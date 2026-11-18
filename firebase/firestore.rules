@@ -65,18 +65,29 @@ service cloud.firestore {
 
     // 6. Collection 'places' (Tây Ninh Go - Local Info Hub)
     match /places/{placeId} {
-      // Cho phép cộng đồng đọc địa điểm đã duyệt; admin có thể xem tất cả
-      allow read: if resource.data.status == 'approved' || (isAuthenticated() && request.auth.token.admin == true);
+      // Cho phép cộng đồng đọc công khai danh bạ địa điểm
+      allow read: if true;
 
-      // Cho phép người dùng đóng góp địa điểm mới với trạng thái pending
-      allow create: if request.resource.data.status == 'pending'
-        && request.resource.data.name is string
-        && request.resource.data.category in ['Ẩm thực', 'Dịch vụ thiết yếu', 'Hành chính công']
+      // Cho phép người dùng đóng góp địa điểm mới
+      allow create: if request.resource.data.name is string
         && request.resource.data.lat is number
         && request.resource.data.lng is number;
 
-      // Cập nhật duyệt hoặc xóa chỉ dành cho Quản trị viên
-      allow update, delete: if isAuthenticated() && request.auth.token.admin == true;
+      // Cập nhật duyệt hoặc xóa chỉ dành cho người dùng đã đăng nhập / Quản trị viên
+      allow update, delete: if isAuthenticated();
+    }
+
+    // 7. Collection 'place_reviews' (Đánh giá & Bình luận địa điểm)
+    match /place_reviews/{reviewId} {
+      // Cho phép cộng đồng đọc công khai các đánh giá
+      allow read: if true;
+
+      // Cho phép gửi đánh giá trải nghiệm địa điểm
+      allow create: if request.resource.data.placeId is string
+        && request.resource.data.comment is string;
+
+      // Cập nhật hoặc xóa chỉ dành cho người dùng đã xác thực
+      allow update, delete: if isAuthenticated();
     }
   }
 }
