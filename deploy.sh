@@ -39,9 +39,9 @@ if ! firebase projects:list &> /dev/null; then
     firebase login
 fi
 
-# Liên kết với Project ID: Blogger
-echo ">> Chọn Firebase Project: Blogger..."
-firebase use Blogger 2>/dev/null || firebase use --add Blogger
+# Liên kết với Project ID: fir-1b417
+echo ">> Chọn Firebase Project: fir-1b417..."
+firebase use fir-1b417 2>/dev/null || firebase use --add fir-1b417
 
 # Đẩy Firestore Rules và Realtime Database Rules
 echo ">> Triển khai Security Rules lên Firebase Cloud..."
