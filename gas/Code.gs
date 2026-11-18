@@ -6,7 +6,7 @@
 // CẤU HÌNH HỆ THỐNG
 const CONFIG = {
   BLOG_ID: PropertiesService.getScriptProperties().getProperty('BLOG_ID') || '8492019482019283741',
-  ADMIN_EMAIL: PropertiesService.getScriptProperties().getProperty('ADMIN_EMAIL') || 'admin@tayninhinfo.com',
+  ADMIN_EMAIL: PropertiesService.getScriptProperties().getProperty('ADMIN_EMAIL') || 'ptquang0968@gmail.com',
   UPLOAD_FOLDER_ID: PropertiesService.getScriptProperties().getProperty('UPLOAD_FOLDER_ID') || '1AbCdEfGhIjKlMnOpQrStUvWxYz123456'
 };
 
