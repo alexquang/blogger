@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+﻿<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE html>
-<html b:css='false' b:defaultwidgetversion='2' b:layoutsversion='3' expr:dir='data:blog.languageDirection' lang='vi' xmlns='http://www.w3.org/1999/xhtml' xmlns:b='http://www.google.com/2005/gml/b' xmlns:data='http://www.google.com/2005/gml/data' xmlns:expr='http://www.google.com/2005/gml/expr'>
+<html b:css='false' b:defaultwidgetversion='2' b:layoutsversion='3' expr:dir='data:blog.languageDirection' lang='vi' xmlns='http://www.w3.org/1999/xhtml' xmlns:b='http://www.google.com/2005/gml/b' xmlns:data='http://www.google.com/2005/gml/data' xmlns:expr='http://www.google.com/2005/gml/expr' xmlns:v-on='http://vuejs.org' xmlns:v-bind='http://vuejs.org'>
 <head>
   <meta charset='utf-8'/>
   <meta content='width=device-width, initial-scale=1.0' name='viewport'/>
@@ -62,7 +62,7 @@
             </div>
             <div>
               <span class='text-xl font-bold tracking-tight bg-gradient-to-r from-brand-600 to-emerald-500 bg-clip-text text-transparent'>TayNinhInfo</span>
-              <span class='block text-[10px] uppercase font-semibold text-slate-400 tracking-wider -mt-1'>Cổng Thông Tin & Mạng Xã Hội</span>
+              <span class='block text-[10px] uppercase font-semibold text-slate-400 tracking-wider -mt-1'>Cổng Thông Tin &amp; Mạng Xã Hội</span>
             </div>
           </a>
         </div>
@@ -70,37 +70,37 @@
         <!-- Search Bar -->
         <div class='hidden md:flex flex-1 max-w-md mx-4'>
           <div class='relative w-full'>
-            <input type='text' v-model='searchKeyword' @keyup.enter='searchPosts' placeholder='Tìm kiếm tin tức, việc làm, địa điểm Tây Ninh...' class='w-full pl-10 pr-4 py-2 text-sm rounded-full bg-slate-100 dark:bg-slate-800 border-none focus:ring-2 focus:ring-brand-500 outline-none text-slate-800 dark:text-slate-100 placeholder-slate-400' />
+            <input type='text' v-model='searchKeyword' v-on:keyup.enter='searchPosts' placeholder='Tìm kiếm tin tức, việc làm, địa điểm Tây Ninh...' class='w-full pl-10 pr-4 py-2 text-sm rounded-full bg-slate-100 dark:bg-slate-800 border-none focus:ring-2 focus:ring-brand-500 outline-none text-slate-800 dark:text-slate-100 placeholder-slate-400' />
             <i class='fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-sm'></i>
           </div>
         </div>
 
         <!-- Right actions -->
         <div class='flex items-center gap-3'>
-          <button @click='toggleDarkMode' class='w-10 h-10 rounded-full flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors'>
-            <i :class="isDark ? 'fa-solid fa-sun text-amber-400' : 'fa-solid fa-moon text-slate-600'"></i>
+          <button v-on:click='toggleDarkMode' class='w-10 h-10 rounded-full flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors'>
+            <i v-bind:class="isDark ? 'fa-solid fa-sun text-amber-400' : 'fa-solid fa-moon text-slate-600'"></i>
           </button>
 
           <!-- Auth Button -->
           <div v-if='!currentUser'>
-            <button @click='loginGoogle' class='inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-full bg-brand-600 hover:bg-brand-700 text-white shadow-md shadow-brand-500/20 transition-all'>
+            <button v-on:click='loginGoogle' class='inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-full bg-brand-600 hover:bg-brand-700 text-white shadow-md shadow-brand-500/20 transition-all'>
               <i class='fa-brands fa-google'></i>
               <span>Đăng nhập Google</span>
             </button>
           </div>
-          <div v-else class='flex items-center gap-3'>
+          <div v-else='true' class='flex items-center gap-3'>
             <div class='relative'>
-              <img :src='currentUser.photoURL || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&h=120&q=80"' :alt='currentUser.displayName' class='w-9 h-9 rounded-full object-cover ring-2 ring-brand-500 cursor-pointer' @click='userMenuOpen = !userMenuOpen' />
+              <img v-bind:src='currentUser.photoURL || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&amp;fit=crop&amp;w=120&amp;h=120&amp;q=80"' v-bind:alt='currentUser.displayName' class='w-9 h-9 rounded-full object-cover ring-2 ring-brand-500 cursor-pointer' v-on:click='userMenuOpen = !userMenuOpen' />
               <!-- Dropdown -->
               <div v-if='userMenuOpen' class='absolute right-0 mt-2 w-56 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl py-2 z-50'>
                 <div class='px-4 py-2 border-b border-slate-100 dark:border-slate-800'>
                   <p class='text-sm font-semibold truncate'>{{ currentUser.displayName }}</p>
                   <p class='text-xs text-slate-400 truncate'>{{ currentUser.email }}</p>
                 </div>
-                <button @click='activeTab = "bookmark"; userMenuOpen = false' class='w-full text-left px-4 py-2 text-sm hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2'>
+                <button v-on:click='activeTab = "bookmark"; userMenuOpen = false' class='w-full text-left px-4 py-2 text-sm hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2'>
                   <i class='fa-solid fa-bookmark text-amber-500'></i> Đã lưu ({{ bookmarks.length }})
                 </button>
-                <button @click='logout' class='w-full text-left px-4 py-2 text-sm text-rose-500 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2'>
+                <button v-on:click='logout' class='w-full text-left px-4 py-2 text-sm text-rose-500 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2'>
                   <i class='fa-solid fa-arrow-right-from-bracket'></i> Đăng xuất
                 </button>
               </div>
@@ -119,7 +119,7 @@
         <div class='bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200/80 dark:border-slate-800 shadow-sm'>
           <div v-if='currentUser' class='text-center'>
             <div class='relative inline-block'>
-              <img :src='currentUser.photoURL || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&h=120&q=80"' class='w-20 h-20 rounded-full mx-auto ring-4 ring-brand-500/20 object-cover' />
+              <img v-bind:src='currentUser.photoURL || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&amp;fit=crop&amp;w=120&amp;h=120&amp;q=80"' class='w-20 h-20 rounded-full mx-auto ring-4 ring-brand-500/20 object-cover' />
               <span class='absolute bottom-0 right-0 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs border-2 border-white dark:border-slate-900' title='Xác minh danh tính'>
                 <i class='fa-solid fa-circle-check'></i>
               </span>
@@ -146,13 +146,13 @@
               </div>
             </div>
           </div>
-          <div v-else class='text-center py-4'>
+          <div v-else='true' class='text-center py-4'>
             <div class='w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 mx-auto mb-3 text-2xl'>
               <i class='fa-regular fa-user'></i>
             </div>
             <h4 class='font-semibold text-sm'>Chào mừng đến Tây Ninh Info</h4>
             <p class='text-xs text-slate-400 mt-1 mb-4'>Đăng nhập để đăng bài, ứng tuyển và kết nối cộng đồng.</p>
-            <button @click='loginGoogle' class='w-full py-2 px-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-medium text-xs shadow-sm transition'>
+            <button v-on:click='loginGoogle' class='w-full py-2 px-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-medium text-xs shadow-sm transition'>
               Đăng nhập ngay
             </button>
           </div>
@@ -162,11 +162,11 @@
         <nav class='bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-800 shadow-sm'>
           <h4 class='text-xs font-bold uppercase tracking-wider text-slate-400 px-3 mb-2'>Chuyên mục Tây Ninh</h4>
           <ul class='space-y-1 text-sm'>
-            <li v-for='cat in categories' :key='cat.id'>
-              <button @click='selectCategory(cat.id)' :class='selectedCategory === cat.id ? "bg-brand-50 dark:bg-brand-950/40 text-brand-600 dark:text-brand-400 font-semibold" : "text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"' class='w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition'>
+            <li v-for='cat in categories' v-bind:key='cat.id'>
+              <button v-on:click='selectCategory(cat.id)' v-bind:class='selectedCategory === cat.id ? "bg-brand-50 dark:bg-brand-950/40 text-brand-600 dark:text-brand-400 font-semibold" : "text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"' class='w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition'>
                 <div class='flex items-center gap-3'>
-                  <span :class='cat.color' class='w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs'>
-                    <i :class='cat.icon'></i>
+                  <span v-bind:class='cat.color' class='w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs'>
+                    <i v-bind:class='cat.icon'></i>
                   </span>
                   <span>{{ cat.name }}</span>
                 </div>
@@ -183,19 +183,19 @@
         <!-- Khung đăng bài nhanh (Quick Post) -->
         <div class='bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-800 shadow-sm'>
           <div class='flex items-center gap-3'>
-            <img :src='currentUser ? (currentUser.photoURL || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&h=120&q=80") : "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&h=120&q=80"' class='w-10 h-10 rounded-full object-cover' />
-            <button @click='openCreatePostModal("tintuc")' class='flex-1 text-left px-4 py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-400 hover:bg-slate-200/70 dark:hover:bg-slate-700/70 rounded-full text-sm transition'>
+            <img v-bind:src='currentUser ? (currentUser.photoURL || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&amp;fit=crop&amp;w=120&amp;h=120&amp;q=80") : "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&amp;fit=crop&amp;w=120&amp;h=120&amp;q=80"' class='w-10 h-10 rounded-full object-cover' />
+            <button v-on:click='openCreatePostModal("tintuc")' class='flex-1 text-left px-4 py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-400 hover:bg-slate-200/70 dark:hover:bg-slate-700/70 rounded-full text-sm transition'>
               {{ currentUser ? currentUser.displayName + ' ơi, bạn đang nghĩ gì?' : 'Đăng tin hoặc chia sẻ thông tin Tây Ninh...' }}
             </button>
           </div>
           <div class='flex items-center justify-between border-t border-slate-100 dark:border-slate-800 mt-3 pt-3 px-2 text-xs font-semibold text-slate-500'>
-            <button @click='openCreatePostModal("tintuc")' class='flex items-center gap-2 hover:text-brand-600 transition'>
+            <button v-on:click='openCreatePostModal("tintuc")' class='flex items-center gap-2 hover:text-brand-600 transition'>
               <i class='fa-regular fa-image text-emerald-500 text-base'></i> Đăng bài ảnh
             </button>
-            <button @click='openCreatePostModal("tuyendung")' class='flex items-center gap-2 hover:text-blue-600 transition'>
+            <button v-on:click='openCreatePostModal("tuyendung")' class='flex items-center gap-2 hover:text-blue-600 transition'>
               <i class='fa-solid fa-briefcase text-blue-500 text-base'></i> Đăng tuyển dụng
             </button>
-            <button @click='openCreatePostModal("raovat")' class='flex items-center gap-2 hover:text-amber-600 transition'>
+            <button v-on:click='openCreatePostModal("raovat")' class='flex items-center gap-2 hover:text-amber-600 transition'>
               <i class='fa-solid fa-tags text-amber-500 text-base'></i> Rao vặt nhanh
             </button>
           </div>
@@ -203,16 +203,16 @@
 
         <!-- Feed Filter Tabs -->
         <div class='flex items-center gap-2 bg-white dark:bg-slate-900 p-1.5 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm'>
-          <button @click='activeTab = "all"' :class='activeTab === "all" ? "bg-brand-600 text-white shadow-sm" : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"' class='flex-1 py-2 text-xs font-semibold rounded-xl transition text-center'>
+          <button v-on:click='activeTab = "all"' v-bind:class='activeTab === "all" ? "bg-brand-600 text-white shadow-sm" : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"' class='flex-1 py-2 text-xs font-semibold rounded-xl transition text-center'>
             <i class='fa-solid fa-globe mr-1.5'></i>Tất cả
           </button>
-          <button @click='activeTab = "tuyendung"' :class='activeTab === "tuyendung" ? "bg-brand-600 text-white shadow-sm" : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"' class='flex-1 py-2 text-xs font-semibold rounded-xl transition text-center'>
+          <button v-on:click='activeTab = "tuyendung"' v-bind:class='activeTab === "tuyendung" ? "bg-brand-600 text-white shadow-sm" : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"' class='flex-1 py-2 text-xs font-semibold rounded-xl transition text-center'>
             <i class='fa-solid fa-briefcase mr-1.5'></i>Việc làm
           </button>
-          <button @click='activeTab = "thaoluan"' :class='activeTab === "thaoluan" ? "bg-brand-600 text-white shadow-sm" : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"' class='flex-1 py-2 text-xs font-semibold rounded-xl transition text-center'>
+          <button v-on:click='activeTab = "thaoluan"' v-bind:class='activeTab === "thaoluan" ? "bg-brand-600 text-white shadow-sm" : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"' class='flex-1 py-2 text-xs font-semibold rounded-xl transition text-center'>
             <i class='fa-regular fa-comments mr-1.5'></i>Thảo luận
           </button>
-          <button @click='activeTab = "bookmark"' :class='activeTab === "bookmark" ? "bg-brand-600 text-white shadow-sm" : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"' class='flex-1 py-2 text-xs font-semibold rounded-xl transition text-center'>
+          <button v-on:click='activeTab = "bookmark"' v-bind:class='activeTab === "bookmark" ? "bg-brand-600 text-white shadow-sm" : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"' class='flex-1 py-2 text-xs font-semibold rounded-xl transition text-center'>
             <i class='fa-solid fa-bookmark mr-1.5'></i>Đã lưu
           </button>
         </div>
@@ -224,13 +224,13 @@
         </div>
 
         <!-- Post Cards List -->
-        <div v-else class='space-y-5'>
-          <article v-for='post in filteredPosts' :key='post.id' class='bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm overflow-hidden transition hover:shadow-md'>
+        <div v-else='true' class='space-y-5'>
+          <article v-for='post in filteredPosts' v-bind:key='post.id' class='bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm overflow-hidden transition hover:shadow-md'>
             
             <!-- Author Header -->
             <div class='p-4 flex items-center justify-between'>
               <div class='flex items-center gap-3'>
-                <img :src='post.authorPhoto || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&h=120&q=80"' class='w-10 h-10 rounded-full object-cover ring-1 ring-slate-200 dark:ring-slate-700' />
+                <img v-bind:src='post.authorPhoto || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&amp;fit=crop&amp;w=120&amp;h=120&amp;q=80"' class='w-10 h-10 rounded-full object-cover ring-1 ring-slate-200 dark:ring-slate-700' />
                 <div>
                   <div class='flex items-center gap-1.5'>
                     <span class='font-bold text-sm'>{{ post.authorName }}</span>
@@ -238,7 +238,7 @@
                   </div>
                   <div class='flex items-center gap-2 text-[11px] text-slate-400'>
                     <span>{{ formatRelativeTime(post.createdAt) }}</span>
-                    <span>&bull;</span>
+                    <span>&amp;bull;</span>
                     <span class='capitalize font-medium text-brand-600 dark:text-brand-400'>{{ post.category }}</span>
                   </div>
                 </div>
@@ -253,7 +253,7 @@
             <!-- Content Body -->
             <div class='px-4 pb-3'>
               <h2 v-if='post.title' class='text-base font-bold text-slate-900 dark:text-slate-100 mb-1.5'>
-                <a :href='post.url' target='_blank' class='hover:text-brand-600 transition'>{{ post.title }}</a>
+                <a v-bind:href='post.url' target='_blank' class='hover:text-brand-600 transition'>{{ post.title }}</a>
               </h2>
               <p class='text-sm text-slate-700 dark:text-slate-300 whitespace-pre-line leading-relaxed'>
                 {{ post.content }}
@@ -265,7 +265,7 @@
                   <span v-if='post.salary'><i class='fa-solid fa-money-bill-wave text-emerald-500 mr-1'></i>{{ post.salary }}</span>
                   <span v-if='post.location'><i class='fa-solid fa-location-dot text-rose-500 mr-1'></i>{{ post.location }}</span>
                 </div>
-                <button @click='openApplyModal(post)' class='px-3.5 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-semibold flex items-center gap-1.5 shadow-sm transition'>
+                <button v-on:click='openApplyModal(post)' class='px-3.5 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-semibold flex items-center gap-1.5 shadow-sm transition'>
                   <i class='fa-solid fa-paper-plane text-xs'></i> Ứng tuyển nhanh
                 </button>
               </div>
@@ -273,27 +273,27 @@
 
             <!-- Post Media (Image) -->
             <div v-if='post.imageUrl' class='max-h-96 overflow-hidden bg-slate-100 dark:bg-slate-800'>
-              <img :src='post.imageUrl' alt='Post image' class='w-full object-cover hover:scale-[1.01] transition-transform duration-300' />
+              <img v-bind:src='post.imageUrl' alt='Post image' class='w-full object-cover hover:scale-[1.01] transition-transform duration-300' />
             </div>
 
             <!-- Interaction Bar -->
             <div class='px-4 py-2.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400'>
               <div class='flex items-center gap-4'>
-                <button @click='toggleLike(post)' :class='isPostLiked(post) ? "text-rose-500 font-bold" : "hover:text-rose-500"' class='flex items-center gap-1.5 transition'>
-                  <i :class='isPostLiked(post) ? "fa-solid fa-heart" : "fa-regular fa-heart"'></i>
+                <button v-on:click='toggleLike(post)' v-bind:class='isPostLiked(post) ? "text-rose-500 font-bold" : "hover:text-rose-500"' class='flex items-center gap-1.5 transition'>
+                  <i v-bind:class='isPostLiked(post) ? "fa-solid fa-heart" : "fa-regular fa-heart"'></i>
                   <span>{{ (post.likes || 0) }} Thích</span>
                 </button>
-                <button @click='toggleCommentSection(post.id)' class='flex items-center gap-1.5 hover:text-brand-600 transition'>
+                <button v-on:click='toggleCommentSection(post.id)' class='flex items-center gap-1.5 hover:text-brand-600 transition'>
                   <i class='fa-regular fa-comment'></i>
                   <span>{{ post.commentCount || 0 }} Bình luận</span>
                 </button>
               </div>
 
               <div class='flex items-center gap-3'>
-                <button @click='toggleBookmark(post)' :class='isBookmarked(post.id) ? "text-amber-500 font-bold" : "hover:text-amber-500"' class='flex items-center gap-1 transition' title='Lưu bài'>
-                  <i :class='isBookmarked(post.id) ? "fa-solid fa-bookmark" : "fa-regular fa-bookmark"'></i>
+                <button v-on:click='toggleBookmark(post)' v-bind:class='isBookmarked(post.id) ? "text-amber-500 font-bold" : "hover:text-amber-500"' class='flex items-center gap-1 transition' title='Lưu bài'>
+                  <i v-bind:class='isBookmarked(post.id) ? "fa-solid fa-bookmark" : "fa-regular fa-bookmark"'></i>
                 </button>
-                <button @click='sharePost(post)' class='hover:text-blue-500 transition' title='Chia sẻ'>
+                <button v-on:click='sharePost(post)' class='hover:text-blue-500 transition' title='Chia sẻ'>
                   <i class='fa-solid fa-share-nodes'></i>
                 </button>
               </div>
@@ -303,16 +303,16 @@
             <div v-if='activeCommentPostId === post.id' class='p-4 bg-slate-50/50 dark:bg-slate-800/40 border-t border-slate-100 dark:border-slate-800 space-y-3'>
               <!-- Comment Input -->
               <div class='flex items-center gap-2'>
-                <input type='text' v-model='newCommentText' @keyup.enter='submitComment(post.id)' placeholder='Viết bình luận công khai...' class='flex-1 px-3.5 py-2 text-xs rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-brand-500 outline-none' />
-                <button @click='submitComment(post.id)' class='w-8 h-8 rounded-full bg-brand-600 text-white flex items-center justify-center hover:bg-brand-700 transition'>
+                <input type='text' v-model='newCommentText' v-on:keyup.enter='submitComment(post.id)' placeholder='Viết bình luận công khai...' class='flex-1 px-3.5 py-2 text-xs rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-brand-500 outline-none' />
+                <button v-on:click='submitComment(post.id)' class='w-8 h-8 rounded-full bg-brand-600 text-white flex items-center justify-center hover:bg-brand-700 transition'>
                   <i class='fa-solid fa-paper-plane text-xs'></i>
                 </button>
               </div>
 
               <!-- List comments -->
               <div class='space-y-2.5 max-h-60 overflow-y-auto custom-scrollbar pr-1'>
-                <div v-for='cmt in (postComments[post.id] || [])' :key='cmt.id' class='flex items-start gap-2.5 text-xs'>
-                  <img :src='cmt.authorPhoto || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&h=120&q=80"' class='w-7 h-7 rounded-full object-cover mt-0.5' />
+                <div v-for='cmt in (postComments[post.id] || [])' v-bind:key='cmt.id' class='flex items-start gap-2.5 text-xs'>
+                  <img v-bind:src='cmt.authorPhoto || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&amp;fit=crop&amp;w=120&amp;h=120&amp;q=80"' class='w-7 h-7 rounded-full object-cover mt-0.5' />
                   <div class='bg-white dark:bg-slate-900 px-3 py-2 rounded-2xl border border-slate-200/60 dark:border-slate-800 flex-1'>
                     <div class='flex items-center justify-between'>
                       <span class='font-bold text-[11px] text-slate-800 dark:text-slate-200'>{{ cmt.authorName }}</span>
@@ -345,12 +345,12 @@
           </div>
 
           <div class='space-y-3'>
-            <div v-for='job in urgentJobs' :key='job.id' class='p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 hover:border-brand-500/50 transition'>
+            <div v-for='job in urgentJobs' v-bind:key='job.id' class='p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 hover:border-brand-500/50 transition'>
               <h5 class='font-semibold text-xs text-slate-800 dark:text-slate-200 line-clamp-1'>{{ job.title }}</h5>
               <p class='text-[11px] text-slate-500 dark:text-slate-400 mt-0.5'><i class='fa-regular fa-building mr-1'></i>{{ job.company }}</p>
               <div class='flex items-center justify-between mt-2 pt-2 border-t border-slate-200/50 dark:border-slate-700/50 text-[11px]'>
                 <span class='text-emerald-600 dark:text-emerald-400 font-bold'>{{ job.salary }}</span>
-                <button @click='openApplyModal(job)' class='px-2.5 py-1 rounded bg-brand-600 hover:bg-brand-700 text-white font-medium text-[10px] transition'>
+                <button v-on:click='openApplyModal(job)' class='px-2.5 py-1 rounded bg-brand-600 hover:bg-brand-700 text-white font-medium text-[10px] transition'>
                   1-Click Nộp CV
                 </button>
               </div>
@@ -358,20 +358,20 @@
           </div>
         </div>
 
-        <!-- Widget: Tiện ích & Thời tiết Tây Ninh -->
+        <!-- Widget: Tiện ích &amp; Thời tiết Tây Ninh -->
         <div class='bg-gradient-to-br from-emerald-600 to-teal-700 text-white rounded-2xl p-4 shadow-sm'>
           <div class='flex items-center justify-between'>
             <div>
               <span class='text-[11px] uppercase tracking-wider font-semibold text-emerald-100'>Thời tiết Tây Ninh</span>
               <h4 class='text-2xl font-black mt-0.5'>32°C</h4>
-              <p class='text-xs text-emerald-100'>Nắng đẹp &bull; Độ ẩm: 68%</p>
+              <p class='text-xs text-emerald-100'>Nắng đẹp &amp;bull; Độ ẩm: 68%</p>
             </div>
             <i class='fa-solid fa-cloud-sun text-4xl text-amber-300 opacity-90'></i>
           </div>
           <div class='mt-4 pt-3 border-t border-emerald-500/50 grid grid-cols-2 gap-2 text-xs'>
             <div class='bg-white/10 rounded-lg p-2 text-center'>
               <span class='block text-[10px] text-emerald-200'>Núi Bà Đen</span>
-              <span class='font-bold'>24°C &bull; Sương mù nhẹ</span>
+              <span class='font-bold'>24°C &amp;bull; Sương mù nhẹ</span>
             </div>
             <div class='bg-white/10 rounded-lg p-2 text-center'>
               <span class='block text-[10px] text-emerald-200'>Cửa khẩu Mộc Bài</span>
@@ -386,12 +386,12 @@
             <i class='fa-solid fa-trophy text-amber-500'></i> Top Đóng Góp Tuần
           </h4>
           <ul class='space-y-3'>
-            <li v-for='(user, idx) in leaderboard' :key='user.id' class='flex items-center justify-between text-xs'>
+            <li v-for='(user, idx) in leaderboard' v-bind:key='user.id' class='flex items-center justify-between text-xs'>
               <div class='flex items-center gap-2.5'>
-                <span class='w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px]' :class='idx === 0 ? "bg-amber-400 text-slate-900" : (idx === 1 ? "bg-slate-300 text-slate-800" : "bg-amber-700 text-white")'>
+                <span class='w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px]' v-bind:class='idx === 0 ? "bg-amber-400 text-slate-900" : (idx === 1 ? "bg-slate-300 text-slate-800" : "bg-amber-700 text-white")'>
                   {{ idx + 1 }}
                 </span>
-                <img :src='user.avatar' class='w-7 h-7 rounded-full object-cover' />
+                <img v-bind:src='user.avatar' class='w-7 h-7 rounded-full object-cover' />
                 <span class='font-semibold text-slate-800 dark:text-slate-200'>{{ user.name }}</span>
               </div>
               <span class='font-bold text-brand-600 dark:text-brand-400'>{{ user.points }} pts</span>
@@ -406,7 +406,7 @@
     <!-- 1-CLICK APPLY MODAL (Giống LinkedIn Easy Apply) -->
     <div v-if='showApplyModal' class='fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4'>
       <div class='bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl relative'>
-        <button @click='showApplyModal = false' class='absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg'>
+        <button v-on:click='showApplyModal = false' class='absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg'>
           <i class='fa-solid fa-xmark'></i>
         </button>
 
@@ -420,24 +420,24 @@
           </div>
         </div>
 
-        <form @submit.prevent='submitApplication' class='space-y-4 text-xs'>
+        <form v-on:submit.prevent='submitApplication' class='space-y-4 text-xs'>
           <div>
             <label class='block font-semibold mb-1 text-slate-700 dark:text-slate-300'>Họ và tên</label>
-            <input type='text' v-model='applyForm.fullName' required class='w-full px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-brand-500' placeholder='Nguyễn Văn A' />
+            <input type='text' v-model='applyForm.fullName' required='required' class='w-full px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-brand-500' placeholder='Nguyễn Văn A' />
           </div>
           <div class='grid grid-cols-2 gap-3'>
             <div>
               <label class='block font-semibold mb-1 text-slate-700 dark:text-slate-300'>Số điện thoại / Zalo</label>
-              <input type='tel' v-model='applyForm.phone' required class='w-full px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-brand-500' placeholder='090xxxxxxx' />
+              <input type='tel' v-model='applyForm.phone' required='required' class='w-full px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-brand-500' placeholder='090xxxxxxx' />
             </div>
             <div>
               <label class='block font-semibold mb-1 text-slate-700 dark:text-slate-300'>Email nhận phản hồi</label>
-              <input type='email' v-model='applyForm.email' required class='w-full px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-brand-500' placeholder='email@example.com' />
+              <input type='email' v-model='applyForm.email' required='required' class='w-full px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-brand-500' placeholder='email@example.com' />
             </div>
           </div>
           <div>
             <label class='block font-semibold mb-1 text-slate-700 dark:text-slate-300'>Đính kèm CV (PDF/DOCX/Ảnh) hoặc Giới thiệu tóm tắt</label>
-            <input type='file' @change='handleFileUpload' accept='.pdf,.doc,.docx,image/*' class='w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100' />
+            <input type='file' v-on:change='handleFileUpload' accept='.pdf,.doc,.docx,image/*' class='w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100' />
           </div>
           <div>
             <label class='block font-semibold mb-1 text-slate-700 dark:text-slate-300'>Ghi chú cho Nhà tuyển dụng</label>
@@ -445,8 +445,8 @@
           </div>
 
           <div class='flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800'>
-            <button type='button' @click='showApplyModal = false' class='px-4 py-2 rounded-lg bg-slate-200 dark:bg-slate-800 font-semibold hover:bg-slate-300 transition'>Hủy</button>
-            <button type='submit' :disabled='submittingApply' class='px-5 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-semibold flex items-center gap-2 transition disabled:opacity-50'>
+            <button type='button' v-on:click='showApplyModal = false' class='px-4 py-2 rounded-lg bg-slate-200 dark:bg-slate-800 font-semibold hover:bg-slate-300 transition'>Hủy</button>
+            <button type='submit' v-bind:disabled='submittingApply' class='px-5 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-semibold flex items-center gap-2 transition disabled:opacity-50'>
               <i v-if='submittingApply' class='fa-solid fa-circle-notch fa-spin'></i>
               <span>{{ submittingApply ? 'Đang gửi hồ sơ...' : 'Nộp hồ sơ ngay' }}</span>
             </button>
@@ -458,7 +458,7 @@
     <!-- CREATE POST MODAL -->
     <div v-if='showCreateModal' class='fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4'>
       <div class='bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl relative'>
-        <button @click='showCreateModal = false' class='absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg'>
+        <button v-on:click='showCreateModal = false' class='absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg'>
           <i class='fa-solid fa-xmark'></i>
         </button>
 
@@ -466,20 +466,20 @@
           <i class='fa-solid fa-pen-nib text-brand-600'></i> Đăng bài lên TayNinhInfo
         </h3>
 
-        <form @submit.prevent='submitPost' class='space-y-4 text-xs'>
+        <form v-on:submit.prevent='submitPost' class='space-y-4 text-xs'>
           <div>
             <label class='block font-semibold mb-1'>Chuyên mục</label>
             <select v-model='postForm.category' class='w-full px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-brand-500'>
-              <option value='tintuc'>Tin tức & Sự kiện</option>
-              <option value='tuyendung'>Tuyển dụng & Việc làm</option>
+              <option value='tintuc'>Tin tức &amp; Sự kiện</option>
+              <option value='tuyendung'>Tuyển dụng &amp; Việc làm</option>
               <option value='raovat'>Rao vặt - Mua bán</option>
-              <option value='diadiem'>Địa điểm & Ẩm thực Tây Ninh</option>
+              <option value='diadiem'>Địa điểm &amp; Ẩm thực Tây Ninh</option>
             </select>
           </div>
 
           <div>
             <label class='block font-semibold mb-1'>Tiêu đề bài viết</label>
-            <input type='text' v-model='postForm.title' required placeholder='Nhập tiêu đề tóm tắt...' class='w-full px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-brand-500' />
+            <input type='text' v-model='postForm.title' required='required' placeholder='Nhập tiêu đề tóm tắt...' class='w-full px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-brand-500' />
           </div>
 
           <div v-if='postForm.category === "tuyendung"' class='grid grid-cols-2 gap-3'>
@@ -495,17 +495,17 @@
 
           <div>
             <label class='block font-semibold mb-1'>Nội dung chi tiết</label>
-            <textarea v-model='postForm.content' rows='4' required placeholder='Chia sẻ thông tin, yêu cầu công việc hoặc mô tả sản phẩm...' class='w-full px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-brand-500'></textarea>
+            <textarea v-model='postForm.content' rows='4' required='required' placeholder='Chia sẻ thông tin, yêu cầu công việc hoặc mô tả sản phẩm...' class='w-full px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-brand-500'></textarea>
           </div>
 
           <div>
             <label class='block font-semibold mb-1'>Đính kèm ảnh (Tùy chọn)</label>
-            <input type='file' @change='handlePostImageUpload' accept='image/*' class='w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100' />
+            <input type='file' v-on:change='handlePostImageUpload' accept='image/*' class='w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100' />
           </div>
 
           <div class='flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800'>
-            <button type='button' @click='showCreateModal = false' class='px-4 py-2 rounded-lg bg-slate-200 dark:bg-slate-800 font-semibold hover:bg-slate-300 transition'>Hủy</button>
-            <button type='submit' :disabled='submittingPost' class='px-5 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-semibold flex items-center gap-2 transition disabled:opacity-50'>
+            <button type='button' v-on:click='showCreateModal = false' class='px-4 py-2 rounded-lg bg-slate-200 dark:bg-slate-800 font-semibold hover:bg-slate-300 transition'>Hủy</button>
+            <button type='submit' v-bind:disabled='submittingPost' class='px-5 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-semibold flex items-center gap-2 transition disabled:opacity-50'>
               <i v-if='submittingPost' class='fa-solid fa-circle-notch fa-spin'></i>
               <span>{{ submittingPost ? 'Đang xuất bản...' : 'Đăng bài ngay' }}</span>
             </button>
@@ -531,7 +531,7 @@
     </b:section>
   </div>
 
-  <!-- FIREBASE MODULAR SDK V10 & APPLICATION SCRIPT -->
+  <!-- FIREBASE MODULAR SDK V10 &amp; APPLICATION SCRIPT -->
   <script type='module'>
     //<![CDATA[
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js';
