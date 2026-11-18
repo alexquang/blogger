@@ -43,9 +43,9 @@ fi
 echo ">> Chọn Firebase Project: fir-1b417..."
 firebase use fir-1b417 2>/dev/null || firebase use --add fir-1b417
 
-# Đẩy Firestore Rules và Realtime Database Rules
-echo ">> Triển khai Security Rules lên Firebase Cloud..."
-firebase deploy --only firestore:rules,database
+# Đẩy Firestore Rules, Realtime Database Rules và Hosting
+echo ">> Triển khai Security Rules & Hosting (Tây Ninh Go) lên Firebase Cloud..."
+firebase deploy --only firestore:rules,database,hosting
 
 cd ..
 

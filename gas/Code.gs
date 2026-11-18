@@ -62,6 +62,10 @@ function doPost(e) {
       case 'apply_job':
         return createJsonResponse(handleJobApplication(payload));
 
+      case 'publish_place':
+      case 'create_place_post':
+        return createJsonResponse(handlePublishPlaceToBlogger(payload));
+
       default:
         return createJsonResponse({
           status: 'error',
@@ -239,5 +243,106 @@ function handleJobApplication(payload) {
   return {
     status: 'success',
     message: 'Application recorded and email sent successfully'
+  };
+}
+
+/**
+ * CHỨC NĂNG 4: Tự động đăng địa điểm "Tây Ninh Go" lên Blogger chuẩn SEO
+ */
+function handlePublishPlaceToBlogger(payload) {
+  const blogId = CONFIG.BLOG_ID;
+  const isDraft = payload.isDraft !== undefined ? payload.isDraft : false;
+
+  const { name, category, address, lat, lng, description } = payload;
+  if (!name || !category || !address) {
+    throw new Error('Thiếu thông tin bắt buộc: name, category hoặc address.');
+  }
+
+  const postTitle = `[Tây Ninh Go] ${name} - Địa điểm ${category} tại Tây Ninh`;
+  const labels = ['Tây Ninh Go', category, 'Địa điểm Tây Ninh', 'Du lịch Tây Ninh'];
+
+  // Nội dung HTML tối ưu hóa SEO với Schema.org LocalBusiness
+  const postContent = `
+    <div class="tayninhgo-place-article" style="font-family: Arial, sans-serif; line-height: 1.7; color: #1e293b;">
+      <h2 style="color: #059669; font-size: 22px; border-bottom: 2px solid #10b981; padding-bottom: 8px;">
+        📍 ${name}
+      </h2>
+      
+      <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px; margin: 16px 0;">
+        <p style="margin: 4px 0;"><strong>🏷️ Danh mục:</strong> <span style="background: #e0f2fe; color: #0369a1; padding: 2px 8px; border-radius: 4px; font-weight: 600;">${category}</span></p>
+        <p style="margin: 4px 0;"><strong>🏠 Địa chỉ:</strong> ${address}</p>
+        ${lat && lng ? `<p style="margin: 4px 0;"><strong>🌐 Tọa độ GPS:</strong> ${lat}, ${lng}</p>` : ''}
+      </div>
+
+      <h3 style="color: #047857; margin-top: 20px;">Giới thiệu địa điểm</h3>
+      <p style="text-align: justify;">
+        ${description ? description : `${name} là một trong những địa điểm ${category.toLowerCase()} uy tín, được ghi nhận và chia sẻ trên bản đồ danh bạ số Tây Ninh Go.`}
+      </p>
+
+      ${lat && lng ? `
+      <div style="margin: 24px 0; text-align: center;">
+        <a href="https://www.google.com/maps?q=${lat},${lng}" target="_blank" rel="noopener noreferrer" 
+           style="display: inline-block; background-color: #059669; color: #ffffff; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+          🗺️ Xem vị trí và chỉ đường trên Google Maps
+        </a>
+      </div>
+      ` : ''}
+
+      <div style="border-top: 1px solid #e2e8f0; margin-top: 24px; padding-top: 12px; font-size: 13px; color: #64748b;">
+        <p>Nguồn dữ liệu: <em>Cộng đồng Tây Ninh Go - Nền tảng kết nối thông tin địa phương Tây Ninh.</em></p>
+      </div>
+
+      <!-- Dữ liệu có cấu trúc SEO Schema LocalBusiness -->
+      <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        "name": "${name}",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "${address}",
+          "addressRegion": "Tây Ninh",
+          "addressCountry": "VN"
+        }
+        ${lat && lng ? `,"geo": {
+          "@type": "GeoCoordinates",
+          "latitude": ${lat},
+          "longitude": ${lng}
+        }` : ''}
+      }
+      <\/script>
+    </div>
+  `;
+
+  // Gọi Blogger API v3
+  const token = ScriptApp.getOAuthToken();
+  const url = 'https://www.googleapis.com/blogger/v3/blogs/' + blogId + '/posts' + (isDraft ? '?isDraft=true' : '');
+
+  const response = UrlFetchApp.fetch(url, {
+    method: 'post',
+    contentType: 'application/json',
+    headers: {
+      Authorization: 'Bearer ' + token
+    },
+    payload: JSON.stringify({
+      kind: 'blogger#post',
+      title: postTitle,
+      content: postContent,
+      labels: labels
+    }),
+    muteHttpExceptions: true
+  });
+
+  const resJson = JSON.parse(response.getContentText());
+
+  if (resJson.error) {
+    throw new Error('Lỗi Blogger API: ' + (resJson.error.message || JSON.stringify(resJson.error)));
+  }
+
+  return {
+    status: 'success',
+    postId: resJson.id,
+    postUrl: resJson.url,
+    title: postTitle
   };
 }

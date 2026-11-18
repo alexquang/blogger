@@ -62,5 +62,21 @@ service cloud.firestore {
         request.auth.token.admin == true
       );
     }
+
+    // 6. Collection 'places' (Tây Ninh Go - Local Info Hub)
+    match /places/{placeId} {
+      // Cho phép cộng đồng đọc địa điểm đã duyệt; admin có thể xem tất cả
+      allow read: if resource.data.status == 'approved' || (isAuthenticated() && request.auth.token.admin == true);
+
+      // Cho phép người dùng đóng góp địa điểm mới với trạng thái pending
+      allow create: if request.resource.data.status == 'pending'
+        && request.resource.data.name is string
+        && request.resource.data.category in ['Ẩm thực', 'Dịch vụ thiết yếu', 'Hành chính công']
+        && request.resource.data.lat is number
+        && request.resource.data.lng is number;
+
+      // Cập nhật duyệt hoặc xóa chỉ dành cho Quản trị viên
+      allow update, delete: if isAuthenticated() && request.auth.token.admin == true;
+    }
   }
 }
