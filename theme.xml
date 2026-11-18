@@ -560,14 +560,16 @@
     } from 'https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js';
 
     // CẤU HÌNH FIREBASE PROJECT: Blogger
-    const firebaseConfig = {
-      apiKey: "AIzaSyDummyKeyForTayNinhInfoBlogger2026",
-      authDomain: "blogger-tayninhinfo.firebaseapp.com",
-      projectId: "Blogger",
-      storageBucket: "blogger-tayninhinfo.appspot.com",
-      messagingSenderId: "109876543210",
-      appId: "1:109876543210:web:abcdef1234567890"
-    };
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyB36E4W7BG8ZLQnfBLeZu-pVtf4TVDqLUQ",
+    authDomain: "fir-1b417.firebaseapp.com",
+    projectId: "fir-1b417",
+    storageBucket: "fir-1b417.firebasestorage.app",
+    messagingSenderId: "593916869236",
+    appId: "1:593916869236:web:e7c6233011227b80f72f21",
+    measurementId: "G-9604F39B4E"
+  };
 
     // Google Apps Script Web App URL
     const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzDummyBloggerWebDeploymentIdForTayNinhInfo/exec";
