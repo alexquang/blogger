@@ -1003,12 +1003,19 @@
           mapInstance = L.map('directoryMap', { zoomControl: false }).setView([DEFAULT_LAT, DEFAULT_LNG], 12);
           L.control.zoom({ position: 'topright' }).addTo(mapInstance);
 
-          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          // Tile Server CartoDB Voyager - Tốc độ cực nhanh tại Việt Nam qua Fastly CDN Singapore
+          L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
             maxZoom: 19,
-            attribution: '&copy; OpenStreetMap | Tây Ninh Go'
+            subdomains: 'abcd',
+            attribution: '© CartoDB © OpenStreetMap | Tây Ninh Go'
           }).addTo(mapInstance);
 
           markersGroup = L.layerGroup().addTo(mapInstance);
+
+          // Tự động fix kích thước bản đồ khi tải xong
+          setTimeout(() => {
+            if (mapInstance) mapInstance.invalidateSize();
+          }, 300);
 
           // Click trên bản đồ để lấy tọa độ vào form đóng góp
           mapInstance.on('click', (e) => {
