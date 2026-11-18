@@ -516,6 +516,110 @@
 
   </div>
 
+    <!-- TAILWIND TOAST NOTIFICATION STACK -->
+    <div class='fixed top-20 right-4 z-50 flex flex-col gap-2.5 pointer-events-none max-w-sm w-full'>
+      <div v-for='toast in toasts' v-bind:key='toast.id'
+           v-bind:class='{
+             "bg-emerald-50 dark:bg-emerald-950/90 border-emerald-500 text-emerald-900 dark:text-emerald-100": toast.type === "success",
+             "bg-rose-50 dark:bg-rose-950/90 border-rose-500 text-rose-900 dark:text-rose-100": toast.type === "error",
+             "bg-amber-50 dark:bg-amber-950/90 border-amber-500 text-amber-900 dark:text-amber-100": toast.type === "warning",
+             "bg-blue-50 dark:bg-blue-950/90 border-blue-500 text-blue-900 dark:text-blue-100": toast.type === "info"
+           }'
+           class='pointer-events-auto p-4 rounded-2xl border shadow-xl flex items-start gap-3 transition-all duration-300'>
+        <div class='text-lg mt-0.5'>
+          <i v-if='toast.type === "success"' class='fa-solid fa-circle-check text-emerald-500'></i>
+          <i v-else-if='toast.type === "error"' class='fa-solid fa-circle-exclamation text-rose-500'></i>
+          <i v-else-if='toast.type === "warning"' class='fa-solid fa-triangle-exclamation text-amber-500'></i>
+          <i v-else='true' class='fa-solid fa-circle-info text-blue-500'></i>
+        </div>
+        <div class='flex-1 text-xs'>
+          <h5 v-if='toast.title' class='font-bold text-sm mb-0.5'>{{ toast.title }}</h5>
+          <p class='leading-relaxed'>{{ toast.message }}</p>
+        </div>
+        <button v-on:click='removeToast(toast.id)' class='opacity-50 hover:opacity-100 text-xs p-1'>
+          <i class='fa-solid fa-xmark'></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- TAILWIND MODAL POPUP DIALOG -->
+    <div v-if='popup.show' class='fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4'>
+      <div class='bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl text-center relative'>
+        <button v-on:click='popup.show = false' class='absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-base'>
+          <i class='fa-solid fa-xmark'></i>
+        </button>
+        <div class='w-14 h-14 rounded-2xl mx-auto flex items-center justify-center text-2xl mb-4'
+             v-bind:class='{
+               "bg-emerald-100 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-400": popup.type === "success",
+               "bg-rose-100 text-rose-600 dark:bg-rose-950/60 dark:text-rose-400": popup.type === "error",
+               "bg-amber-100 text-amber-600 dark:bg-amber-950/60 dark:text-amber-400": popup.type === "warning",
+               "bg-blue-100 text-blue-600 dark:bg-blue-950/60 dark:text-blue-400": popup.type === "info"
+             }'>
+          <i v-if='popup.type === "success"' class='fa-solid fa-circle-check'></i>
+          <i v-else-if='popup.type === "error"' class='fa-solid fa-triangle-exclamation'></i>
+          <i v-else-if='popup.type === "warning"' class='fa-solid fa-bell'></i>
+          <i v-else='true' class='fa-solid fa-circle-info'></i>
+        </div>
+        <h4 class='text-base font-bold text-slate-900 dark:text-slate-100 mb-2'>{{ popup.title }}</h4>
+        <p class='text-xs text-slate-600 dark:text-slate-300 leading-relaxed mb-6 whitespace-pre-line'>{{ popup.message }}</p>
+        <div class='flex gap-3 justify-center'>
+          <button v-if='popup.showCancel' v-on:click='popup.show = false' class='px-5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold hover:bg-slate-200 transition'>
+            {{ popup.cancelText || 'Hủy' }}
+          </button>
+          <button v-on:click='handlePopupConfirm'
+                  v-bind:class='{
+                    "bg-brand-600 hover:bg-brand-700 text-white": popup.type === "success" || popup.type === "info",
+                    "bg-rose-600 hover:bg-rose-700 text-white": popup.type === "error",
+                    "bg-amber-600 hover:bg-amber-700 text-white": popup.type === "warning"
+                  }'
+                  class='px-6 py-2.5 rounded-xl text-xs font-semibold shadow-lg transition'>
+            {{ popup.confirmText || 'Đã hiểu' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL CẤU HÌNH GOOGLE LOGIN & DEMO -->
+    <div v-if='showConfigModal' class='fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4'>
+      <div class='bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl relative text-left'>
+        <button v-on:click='showConfigModal = false' class='absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-base'>
+          <i class='fa-solid fa-xmark'></i>
+        </button>
+
+        <div class='w-12 h-12 rounded-2xl bg-amber-100 text-amber-600 dark:bg-amber-950/60 dark:text-amber-400 mx-auto flex items-center justify-center text-xl mb-3'>
+          <i class='fa-solid fa-key'></i>
+        </div>
+
+        <h3 class='text-base font-bold text-center text-slate-900 dark:text-slate-100 mb-1'>Cấu Hình Đăng Nhập Google</h3>
+        <p class='text-xs text-slate-500 dark:text-slate-400 text-center mb-4 leading-relaxed'>
+          Dự án Firebase đang dùng khóa mẫu. Bạn có thể nhập Web API Key của dự án hoặc đăng nhập ngay bằng Chế độ Trải nghiệm.
+        </p>
+
+        <div class='space-y-3 mb-4 text-xs'>
+          <div>
+            <label class='block font-semibold mb-1 text-slate-700 dark:text-slate-300'>Firebase Web API Key (Tùy chọn)</label>
+            <input type='text' v-model='customApiKey' placeholder='Dán mã AIzaSy...' class='w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-brand-500 font-mono text-[11px]' />
+            <span class='text-[10px] text-slate-400 mt-1 block'>Lấy tại: Firebase Console -> Project Settings -> General -> Web API Key</span>
+          </div>
+
+          <button v-if='customApiKey.trim()' v-on:click='saveCustomApiKey' class='w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold flex items-center justify-center gap-2 shadow-sm transition'>
+            <i class='fa-solid fa-floppy-disk'></i> Lưu Khóa &amp; Tải Lại
+          </button>
+        </div>
+
+        <div class='relative flex py-2 items-center'>
+          <div class='flex-grow border-t border-slate-200 dark:border-slate-800'></div>
+          <span class='flex-shrink mx-3 text-[10px] font-bold uppercase text-slate-400'>HOẶC</span>
+          <div class='flex-grow border-t border-slate-200 dark:border-slate-800'></div>
+        </div>
+
+        <button v-on:click='demoLogin' class='w-full mt-2 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-semibold text-xs flex items-center justify-center gap-2 transition border border-slate-200 dark:border-slate-700'>
+          <i class='fa-brands fa-google text-rose-500'></i> Đăng nhập Chế độ Trải nghiệm
+        </button>
+        <p class='text-[10px] text-slate-400 text-center mt-2'>Thử nghiệm đầy đủ quyền đăng bài, ứng tuyển 1-click, lưu tin và bình luận ngay lập tức.</p>
+      </div>
+    </div>
+
   <!-- Blogger Standard Section Required by Engine -->
   <div style='display:none;'>
     <b:section class='main' id='main' showaddelement='yes'>
@@ -584,6 +688,76 @@
     createApp({
       setup() {
         const isDark = ref(false);
+        const toasts = ref([]);
+        const popup = ref({
+          show: false,
+          title: '',
+          message: '',
+          type: 'info',
+          confirmText: 'Đã hiểu',
+          showCancel: false,
+          cancelText: 'Hủy',
+          onConfirm: null
+        });
+        const showConfigModal = ref(false);
+        const customApiKey = ref(localStorage.getItem('tayninh_firebase_api_key') || '');
+
+        const showToast = (message, type = 'info', title = '') => {
+          const id = Date.now() + Math.random();
+          toasts.value.push({ id, message, type, title });
+          setTimeout(() => {
+            toasts.value = toasts.value.filter(t => t.id !== id);
+          }, 3500);
+        };
+
+        const removeToast = (id) => {
+          toasts.value = toasts.value.filter(t => t.id !== id);
+        };
+
+        const showPopup = (title, message, type = 'info', confirmText = 'Đã hiểu', onConfirm = null, showCancel = false) => {
+          popup.value = {
+            show: true,
+            title,
+            message,
+            type,
+            confirmText,
+            showCancel,
+            cancelText: 'Hủy',
+            onConfirm
+          };
+        };
+
+        const handlePopupConfirm = () => {
+          if (popup.value.onConfirm && typeof popup.value.onConfirm === 'function') {
+            popup.value.onConfirm();
+          }
+          popup.value.show = false;
+        };
+
+        const demoLogin = () => {
+          const mockUser = {
+            uid: 'demo_user_ptquang',
+            displayName: 'Phạm Thanh Quang',
+            email: 'ptquang0968@gmail.com',
+            photoURL: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&h=120&q=80'
+          };
+          currentUser.value = mockUser;
+          localStorage.setItem('tayninh_demo_user', JSON.stringify(mockUser));
+          applyForm.value.fullName = mockUser.displayName;
+          applyForm.value.email = mockUser.email;
+          showConfigModal.value = false;
+          showToast('Chào mừng ' + mockUser.displayName + '!', 'success', 'Đăng nhập thành công');
+        };
+
+        const saveCustomApiKey = () => {
+          if (customApiKey.value.trim()) {
+            localStorage.setItem('tayninh_firebase_api_key', customApiKey.value.trim());
+            showToast('Đã lưu API Key! Đang tải lại trang...', 'success');
+            setTimeout(() => {
+              window.location.reload();
+            }, 800);
+          }
+        };
         const currentUser = ref(null);
         const userMenuOpen = ref(false);
         const activeTab = ref('all');
@@ -710,6 +884,7 @@
         // Firebase Auth Google
         const loginGoogle = async () => {
           try {
+            if (firebaseConfig.apiKey.includes('Dummy')) { showConfigModal.value = true; return; }
             const provider = new GoogleAuthProvider();
             const res = await signInWithPopup(auth, provider);
             const user = res.user;
@@ -721,7 +896,12 @@
               lastLogin: serverTimestamp()
             }, { merge: true });
           } catch (err) {
-            alert('Lỗi đăng nhập: ' + err.message);
+            console.error('Firebase Auth Error:', err);
+            if (err.code === 'auth/api-key-not-valid' || (err.message && err.message.includes('api-key-not-valid'))) {
+              showConfigModal.value = true;
+            } else {
+              showPopup('Lỗi Đăng Nhập', 'Không thể hoàn tất đăng nhập Google: ' + err.message, 'error');
+            }
           }
         };
 
@@ -838,7 +1018,7 @@
         const isPostLiked = (post) => likedPostIds.value.has(post.id);
         const toggleLike = async (post) => {
           if (!currentUser.value) {
-            alert('Vui lòng đăng nhập để thả tim bài viết!');
+            showToast('Vui lòng đăng nhập để thả tim bài viết!', 'warning', 'Yêu cầu đăng nhập');
             return;
           }
           if (likedPostIds.value.has(post.id)) {
@@ -876,7 +1056,7 @@
             }).catch(() => {});
           } else {
             navigator.clipboard.writeText(post.url || window.location.href);
-            alert('Đã sao chép liên kết vào clipboard!');
+            showToast('Đã sao chép liên kết bài viết vào clipboard!', 'success', 'Chia sẻ');
           }
         };
 
@@ -901,7 +1081,7 @@
 
         const submitComment = async (postId) => {
           if (!currentUser.value) {
-            alert('Vui lòng đăng nhập để bình luận!');
+            showToast('Vui lòng đăng nhập để gửi bình luận!', 'warning', 'Yêu cầu đăng nhập');
             return;
           }
           if (!newCommentText.value.trim()) return;
@@ -917,7 +1097,7 @@
             });
             newCommentText.value = '';
           } catch (err) {
-            alert('Lỗi đăng bình luận: ' + err.message);
+            showToast('Không thể gửi bình luận: ' + err.message, 'error', 'Lỗi');
           }
         };
 
@@ -973,11 +1153,11 @@
               });
             }
 
-            alert('Chúc mừng! Đã gửi hồ sơ ứng tuyển thành công. Nhà tuyển dụng sẽ sớm liên hệ qua SĐT/Email.');
+            showPopup('Ứng Tuyển Thành Công!', 'Hồ sơ của bạn đã được gửi đến nhà tuyển dụng. Họ sẽ sớm liên hệ lại qua SĐT/Email.', 'success');
             showApplyModal.value = false;
             applyForm.value.note = '';
           } catch (err) {
-            alert('Lỗi khi nộp hồ sơ: ' + err.message);
+            showPopup('Lỗi Nộp Hồ Sơ', 'Không thể gửi hồ sơ: ' + err.message, 'error');
           } finally {
             submittingApply.value = false;
           }
@@ -986,7 +1166,7 @@
         // Quick Post Flow
         const openCreatePostModal = (cat) => {
           if (!currentUser.value) {
-            alert('Vui lòng đăng nhập bằng Google trước khi đăng tin!');
+            showPopup('Yêu Cầu Đăng Nhập', 'Vui lòng đăng nhập bằng Google để xác minh danh tính khi đăng tin.', 'warning', 'Đăng nhập ngay', () => loginGoogle());
             return;
           }
           postForm.value.category = cat || 'tintuc';
@@ -1064,11 +1244,11 @@
               });
             }
 
-            alert('Đăng bài thành công!');
+            showToast('Bài viết của bạn đã được đăng thành công!', 'success', 'Hoàn tất');
             showCreateModal.value = false;
             postForm.value = { title: '', category: 'tintuc', salary: '', location: '', content: '', imageBase64: null, imageName: '' };
           } catch (err) {
-            alert('Lỗi khi đăng bài: ' + err.message);
+            showPopup('Lỗi Đăng Bài', 'Không thể xuất bản bài viết: ' + err.message, 'error');
           } finally {
             submittingPost.value = false;
           }
