@@ -1,0 +1,1084 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html b:css='false' b:defaultwidgetversion='2' b:layoutsversion='3' expr:dir='data:blog.languageDirection' lang='vi' xmlns='http://www.w3.org/1999/xhtml' xmlns:b='http://www.google.com/2005/gml/b' xmlns:data='http://www.google.com/2005/gml/data' xmlns:expr='http://www.google.com/2005/gml/expr'>
+<head>
+  <meta charset='utf-8'/>
+  <meta content='width=device-width, initial-scale=1.0' name='viewport'/>
+  <title><data:blog.pageTitle/></title>
+  <b:include data='blog' name='all-head-content'/>
+
+  <!-- CDNs: Tailwind CSS, FontAwesome, Vue 3 -->
+  <script src='https://cdn.tailwindcss.com'></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+              800: '#065f46'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css' rel='stylesheet'/>
+  <script src='https://unpkg.com/vue@3/dist/vue.global.prod.js'></script>
+
+  <b:skin><![CDATA[
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(156, 163, 175, 0.5);
+      border-radius: 9999px;
+    }
+  ]]></b:skin>
+</head>
+<body class='bg-slate-100 text-slate-900 dark:bg-slate-950 dark:text-slate-100 antialiased min-h-screen transition-colors duration-200'>
+
+  <div id='app' class='flex flex-col min-h-screen'>
+    <!-- Header / Navbar -->
+    <header class='sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors'>
+      <div class='max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4'>
+        <div class='flex items-center gap-3'>
+          <a href='/' class='flex items-center gap-2 group'>
+            <div class='w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-emerald-400 flex items-center justify-center text-white shadow-lg shadow-brand-500/20 group-hover:scale-105 transition-transform'>
+              <i class='fa-solid fa-mountain-sun text-lg'></i>
+            </div>
+            <div>
+              <span class='text-xl font-bold tracking-tight bg-gradient-to-r from-brand-600 to-emerald-500 bg-clip-text text-transparent'>TayNinhInfo</span>
+              <span class='block text-[10px] uppercase font-semibold text-slate-400 tracking-wider -mt-1'>Cổng Thông Tin & Mạng Xã Hội</span>
+            </div>
+          </a>
+        </div>
+
+        <!-- Search Bar -->
+        <div class='hidden md:flex flex-1 max-w-md mx-4'>
+          <div class='relative w-full'>
+            <input type='text' v-model='searchKeyword' @keyup.enter='searchPosts' placeholder='Tìm kiếm tin tức, việc làm, địa điểm Tây Ninh...' class='w-full pl-10 pr-4 py-2 text-sm rounded-full bg-slate-100 dark:bg-slate-800 border-none focus:ring-2 focus:ring-brand-500 outline-none text-slate-800 dark:text-slate-100 placeholder-slate-400' />
+            <i class='fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-sm'></i>
+          </div>
+        </div>
+
+        <!-- Right actions -->
+        <div class='flex items-center gap-3'>
+          <button @click='toggleDarkMode' class='w-10 h-10 rounded-full flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors'>
+            <i :class="isDark ? 'fa-solid fa-sun text-amber-400' : 'fa-solid fa-moon text-slate-600'"></i>
+          </button>
+
+          <!-- Auth Button -->
+          <div v-if='!currentUser'>
+            <button @click='loginGoogle' class='inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-full bg-brand-600 hover:bg-brand-700 text-white shadow-md shadow-brand-500/20 transition-all'>
+              <i class='fa-brands fa-google'></i>
+              <span>Đăng nhập Google</span>
+            </button>
+          </div>
+          <div v-else class='flex items-center gap-3'>
+            <div class='relative'>
+              <img :src='currentUser.photoURL || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&h=120&q=80"' :alt='currentUser.displayName' class='w-9 h-9 rounded-full object-cover ring-2 ring-brand-500 cursor-pointer' @click='userMenuOpen = !userMenuOpen' />
+              <!-- Dropdown -->
+              <div v-if='userMenuOpen' class='absolute right-0 mt-2 w-56 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl py-2 z-50'>
+                <div class='px-4 py-2 border-b border-slate-100 dark:border-slate-800'>
+                  <p class='text-sm font-semibold truncate'>{{ currentUser.displayName }}</p>
+                  <p class='text-xs text-slate-400 truncate'>{{ currentUser.email }}</p>
+                </div>
+                <button @click='activeTab = "bookmark"; userMenuOpen = false' class='w-full text-left px-4 py-2 text-sm hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2'>
+                  <i class='fa-solid fa-bookmark text-amber-500'></i> Đã lưu ({{ bookmarks.length }})
+                </button>
+                <button @click='logout' class='w-full text-left px-4 py-2 text-sm text-rose-500 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2'>
+                  <i class='fa-solid fa-arrow-right-from-bracket'></i> Đăng xuất
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Container: 3 Columns -->
+    <main class='max-w-7xl mx-auto px-4 py-6 flex-1 w-full grid grid-cols-1 lg:grid-cols-12 gap-6'>
+      
+      <!-- CỘT TRÁI (3 cols) -->
+      <aside class='lg:col-span-3 space-y-6'>
+        <!-- Profile Card -->
+        <div class='bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200/80 dark:border-slate-800 shadow-sm'>
+          <div v-if='currentUser' class='text-center'>
+            <div class='relative inline-block'>
+              <img :src='currentUser.photoURL || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&h=120&q=80"' class='w-20 h-20 rounded-full mx-auto ring-4 ring-brand-500/20 object-cover' />
+              <span class='absolute bottom-0 right-0 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs border-2 border-white dark:border-slate-900' title='Xác minh danh tính'>
+                <i class='fa-solid fa-circle-check'></i>
+              </span>
+            </div>
+            <h3 class='font-bold text-lg mt-3 flex items-center justify-center gap-1.5'>
+              {{ currentUser.displayName }}
+            </h3>
+            <span class='inline-block text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 mt-1'>
+              <i class='fa-solid fa-award mr-1'></i>Thành viên Uy tín
+            </span>
+
+            <div class='grid grid-cols-3 gap-2 mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 text-center text-xs'>
+              <div>
+                <span class='block font-bold text-slate-800 dark:text-slate-100'>{{ userStats.postsCount }}</span>
+                <span class='text-slate-400'>Bài viết</span>
+              </div>
+              <div>
+                <span class='block font-bold text-slate-800 dark:text-slate-100'>{{ bookmarks.length }}</span>
+                <span class='text-slate-400'>Đã lưu</span>
+              </div>
+              <div>
+                <span class='block font-bold text-slate-800 dark:text-slate-100'>{{ userStats.reputation }}</span>
+                <span class='text-slate-400'>Điểm</span>
+              </div>
+            </div>
+          </div>
+          <div v-else class='text-center py-4'>
+            <div class='w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 mx-auto mb-3 text-2xl'>
+              <i class='fa-regular fa-user'></i>
+            </div>
+            <h4 class='font-semibold text-sm'>Chào mừng đến Tây Ninh Info</h4>
+            <p class='text-xs text-slate-400 mt-1 mb-4'>Đăng nhập để đăng bài, ứng tuyển và kết nối cộng đồng.</p>
+            <button @click='loginGoogle' class='w-full py-2 px-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-medium text-xs shadow-sm transition'>
+              Đăng nhập ngay
+            </button>
+          </div>
+        </div>
+
+        <!-- Navigation / Category Filters -->
+        <nav class='bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-800 shadow-sm'>
+          <h4 class='text-xs font-bold uppercase tracking-wider text-slate-400 px-3 mb-2'>Chuyên mục Tây Ninh</h4>
+          <ul class='space-y-1 text-sm'>
+            <li v-for='cat in categories' :key='cat.id'>
+              <button @click='selectCategory(cat.id)' :class='selectedCategory === cat.id ? "bg-brand-50 dark:bg-brand-950/40 text-brand-600 dark:text-brand-400 font-semibold" : "text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"' class='w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition'>
+                <div class='flex items-center gap-3'>
+                  <span :class='cat.color' class='w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs'>
+                    <i :class='cat.icon'></i>
+                  </span>
+                  <span>{{ cat.name }}</span>
+                </div>
+                <span v-if='cat.badge' class='text-[10px] px-2 py-0.5 rounded-full font-bold bg-rose-500 text-white'>{{ cat.badge }}</span>
+              </button>
+            </li>
+          </ul>
+        </nav>
+      </aside>
+
+      <!-- CỘT GIỮA (Main Feed - 6 cols) -->
+      <section class='lg:col-span-6 space-y-6'>
+        
+        <!-- Khung đăng bài nhanh (Quick Post) -->
+        <div class='bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-800 shadow-sm'>
+          <div class='flex items-center gap-3'>
+            <img :src='currentUser ? (currentUser.photoURL || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&h=120&q=80") : "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&h=120&q=80"' class='w-10 h-10 rounded-full object-cover' />
+            <button @click='openCreatePostModal("tintuc")' class='flex-1 text-left px-4 py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-400 hover:bg-slate-200/70 dark:hover:bg-slate-700/70 rounded-full text-sm transition'>
+              {{ currentUser ? currentUser.displayName + ' ơi, bạn đang nghĩ gì?' : 'Đăng tin hoặc chia sẻ thông tin Tây Ninh...' }}
+            </button>
+          </div>
+          <div class='flex items-center justify-between border-t border-slate-100 dark:border-slate-800 mt-3 pt-3 px-2 text-xs font-semibold text-slate-500'>
+            <button @click='openCreatePostModal("tintuc")' class='flex items-center gap-2 hover:text-brand-600 transition'>
+              <i class='fa-regular fa-image text-emerald-500 text-base'></i> Đăng bài ảnh
+            </button>
+            <button @click='openCreatePostModal("tuyendung")' class='flex items-center gap-2 hover:text-blue-600 transition'>
+              <i class='fa-solid fa-briefcase text-blue-500 text-base'></i> Đăng tuyển dụng
+            </button>
+            <button @click='openCreatePostModal("raovat")' class='flex items-center gap-2 hover:text-amber-600 transition'>
+              <i class='fa-solid fa-tags text-amber-500 text-base'></i> Rao vặt nhanh
+            </button>
+          </div>
+        </div>
+
+        <!-- Feed Filter Tabs -->
+        <div class='flex items-center gap-2 bg-white dark:bg-slate-900 p-1.5 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm'>
+          <button @click='activeTab = "all"' :class='activeTab === "all" ? "bg-brand-600 text-white shadow-sm" : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"' class='flex-1 py-2 text-xs font-semibold rounded-xl transition text-center'>
+            <i class='fa-solid fa-globe mr-1.5'></i>Tất cả
+          </button>
+          <button @click='activeTab = "tuyendung"' :class='activeTab === "tuyendung" ? "bg-brand-600 text-white shadow-sm" : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"' class='flex-1 py-2 text-xs font-semibold rounded-xl transition text-center'>
+            <i class='fa-solid fa-briefcase mr-1.5'></i>Việc làm
+          </button>
+          <button @click='activeTab = "thaoluan"' :class='activeTab === "thaoluan" ? "bg-brand-600 text-white shadow-sm" : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"' class='flex-1 py-2 text-xs font-semibold rounded-xl transition text-center'>
+            <i class='fa-regular fa-comments mr-1.5'></i>Thảo luận
+          </button>
+          <button @click='activeTab = "bookmark"' :class='activeTab === "bookmark" ? "bg-brand-600 text-white shadow-sm" : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"' class='flex-1 py-2 text-xs font-semibold rounded-xl transition text-center'>
+            <i class='fa-solid fa-bookmark mr-1.5'></i>Đã lưu
+          </button>
+        </div>
+
+        <!-- Loading Spinner -->
+        <div v-if='loading' class='py-12 text-center text-slate-400'>
+          <i class='fa-solid fa-circle-notch fa-spin text-3xl text-brand-600'></i>
+          <p class='text-xs mt-3'>Đang cập nhật dòng tin Tây Ninh...</p>
+        </div>
+
+        <!-- Post Cards List -->
+        <div v-else class='space-y-5'>
+          <article v-for='post in filteredPosts' :key='post.id' class='bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm overflow-hidden transition hover:shadow-md'>
+            
+            <!-- Author Header -->
+            <div class='p-4 flex items-center justify-between'>
+              <div class='flex items-center gap-3'>
+                <img :src='post.authorPhoto || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&h=120&q=80"' class='w-10 h-10 rounded-full object-cover ring-1 ring-slate-200 dark:ring-slate-700' />
+                <div>
+                  <div class='flex items-center gap-1.5'>
+                    <span class='font-bold text-sm'>{{ post.authorName }}</span>
+                    <i v-if='post.isVerified' class='fa-solid fa-circle-check text-blue-500 text-xs' title='Chính chủ xác minh'></i>
+                  </div>
+                  <div class='flex items-center gap-2 text-[11px] text-slate-400'>
+                    <span>{{ formatRelativeTime(post.createdAt) }}</span>
+                    <span>&bull;</span>
+                    <span class='capitalize font-medium text-brand-600 dark:text-brand-400'>{{ post.category }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Badge for Job / Easy Apply -->
+              <span v-if='post.category === "tuyendung" || post.isJob' class='px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800 dark:bg-amber-950/70 dark:text-amber-300 flex items-center gap-1'>
+                <i class='fa-solid fa-bolt text-amber-500'></i> Easy Apply
+              </span>
+            </div>
+
+            <!-- Content Body -->
+            <div class='px-4 pb-3'>
+              <h2 v-if='post.title' class='text-base font-bold text-slate-900 dark:text-slate-100 mb-1.5'>
+                <a :href='post.url' target='_blank' class='hover:text-brand-600 transition'>{{ post.title }}</a>
+              </h2>
+              <p class='text-sm text-slate-700 dark:text-slate-300 whitespace-pre-line leading-relaxed'>
+                {{ post.content }}
+              </p>
+
+              <!-- Extra Job Info if Tuyendung -->
+              <div v-if='post.category === "tuyendung" || post.isJob' class='mt-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 flex flex-wrap items-center justify-between gap-2 text-xs'>
+                <div class='flex items-center gap-4 text-slate-600 dark:text-slate-300'>
+                  <span v-if='post.salary'><i class='fa-solid fa-money-bill-wave text-emerald-500 mr-1'></i>{{ post.salary }}</span>
+                  <span v-if='post.location'><i class='fa-solid fa-location-dot text-rose-500 mr-1'></i>{{ post.location }}</span>
+                </div>
+                <button @click='openApplyModal(post)' class='px-3.5 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-semibold flex items-center gap-1.5 shadow-sm transition'>
+                  <i class='fa-solid fa-paper-plane text-xs'></i> Ứng tuyển nhanh
+                </button>
+              </div>
+            </div>
+
+            <!-- Post Media (Image) -->
+            <div v-if='post.imageUrl' class='max-h-96 overflow-hidden bg-slate-100 dark:bg-slate-800'>
+              <img :src='post.imageUrl' alt='Post image' class='w-full object-cover hover:scale-[1.01] transition-transform duration-300' />
+            </div>
+
+            <!-- Interaction Bar -->
+            <div class='px-4 py-2.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400'>
+              <div class='flex items-center gap-4'>
+                <button @click='toggleLike(post)' :class='isPostLiked(post) ? "text-rose-500 font-bold" : "hover:text-rose-500"' class='flex items-center gap-1.5 transition'>
+                  <i :class='isPostLiked(post) ? "fa-solid fa-heart" : "fa-regular fa-heart"'></i>
+                  <span>{{ (post.likes || 0) }} Thích</span>
+                </button>
+                <button @click='toggleCommentSection(post.id)' class='flex items-center gap-1.5 hover:text-brand-600 transition'>
+                  <i class='fa-regular fa-comment'></i>
+                  <span>{{ post.commentCount || 0 }} Bình luận</span>
+                </button>
+              </div>
+
+              <div class='flex items-center gap-3'>
+                <button @click='toggleBookmark(post)' :class='isBookmarked(post.id) ? "text-amber-500 font-bold" : "hover:text-amber-500"' class='flex items-center gap-1 transition' title='Lưu bài'>
+                  <i :class='isBookmarked(post.id) ? "fa-solid fa-bookmark" : "fa-regular fa-bookmark"'></i>
+                </button>
+                <button @click='sharePost(post)' class='hover:text-blue-500 transition' title='Chia sẻ'>
+                  <i class='fa-solid fa-share-nodes'></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Realtime Comments Section -->
+            <div v-if='activeCommentPostId === post.id' class='p-4 bg-slate-50/50 dark:bg-slate-800/40 border-t border-slate-100 dark:border-slate-800 space-y-3'>
+              <!-- Comment Input -->
+              <div class='flex items-center gap-2'>
+                <input type='text' v-model='newCommentText' @keyup.enter='submitComment(post.id)' placeholder='Viết bình luận công khai...' class='flex-1 px-3.5 py-2 text-xs rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-brand-500 outline-none' />
+                <button @click='submitComment(post.id)' class='w-8 h-8 rounded-full bg-brand-600 text-white flex items-center justify-center hover:bg-brand-700 transition'>
+                  <i class='fa-solid fa-paper-plane text-xs'></i>
+                </button>
+              </div>
+
+              <!-- List comments -->
+              <div class='space-y-2.5 max-h-60 overflow-y-auto custom-scrollbar pr-1'>
+                <div v-for='cmt in (postComments[post.id] || [])' :key='cmt.id' class='flex items-start gap-2.5 text-xs'>
+                  <img :src='cmt.authorPhoto || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&h=120&q=80"' class='w-7 h-7 rounded-full object-cover mt-0.5' />
+                  <div class='bg-white dark:bg-slate-900 px-3 py-2 rounded-2xl border border-slate-200/60 dark:border-slate-800 flex-1'>
+                    <div class='flex items-center justify-between'>
+                      <span class='font-bold text-[11px] text-slate-800 dark:text-slate-200'>{{ cmt.authorName }}</span>
+                      <span class='text-[10px] text-slate-400'>{{ formatRelativeTime(cmt.createdAt) }}</span>
+                    </div>
+                    <p class='text-slate-700 dark:text-slate-300 mt-1 leading-snug'>{{ cmt.text }}</p>
+                  </div>
+                </div>
+                <div v-if='!postComments[post.id] || postComments[post.id].length === 0' class='text-center py-2 text-[11px] text-slate-400'>
+                  Chưa có bình luận nào. Hãy là người đầu tiên thảo luận!
+                </div>
+              </div>
+            </div>
+
+          </article>
+        </div>
+
+      </section>
+
+      <!-- CỘT PHẢI (3 cols) -->
+      <aside class='lg:col-span-3 space-y-6'>
+        
+        <!-- Widget: Việc làm gấp tại Tây Ninh -->
+        <div class='bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-800 shadow-sm'>
+          <div class='flex items-center justify-between mb-3'>
+            <h4 class='text-xs font-bold uppercase tracking-wider text-rose-500 flex items-center gap-1.5'>
+              <i class='fa-solid fa-fire animate-pulse'></i> Việc làm gấp Tây Ninh
+            </h4>
+            <span class='text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300'>HOT</span>
+          </div>
+
+          <div class='space-y-3'>
+            <div v-for='job in urgentJobs' :key='job.id' class='p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 hover:border-brand-500/50 transition'>
+              <h5 class='font-semibold text-xs text-slate-800 dark:text-slate-200 line-clamp-1'>{{ job.title }}</h5>
+              <p class='text-[11px] text-slate-500 dark:text-slate-400 mt-0.5'><i class='fa-regular fa-building mr-1'></i>{{ job.company }}</p>
+              <div class='flex items-center justify-between mt-2 pt-2 border-t border-slate-200/50 dark:border-slate-700/50 text-[11px]'>
+                <span class='text-emerald-600 dark:text-emerald-400 font-bold'>{{ job.salary }}</span>
+                <button @click='openApplyModal(job)' class='px-2.5 py-1 rounded bg-brand-600 hover:bg-brand-700 text-white font-medium text-[10px] transition'>
+                  1-Click Nộp CV
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Widget: Tiện ích & Thời tiết Tây Ninh -->
+        <div class='bg-gradient-to-br from-emerald-600 to-teal-700 text-white rounded-2xl p-4 shadow-sm'>
+          <div class='flex items-center justify-between'>
+            <div>
+              <span class='text-[11px] uppercase tracking-wider font-semibold text-emerald-100'>Thời tiết Tây Ninh</span>
+              <h4 class='text-2xl font-black mt-0.5'>32°C</h4>
+              <p class='text-xs text-emerald-100'>Nắng đẹp &bull; Độ ẩm: 68%</p>
+            </div>
+            <i class='fa-solid fa-cloud-sun text-4xl text-amber-300 opacity-90'></i>
+          </div>
+          <div class='mt-4 pt-3 border-t border-emerald-500/50 grid grid-cols-2 gap-2 text-xs'>
+            <div class='bg-white/10 rounded-lg p-2 text-center'>
+              <span class='block text-[10px] text-emerald-200'>Núi Bà Đen</span>
+              <span class='font-bold'>24°C &bull; Sương mù nhẹ</span>
+            </div>
+            <div class='bg-white/10 rounded-lg p-2 text-center'>
+              <span class='block text-[10px] text-emerald-200'>Cửa khẩu Mộc Bài</span>
+              <span class='font-bold'>Thông quan ổn định</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Widget: Bảng xếp hạng thành viên đóng góp -->
+        <div class='bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-800 shadow-sm'>
+          <h4 class='text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1.5'>
+            <i class='fa-solid fa-trophy text-amber-500'></i> Top Đóng Góp Tuần
+          </h4>
+          <ul class='space-y-3'>
+            <li v-for='(user, idx) in leaderboard' :key='user.id' class='flex items-center justify-between text-xs'>
+              <div class='flex items-center gap-2.5'>
+                <span class='w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px]' :class='idx === 0 ? "bg-amber-400 text-slate-900" : (idx === 1 ? "bg-slate-300 text-slate-800" : "bg-amber-700 text-white")'>
+                  {{ idx + 1 }}
+                </span>
+                <img :src='user.avatar' class='w-7 h-7 rounded-full object-cover' />
+                <span class='font-semibold text-slate-800 dark:text-slate-200'>{{ user.name }}</span>
+              </div>
+              <span class='font-bold text-brand-600 dark:text-brand-400'>{{ user.points }} pts</span>
+            </li>
+          </ul>
+        </div>
+
+      </aside>
+
+    </main>
+
+    <!-- 1-CLICK APPLY MODAL (Giống LinkedIn Easy Apply) -->
+    <div v-if='showApplyModal' class='fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4'>
+      <div class='bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl relative'>
+        <button @click='showApplyModal = false' class='absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg'>
+          <i class='fa-solid fa-xmark'></i>
+        </button>
+
+        <div class='flex items-center gap-3 mb-4'>
+          <div class='w-10 h-10 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center text-lg'>
+            <i class='fa-solid fa-bolt'></i>
+          </div>
+          <div>
+            <h3 class='font-bold text-base text-slate-900 dark:text-slate-100'>Ứng tuyển nhanh (1-Click Apply)</h3>
+            <p class='text-xs text-slate-400'>Vị trí: <strong class='text-slate-700 dark:text-slate-300'>{{ selectedJobToApply?.title }}</strong></p>
+          </div>
+        </div>
+
+        <form @submit.prevent='submitApplication' class='space-y-4 text-xs'>
+          <div>
+            <label class='block font-semibold mb-1 text-slate-700 dark:text-slate-300'>Họ và tên</label>
+            <input type='text' v-model='applyForm.fullName' required class='w-full px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-brand-500' placeholder='Nguyễn Văn A' />
+          </div>
+          <div class='grid grid-cols-2 gap-3'>
+            <div>
+              <label class='block font-semibold mb-1 text-slate-700 dark:text-slate-300'>Số điện thoại / Zalo</label>
+              <input type='tel' v-model='applyForm.phone' required class='w-full px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-brand-500' placeholder='090xxxxxxx' />
+            </div>
+            <div>
+              <label class='block font-semibold mb-1 text-slate-700 dark:text-slate-300'>Email nhận phản hồi</label>
+              <input type='email' v-model='applyForm.email' required class='w-full px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-brand-500' placeholder='email@example.com' />
+            </div>
+          </div>
+          <div>
+            <label class='block font-semibold mb-1 text-slate-700 dark:text-slate-300'>Đính kèm CV (PDF/DOCX/Ảnh) hoặc Giới thiệu tóm tắt</label>
+            <input type='file' @change='handleFileUpload' accept='.pdf,.doc,.docx,image/*' class='w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100' />
+          </div>
+          <div>
+            <label class='block font-semibold mb-1 text-slate-700 dark:text-slate-300'>Ghi chú cho Nhà tuyển dụng</label>
+            <textarea v-model='applyForm.note' rows='3' class='w-full px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-brand-500' placeholder='Tôi có 2 năm kinh nghiệm làm việc tại Trảng Bàng, sẵn sàng đi làm ngay...'></textarea>
+          </div>
+
+          <div class='flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800'>
+            <button type='button' @click='showApplyModal = false' class='px-4 py-2 rounded-lg bg-slate-200 dark:bg-slate-800 font-semibold hover:bg-slate-300 transition'>Hủy</button>
+            <button type='submit' :disabled='submittingApply' class='px-5 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-semibold flex items-center gap-2 transition disabled:opacity-50'>
+              <i v-if='submittingApply' class='fa-solid fa-circle-notch fa-spin'></i>
+              <span>{{ submittingApply ? 'Đang gửi hồ sơ...' : 'Nộp hồ sơ ngay' }}</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- CREATE POST MODAL -->
+    <div v-if='showCreateModal' class='fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4'>
+      <div class='bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl relative'>
+        <button @click='showCreateModal = false' class='absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg'>
+          <i class='fa-solid fa-xmark'></i>
+        </button>
+
+        <h3 class='font-bold text-base mb-4 text-slate-900 dark:text-slate-100 flex items-center gap-2'>
+          <i class='fa-solid fa-pen-nib text-brand-600'></i> Đăng bài lên TayNinhInfo
+        </h3>
+
+        <form @submit.prevent='submitPost' class='space-y-4 text-xs'>
+          <div>
+            <label class='block font-semibold mb-1'>Chuyên mục</label>
+            <select v-model='postForm.category' class='w-full px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-brand-500'>
+              <option value='tintuc'>Tin tức & Sự kiện</option>
+              <option value='tuyendung'>Tuyển dụng & Việc làm</option>
+              <option value='raovat'>Rao vặt - Mua bán</option>
+              <option value='diadiem'>Địa điểm & Ẩm thực Tây Ninh</option>
+            </select>
+          </div>
+
+          <div>
+            <label class='block font-semibold mb-1'>Tiêu đề bài viết</label>
+            <input type='text' v-model='postForm.title' required placeholder='Nhập tiêu đề tóm tắt...' class='w-full px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-brand-500' />
+          </div>
+
+          <div v-if='postForm.category === "tuyendung"' class='grid grid-cols-2 gap-3'>
+            <div>
+              <label class='block font-semibold mb-1'>Mức lương</label>
+              <input type='text' v-model='postForm.salary' placeholder='Ví dụ: 8 - 15 triệu' class='w-full px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-brand-500' />
+            </div>
+            <div>
+              <label class='block font-semibold mb-1'>Địa điểm làm việc</label>
+              <input type='text' v-model='postForm.location' placeholder='KCN Trảng Bàng, Tây Ninh' class='w-full px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-brand-500' />
+            </div>
+          </div>
+
+          <div>
+            <label class='block font-semibold mb-1'>Nội dung chi tiết</label>
+            <textarea v-model='postForm.content' rows='4' required placeholder='Chia sẻ thông tin, yêu cầu công việc hoặc mô tả sản phẩm...' class='w-full px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-brand-500'></textarea>
+          </div>
+
+          <div>
+            <label class='block font-semibold mb-1'>Đính kèm ảnh (Tùy chọn)</label>
+            <input type='file' @change='handlePostImageUpload' accept='image/*' class='w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100' />
+          </div>
+
+          <div class='flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800'>
+            <button type='button' @click='showCreateModal = false' class='px-4 py-2 rounded-lg bg-slate-200 dark:bg-slate-800 font-semibold hover:bg-slate-300 transition'>Hủy</button>
+            <button type='submit' :disabled='submittingPost' class='px-5 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-semibold flex items-center gap-2 transition disabled:opacity-50'>
+              <i v-if='submittingPost' class='fa-solid fa-circle-notch fa-spin'></i>
+              <span>{{ submittingPost ? 'Đang xuất bản...' : 'Đăng bài ngay' }}</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Blogger Standard Section Required by Engine -->
+  <div style='display:none;'>
+    <b:section class='main' id='main' showaddelement='yes'>
+      <b:widget id='Blog1' locked='true' title='Blog Posts' type='Blog' version='2'>
+        <b:includable id='main' var='top'>
+          <b:loop values='data:posts' var='post'>
+            <article class='blogger-native-post' expr:data-id='data:post.id' expr:data-title='data:post.title' expr:data-url='data:post.url'>
+              <data:post.body/>
+            </article>
+          </b:loop>
+        </b:includable>
+      </b:widget>
+    </b:section>
+  </div>
+
+  <!-- FIREBASE MODULAR SDK V10 & APPLICATION SCRIPT -->
+  <script type='module'>
+    //<![CDATA[
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js';
+    import { 
+      getAuth, 
+      GoogleAuthProvider, 
+      signInWithPopup, 
+      signOut, 
+      onAuthStateChanged 
+    } from 'https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js';
+    import { 
+      getFirestore, 
+      collection, 
+      addDoc, 
+      getDocs, 
+      query, 
+      where, 
+      orderBy, 
+      limit, 
+      onSnapshot, 
+      doc, 
+      setDoc, 
+      updateDoc, 
+      increment, 
+      serverTimestamp 
+    } from 'https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js';
+
+    // CẤU HÌNH FIREBASE PROJECT: Blogger
+    const firebaseConfig = {
+      apiKey: "AIzaSyDummyKeyForTayNinhInfoBlogger2026",
+      authDomain: "blogger-tayninhinfo.firebaseapp.com",
+      projectId: "Blogger",
+      storageBucket: "blogger-tayninhinfo.appspot.com",
+      messagingSenderId: "109876543210",
+      appId: "1:109876543210:web:abcdef1234567890"
+    };
+
+    // Google Apps Script Web App URL
+    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzDummyBloggerWebDeploymentIdForTayNinhInfo/exec";
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const { createApp, ref, computed, onMounted } = Vue;
+
+    createApp({
+      setup() {
+        const isDark = ref(false);
+        const currentUser = ref(null);
+        const userMenuOpen = ref(false);
+        const activeTab = ref('all');
+        const selectedCategory = ref('all');
+        const searchKeyword = ref('');
+        const loading = ref(true);
+
+        const posts = ref([]);
+        const bookmarks = ref(JSON.parse(localStorage.getItem('tayninh_bookmarks') || '[]'));
+        const likedPostIds = ref(new Set(JSON.parse(localStorage.getItem('tayninh_likes') || '[]')));
+
+        const activeCommentPostId = ref(null);
+        const postComments = ref({});
+        const newCommentText = ref('');
+
+        const showApplyModal = ref(false);
+        const selectedJobToApply = ref(null);
+        const submittingApply = ref(false);
+        const applyForm = ref({
+          fullName: '',
+          phone: '',
+          email: '',
+          note: '',
+          fileBase64: null,
+          fileName: ''
+        });
+
+        const showCreateModal = ref(false);
+        const submittingPost = ref(false);
+        const postForm = ref({
+          title: '',
+          category: 'tintuc',
+          salary: '',
+          location: '',
+          content: '',
+          imageBase64: null,
+          imageName: ''
+        });
+
+        const userStats = ref({
+          postsCount: 12,
+          reputation: 98
+        });
+
+        const categories = ref([
+          { id: 'all', name: 'Tất cả danh mục', icon: 'fa-solid fa-list', color: 'bg-slate-700' },
+          { id: 'tintuc', name: 'Tin tức Tây Ninh', icon: 'fa-solid fa-newspaper', color: 'bg-emerald-600', badge: 'Mới' },
+          { id: 'tuyendung', name: 'Tuyển dụng & Việc làm', icon: 'fa-solid fa-briefcase', color: 'bg-blue-600', badge: 'Hot' },
+          { id: 'raovat', name: 'Rao vặt - Mua bán', icon: 'fa-solid fa-tag', color: 'bg-amber-600' },
+          { id: 'diadiem', name: 'Địa điểm & Review', icon: 'fa-solid fa-map-location-dot', color: 'bg-rose-600' }
+        ]);
+
+        const urgentJobs = ref([
+          { id: 'j1', title: 'Kỹ sư Vận hành Máy CNC', company: 'Tập đoàn KCN Phước Đông', salary: '12 - 18 Triệu', location: 'Gò Dầu, Tây Ninh' },
+          { id: 'j2', title: 'Nhân viên Xuất Nhập Khẩu', company: 'Logistics Mộc Bài Tây Ninh', salary: '10 - 15 Triệu', location: 'Bến Cầu, Tây Ninh' },
+          { id: 'j3', title: 'Quản trị viên Nhà hàng SunWorld', company: 'KDL Quốc gia Núi Bà Đen', salary: '9 - 14 Triệu', location: 'TP. Tây Ninh' }
+        ]);
+
+        const leaderboard = ref([
+          { id: 'u1', name: 'Trần Văn Hưng', points: 1450, avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&h=80&q=80' },
+          { id: 'u2', name: 'Lê Thị Mai Thảo', points: 1220, avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=80&h=80&q=80' },
+          { id: 'u3', name: 'Nguyễn Thành Đạt', points: 980, avatar: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&w=80&h=80&q=80' }
+        ]);
+
+        // Toggle Dark Theme
+        const toggleDarkMode = () => {
+          isDark.value = !isDark.value;
+          if (isDark.value) {
+            document.documentElement.classList.add('dark');
+            localStorage.setItem('theme', 'dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+            localStorage.setItem('theme', 'light');
+          }
+        };
+
+        // Firebase Auth Google
+        const loginGoogle = async () => {
+          try {
+            const provider = new GoogleAuthProvider();
+            const res = await signInWithPopup(auth, provider);
+            const user = res.user;
+            await setDoc(doc(db, 'users', user.uid), {
+              uid: user.uid,
+              displayName: user.displayName,
+              email: user.email,
+              photoURL: user.photoURL,
+              lastLogin: serverTimestamp()
+            }, { merge: true });
+          } catch (err) {
+            alert('Lỗi đăng nhập: ' + err.message);
+          }
+        };
+
+        const logout = async () => {
+          await signOut(auth);
+          userMenuOpen.value = false;
+        };
+
+        // Listen Auth State
+        onAuthStateChanged(auth, (user) => {
+          currentUser.value = user;
+          if (user) {
+            applyForm.value.fullName = user.displayName || '';
+            applyForm.value.email = user.email || '';
+          }
+        });
+
+        // Filter Posts
+        const filteredPosts = computed(() => {
+          let list = [...posts.value];
+          if (selectedCategory.value !== 'all') {
+            list = list.filter(p => p.category === selectedCategory.value);
+          }
+          if (activeTab.value === 'tuyendung') {
+            list = list.filter(p => p.category === 'tuyendung' || p.isJob);
+          } else if (activeTab.value === 'thaoluan') {
+            list = list.filter(p => p.category === 'tintuc' || p.category === 'diadiem');
+          } else if (activeTab.value === 'bookmark') {
+            list = list.filter(p => bookmarks.value.includes(p.id));
+          }
+          if (searchKeyword.value.trim()) {
+            const kw = searchKeyword.value.toLowerCase();
+            list = list.filter(p => (p.title && p.title.toLowerCase().includes(kw)) || (p.content && p.content.toLowerCase().includes(kw)));
+          }
+          return list;
+        });
+
+        const selectCategory = (catId) => {
+          selectedCategory.value = catId;
+          activeTab.value = 'all';
+        };
+
+        // Fetch Blogger Feed & Merge with Firestore
+        const loadInitialData = async () => {
+          loading.value = true;
+          const merged = [];
+
+          try {
+            // 1. Fetch Blogger Native Feed JSON
+            const feedRes = await fetch('/feeds/posts/default?alt=json&max-results=10');
+            if (feedRes.ok) {
+              const feedData = await feedRes.json();
+              if (feedData.feed && feedData.feed.entry) {
+                feedData.feed.entry.forEach(entry => {
+                  const title = entry.title.$t;
+                  const content = entry.content ? entry.content.$t.replace(/<[^>]*>?/gm, '').substring(0, 220) + '...' : '';
+                  const url = entry.link.find(l => l.rel === 'alternate')?.href || '#';
+                  const published = entry.published.$t;
+                  const id = 'blogger_' + entry.id.$t.split('post-')[1];
+                  const img = entry.media$thumbnail ? entry.media$thumbnail.url.replace('/s72-c/', '/s1600/') : null;
+
+                  merged.push({
+                    id,
+                    title,
+                    content,
+                    url,
+                    authorName: entry.author[0]?.name.$t || 'Ban Biên Tập Tây Ninh',
+                    authorPhoto: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&h=120&q=80',
+                    createdAt: new Date(published).getTime(),
+                    category: 'tintuc',
+                    imageUrl: img,
+                    isVerified: true,
+                    likes: 15,
+                    commentCount: 4
+                  });
+                });
+              }
+            }
+          } catch (e) {
+            console.warn('Blogger feed fetch skipped or offline, using live data.');
+          }
+
+          // 2. Fetch Realtime Firestore Community Posts
+          try {
+            const q = query(collection(db, 'posts'), orderBy('createdAt', 'desc'), limit(20));
+            onSnapshot(q, (snapshot) => {
+              const livePosts = [];
+              snapshot.forEach(docSnap => {
+                livePosts.push({ id: docSnap.id, ...docSnap.data() });
+              });
+
+              // Merge Firestore with Blogger feed
+              posts.value = [...livePosts, ...merged].sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+              loading.value = false;
+            });
+          } catch (err) {
+            console.error('Firestore sync error:', err);
+            posts.value = merged;
+            loading.value = false;
+          }
+        };
+
+        // Likes & Bookmarks
+        const isPostLiked = (post) => likedPostIds.value.has(post.id);
+        const toggleLike = async (post) => {
+          if (!currentUser.value) {
+            alert('Vui lòng đăng nhập để thả tim bài viết!');
+            return;
+          }
+          if (likedPostIds.value.has(post.id)) {
+            likedPostIds.value.delete(post.id);
+            post.likes = Math.max(0, (post.likes || 1) - 1);
+          } else {
+            likedPostIds.value.add(post.id);
+            post.likes = (post.likes || 0) + 1;
+            // Update Firestore meta
+            try {
+              const refDoc = doc(db, 'posts_meta', post.id);
+              await setDoc(refDoc, { likes: increment(1) }, { merge: true });
+            } catch (e) {}
+          }
+          localStorage.setItem('tayninh_likes', JSON.stringify([...likedPostIds.value]));
+        };
+
+        const isBookmarked = (id) => bookmarks.value.includes(id);
+        const toggleBookmark = (post) => {
+          const idx = bookmarks.value.indexOf(post.id);
+          if (idx >= 0) {
+            bookmarks.value.splice(idx, 1);
+          } else {
+            bookmarks.value.push(post.id);
+          }
+          localStorage.setItem('tayninh_bookmarks', JSON.stringify(bookmarks.value));
+        };
+
+        const sharePost = (post) => {
+          if (navigator.share) {
+            navigator.share({
+              title: post.title || 'Bài viết từ TayNinhInfo',
+              text: post.content,
+              url: post.url || window.location.href
+            }).catch(() => {});
+          } else {
+            navigator.clipboard.writeText(post.url || window.location.href);
+            alert('Đã sao chép liên kết vào clipboard!');
+          }
+        };
+
+        // Comments System
+        const toggleCommentSection = (postId) => {
+          if (activeCommentPostId.value === postId) {
+            activeCommentPostId.value = null;
+          } else {
+            activeCommentPostId.value = postId;
+            loadComments(postId);
+          }
+        };
+
+        const loadComments = (postId) => {
+          const q = query(collection(db, 'comments'), where('postId', '==', postId), orderBy('createdAt', 'asc'));
+          onSnapshot(q, (snapshot) => {
+            const list = [];
+            snapshot.forEach(docSnap => list.push({ id: docSnap.id, ...docSnap.data() }));
+            postComments.value[postId] = list;
+          });
+        };
+
+        const submitComment = async (postId) => {
+          if (!currentUser.value) {
+            alert('Vui lòng đăng nhập để bình luận!');
+            return;
+          }
+          if (!newCommentText.value.trim()) return;
+
+          try {
+            await addDoc(collection(db, 'comments'), {
+              postId: postId,
+              authorId: currentUser.value.uid,
+              authorName: currentUser.value.displayName,
+              authorPhoto: currentUser.value.photoURL,
+              text: newCommentText.value.trim(),
+              createdAt: Date.now()
+            });
+            newCommentText.value = '';
+          } catch (err) {
+            alert('Lỗi đăng bình luận: ' + err.message);
+          }
+        };
+
+        // 1-Click Apply Flow
+        const openApplyModal = (job) => {
+          selectedJobToApply.value = job;
+          showApplyModal.value = true;
+        };
+
+        const handleFileUpload = (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+          applyForm.value.fileName = file.name;
+          const reader = new FileReader();
+          reader.onload = (evt) => {
+            applyForm.value.fileBase64 = evt.target.result;
+          };
+          reader.readAsDataURL(file);
+        };
+
+        const submitApplication = async () => {
+          submittingApply.value = true;
+          try {
+            // 1. Lưu vào Firestore
+            const docRef = await addDoc(collection(db, 'job_applications'), {
+              jobId: selectedJobToApply.value.id,
+              jobTitle: selectedJobToApply.value.title,
+              userId: currentUser.value ? currentUser.value.uid : 'anonymous',
+              fullName: applyForm.value.fullName,
+              phone: applyForm.value.phone,
+              email: applyForm.value.email,
+              note: applyForm.value.note,
+              hasFile: !!applyForm.value.fileBase64,
+              createdAt: Date.now()
+            });
+
+            // 2. Gửi file đính kèm & kích hoạt email qua Google Apps Script
+            if (GAS_WEB_APP_URL && !GAS_WEB_APP_URL.includes('Dummy')) {
+              await fetch(GAS_WEB_APP_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  action: 'apply_job',
+                  jobTitle: selectedJobToApply.value.title,
+                  fullName: applyForm.value.fullName,
+                  phone: applyForm.value.phone,
+                  email: applyForm.value.email,
+                  note: applyForm.value.note,
+                  fileBase64: applyForm.value.fileBase64,
+                  fileName: applyForm.value.fileName
+                })
+              });
+            }
+
+            alert('Chúc mừng! Đã gửi hồ sơ ứng tuyển thành công. Nhà tuyển dụng sẽ sớm liên hệ qua SĐT/Email.');
+            showApplyModal.value = false;
+            applyForm.value.note = '';
+          } catch (err) {
+            alert('Lỗi khi nộp hồ sơ: ' + err.message);
+          } finally {
+            submittingApply.value = false;
+          }
+        };
+
+        // Quick Post Flow
+        const openCreatePostModal = (cat) => {
+          if (!currentUser.value) {
+            alert('Vui lòng đăng nhập bằng Google trước khi đăng tin!');
+            return;
+          }
+          postForm.value.category = cat || 'tintuc';
+          showCreateModal.value = true;
+        };
+
+        const handlePostImageUpload = (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+          postForm.value.imageName = file.name;
+          const reader = new FileReader();
+          reader.onload = (evt) => {
+            postForm.value.imageBase64 = evt.target.result;
+          };
+          reader.readAsDataURL(file);
+        };
+
+        const submitPost = async () => {
+          submittingPost.value = true;
+          try {
+            let uploadedImageUrl = null;
+
+            // Đẩy ảnh lên Google Drive qua GAS Web App
+            if (postForm.value.imageBase64 && GAS_WEB_APP_URL && !GAS_WEB_APP_URL.includes('Dummy')) {
+              try {
+                const res = await fetch(GAS_WEB_APP_URL, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    action: 'upload_image',
+                    fileBase64: postForm.value.imageBase64,
+                    fileName: postForm.value.imageName
+                  })
+                });
+                const data = await res.json();
+                if (data && data.fileUrl) {
+                  uploadedImageUrl = data.fileUrl;
+                }
+              } catch (e) {
+                console.warn('Lưu ảnh Google Drive thất bại, dùng Base64 trực tiếp');
+                uploadedImageUrl = postForm.value.imageBase64;
+              }
+            }
+
+            // Ghi vào Firestore
+            await addDoc(collection(db, 'posts'), {
+              title: postForm.value.title,
+              content: postForm.value.content,
+              category: postForm.value.category,
+              salary: postForm.value.salary || null,
+              location: postForm.value.location || null,
+              imageUrl: uploadedImageUrl,
+              authorId: currentUser.value.uid,
+              authorName: currentUser.value.displayName,
+              authorPhoto: currentUser.value.photoURL,
+              isVerified: true,
+              likes: 1,
+              commentCount: 0,
+              createdAt: Date.now()
+            });
+
+            // Đồng bộ sang bài viết Blogger qua Google Apps Script (Blogger API v3)
+            if (GAS_WEB_APP_URL && !GAS_WEB_APP_URL.includes('Dummy')) {
+              fetch(GAS_WEB_APP_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  action: 'create_blogger_post',
+                  title: postForm.value.title,
+                  content: `<p>${postForm.value.content}</p>${uploadedImageUrl ? `<img src="${uploadedImageUrl}"/>` : ''}`,
+                  labels: ['TayNinhInfo', postForm.value.category],
+                  isDraft: false
+                })
+              });
+            }
+
+            alert('Đăng bài thành công!');
+            showCreateModal.value = false;
+            postForm.value = { title: '', category: 'tintuc', salary: '', location: '', content: '', imageBase64: null, imageName: '' };
+          } catch (err) {
+            alert('Lỗi khi đăng bài: ' + err.message);
+          } finally {
+            submittingPost.value = false;
+          }
+        };
+
+        const formatRelativeTime = (timestamp) => {
+          if (!timestamp) return 'Vừa xong';
+          const diff = Math.floor((Date.now() - Number(timestamp)) / 1000);
+          if (diff < 60) return 'Vừa xong';
+          if (diff < 3600) return Math.floor(diff / 60) + ' phút trước';
+          if (diff < 86400) return Math.floor(diff / 3600) + ' giờ trước';
+          return Math.floor(diff / 86400) + ' ngày trước';
+        };
+
+        onMounted(() => {
+          const savedTheme = localStorage.getItem('theme');
+          if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            isDark.value = true;
+            document.documentElement.classList.add('dark');
+          }
+          loadInitialData();
+        });
+
+        return {
+          isDark,
+          toggleDarkMode,
+          currentUser,
+          userMenuOpen,
+          loginGoogle,
+          logout,
+          userStats,
+          categories,
+          selectedCategory,
+          selectCategory,
+          activeTab,
+          searchKeyword,
+          loading,
+          filteredPosts,
+          bookmarks,
+          isPostLiked,
+          toggleLike,
+          isBookmarked,
+          toggleBookmark,
+          sharePost,
+          activeCommentPostId,
+          toggleCommentSection,
+          postComments,
+          newCommentText,
+          submitComment,
+          urgentJobs,
+          leaderboard,
+          showApplyModal,
+          selectedJobToApply,
+          submittingApply,
+          applyForm,
+          openApplyModal,
+          handleFileUpload,
+          submitApplication,
+          showCreateModal,
+          submittingPost,
+          postForm,
+          openCreatePostModal,
+          handlePostImageUpload,
+          submitPost,
+          formatRelativeTime
+        };
+      }
+    }).mount('#app');
+    //]]>
+  </script>
+</body>
+</html>
