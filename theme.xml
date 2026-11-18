@@ -1263,6 +1263,22 @@
           return Math.floor(diff / 86400) + ' ngày trước';
         };
 
+        const searchPosts = () => {
+          // Handled reactively by filteredPosts
+        };
+
+        const onSearchKey = (e) => {
+          if (e.key === 'Enter') {
+            searchPosts();
+          }
+        };
+
+        const onCommentKey = (e, postId) => {
+          if (e.key === 'Enter') {
+            submitComment(postId);
+          }
+        };
+
         onMounted(() => {
           const savedTheme = localStorage.getItem('theme');
           if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -1313,7 +1329,20 @@
           openCreatePostModal,
           handlePostImageUpload,
           submitPost,
-          formatRelativeTime
+          formatRelativeTime,
+          searchPosts,
+          onSearchKey,
+          onCommentKey,
+          toasts,
+          popup,
+          showToast,
+          removeToast,
+          showPopup,
+          handlePopupConfirm,
+          showConfigModal,
+          customApiKey,
+          demoLogin,
+          saveCustomApiKey
         };
       }
     }).mount('#app');
