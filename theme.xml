@@ -4,10 +4,10 @@
 <head>
   <meta charset='utf-8'/>
   <meta content='width=device-width, initial-scale=1.0' name='viewport'/>
-  <title><data:blog.pageTitle/></title>
+  <title><data:blog.pageTitle/> - Tây Ninh Go: Cổng Thông Tin Địa Phương &amp; Bản Đồ Số</title>
   <b:include data='blog' name='all-head-content'/>
 
-  <!-- CDNs: Tailwind CSS, FontAwesome, Vue 3 -->
+  <!-- CDNs: Tailwind CSS, FontAwesome 6, Vue 3, Leaflet.js -->
   <script src='https://cdn.tailwindcss.com'></script>
   <script>
     tailwind.config = {
@@ -30,6 +30,10 @@
   </script>
   <link href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css' rel='stylesheet'/>
   <script src='https://unpkg.com/vue@3/dist/vue.global.prod.js'></script>
+  
+  <!-- Leaflet CSS &amp; JS -->
+  <link rel='stylesheet' href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'/>
+  <script src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'></script>
 
   <b:skin><![CDATA[
     body {
@@ -39,587 +43,538 @@
     }
     .custom-scrollbar::-webkit-scrollbar {
       width: 6px;
+      height: 6px;
     }
     .custom-scrollbar::-webkit-scrollbar-track {
       background: transparent;
     }
     .custom-scrollbar::-webkit-scrollbar-thumb {
-      background: rgba(156, 163, 175, 0.5);
+      background: rgba(156, 163, 175, 0.4);
       border-radius: 9999px;
+    }
+    .leaflet-popup-content-wrapper {
+      border-radius: 12px;
+      padding: 4px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
     }
   ]]></b:skin>
 </head>
 <body class='bg-slate-100 text-slate-900 dark:bg-slate-950 dark:text-slate-100 antialiased min-h-screen transition-colors duration-200'>
 
-  <div id='app' class='flex flex-col min-h-screen'>
-    <!-- Header / Navbar -->
-    <header class='sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors'>
-      <div class='max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4'>
+  <div id='app' class='flex flex-col h-screen overflow-hidden'>
+    
+    <!-- 1. HEADER / NAVBAR -->
+    <header class='flex-shrink-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors'>
+      <div class='max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-3'>
+        
+        <!-- Logo & Brand -->
         <div class='flex items-center gap-3'>
           <a href='/' class='flex items-center gap-2 group'>
             <div class='w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-emerald-400 flex items-center justify-center text-white shadow-lg shadow-brand-500/20 group-hover:scale-105 transition-transform'>
-              <i class='fa-solid fa-mountain-sun text-lg'></i>
+              <i class='fa-solid fa-map-location-dot text-lg'></i>
             </div>
             <div>
-              <span class='text-xl font-bold tracking-tight bg-gradient-to-r from-brand-600 to-emerald-500 bg-clip-text text-transparent'>TayNinhInfo</span>
-              <span class='block text-[10px] uppercase font-semibold text-slate-400 tracking-wider -mt-1'>Cổng Thông Tin &amp; Mạng Xã Hội</span>
+              <span class='font-black text-lg bg-gradient-to-r from-brand-700 to-emerald-500 dark:from-brand-500 dark:to-emerald-400 bg-clip-text text-transparent leading-none'>Tây Ninh Go</span>
+              <span class='block text-[10px] font-semibold text-slate-500 dark:text-slate-400 tracking-wider uppercase'>Local Info &amp; Directory Hub</span>
             </div>
           </a>
         </div>
 
         <!-- Search Bar -->
-        <div class='hidden md:flex flex-1 max-w-md mx-4'>
-          <div class='relative w-full'>
-            <input type='text' v-model='searchKeyword' v-on:keyup='onSearchKey' placeholder='Tìm kiếm tin tức, việc làm, địa điểm Tây Ninh...' class='w-full pl-10 pr-4 py-2 text-sm rounded-full bg-slate-100 dark:bg-slate-800 border-none focus:ring-2 focus:ring-brand-500 outline-none text-slate-800 dark:text-slate-100 placeholder-slate-400' />
-            <i class='fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-sm'></i>
+        <div class='flex-1 max-w-md mx-2 hidden sm:block'>
+          <div class='relative'>
+            <i class='fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm'></i>
+            <input type='text' v-model='searchKeyword' placeholder='Tìm quán ăn, nhà thuốc, sửa xe, cơ quan hành chính...' class='w-full pl-10 pr-9 py-2 text-xs rounded-full bg-slate-100 dark:bg-slate-800 border border-transparent focus:border-brand-500 focus:bg-white dark:focus:bg-slate-900 outline-none transition' />
+            <button v-if='searchKeyword' v-on:click='searchKeyword = ""' class='absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs'>
+              <i class='fa-solid fa-circle-xmark'></i>
+            </button>
           </div>
         </div>
 
-        <!-- Right actions -->
-        <div class='flex items-center gap-3'>
-          <button v-on:click='toggleDarkMode' class='w-10 h-10 rounded-full flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors'>
-            <i v-bind:class="isDark ? 'fa-solid fa-sun text-amber-400' : 'fa-solid fa-moon text-slate-600'"></i>
-          </button>
-
-          <!-- Auth Button -->
-          <div v-if='!currentUser'>
-            <button v-on:click='loginGoogle' class='inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-full bg-brand-600 hover:bg-brand-700 text-white shadow-md shadow-brand-500/20 transition-all'>
-              <i class='fa-brands fa-google'></i>
-              <span>Đăng nhập Google</span>
+        <!-- Header Actions -->
+        <div class='flex items-center gap-2'>
+          
+          <!-- Chế độ xem: Bản đồ / Danh bạ -->
+          <div class='flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-xl text-xs font-semibold'>
+            <button v-on:click='viewMode = "split"' v-bind:class='viewMode === "split" ? "bg-white dark:bg-slate-900 text-brand-600 shadow-sm" : "text-slate-500 hover:text-slate-900 dark:hover:text-white"' class='px-3 py-1.5 rounded-lg transition flex items-center gap-1.5' title='Bản đồ &amp; Danh bạ'>
+              <i class='fa-solid fa-table-columns'></i> <span class='hidden md:inline'>Kết hợp</span>
+            </button>
+            <button v-on:click='viewMode = "grid"' v-bind:class='viewMode === "grid" ? "bg-white dark:bg-slate-900 text-brand-600 shadow-sm" : "text-slate-500 hover:text-slate-900 dark:hover:text-white"' class='px-3 py-1.5 rounded-lg transition flex items-center gap-1.5' title='Chỉ hiển thị Danh sách'>
+              <i class='fa-solid fa-grip'></i> <span class='hidden md:inline'>Danh bạ</span>
             </button>
           </div>
-          <div v-else='true' class='flex items-center gap-3'>
-            <div class='relative'>
-              <img v-bind:src='currentUser.photoURL || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&amp;fit=crop&amp;w=120&amp;h=120&amp;q=80"' v-bind:alt='currentUser.displayName' class='w-9 h-9 rounded-full object-cover ring-2 ring-brand-500 cursor-pointer' v-on:click='userMenuOpen = !userMenuOpen' />
-              <!-- Dropdown -->
-              <div v-if='userMenuOpen' class='absolute right-0 mt-2 w-56 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl py-2 z-50'>
-                <div class='px-4 py-2 border-b border-slate-100 dark:border-slate-800'>
-                  <p class='text-sm font-semibold truncate'>{{ currentUser.displayName }}</p>
-                  <p class='text-xs text-slate-400 truncate'>{{ currentUser.email }}</p>
-                </div>
-                <button v-on:click='activeTab = "bookmark"; userMenuOpen = false' class='w-full text-left px-4 py-2 text-sm hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2'>
-                  <i class='fa-solid fa-bookmark text-amber-500'></i> Đã lưu ({{ bookmarks.length }})
-                </button>
-                <button v-on:click='logout' class='w-full text-left px-4 py-2 text-sm text-rose-500 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2'>
-                  <i class='fa-solid fa-arrow-right-from-bracket'></i> Đăng xuất
-                </button>
+
+          <!-- Nút Vị trí của tôi (GPS) -->
+          <button v-on:click='getUserLocation' v-bind:class='userCoords ? "bg-emerald-50 text-brand-600 border-brand-300 dark:bg-emerald-950/40" : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"' class='p-2 sm:px-3 sm:py-2 text-xs font-semibold rounded-xl border border-slate-200 dark:border-slate-700 flex items-center gap-1.5 transition' title='Định vị vị trí hiện tại của bạn'>
+            <i class='fa-solid fa-crosshairs' v-bind:class='{"fa-spin": isLocating}'></i>
+            <span class='hidden lg:inline'>{{ userCoords ? 'Đã định vị' : 'Gần tôi' }}</span>
+          </button>
+
+          <!-- Nút Đóng góp địa điểm mới -->
+          <button v-on:click='openContributeModal' class='px-3 py-2 rounded-xl bg-gradient-to-r from-brand-600 to-emerald-600 hover:from-brand-700 hover:to-emerald-700 text-white font-semibold text-xs shadow-md shadow-brand-500/20 flex items-center gap-1.5 transition'>
+            <i class='fa-solid fa-plus-circle'></i>
+            <span class='hidden sm:inline'>Đóng góp</span>
+          </button>
+
+          <!-- Dark mode toggle -->
+          <button v-on:click='toggleDarkMode' class='w-9 h-9 rounded-xl flex items-center justify-center text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition'>
+            <i v-bind:class='isDark ? "fa-solid fa-sun text-amber-400" : "fa-solid fa-moon text-indigo-500"'></i>
+          </button>
+
+          <!-- User Menu / Login -->
+          <div class='relative'>
+            <button v-if='currentUser' v-on:click='userMenuOpen = !userMenuOpen' class='flex items-center gap-2 pl-2 pr-1 py-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition'>
+              <img v-bind:src='currentUser.photoURL || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&amp;fit=crop&amp;w=80&amp;h=80&amp;q=80"' class='w-8 h-8 rounded-full object-cover ring-2 ring-brand-500/40' />
+            </button>
+            <button v-else='true' v-on:click='loginGoogle' class='px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold hover:bg-slate-100 dark:hover:bg-slate-800 transition'>
+              Đăng nhập
+            </button>
+
+            <!-- User Dropdown Menu -->
+            <div v-if='userMenuOpen' class='absolute right-0 mt-2 w-52 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl py-2 z-50 text-xs'>
+              <div class='px-4 py-2 border-b border-slate-100 dark:border-slate-800'>
+                <p class='font-bold truncate'>{{ currentUser.displayName }}</p>
+                <p class='text-[10px] text-slate-400 truncate'>{{ currentUser.email }}</p>
               </div>
+              <button v-on:click='logout' class='w-full text-left px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 text-rose-500 flex items-center gap-2'>
+                <i class='fa-solid fa-arrow-right-from-bracket'></i> Đăng xuất
+              </button>
             </div>
           </div>
+
+        </div>
+
+      </div>
+
+      <!-- 2. CATEGORY PILLS BAR -->
+      <div class='max-w-7xl mx-auto px-4 py-2 border-t border-slate-100 dark:border-slate-800 flex items-center gap-2 overflow-x-auto custom-scrollbar text-xs'>
+        <button v-on:click='selectMainCategory("all")' v-bind:class='activeCategory === "all" ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 font-bold" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"' class='px-3.5 py-1.5 rounded-full whitespace-nowrap transition'>
+          🌐 Tất cả địa điểm ({{ places.length }})
+        </button>
+
+        <button v-on:click='selectMainCategory("Ẩm thực & Giải trí")' v-bind:class='activeCategory === "Ẩm thực & Giải trí" ? "bg-rose-600 text-white font-bold" : "bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300 hover:bg-rose-100"' class='px-3.5 py-1.5 rounded-full whitespace-nowrap transition flex items-center gap-1.5'>
+          🍜 Ẩm thực &amp; Giải trí
+        </button>
+
+        <button v-on:click='selectMainCategory("Dịch vụ thiết yếu")' v-bind:class='activeCategory === "Dịch vụ thiết yếu" ? "bg-blue-600 text-white font-bold" : "bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300 hover:bg-blue-100"' class='px-3.5 py-1.5 rounded-full whitespace-nowrap transition flex items-center gap-1.5'>
+          🛠️ Dịch vụ thiết yếu
+        </button>
+
+        <button v-on:click='selectMainCategory("Hành chính công")' v-bind:class='activeCategory === "Hành chính công" ? "bg-amber-600 text-white font-bold" : "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300 hover:bg-amber-100"' class='px-3.5 py-1.5 rounded-full whitespace-nowrap transition flex items-center gap-1.5'>
+          🏛️ Hành chính công
+        </button>
+
+        <!-- Subcategories Quick Dropdown / Filter -->
+        <span class='h-4 w-[1px] bg-slate-200 dark:border-slate-700 mx-1'></span>
+        <div class='flex items-center gap-1.5'>
+          <button v-for='sub in currentSubcategories' v-bind:key='sub' v-on:click='activeSubcategory = (activeSubcategory === sub ? "" : sub)' v-bind:class='activeSubcategory === sub ? "border-brand-500 text-brand-600 bg-brand-50 dark:bg-brand-950/40 font-bold" : "border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800"' class='px-2.5 py-1 rounded-lg border text-[11px] whitespace-nowrap transition'>
+            {{ sub }}
+          </button>
         </div>
       </div>
     </header>
 
-    <!-- Main Container: 3 Columns -->
-    <main class='max-w-7xl mx-auto px-4 py-6 flex-1 w-full grid grid-cols-1 lg:grid-cols-12 gap-6'>
+    <!-- 3. MAIN WORKSPACE -->
+    <main class='flex-1 flex overflow-hidden relative'>
       
-      <!-- CỘT TRÁI (3 cols) -->
-      <aside class='lg:col-span-3 space-y-6'>
-        <!-- Profile Card -->
-        <div class='bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200/80 dark:border-slate-800 shadow-sm'>
-          <div v-if='currentUser' class='text-center'>
-            <div class='relative inline-block'>
-              <img v-bind:src='currentUser.photoURL || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&amp;fit=crop&amp;w=120&amp;h=120&amp;q=80"' class='w-20 h-20 rounded-full mx-auto ring-4 ring-brand-500/20 object-cover' />
-              <span class='absolute bottom-0 right-0 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs border-2 border-white dark:border-slate-900' title='Xác minh danh tính'>
-                <i class='fa-solid fa-circle-check'></i>
-              </span>
-            </div>
-            <h3 class='font-bold text-lg mt-3 flex items-center justify-center gap-1.5'>
-              {{ currentUser.displayName }}
-            </h3>
-            <span class='inline-block text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 mt-1'>
-              <i class='fa-solid fa-award mr-1'></i>Thành viên Uy tín
-            </span>
-
-            <div class='grid grid-cols-3 gap-2 mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 text-center text-xs'>
-              <div>
-                <span class='block font-bold text-slate-800 dark:text-slate-100'>{{ userStats.postsCount }}</span>
-                <span class='text-slate-400'>Bài viết</span>
-              </div>
-              <div>
-                <span class='block font-bold text-slate-800 dark:text-slate-100'>{{ bookmarks.length }}</span>
-                <span class='text-slate-400'>Đã lưu</span>
-              </div>
-              <div>
-                <span class='block font-bold text-slate-800 dark:text-slate-100'>{{ userStats.reputation }}</span>
-                <span class='text-slate-400'>Điểm</span>
-              </div>
-            </div>
-          </div>
-          <div v-else='true' class='text-center py-4'>
-            <div class='w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 mx-auto mb-3 text-2xl'>
-              <i class='fa-regular fa-user'></i>
-            </div>
-            <h4 class='font-semibold text-sm'>Chào mừng đến Tây Ninh Info</h4>
-            <p class='text-xs text-slate-400 mt-1 mb-4'>Đăng nhập để đăng bài, ứng tuyển và kết nối cộng đồng.</p>
-            <button v-on:click='loginGoogle' class='w-full py-2 px-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-medium text-xs shadow-sm transition'>
-              Đăng nhập ngay
-            </button>
-          </div>
-        </div>
-
-        <!-- Navigation / Category Filters -->
-        <nav class='bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-800 shadow-sm'>
-          <h4 class='text-xs font-bold uppercase tracking-wider text-slate-400 px-3 mb-2'>Chuyên mục Tây Ninh</h4>
-          <ul class='space-y-1 text-sm'>
-            <li v-for='cat in categories' v-bind:key='cat.id'>
-              <button v-on:click='selectCategory(cat.id)' v-bind:class='selectedCategory === cat.id ? "bg-brand-50 dark:bg-brand-950/40 text-brand-600 dark:text-brand-400 font-semibold" : "text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"' class='w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition'>
-                <div class='flex items-center gap-3'>
-                  <span v-bind:class='cat.color' class='w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs'>
-                    <i v-bind:class='cat.icon'></i>
-                  </span>
-                  <span>{{ cat.name }}</span>
-                </div>
-                <span v-if='cat.badge' class='text-[10px] px-2 py-0.5 rounded-full font-bold bg-rose-500 text-white'>{{ cat.badge }}</span>
-              </button>
-            </li>
-          </ul>
-        </nav>
-      </aside>
-
-      <!-- CỘT GIỮA (Main Feed - 6 cols) -->
-      <section class='lg:col-span-6 space-y-6'>
+      <!-- CỘT TRÁI: Bộ Lọc Thông Minh & Danh Sách Địa Điểm -->
+      <aside v-bind:class='viewMode === "grid" ? "w-full max-w-7xl mx-auto px-4 py-4" : "w-full md:w-[460px] lg:w-[500px]"' class='flex flex-col bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 h-full overflow-hidden flex-shrink-0 z-10 transition-all'>
         
-        <!-- Khung đăng bài nhanh (Quick Post) -->
-        <div class='bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-800 shadow-sm'>
-          <div class='flex items-center gap-3'>
-            <img v-bind:src='currentUser ? (currentUser.photoURL || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&amp;fit=crop&amp;w=120&amp;h=120&amp;q=80") : "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&amp;fit=crop&amp;w=120&amp;h=120&amp;q=80"' class='w-10 h-10 rounded-full object-cover' />
-            <button v-on:click='openCreatePostModal("tintuc")' class='flex-1 text-left px-4 py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-400 hover:bg-slate-200/70 dark:hover:bg-slate-700/70 rounded-full text-sm transition'>
-              {{ currentUser ? currentUser.displayName + ' ơi, bạn đang nghĩ gì?' : 'Đăng tin hoặc chia sẻ thông tin Tây Ninh...' }}
-            </button>
-          </div>
-          <div class='flex items-center justify-between border-t border-slate-100 dark:border-slate-800 mt-3 pt-3 px-2 text-xs font-semibold text-slate-500'>
-            <button v-on:click='openCreatePostModal("tintuc")' class='flex items-center gap-2 hover:text-brand-600 transition'>
-              <i class='fa-regular fa-image text-emerald-500 text-base'></i> Đăng bài ảnh
-            </button>
-            <button v-on:click='openCreatePostModal("tuyendung")' class='flex items-center gap-2 hover:text-blue-600 transition'>
-              <i class='fa-solid fa-briefcase text-blue-500 text-base'></i> Đăng tuyển dụng
-            </button>
-            <button v-on:click='openCreatePostModal("raovat")' class='flex items-center gap-2 hover:text-amber-600 transition'>
-              <i class='fa-solid fa-tags text-amber-500 text-base'></i> Rao vặt nhanh
-            </button>
-          </div>
-        </div>
-
-        <!-- Feed Filter Tabs -->
-        <div class='flex items-center gap-2 bg-white dark:bg-slate-900 p-1.5 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm'>
-          <button v-on:click='activeTab = "all"' v-bind:class='activeTab === "all" ? "bg-brand-600 text-white shadow-sm" : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"' class='flex-1 py-2 text-xs font-semibold rounded-xl transition text-center'>
-            <i class='fa-solid fa-globe mr-1.5'></i>Tất cả
-          </button>
-          <button v-on:click='activeTab = "tuyendung"' v-bind:class='activeTab === "tuyendung" ? "bg-brand-600 text-white shadow-sm" : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"' class='flex-1 py-2 text-xs font-semibold rounded-xl transition text-center'>
-            <i class='fa-solid fa-briefcase mr-1.5'></i>Việc làm
-          </button>
-          <button v-on:click='activeTab = "thaoluan"' v-bind:class='activeTab === "thaoluan" ? "bg-brand-600 text-white shadow-sm" : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"' class='flex-1 py-2 text-xs font-semibold rounded-xl transition text-center'>
-            <i class='fa-regular fa-comments mr-1.5'></i>Thảo luận
-          </button>
-          <button v-on:click='activeTab = "bookmark"' v-bind:class='activeTab === "bookmark" ? "bg-brand-600 text-white shadow-sm" : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"' class='flex-1 py-2 text-xs font-semibold rounded-xl transition text-center'>
-            <i class='fa-solid fa-bookmark mr-1.5'></i>Đã lưu
-          </button>
-        </div>
-
-        <!-- Loading Spinner -->
-        <div v-if='loading' class='py-12 text-center text-slate-400'>
-          <i class='fa-solid fa-circle-notch fa-spin text-3xl text-brand-600'></i>
-          <p class='text-xs mt-3'>Đang cập nhật dòng tin Tây Ninh...</p>
-        </div>
-
-        <!-- Post Cards List -->
-        <div v-else='true' class='space-y-5'>
-          <article v-for='post in filteredPosts' v-bind:key='post.id' class='bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm overflow-hidden transition hover:shadow-md'>
+        <!-- Bộ lọc nâng cao (Smart Filter) -->
+        <div class='p-3.5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/50 space-y-2.5 text-xs'>
+          
+          <!-- Hàng 1: Trạng thái & Khoảng cách & Mức giá -->
+          <div class='grid grid-cols-3 gap-2'>
             
-            <!-- Author Header -->
-            <div class='p-4 flex items-center justify-between'>
-              <div class='flex items-center gap-3'>
-                <img v-bind:src='post.authorPhoto || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&amp;fit=crop&amp;w=120&amp;h=120&amp;q=80"' class='w-10 h-10 rounded-full object-cover ring-1 ring-slate-200 dark:ring-slate-700' />
-                <div>
-                  <div class='flex items-center gap-1.5'>
-                    <span class='font-bold text-sm'>{{ post.authorName }}</span>
-                    <i v-if='post.isVerified' class='fa-solid fa-circle-check text-blue-500 text-xs' title='Chính chủ xác minh'></i>
-                  </div>
-                  <div class='flex items-center gap-2 text-[11px] text-slate-400'>
-                    <span>{{ formatRelativeTime(post.createdAt) }}</span>
-                    <span>&amp;bull;</span>
-                    <span class='capitalize font-medium text-brand-600 dark:text-brand-400'>{{ post.category }}</span>
-                  </div>
-                </div>
-              </div>
+            <!-- Trạng thái mở cửa -->
+            <select v-model='filterOpenNow' class='bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1.5 outline-none font-medium'>
+              <option value='all'>🕒 Tất cả giờ</option>
+              <option value='open'>🟢 Đang mở cửa</option>
+            </select>
 
-              <!-- Badge for Job / Easy Apply -->
-              <span v-if='post.category === "tuyendung" || post.isJob' class='px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800 dark:bg-amber-950/70 dark:text-amber-300 flex items-center gap-1'>
-                <i class='fa-solid fa-bolt text-amber-500'></i> Easy Apply
-              </span>
-            </div>
+            <!-- Khoảng cách -->
+            <select v-model='filterDistance' v-bind:disabled='!userCoords' class='bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1.5 outline-none font-medium disabled:opacity-50'>
+              <option value='all'>📍 Khoảng cách</option>
+              <option value='2'>Dưới 2 km</option>
+              <option value='5'>Dưới 5 km</option>
+              <option value='10'>Dưới 10 km</option>
+            </select>
 
-            <!-- Content Body -->
-            <div class='px-4 pb-3'>
-              <h2 v-if='post.title' class='text-base font-bold text-slate-900 dark:text-slate-100 mb-1.5'>
-                <a v-bind:href='post.url' target='_blank' class='hover:text-brand-600 transition'>{{ post.title }}</a>
-              </h2>
-              <p class='text-sm text-slate-700 dark:text-slate-300 whitespace-pre-line leading-relaxed'>
-                {{ post.content }}
-              </p>
-
-              <!-- Extra Job Info if Tuyendung -->
-              <div v-if='post.category === "tuyendung" || post.isJob' class='mt-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 flex flex-wrap items-center justify-between gap-2 text-xs'>
-                <div class='flex items-center gap-4 text-slate-600 dark:text-slate-300'>
-                  <span v-if='post.salary'><i class='fa-solid fa-money-bill-wave text-emerald-500 mr-1'></i>{{ post.salary }}</span>
-                  <span v-if='post.location'><i class='fa-solid fa-location-dot text-rose-500 mr-1'></i>{{ post.location }}</span>
-                </div>
-                <button v-on:click='openApplyModal(post)' class='px-3.5 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-semibold flex items-center gap-1.5 shadow-sm transition'>
-                  <i class='fa-solid fa-paper-plane text-xs'></i> Ứng tuyển nhanh
-                </button>
-              </div>
-            </div>
-
-            <!-- Post Media (Image) -->
-            <div v-if='post.imageUrl' class='max-h-96 overflow-hidden bg-slate-100 dark:bg-slate-800'>
-              <img v-bind:src='post.imageUrl' alt='Post image' class='w-full object-cover hover:scale-[1.01] transition-transform duration-300' />
-            </div>
-
-            <!-- Interaction Bar -->
-            <div class='px-4 py-2.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400'>
-              <div class='flex items-center gap-4'>
-                <button v-on:click='toggleLike(post)' v-bind:class='isPostLiked(post) ? "text-rose-500 font-bold" : "hover:text-rose-500"' class='flex items-center gap-1.5 transition'>
-                  <i v-bind:class='isPostLiked(post) ? "fa-solid fa-heart" : "fa-regular fa-heart"'></i>
-                  <span>{{ (post.likes || 0) }} Thích</span>
-                </button>
-                <button v-on:click='toggleCommentSection(post.id)' class='flex items-center gap-1.5 hover:text-brand-600 transition'>
-                  <i class='fa-regular fa-comment'></i>
-                  <span>{{ post.commentCount || 0 }} Bình luận</span>
-                </button>
-              </div>
-
-              <div class='flex items-center gap-3'>
-                <button v-on:click='toggleBookmark(post)' v-bind:class='isBookmarked(post.id) ? "text-amber-500 font-bold" : "hover:text-amber-500"' class='flex items-center gap-1 transition' title='Lưu bài'>
-                  <i v-bind:class='isBookmarked(post.id) ? "fa-solid fa-bookmark" : "fa-regular fa-bookmark"'></i>
-                </button>
-                <button v-on:click='sharePost(post)' class='hover:text-blue-500 transition' title='Chia sẻ'>
-                  <i class='fa-solid fa-share-nodes'></i>
-                </button>
-              </div>
-            </div>
-
-            <!-- Realtime Comments Section -->
-            <div v-if='activeCommentPostId === post.id' class='p-4 bg-slate-50/50 dark:bg-slate-800/40 border-t border-slate-100 dark:border-slate-800 space-y-3'>
-              <!-- Comment Input -->
-              <div class='flex items-center gap-2'>
-                <input type='text' v-model='newCommentText' v-on:keyup='onCommentKey($event, post.id)' placeholder='Viết bình luận công khai...' class='flex-1 px-3.5 py-2 text-xs rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-brand-500 outline-none' />
-                <button v-on:click='submitComment(post.id)' class='w-8 h-8 rounded-full bg-brand-600 text-white flex items-center justify-center hover:bg-brand-700 transition'>
-                  <i class='fa-solid fa-paper-plane text-xs'></i>
-                </button>
-              </div>
-
-              <!-- List comments -->
-              <div class='space-y-2.5 max-h-60 overflow-y-auto custom-scrollbar pr-1'>
-                <div v-for='cmt in (postComments[post.id] || [])' v-bind:key='cmt.id' class='flex items-start gap-2.5 text-xs'>
-                  <img v-bind:src='cmt.authorPhoto || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&amp;fit=crop&amp;w=120&amp;h=120&amp;q=80"' class='w-7 h-7 rounded-full object-cover mt-0.5' />
-                  <div class='bg-white dark:bg-slate-900 px-3 py-2 rounded-2xl border border-slate-200/60 dark:border-slate-800 flex-1'>
-                    <div class='flex items-center justify-between'>
-                      <span class='font-bold text-[11px] text-slate-800 dark:text-slate-200'>{{ cmt.authorName }}</span>
-                      <span class='text-[10px] text-slate-400'>{{ formatRelativeTime(cmt.createdAt) }}</span>
-                    </div>
-                    <p class='text-slate-700 dark:text-slate-300 mt-1 leading-snug'>{{ cmt.text }}</p>
-                  </div>
-                </div>
-                <div v-if='!postComments[post.id] || postComments[post.id].length === 0' class='text-center py-2 text-[11px] text-slate-400'>
-                  Chưa có bình luận nào. Hãy là người đầu tiên thảo luận!
-                </div>
-              </div>
-            </div>
-
-          </article>
-        </div>
-
-      </section>
-
-      <!-- CỘT PHẢI (3 cols) -->
-      <aside class='lg:col-span-3 space-y-6'>
-        
-        <!-- Widget: Việc làm gấp tại Tây Ninh -->
-        <div class='bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-800 shadow-sm'>
-          <div class='flex items-center justify-between mb-3'>
-            <h4 class='text-xs font-bold uppercase tracking-wider text-rose-500 flex items-center gap-1.5'>
-              <i class='fa-solid fa-fire animate-pulse'></i> Việc làm gấp Tây Ninh
-            </h4>
-            <span class='text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300'>HOT</span>
-          </div>
-
-          <div class='space-y-3'>
-            <div v-for='job in urgentJobs' v-bind:key='job.id' class='p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 hover:border-brand-500/50 transition'>
-              <h5 class='font-semibold text-xs text-slate-800 dark:text-slate-200 line-clamp-1'>{{ job.title }}</h5>
-              <p class='text-[11px] text-slate-500 dark:text-slate-400 mt-0.5'><i class='fa-regular fa-building mr-1'></i>{{ job.company }}</p>
-              <div class='flex items-center justify-between mt-2 pt-2 border-t border-slate-200/50 dark:border-slate-700/50 text-[11px]'>
-                <span class='text-emerald-600 dark:text-emerald-400 font-bold'>{{ job.salary }}</span>
-                <button v-on:click='openApplyModal(job)' class='px-2.5 py-1 rounded bg-brand-600 hover:bg-brand-700 text-white font-medium text-[10px] transition'>
-                  1-Click Nộp CV
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Widget: Tiện ích &amp; Thời tiết Tây Ninh -->
-        <div class='bg-gradient-to-br from-emerald-600 to-teal-700 text-white rounded-2xl p-4 shadow-sm'>
-          <div class='flex items-center justify-between'>
-            <div>
-              <span class='text-[11px] uppercase tracking-wider font-semibold text-emerald-100'>Thời tiết Tây Ninh</span>
-              <h4 class='text-2xl font-black mt-0.5'>32°C</h4>
-              <p class='text-xs text-emerald-100'>Nắng đẹp &amp;bull; Độ ẩm: 68%</p>
-            </div>
-            <i class='fa-solid fa-cloud-sun text-4xl text-amber-300 opacity-90'></i>
-          </div>
-          <div class='mt-4 pt-3 border-t border-emerald-500/50 grid grid-cols-2 gap-2 text-xs'>
-            <div class='bg-white/10 rounded-lg p-2 text-center'>
-              <span class='block text-[10px] text-emerald-200'>Núi Bà Đen</span>
-              <span class='font-bold'>24°C &amp;bull; Sương mù nhẹ</span>
-            </div>
-            <div class='bg-white/10 rounded-lg p-2 text-center'>
-              <span class='block text-[10px] text-emerald-200'>Cửa khẩu Mộc Bài</span>
-              <span class='font-bold'>Thông quan ổn định</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Widget: Bảng xếp hạng thành viên đóng góp -->
-        <div class='bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-800 shadow-sm'>
-          <h4 class='text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1.5'>
-            <i class='fa-solid fa-trophy text-amber-500'></i> Top Đóng Góp Tuần
-          </h4>
-          <ul class='space-y-3'>
-            <li v-for='(user, idx) in leaderboard' v-bind:key='user.id' class='flex items-center justify-between text-xs'>
-              <div class='flex items-center gap-2.5'>
-                <span class='w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px]' v-bind:class='idx === 0 ? "bg-amber-400 text-slate-900" : (idx === 1 ? "bg-slate-300 text-slate-800" : "bg-amber-700 text-white")'>
-                  {{ idx + 1 }}
-                </span>
-                <img v-bind:src='user.avatar' class='w-7 h-7 rounded-full object-cover' />
-                <span class='font-semibold text-slate-800 dark:text-slate-200'>{{ user.name }}</span>
-              </div>
-              <span class='font-bold text-brand-600 dark:text-brand-400'>{{ user.points }} pts</span>
-            </li>
-          </ul>
-        </div>
-
-      </aside>
-
-    </main>
-
-    <!-- 1-CLICK APPLY MODAL (Giống LinkedIn Easy Apply) -->
-    <div v-if='showApplyModal' class='fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4'>
-      <div class='bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl relative'>
-        <button v-on:click='showApplyModal = false' class='absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg'>
-          <i class='fa-solid fa-xmark'></i>
-        </button>
-
-        <div class='flex items-center gap-3 mb-4'>
-          <div class='w-10 h-10 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center text-lg'>
-            <i class='fa-solid fa-bolt'></i>
-          </div>
-          <div>
-            <h3 class='font-bold text-base text-slate-900 dark:text-slate-100'>Ứng tuyển nhanh (1-Click Apply)</h3>
-            <p class='text-xs text-slate-400'>Vị trí: <strong class='text-slate-700 dark:text-slate-300'>{{ selectedJobToApply?.title }}</strong></p>
-          </div>
-        </div>
-
-        <form v-on:submit.prevent='submitApplication' class='space-y-4 text-xs'>
-          <div>
-            <label class='block font-semibold mb-1 text-slate-700 dark:text-slate-300'>Họ và tên</label>
-            <input type='text' v-model='applyForm.fullName' required='required' class='w-full px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-brand-500' placeholder='Nguyễn Văn A' />
-          </div>
-          <div class='grid grid-cols-2 gap-3'>
-            <div>
-              <label class='block font-semibold mb-1 text-slate-700 dark:text-slate-300'>Số điện thoại / Zalo</label>
-              <input type='tel' v-model='applyForm.phone' required='required' class='w-full px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-brand-500' placeholder='090xxxxxxx' />
-            </div>
-            <div>
-              <label class='block font-semibold mb-1 text-slate-700 dark:text-slate-300'>Email nhận phản hồi</label>
-              <input type='email' v-model='applyForm.email' required='required' class='w-full px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-brand-500' placeholder='email@example.com' />
-            </div>
-          </div>
-          <div>
-            <label class='block font-semibold mb-1 text-slate-700 dark:text-slate-300'>Đính kèm CV (PDF/DOCX/Ảnh) hoặc Giới thiệu tóm tắt</label>
-            <input type='file' v-on:change='handleFileUpload' accept='.pdf,.doc,.docx,image/*' class='w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100' />
-          </div>
-          <div>
-            <label class='block font-semibold mb-1 text-slate-700 dark:text-slate-300'>Ghi chú cho Nhà tuyển dụng</label>
-            <textarea v-model='applyForm.note' rows='3' class='w-full px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-brand-500' placeholder='Tôi có 2 năm kinh nghiệm làm việc tại Trảng Bàng, sẵn sàng đi làm ngay...'></textarea>
-          </div>
-
-          <div class='flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800'>
-            <button type='button' v-on:click='showApplyModal = false' class='px-4 py-2 rounded-lg bg-slate-200 dark:bg-slate-800 font-semibold hover:bg-slate-300 transition'>Hủy</button>
-            <button type='submit' v-bind:disabled='submittingApply' class='px-5 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-semibold flex items-center gap-2 transition disabled:opacity-50'>
-              <i v-if='submittingApply' class='fa-solid fa-circle-notch fa-spin'></i>
-              <span>{{ submittingApply ? 'Đang gửi hồ sơ...' : 'Nộp hồ sơ ngay' }}</span>
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <!-- CREATE POST MODAL -->
-    <div v-if='showCreateModal' class='fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4'>
-      <div class='bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl relative'>
-        <button v-on:click='showCreateModal = false' class='absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg'>
-          <i class='fa-solid fa-xmark'></i>
-        </button>
-
-        <h3 class='font-bold text-base mb-4 text-slate-900 dark:text-slate-100 flex items-center gap-2'>
-          <i class='fa-solid fa-pen-nib text-brand-600'></i> Đăng bài lên TayNinhInfo
-        </h3>
-
-        <form v-on:submit.prevent='submitPost' class='space-y-4 text-xs'>
-          <div>
-            <label class='block font-semibold mb-1'>Chuyên mục</label>
-            <select v-model='postForm.category' class='w-full px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-brand-500'>
-              <option value='tintuc'>Tin tức &amp; Sự kiện</option>
-              <option value='tuyendung'>Tuyển dụng &amp; Việc làm</option>
-              <option value='raovat'>Rao vặt - Mua bán</option>
-              <option value='diadiem'>Địa điểm &amp; Ẩm thực Tây Ninh</option>
+            <!-- Mức giá -->
+            <select v-model='filterPrice' class='bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1.5 outline-none font-medium'>
+              <option value='all'>💵 Mức giá</option>
+              <option value='bình dân'>Bình dân ($)</option>
+              <option value='tầm trung'>Tầm trung ($$)</option>
+              <option value='cao cấp'>Cao cấp ($$$)</option>
             </select>
           </div>
 
-          <div>
-            <label class='block font-semibold mb-1'>Tiêu đề bài viết</label>
-            <input type='text' v-model='postForm.title' required='required' placeholder='Nhập tiêu đề tóm tắt...' class='w-full px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-brand-500' />
+          <!-- Hàng 2: Tiện ích Tags (Amenities Filter) -->
+          <div class='flex items-center gap-1.5 overflow-x-auto custom-scrollbar py-0.5'>
+            <button v-for='amenity in availableAmenities' v-bind:key='amenity.key' v-on:click='toggleAmenityFilter(amenity.key)' v-bind:class='selectedAmenities.includes(amenity.key) ? "bg-brand-600 text-white font-semibold shadow-sm" : "bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100"' class='px-2 py-1 rounded-md text-[11px] whitespace-nowrap transition flex items-center gap-1'>
+              <i v-bind:class='amenity.icon'></i> {{ amenity.label }}
+            </button>
           </div>
 
-          <div v-if='postForm.category === "tuyendung"' class='grid grid-cols-2 gap-3'>
+          <!-- Thanh kết quả & Xóa lọc -->
+          <div class='flex items-center justify-between text-[11px] text-slate-500 pt-1'>
+            <span>Tìm thấy <b>{{ filteredPlaces.length }}</b> địa điểm phù hợp</span>
+            <button v-if='hasActiveFilters' v-on:click='resetFilters' class='text-rose-500 hover:underline flex items-center gap-1'>
+              <i class='fa-solid fa-rotate-left'></i> Đặt lại bộ lọc
+            </button>
+          </div>
+        </div>
+
+        <!-- Danh sách Place Cards -->
+        <div class='flex-1 overflow-y-auto custom-scrollbar p-3 space-y-3' v-bind:class='{"grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 space-y-0": viewMode === "grid"}'>
+          
+          <div v-if='loading' class='py-16 text-center text-slate-400'>
+            <i class='fa-solid fa-circle-notch fa-spin text-2xl text-brand-600 mb-2'></i>
+            <p class='text-xs'>Đang tải danh bạ Tây Ninh Go...</p>
+          </div>
+
+          <div v-else-if='filteredPlaces.length === 0' class='py-16 text-center text-slate-400'>
+            <i class='fa-solid fa-map-pin text-3xl mb-2 text-slate-300 dark:text-slate-600'></i>
+            <p class='text-sm font-semibold'>Không tìm thấy địa điểm phù hợp</p>
+            <p class='text-xs text-slate-400 mt-1'>Thử thay đổi từ khóa hoặc đặt lại bộ lọc nâng cao.</p>
+          </div>
+
+          <!-- Card Địa Điểm -->
+          <div v-for='place in filteredPlaces' v-bind:key='place.id' v-on:click='selectPlace(place)' v-bind:class='selectedPlace &amp;&amp; selectedPlace.id === place.id ? "ring-2 ring-brand-500 border-transparent shadow-md" : "hover:border-brand-400 hover:shadow-sm"' class='bg-white dark:bg-slate-800/80 rounded-2xl border border-slate-200 dark:border-slate-700/80 p-3.5 transition cursor-pointer flex flex-col justify-between gap-2.5'>
+            
             <div>
-              <label class='block font-semibold mb-1'>Mức lương</label>
-              <input type='text' v-model='postForm.salary' placeholder='Ví dụ: 8 - 15 triệu' class='w-full px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-brand-500' />
+              <div class='flex items-start justify-between gap-2'>
+                <div>
+                  <span v-bind:class='getCategoryBadgeClass(place.category)' class='inline-block text-[10px] font-bold px-2 py-0.5 rounded-full mb-1'>
+                    {{ place.category }} {{ place.subCategory ? '• ' + place.subCategory : '' }}
+                  </span>
+                  <h3 class='font-bold text-sm text-slate-800 dark:text-slate-100 hover:text-brand-600 transition'>{{ place.name }}</h3>
+                </div>
+
+                <!-- Rating -->
+                <div class='flex items-center gap-1 bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 px-1.5 py-0.5 rounded-lg text-xs font-bold'>
+                  <i class='fa-solid fa-star text-[10px]'></i>
+                  <span>{{ (place.rating || 5.0).toFixed(1) }}</span>
+                </div>
+              </div>
+
+              <!-- Địa chỉ & Khoảng cách -->
+              <p class='text-xs text-slate-500 dark:text-slate-400 flex items-start gap-1.5 mt-1.5 line-clamp-2'>
+                <i class='fa-solid fa-location-dot mt-0.5 text-slate-400 flex-shrink-0'></i>
+                <span>{{ place.address }}</span>
+              </p>
+
+              <!-- Tiện ích badges tóm tắt -->
+              <div v-if='place.amenities &amp;&amp; place.amenities.length' class='flex flex-wrap gap-1 mt-2'>
+                <span v-for='amKey in place.amenities.slice(0, 3)' v-bind:key='amKey' class='text-[10px] bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-1.5 py-0.5 rounded'>
+                  {{ getAmenityLabel(amKey) }}
+                </span>
+                <span v-if='place.amenities.length > 3' class='text-[10px] text-slate-400'>+{{ place.amenities.length - 3 }}</span>
+              </div>
+            </div>
+
+            <!-- Footer: Trạng thái giờ, khoảng cách, và Nút Gọi / Chỉ đường -->
+            <div class='flex items-center justify-between border-t border-slate-100 dark:border-slate-700/60 pt-2 text-[11px] text-slate-500'>
+              <div class='flex items-center gap-2'>
+                <span v-if='place.openHours' v-bind:class='isOpenNow(place.openHours) ? "text-emerald-600 font-semibold" : "text-slate-400"'>
+                  <i class='fa-solid fa-clock mr-0.5'></i> {{ isOpenNow(place.openHours) ? 'Mở cửa' : 'Đóng cửa' }}
+                </span>
+                <span v-if='place.distanceKm !== undefined' class='text-brand-600 font-semibold'>
+                  <i class='fa-solid fa-route mr-0.5'></i> {{ place.distanceKm }} km
+                </span>
+              </div>
+
+              <div class='flex items-center gap-1.5'>
+                <a v-if='place.phone' v-bind:href='"tel:" + place.phone' v-on:click.stop='' class='p-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-brand-600 hover:bg-emerald-100 transition' title='Gọi điện liên hệ'>
+                  <i class='fa-solid fa-phone'></i>
+                </a>
+                <a v-bind:href='"https://www.google.com/maps?q=" + place.lat + "," + place.lng' target='_blank' v-on:click.stop='' class='p-1.5 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-200 transition' title='Chỉ đường trên Google Maps'>
+                  <i class='fa-solid fa-diamond-turn-right text-brand-600'></i>
+                </a>
+                <button v-on:click.stop='openDetailModal(place)' class='px-2 py-1 rounded-lg bg-brand-50 dark:bg-brand-950/50 text-brand-700 dark:text-brand-300 font-bold hover:bg-brand-100 transition'>
+                  Chi tiết
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </aside>
+
+      <!-- CỘT PHẢI: BẢN ĐỒ TƯƠNG TÁC (LEAFLET) -->
+      <section v-show='viewMode === "split"' class='flex-1 h-full relative'>
+        <div id='directoryMap' class='w-full h-full z-0'></div>
+
+        <!-- Float Map Controls -->
+        <div class='absolute top-4 right-4 z-10 flex flex-col gap-2'>
+          <button v-on:click='getUserLocation' class='w-10 h-10 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-lg text-slate-700 dark:text-slate-200 flex items-center justify-center hover:bg-slate-50 transition' title='Định vị vị trí của tôi'>
+            <i class='fa-solid fa-crosshairs text-brand-600 text-sm'></i>
+          </button>
+          <button v-on:click='resetMapView' class='w-10 h-10 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-lg text-slate-700 dark:text-slate-200 flex items-center justify-center hover:bg-slate-50 transition' title='Về trung tâm TP. Tây Ninh'>
+            <i class='fa-solid fa-map-location text-sm'></i>
+          </button>
+        </div>
+
+        <!-- Banner gợi ý bấm bản đồ khi muốn đóng góp -->
+        <div class='absolute bottom-4 left-4 right-4 md:left-6 md:right-auto z-10 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-800 shadow-lg text-xs flex items-center gap-2'>
+          <i class='fa-solid fa-hand-pointer text-brand-600 animate-bounce'></i>
+          <span>Bấm trực tiếp vào bất kỳ vị trí nào trên bản đồ để ghim tọa độ đóng góp địa điểm.</span>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- 4. MODAL: ĐÓNG GÓP ĐỊA ĐIỂM MỚI (CONTRIBUTE MODAL) -->
+    <div v-if='showContributeModal' class='fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto'>
+      <div class='bg-white dark:bg-slate-900 rounded-3xl w-full max-w-xl max-h-[90vh] overflow-y-auto border border-slate-200 dark:border-slate-800 shadow-2xl p-6 custom-scrollbar'>
+        
+        <div class='flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3 mb-4'>
+          <div class='flex items-center gap-2.5'>
+            <span class='w-9 h-9 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center'>
+              <i class='fa-solid fa-map-pin text-base'></i>
+            </span>
+            <div>
+              <h3 class='font-bold text-base text-slate-900 dark:text-slate-100'>Đóng Góp Địa Điểm Mới</h3>
+              <p class='text-xs text-slate-400'>Chia sẻ địa điểm hữu ích cho cộng đồng Tây Ninh</p>
+            </div>
+          </div>
+          <button v-on:click='showContributeModal = false' class='w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800'>
+            <i class='fa-solid fa-xmark'></i>
+          </button>
+        </div>
+
+        <form v-on:submit.prevent='submitNewPlace' class='space-y-4 text-xs'>
+          
+          <!-- Tên địa điểm -->
+          <div>
+            <label class='block font-semibold mb-1 text-slate-700 dark:text-slate-300'>Tên địa điểm (*)</label>
+            <input type='text' v-model='newPlaceForm.name' required='required' placeholder='Ví dụ: Bánh canh Trảng Bàng Út Huệ' class='w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none focus:border-brand-500 text-xs' />
+          </div>
+
+          <!-- Danh mục chính & Danh mục con -->
+          <div class='grid grid-cols-1 sm:grid-cols-2 gap-3'>
+            <div>
+              <label class='block font-semibold mb-1 text-slate-700 dark:text-slate-300'>Danh mục chính (*)</label>
+              <select v-model='newPlaceForm.category' required='required' class='w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none focus:border-brand-500 text-xs'>
+                <option value='Ẩm thực & Giải trí'>🍜 Ẩm thực &amp; Giải trí</option>
+                <option value='Dịch vụ thiết yếu'>🛠️ Dịch vụ thiết yếu</option>
+                <option value='Hành chính công'>🏛️ Hành chính công</option>
+              </select>
+            </div>
+
+            <div>
+              <label class='block font-semibold mb-1 text-slate-700 dark:text-slate-300'>Phân loại chi tiết</label>
+              <input type='text' v-model='newPlaceForm.subCategory' placeholder='Ví dụ: Quán ăn đặc sản, Bệnh viện, UBND...' class='w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none focus:border-brand-500 text-xs' />
+            </div>
+          </div>
+
+          <!-- Địa chỉ chi tiết -->
+          <div>
+            <label class='block font-semibold mb-1 text-slate-700 dark:text-slate-300'>Địa chỉ chi tiết (*)</label>
+            <input type='text' v-model='newPlaceForm.address' required='required' placeholder='Số nhà, tên đường, ấp/khu phố, huyện/thị xã...' class='w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none focus:border-brand-500 text-xs' />
+          </div>
+
+          <!-- Tọa độ Lat / Lng -->
+          <div class='grid grid-cols-2 gap-3'>
+            <div>
+              <label class='block font-semibold mb-1 text-slate-700 dark:text-slate-300'>Vĩ độ (Lat) (*)</label>
+              <input type='number' step='any' v-model.number='newPlaceForm.lat' required='required' class='w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none focus:border-brand-500 text-xs' />
             </div>
             <div>
-              <label class='block font-semibold mb-1'>Địa điểm làm việc</label>
-              <input type='text' v-model='postForm.location' placeholder='KCN Trảng Bàng, Tây Ninh' class='w-full px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-brand-500' />
+              <label class='block font-semibold mb-1 text-slate-700 dark:text-slate-300'>Kinh độ (Lng) (*)</label>
+              <input type='number' step='any' v-model.number='newPlaceForm.lng' required='required' class='w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none focus:border-brand-500 text-xs' />
             </div>
           </div>
 
-          <div>
-            <label class='block font-semibold mb-1'>Nội dung chi tiết</label>
-            <textarea v-model='postForm.content' rows='4' required='required' placeholder='Chia sẻ thông tin, yêu cầu công việc hoặc mô tả sản phẩm...' class='w-full px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-brand-500'></textarea>
+          <!-- Giờ mở cửa & Số điện thoại hotline -->
+          <div class='grid grid-cols-1 sm:grid-cols-2 gap-3'>
+            <div>
+              <label class='block font-semibold mb-1 text-slate-700 dark:text-slate-300'>Giờ mở cửa (VD: 07:00 - 22:00)</label>
+              <input type='text' v-model='newPlaceForm.openHours' placeholder='06:30 - 21:00 hoặc 24/7' class='w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none focus:border-brand-500 text-xs' />
+            </div>
+
+            <div>
+              <label class='block font-semibold mb-1 text-slate-700 dark:text-slate-300'>Số điện thoại liên hệ / Hotline</label>
+              <input type='tel' v-model='newPlaceForm.phone' placeholder='090xxxxxxx hoặc 113 / 115' class='w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none focus:border-brand-500 text-xs' />
+            </div>
           </div>
 
+          <!-- Mức giá & Link Hình ảnh thực tế -->
+          <div class='grid grid-cols-1 sm:grid-cols-2 gap-3'>
+            <div>
+              <label class='block font-semibold mb-1 text-slate-700 dark:text-slate-300'>Mức giá</label>
+              <select v-model='newPlaceForm.priceLevel' class='w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none focus:border-brand-500 text-xs'>
+                <option value='bình dân'>Bình dân (20k - 50k)</option>
+                <option value='tầm trung'>Tầm trung (50k - 200k)</option>
+                <option value='cao cấp'>Cao cấp (> 200k)</option>
+              </select>
+            </div>
+
+            <div>
+              <label class='block font-semibold mb-1 text-slate-700 dark:text-slate-300'>Link hình ảnh thực tế (URL)</label>
+              <input type='url' v-model='newPlaceForm.imageUrl' placeholder='https://images.unsplash.com/...' class='w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none focus:border-brand-500 text-xs' />
+            </div>
+          </div>
+
+          <!-- Checkboxes tiện ích -->
           <div>
-            <label class='block font-semibold mb-1'>Đính kèm ảnh (Tùy chọn)</label>
-            <input type='file' v-on:change='handlePostImageUpload' accept='image/*' class='w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100' />
+            <label class='block font-semibold mb-1.5 text-slate-700 dark:text-slate-300'>Tiện ích nổi bật</label>
+            <div class='grid grid-cols-2 sm:grid-cols-3 gap-2'>
+              <label v-for='am in availableAmenities' v-bind:key='am.key' class='flex items-center gap-2 p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 cursor-pointer'>
+                <input type='checkbox' v-model='newPlaceForm.amenities' v-bind:value='am.key' class='rounded text-brand-600 focus:ring-brand-500' />
+                <span class='text-[11px] font-medium'>{{ am.label }}</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Mô tả chi tiết -->
+          <div>
+            <label class='block font-semibold mb-1 text-slate-700 dark:text-slate-300'>Mô tả chi tiết / Hướng dẫn thêm</label>
+            <textarea v-model='newPlaceForm.description' rows='3' placeholder='Điểm nổi bật của quán, thủ tục cần mang theo khi đến cơ quan, bãi đỗ xe...' class='w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none focus:border-brand-500 text-xs'></textarea>
           </div>
 
           <div class='flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800'>
-            <button type='button' v-on:click='showCreateModal = false' class='px-4 py-2 rounded-lg bg-slate-200 dark:bg-slate-800 font-semibold hover:bg-slate-300 transition'>Hủy</button>
-            <button type='submit' v-bind:disabled='submittingPost' class='px-5 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-semibold flex items-center gap-2 transition disabled:opacity-50'>
-              <i v-if='submittingPost' class='fa-solid fa-circle-notch fa-spin'></i>
-              <span>{{ submittingPost ? 'Đang xuất bản...' : 'Đăng bài ngay' }}</span>
+            <button type='button' v-on:click='showContributeModal = false' class='px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100'>
+              Hủy bỏ
+            </button>
+            <button type='submit' v-bind:disabled='submittingPlace' class='px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold flex items-center gap-2 shadow-md shadow-brand-500/20 disabled:opacity-50'>
+              <i class='fa-solid fa-paper-plane' v-bind:class='{"fa-spin": submittingPlace}'></i>
+              <span>{{ submittingPlace ? 'Đang gửi...' : 'Gửi đóng góp' }}</span>
             </button>
           </div>
+
         </form>
+
       </div>
     </div>
 
-
-    <!-- TAILWIND TOAST NOTIFICATION STACK -->
-    <div class='fixed top-20 right-4 z-50 flex flex-col gap-2.5 pointer-events-none max-w-sm w-full'>
-      <div v-for='toast in toasts' v-bind:key='toast.id'
-           v-bind:class='{
-             "bg-emerald-50 dark:bg-emerald-950/90 border-emerald-500 text-emerald-900 dark:text-emerald-100": toast.type === "success",
-             "bg-rose-50 dark:bg-rose-950/90 border-rose-500 text-rose-900 dark:text-rose-100": toast.type === "error",
-             "bg-amber-50 dark:bg-amber-950/90 border-amber-500 text-amber-900 dark:text-amber-100": toast.type === "warning",
-             "bg-blue-50 dark:bg-blue-950/90 border-blue-500 text-blue-900 dark:text-blue-100": toast.type === "info"
-           }'
-           class='pointer-events-auto p-4 rounded-2xl border shadow-xl flex items-start gap-3 transition-all duration-300'>
-        <div class='text-lg mt-0.5'>
-          <i v-if='toast.type === "success"' class='fa-solid fa-circle-check text-emerald-500'></i>
-          <i v-else-if='toast.type === "error"' class='fa-solid fa-circle-exclamation text-rose-500'></i>
-          <i v-else-if='toast.type === "warning"' class='fa-solid fa-triangle-exclamation text-amber-500'></i>
-          <i v-else='true' class='fa-solid fa-circle-info text-blue-500'></i>
-        </div>
-        <div class='flex-1 text-xs'>
-          <h5 v-if='toast.title' class='font-bold text-sm mb-0.5'>{{ toast.title }}</h5>
-          <p class='leading-relaxed'>{{ toast.message }}</p>
-        </div>
-        <button v-on:click='removeToast(toast.id)' class='opacity-50 hover:opacity-100 text-xs p-1'>
-          <i class='fa-solid fa-xmark'></i>
-        </button>
-      </div>
-    </div>
-
-    <!-- TAILWIND MODAL POPUP DIALOG -->
-    <div v-if='popup.show' class='fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4'>
-      <div class='bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl text-center relative'>
-        <button v-on:click='popup.show = false' class='absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-base'>
-          <i class='fa-solid fa-xmark'></i>
-        </button>
-        <div class='w-14 h-14 rounded-2xl mx-auto flex items-center justify-center text-2xl mb-4'
-             v-bind:class='{
-               "bg-emerald-100 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-400": popup.type === "success",
-               "bg-rose-100 text-rose-600 dark:bg-rose-950/60 dark:text-rose-400": popup.type === "error",
-               "bg-amber-100 text-amber-600 dark:bg-amber-950/60 dark:text-amber-400": popup.type === "warning",
-               "bg-blue-100 text-blue-600 dark:bg-blue-950/60 dark:text-blue-400": popup.type === "info"
-             }'>
-          <i v-if='popup.type === "success"' class='fa-solid fa-circle-check'></i>
-          <i v-else-if='popup.type === "error"' class='fa-solid fa-triangle-exclamation'></i>
-          <i v-else-if='popup.type === "warning"' class='fa-solid fa-bell'></i>
-          <i v-else='true' class='fa-solid fa-circle-info'></i>
-        </div>
-        <h4 class='text-base font-bold text-slate-900 dark:text-slate-100 mb-2'>{{ popup.title }}</h4>
-        <p class='text-xs text-slate-600 dark:text-slate-300 leading-relaxed mb-6 whitespace-pre-line'>{{ popup.message }}</p>
-        <div class='flex gap-3 justify-center'>
-          <button v-if='popup.showCancel' v-on:click='popup.show = false' class='px-5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold hover:bg-slate-200 transition'>
-            {{ popup.cancelText || 'Hủy' }}
-          </button>
-          <button v-on:click='handlePopupConfirm'
-                  v-bind:class='{
-                    "bg-brand-600 hover:bg-brand-700 text-white": popup.type === "success" || popup.type === "info",
-                    "bg-rose-600 hover:bg-rose-700 text-white": popup.type === "error",
-                    "bg-amber-600 hover:bg-amber-700 text-white": popup.type === "warning"
-                  }'
-                  class='px-6 py-2.5 rounded-xl text-xs font-semibold shadow-lg transition'>
-            {{ popup.confirmText || 'Đã hiểu' }}
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- MODAL CẤU HÌNH GOOGLE LOGIN & DEMO -->
-    <div v-if='showConfigModal' class='fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4'>
-      <div class='bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl relative text-left'>
-        <button v-on:click='showConfigModal = false' class='absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-base'>
-          <i class='fa-solid fa-xmark'></i>
-        </button>
-
-        <div class='w-12 h-12 rounded-2xl bg-amber-100 text-amber-600 dark:bg-amber-950/60 dark:text-amber-400 mx-auto flex items-center justify-center text-xl mb-3'>
-          <i class='fa-solid fa-key'></i>
-        </div>
-
-        <h3 class='text-base font-bold text-center text-slate-900 dark:text-slate-100 mb-1'>Cấu Hình Đăng Nhập Google</h3>
-        <p class='text-xs text-slate-500 dark:text-slate-400 text-center mb-4 leading-relaxed'>
-          Dự án Firebase đang dùng khóa mẫu. Bạn có thể nhập Web API Key của dự án hoặc đăng nhập ngay bằng Chế độ Trải nghiệm.
-        </p>
-
-        <div class='space-y-3 mb-4 text-xs'>
+    <!-- 5. MODAL: CHI TIẾT ĐỊA ĐIỂM & ĐÁNH GIÁ (DETAIL & REVIEW MODAL) -->
+    <div v-if='activePlaceDetail' class='fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto'>
+      <div class='bg-white dark:bg-slate-900 rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-slate-200 dark:border-slate-800 shadow-2xl p-6 custom-scrollbar space-y-5 text-xs'>
+        
+        <div class='flex items-start justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-3'>
           <div>
-            <label class='block font-semibold mb-1 text-slate-700 dark:text-slate-300'>Firebase Web API Key (Tùy chọn)</label>
-            <input type='text' v-model='customApiKey' placeholder='Dán mã AIzaSy...' class='w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-brand-500 font-mono text-[11px]' />
-            <span class='text-[10px] text-slate-400 mt-1 block'>Lấy tại: Firebase Console -> Project Settings -> General -> Web API Key</span>
+            <span v-bind:class='getCategoryBadgeClass(activePlaceDetail.category)' class='inline-block text-[10px] font-bold px-2.5 py-0.5 rounded-full mb-1'>
+              {{ activePlaceDetail.category }} • {{ activePlaceDetail.subCategory || 'Địa phương' }}
+            </span>
+            <h2 class='text-lg font-bold text-slate-900 dark:text-slate-100'>{{ activePlaceDetail.name }}</h2>
+            <p class='text-slate-500 mt-1 flex items-center gap-1.5'>
+              <i class='fa-solid fa-location-dot text-brand-600'></i> {{ activePlaceDetail.address }}
+            </p>
+          </div>
+          <button v-on:click='activePlaceDetail = null' class='w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800'>
+            <i class='fa-solid fa-xmark text-sm'></i>
+          </button>
+        </div>
+
+        <!-- Ảnh thực tế nếu có -->
+        <div v-if='activePlaceDetail.imageUrl' class='w-full h-48 rounded-2xl overflow-hidden bg-slate-100'>
+          <img v-bind:src='activePlaceDetail.imageUrl' class='w-full h-full object-cover' />
+        </div>
+
+        <!-- Thông tin nhanh (Giờ mở cửa, Giá, Hotline, Chỉ đường) -->
+        <div class='grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center'>
+          <div class='p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-100 dark:border-slate-800'>
+            <span class='block text-[10px] text-slate-400 font-semibold uppercase'>Giờ mở cửa</span>
+            <span class='font-bold text-slate-800 dark:text-slate-100 mt-0.5 block'>{{ activePlaceDetail.openHours || 'Đang cập nhật' }}</span>
           </div>
 
-          <button v-if='customApiKey.trim()' v-on:click='saveCustomApiKey' class='w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold flex items-center justify-center gap-2 shadow-sm transition'>
-            <i class='fa-solid fa-floppy-disk'></i> Lưu Khóa &amp; Tải Lại
-          </button>
+          <div class='p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-100 dark:border-slate-800'>
+            <span class='block text-[10px] text-slate-400 font-semibold uppercase'>Mức giá</span>
+            <span class='font-bold text-slate-800 dark:text-slate-100 mt-0.5 block capitalize'>{{ activePlaceDetail.priceLevel || 'Bình dân' }}</span>
+          </div>
+
+          <div class='p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-100 dark:border-slate-800'>
+            <span class='block text-[10px] text-slate-400 font-semibold uppercase'>Đánh giá</span>
+            <span class='font-bold text-amber-500 mt-0.5 block flex items-center justify-center gap-1'>
+              <i class='fa-solid fa-star'></i> {{ (activePlaceDetail.rating || 5.0).toFixed(1) }} ({{ activePlaceReviews.length }})
+            </span>
+          </div>
+
+          <a v-bind:href='"https://www.google.com/maps?q=" + activePlaceDetail.lat + "," + activePlaceDetail.lng' target='_blank' class='p-3 bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300 rounded-xl border border-brand-200 dark:border-brand-800 flex flex-col justify-center items-center hover:bg-brand-100 transition'>
+            <i class='fa-solid fa-diamond-turn-right text-base text-brand-600 mb-0.5'></i>
+            <span class='font-bold text-[11px]'>Mở Google Maps</span>
+          </a>
         </div>
 
-        <div class='relative flex py-2 items-center'>
-          <div class='flex-grow border-t border-slate-200 dark:border-slate-800'></div>
-          <span class='flex-shrink mx-3 text-[10px] font-bold uppercase text-slate-400'>HOẶC</span>
-          <div class='flex-grow border-t border-slate-200 dark:border-slate-800'></div>
+        <!-- Tiện ích -->
+        <div v-if='activePlaceDetail.amenities &amp;&amp; activePlaceDetail.amenities.length'>
+          <h4 class='font-bold text-slate-800 dark:text-slate-200 mb-2'>Tiện ích tại địa điểm</h4>
+          <div class='flex flex-wrap gap-2'>
+            <span v-for='amKey in activePlaceDetail.amenities' v-bind:key='amKey' class='px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium flex items-center gap-1.5'>
+              <i class='fa-solid fa-check text-brand-600'></i> {{ getAmenityLabel(amKey) }}
+            </span>
+          </div>
         </div>
 
-        <button v-on:click='demoLogin' class='w-full mt-2 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-semibold text-xs flex items-center justify-center gap-2 transition border border-slate-200 dark:border-slate-700'>
-          <i class='fa-brands fa-google text-rose-500'></i> Đăng nhập Chế độ Trải nghiệm
-        </button>
-        <p class='text-[10px] text-slate-400 text-center mt-2'>Thử nghiệm đầy đủ quyền đăng bài, ứng tuyển 1-click, lưu tin và bình luận ngay lập tức.</p>
+        <!-- Giới thiệu / Hướng dẫn -->
+        <div>
+          <h4 class='font-bold text-slate-800 dark:text-slate-200 mb-1.5'>Giới thiệu chi tiết</h4>
+          <p class='text-slate-600 dark:text-slate-300 leading-relaxed bg-slate-50 dark:bg-slate-800/40 p-3.5 rounded-2xl border border-slate-100 dark:border-slate-800'>
+            {{ activePlaceDetail.description || 'Địa điểm được xác thực và đóng góp bởi cộng đồng Tây Ninh Go.' }}
+          </p>
+        </div>
+
+        <!-- KHU VỰC ĐÁNH GIÁ & BÌNH LUẬN (REVIEWS) -->
+        <div class='border-t border-slate-100 dark:border-slate-800 pt-4 space-y-4'>
+          <h4 class='font-bold text-sm text-slate-800 dark:text-slate-100 flex items-center gap-2'>
+            <i class='fa-regular fa-comments text-brand-600'></i> Đánh giá &amp; Trải nghiệm thực tế ({{ activePlaceReviews.length }})
+          </h4>
+
+          <!-- Form viết đánh giá mới -->
+          <form v-on:submit.prevent='submitReview' class='bg-slate-50 dark:bg-slate-800/60 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-3'>
+            <div class='flex items-center justify-between'>
+              <span class='font-semibold'>Chấm điểm của bạn:</span>
+              <div class='flex items-center gap-1 text-base text-slate-300 cursor-pointer'>
+                <i v-for='star in 5' v-bind:key='star' v-on:click='newReviewRating = star' v-bind:class='star &lt;= newReviewRating ? "fa-solid fa-star text-amber-400" : "fa-regular fa-star hover:text-amber-300"' class='transition-colors'></i>
+              </div>
+            </div>
+
+            <textarea v-model='newReviewComment' rows='2' required='required' placeholder='Chia sẻ cảm nhận về món ăn, thái độ phục vụ, mức giá hoặc kinh nghiệm đến đây...' class='w-full px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 outline-none focus:border-brand-500 text-xs'></textarea>
+
+            <div class='flex items-center justify-between'>
+              <span class='text-[11px] text-slate-400'>
+                Đăng nhập với tư cách: <b>{{ currentUser ? currentUser.displayName : 'Khách ẩn danh' }}</b>
+              </span>
+              <button type='submit' v-bind:disabled='submittingReview' class='px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold flex items-center gap-1.5 transition disabled:opacity-50'>
+                <i class='fa-solid fa-paper-plane'></i> Gửi đánh giá
+              </button>
+            </div>
+          </form>
+
+          <!-- Danh sách nhận xét -->
+          <div class='space-y-2.5 max-h-52 overflow-y-auto custom-scrollbar'>
+            <div v-if='activePlaceReviews.length === 0' class='text-center py-4 text-slate-400'>
+              Chưa có đánh giá nào. Hãy là người đầu tiên trải nghiệm và chia sẻ!
+            </div>
+            <div v-for='rev in activePlaceReviews' v-bind:key='rev.id' class='p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700'>
+              <div class='flex items-center justify-between mb-1'>
+                <span class='font-bold text-slate-800 dark:text-slate-100'>{{ rev.authorName || 'Người dùng Tây Ninh' }}</span>
+                <div class='flex items-center text-amber-400 text-[10px]'>
+                  <i v-for='s in rev.rating' v-bind:key='s' class='fa-solid fa-star'></i>
+                </div>
+              </div>
+              <p class='text-slate-600 dark:text-slate-300'>{{ rev.comment }}</p>
+              <span class='text-[10px] text-slate-400 mt-1 block'>{{ rev.timeAgo || 'Vừa xong' }}</span>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TOAST THÔNG BÁO -->
+    <div class='fixed bottom-4 right-4 z-50 space-y-2'>
+      <div v-for='t in toasts' v-bind:key='t.id' class='px-4 py-2.5 rounded-xl bg-slate-900/95 dark:bg-white/95 text-white dark:text-slate-900 text-xs shadow-xl flex items-center gap-2 border border-slate-700'>
+        <i class='fa-solid fa-circle-check text-emerald-400'></i>
+        <span>{{ t.message }}</span>
       </div>
     </div>
 
   </div>
+
   <!-- Blogger Standard Section Required by Engine -->
   <div style='display:none;'>
     <b:section class='main' id='main' showaddelement='yes'>
@@ -635,7 +590,7 @@
     </b:section>
   </div>
 
-  <!-- FIREBASE MODULAR SDK V10 &amp; APPLICATION SCRIPT -->
+  <!-- FIREBASE MODULAR SDK V10 & APPLICATION SCRIPT -->
   <script type='module'>
     //<![CDATA[
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js';
@@ -659,690 +614,724 @@
       doc, 
       setDoc, 
       updateDoc, 
-      increment, 
       serverTimestamp 
     } from 'https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js';
 
     // CẤU HÌNH FIREBASE PROJECT: Blogger
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyB36E4W7BG8ZLQnfBLeZu-pVtf4TVDqLUQ",
-    authDomain: "fir-1b417.firebaseapp.com",
-    projectId: "fir-1b417",
-    storageBucket: "fir-1b417.firebasestorage.app",
-    messagingSenderId: "593916869236",
-    appId: "1:593916869236:web:e7c6233011227b80f72f21",
-    measurementId: "G-9604F39B4E"
-  };
+    const firebaseConfig = {
+      apiKey: "AIzaSyB36E4W7BG8ZLQnfBLeZu-pVtf4TVDqLUQ",
+      authDomain: "fir-1b417.firebaseapp.com",
+      projectId: "fir-1b417",
+      storageBucket: "fir-1b417.firebasestorage.app",
+      messagingSenderId: "593916869236",
+      appId: "1:593916869236:web:e7c6233011227b80f72f21",
+      measurementId: "G-9604F39B4E"
+    };
 
-    // Google Apps Script Web App URL
-    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzDummyBloggerWebDeploymentIdForTayNinhInfo/exec";
-
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    const { createApp, ref, computed, onMounted } = Vue;
+    const { createApp, ref, computed, onMounted, watch } = Vue;
+
+    // TÂM BẢN ĐỒ MẶC ĐỊNH: TÒA HÀNH CHÍNH TP. TÂY NINH
+    const DEFAULT_LAT = 11.3117;
+    const DEFAULT_LNG = 106.0988;
+
+    // DỮ LIỆU BAN ĐẦU SẴN SÀNG CHO TÂY NINH (LOCAL DIRECTORY HUBS)
+    const SEED_PLACES = [
+      {
+        id: 'seed-1',
+        name: 'Núi Bà Đen - Đỉnh Núi Huyền Thoại',
+        category: 'Ẩm thực & Giải trí',
+        subCategory: 'Điểm check-in du lịch',
+        address: 'Thạnh Tân, TP. Tây Ninh, Tây Ninh',
+        lat: 11.3789,
+        lng: 106.1689,
+        openHours: '05:00 - 22:00',
+        phone: '02763536666',
+        priceLevel: 'tầm trung',
+        rating: 4.9,
+        amenities: ['parking', 'card', 'aircon', 'wifi'],
+        imageUrl: 'https://images.unsplash.com/photo-1596401057633-54a8fe8ef647?auto=format&fit=crop&w=600&q=80',
+        description: 'Nóc nhà Đông Nam Bộ với tượng Phật Bà Tây Bổ Đà Sơn và hệ thống cáp treo Sun World hiện đại bậc nhất.',
+        status: 'approved'
+      },
+      {
+        id: 'seed-2',
+        name: 'Tòa Thánh Tây Ninh',
+        category: 'Ẩm thực & Giải trí',
+        subCategory: 'Điểm check-in du lịch',
+        address: 'Phạm Hộ Pháp, Thị xã Hòa Thành, Tây Ninh',
+        lat: 11.3006,
+        lng: 106.1368,
+        openHours: '06:00 - 20:00',
+        phone: '',
+        priceLevel: 'bình dân',
+        rating: 4.8,
+        amenities: ['parking'],
+        imageUrl: 'https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=600&q=80',
+        description: 'Trung tâm tôn giáo Cao Đài nổi tiếng với kiến trúc độc đáo, uy nghiêm và lễ hội đón tiếp hàng triệu du khách.',
+        status: 'approved'
+      },
+      {
+        id: 'seed-3',
+        name: 'Bánh Canh Trảng Bàng Năm Dung',
+        category: 'Ẩm thực & Giải trí',
+        subCategory: 'Quán ăn đặc sản',
+        address: '90 Nguyễn Du, Thị xã Trảng Bàng, Tây Ninh',
+        lat: 11.0331,
+        lng: 106.3538,
+        openHours: '06:00 - 21:00',
+        phone: '02763882245',
+        priceLevel: 'bình dân',
+        rating: 4.7,
+        amenities: ['parking', 'card', 'delivery'],
+        imageUrl: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80',
+        description: 'Đặc sản bánh canh Trảng Bàng gia truyền sợi dẻo mềm, nước dùng thanh ngọt cùng đĩa thịt luộc và rau rừng Tây Ninh.',
+        status: 'approved'
+      },
+      {
+        id: 'seed-4',
+        name: 'Bò Tơ Tây Ninh Năm Sánh',
+        category: 'Ẩm thực & Giải trí',
+        subCategory: 'Nhà hàng',
+        address: 'Quốc Lộ 22B, Hiệp Tân, Hòa Thành, Tây Ninh',
+        lat: 11.2721,
+        lng: 106.1215,
+        openHours: '09:00 - 22:30',
+        phone: '0937777777',
+        priceLevel: 'tầm trung',
+        rating: 4.6,
+        amenities: ['parking', 'card', 'aircon', 'wifi'],
+        imageUrl: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80',
+        description: 'Bò tơ tươi nướng than hoa, bóp thấu, lẩu đuôi bò đậm đà đặc sản Tây Ninh.',
+        status: 'approved'
+      },
+      {
+        id: 'seed-5',
+        name: 'Bệnh Viện Đa Khoa Tây Ninh',
+        category: 'Dịch vụ thiết yếu',
+        subCategory: 'Y tế (bệnh viện / nhà thuốc)',
+        address: '626 Đường 30 Tháng 4, Phường 3, TP. Tây Ninh',
+        lat: 11.3142,
+        lng: 106.1045,
+        openHours: '24/7',
+        phone: '02763822145',
+        priceLevel: 'bình dân',
+        rating: 4.5,
+        amenities: ['parking', 'card', 'aircon'],
+        imageUrl: '',
+        description: 'Bệnh viện tuyến đầu của tỉnh, cấp cứu và khám chữa bệnh 24/7 với trang thiết bị hiện đại.',
+        status: 'approved'
+      },
+      {
+        id: 'seed-6',
+        name: 'Cứu Hộ & Sửa Xe Máy - Ô Tô Tây Ninh 24/7',
+        category: 'Dịch vụ thiết yếu',
+        subCategory: 'Sửa xe',
+        address: 'Ngã tư Tân Bình, TP. Tây Ninh',
+        lat: 11.3320,
+        lng: 106.1020,
+        openHours: '24/7',
+        phone: '0988123456',
+        priceLevel: 'bình dân',
+        rating: 4.8,
+        amenities: ['delivery'],
+        imageUrl: '',
+        description: 'Đội cứu hộ săm lốp, bình ắc quy, sửa chữa lưu động nhanh chóng trên các tuyến quốc lộ Tây Ninh.',
+        status: 'approved'
+      },
+      {
+        id: 'seed-7',
+        name: 'Trung Tâm Phục Vụ Hành Chính Công Tỉnh Tây Ninh',
+        category: 'Hành chính công',
+        subCategory: 'Danh bạ cơ quan nhà nước',
+        address: 'Số 83 Đường Phạm Tung, Phường 3, TP. Tây Ninh',
+        lat: 11.3168,
+        lng: 106.0965,
+        openHours: '07:30 - 17:00',
+        phone: '02763888888',
+        priceLevel: 'bình dân',
+        rating: 4.9,
+        amenities: ['parking', 'aircon', 'wifi'],
+        imageUrl: '',
+        description: 'Tiếp nhận và giải quyết thủ tục hành chính một cửa cấp tỉnh, hỗ trợ dịch vụ công trực tuyến nhanh chóng.',
+        status: 'approved'
+      },
+      {
+        id: 'seed-8',
+        name: 'Tổng Đài Cấp Cứu & Đường Dây Nóng Khẩn Cấp 113 - 114 - 115',
+        category: 'Hành chính công',
+        subCategory: 'Số điện thoại đường dây nóng',
+        address: 'Toàn tỉnh Tây Ninh',
+        lat: 11.3117,
+        lng: 106.0988,
+        openHours: '24/7',
+        phone: '115',
+        priceLevel: 'bình dân',
+        rating: 5.0,
+        amenities: [],
+        imageUrl: '',
+        description: 'Đường dây nóng khẩn cấp: 113 (Công an an ninh), 114 (Cứu hỏa PCCC), 115 (Cấp cứu y tế). Trực 24/24 tiếp nhận phản ánh.',
+        status: 'approved'
+      }
+    ];
 
     createApp({
       setup() {
-        const isDark = ref(false);
+        const isDark = ref(localStorage.getItem('tayninh_dark') === 'true');
+        const viewMode = ref('split'); // 'split' | 'grid'
+        const loading = ref(true);
         const toasts = ref([]);
-        const popup = ref({
-          show: false,
-          title: '',
-          message: '',
-          type: 'info',
-          confirmText: 'Đã hiểu',
-          showCancel: false,
-          cancelText: 'Hủy',
-          onConfirm: null
-        });
-        const showConfigModal = ref(false);
-        const customApiKey = ref(localStorage.getItem('tayninh_firebase_api_key') || '');
-
-        const showToast = (message, type = 'info', title = '') => {
-          const id = Date.now() + Math.random();
-          toasts.value.push({ id, message, type, title });
-          setTimeout(() => {
-            toasts.value = toasts.value.filter(t => t.id !== id);
-          }, 3500);
-        };
-
-        const removeToast = (id) => {
-          toasts.value = toasts.value.filter(t => t.id !== id);
-        };
-
-        const showPopup = (title, message, type = 'info', confirmText = 'Đã hiểu', onConfirm = null, showCancel = false) => {
-          popup.value = {
-            show: true,
-            title,
-            message,
-            type,
-            confirmText,
-            showCancel,
-            cancelText: 'Hủy',
-            onConfirm
-          };
-        };
-
-        const handlePopupConfirm = () => {
-          if (popup.value.onConfirm && typeof popup.value.onConfirm === 'function') {
-            popup.value.onConfirm();
-          }
-          popup.value.show = false;
-        };
-
-        const demoLogin = () => {
-          const mockUser = {
-            uid: 'demo_user_ptquang',
-            displayName: 'Phạm Thanh Quang',
-            email: 'ptquang0968@gmail.com',
-            photoURL: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&h=120&q=80'
-          };
-          currentUser.value = mockUser;
-          localStorage.setItem('tayninh_demo_user', JSON.stringify(mockUser));
-          applyForm.value.fullName = mockUser.displayName;
-          applyForm.value.email = mockUser.email;
-          showConfigModal.value = false;
-          showToast('Chào mừng ' + mockUser.displayName + '!', 'success', 'Đăng nhập thành công');
-        };
-
-        const saveCustomApiKey = () => {
-          if (customApiKey.value.trim()) {
-            localStorage.setItem('tayninh_firebase_api_key', customApiKey.value.trim());
-            showToast('Đã lưu API Key! Đang tải lại trang...', 'success');
-            setTimeout(() => {
-              window.location.reload();
-            }, 800);
-          }
-        };
         const currentUser = ref(null);
         const userMenuOpen = ref(false);
-        const activeTab = ref('all');
-        const selectedCategory = ref('all');
-        const searchKeyword = ref('');
-        const loading = ref(false);
 
-        const sampleFallbackPosts = [
-          {
-            id: 'sp1',
-            title: 'Tây Ninh đón hơn 3 triệu lượt khách du lịch đầu năm 2026',
-            content: 'Khu du lịch Quốc gia Núi Bà Đen ghi nhận lượng du khách kỷ lục với các công trình tâm linh hoành tráng và tuyến cáp treo hiện đại. Tỉnh tiếp tục mở rộng các tuyến giao thông liên vùng kết nối TP.HCM và Mộc Bài.',
-            url: '#',
-            authorName: 'Ban Biên Tập TayNinhInfo',
-            authorPhoto: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&h=120&q=80',
-            createdAt: Date.now() - 3600000 * 2,
-            category: 'tintuc',
-            imageUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80',
-            isVerified: true,
-            likes: 42,
-            commentCount: 9
-          },
-          {
-            id: 'sp2',
-            title: 'Tuyển gấp 50 Kỹ thuật viên & Công nhân Vận hành KCN Phước Đông',
-            content: 'Nhà máy chế tạo công nghệ cao cần tuyển dụng nhân sự làm việc tại Trảng Bàng, Tây Ninh. Thu nhập 9 - 16 triệu/tháng, đầy đủ chế độ BHXH, xe đưa rước các huyện.',
-            salary: '9 - 16 Triệu',
-            location: 'KCN Phước Đông, Trảng Bàng',
-            url: '#',
-            authorName: 'HR KCN Phước Đông',
-            authorPhoto: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&w=120&h=120&q=80',
-            createdAt: Date.now() - 3600000 * 5,
-            category: 'tuyendung',
-            isJob: true,
-            isVerified: true,
-            likes: 18,
-            commentCount: 5
-          },
-          {
-            id: 'sp3',
-            title: 'Góc Review: Ẩm thực Bánh tráng phơi sương Trảng Bàng chính hiệu',
-            content: 'Chia sẻ địa chỉ các quán bánh tráng cuốn thịt luộc, rau rừng chuẩn vị truyền thống Tây Ninh cho du khách và người dân địa phương tham khảo.',
-            url: '#',
-            authorName: 'Ẩm Thực Tây Ninh',
-            authorPhoto: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&h=120&q=80',
-            createdAt: Date.now() - 3600000 * 12,
-            category: 'diadiem',
-            imageUrl: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80',
-            isVerified: true,
-            likes: 67,
-            commentCount: 14
-          }
+        // Geolocation người dùng
+        const userCoords = ref(null);
+        const isLocating = ref(false);
+
+        // Danh sách địa điểm
+        const places = ref([]);
+        const selectedPlace = ref(null);
+        const activePlaceDetail = ref(null);
+        const activePlaceReviews = ref([]);
+
+        // Bộ lọc
+        const searchKeyword = ref('');
+        const activeCategory = ref('all');
+        const activeSubcategory = ref('');
+        const filterOpenNow = ref('all');
+        const filterDistance = ref('all');
+        const filterPrice = ref('all');
+        const selectedAmenities = ref([]);
+
+        // Form đóng góp địa điểm
+        const showContributeModal = ref(false);
+        const submittingPlace = ref(false);
+        const newPlaceForm = ref({
+          name: '',
+          category: 'Ẩm thực & Giải trí',
+          subCategory: 'Quán ăn đặc sản',
+          address: '',
+          lat: DEFAULT_LAT,
+          lng: DEFAULT_LNG,
+          openHours: '07:00 - 22:00',
+          phone: '',
+          priceLevel: 'bình dân',
+          imageUrl: '',
+          amenities: ['parking', 'card'],
+          description: ''
+        });
+
+        // Form đánh giá
+        const newReviewRating = ref(5);
+        const newReviewComment = ref('');
+        const submittingReview = ref(false);
+
+        // Danh mục tiện ích
+        const availableAmenities = [
+          { key: 'parking', label: 'Chỗ đậu ô tô', icon: 'fa-solid fa-square-parking' },
+          { key: 'card', label: 'Thanh toán thẻ/QR', icon: 'fa-solid fa-credit-card' },
+          { key: 'aircon', label: 'Phòng máy lạnh', icon: 'fa-solid fa-snowflake' },
+          { key: 'wifi', label: 'Wifi miễn phí', icon: 'fa-solid fa-wifi' },
+          { key: 'delivery', label: 'Giao hàng tận nơi', icon: 'fa-solid fa-motorcycle' }
         ];
 
-        const posts = ref([...sampleFallbackPosts]);
-        const bookmarks = ref(JSON.parse(localStorage.getItem('tayninh_bookmarks') || '[]'));
-        const likedPostIds = ref(new Set(JSON.parse(localStorage.getItem('tayninh_likes') || '[]')));
+        // Leaflet Map instance
+        let mapInstance = null;
+        let markersGroup = null;
+        let userMarker = null;
 
-        const activeCommentPostId = ref(null);
-        const postComments = ref({});
-        const newCommentText = ref('');
+        // Tính khoảng cách Haversine (km)
+        const calculateDistance = (lat1, lon1, lat2, lon2) => {
+          const R = 6371; // km
+          const dLat = (lat2 - lat1) * Math.PI / 180;
+          const dLon = (lon2 - lon1) * Math.PI / 180;
+          const a = 
+            Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+          const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+          return Math.round(R * c * 10) / 10;
+        };
 
-        const showApplyModal = ref(false);
-        const selectedJobToApply = ref(null);
-        const submittingApply = ref(false);
-        const applyForm = ref({
-          fullName: '',
-          phone: '',
-          email: '',
-          note: '',
-          fileBase64: null,
-          fileName: ''
+        // Lấy danh mục con tương ứng
+        const currentSubcategories = computed(() => {
+          if (activeCategory.value === 'Ẩm thực & Giải trí') {
+            return ['Quán cà phê', 'Quán ăn đặc sản', 'Nhà hàng', 'Điểm check-in du lịch'];
+          }
+          if (activeCategory.value === 'Dịch vụ thiết yếu') {
+            return ['Sửa xe', 'Y tế (bệnh viện / nhà thuốc)', 'Ngân hàng & ATM', 'Trạm xăng', 'Dịch vụ công nghệ'];
+          }
+          if (activeCategory.value === 'Hành chính công') {
+            return ['Danh bạ cơ quan nhà nước', 'Số điện thoại đường dây nóng', 'Thủ tục hành chính nhanh'];
+          }
+          return ['Đặc sản', 'Du lịch', 'Cứu hộ 24/7', 'Y tế', 'Hành chính'];
         });
 
-        const showCreateModal = ref(false);
-        const submittingPost = ref(false);
-        const postForm = ref({
-          title: '',
-          category: 'tintuc',
-          salary: '',
-          location: '',
-          content: '',
-          imageBase64: null,
-          imageName: ''
+        // Kiểm tra đang mở cửa
+        const isOpenNow = (hoursStr) => {
+          if (!hoursStr) return true;
+          if (hoursStr.includes('24/7') || hoursStr.includes('24/24')) return true;
+          const parts = hoursStr.split('-');
+          if (parts.length !== 2) return true;
+          const now = new Date();
+          const curMinutes = now.getHours() * 60 + now.getMinutes();
+
+          const parseMin = (s) => {
+            const p = s.trim().split(':');
+            return parseInt(p[0]) * 60 + (p[1] ? parseInt(p[1]) : 0);
+          };
+          const start = parseMin(parts[0]);
+          const end = parseMin(parts[1]);
+          return curMinutes >= start && curMinutes <= end;
+        };
+
+        // Danh sách địa điểm đã lọc
+        const filteredPlaces = computed(() => {
+          return places.value.filter(p => {
+            // Danh mục chính
+            if (activeCategory.value !== 'all' && p.category !== activeCategory.value) {
+              return false;
+            }
+            // Danh mục con
+            if (activeSubcategory.value && p.subCategory !== activeSubcategory.value && !p.subCategory?.includes(activeSubcategory.value)) {
+              return false;
+            }
+            // Tìm kiếm
+            if (searchKeyword.value) {
+              const kw = searchKeyword.value.toLowerCase();
+              const matchName = p.name.toLowerCase().includes(kw);
+              const matchAddr = p.address && p.address.toLowerCase().includes(kw);
+              const matchSub = p.subCategory && p.subCategory.toLowerCase().includes(kw);
+              if (!matchName && !matchAddr && !matchSub) return false;
+            }
+            // Trạng thái mở cửa
+            if (filterOpenNow.value === 'open' && !isOpenNow(p.openHours)) {
+              return false;
+            }
+            // Mức giá
+            if (filterPrice.value !== 'all' && p.priceLevel !== filterPrice.value) {
+              return false;
+            }
+            // Khoảng cách
+            if (filterDistance.value !== 'all' && p.distanceKm !== undefined) {
+              if (p.distanceKm > parseFloat(filterDistance.value)) return false;
+            }
+            // Tiện ích
+            if (selectedAmenities.value.length > 0) {
+              const pAmenities = p.amenities || [];
+              const matchAll = selectedAmenities.value.every(am => pAmenities.includes(am));
+              if (!matchAll) return false;
+            }
+            return true;
+          }).sort((a, b) => {
+            // Sắp xếp ưu tiên theo khoảng cách nếu đã có GPS
+            if (a.distanceKm !== undefined && b.distanceKm !== undefined) {
+              return a.distanceKm - b.distanceKm;
+            }
+            return (b.rating || 5) - (a.rating || 5);
+          });
         });
 
-        const userStats = ref({
-          postsCount: 12,
-          reputation: 98
+        const hasActiveFilters = computed(() => {
+          return activeCategory.value !== 'all' || 
+                 activeSubcategory.value !== '' || 
+                 searchKeyword.value !== '' || 
+                 filterOpenNow.value !== 'all' || 
+                 filterDistance.value !== 'all' || 
+                 filterPrice.value !== 'all' || 
+                 selectedAmenities.value.length > 0;
         });
 
-        const categories = ref([
-          { id: 'all', name: 'Tất cả danh mục', icon: 'fa-solid fa-list', color: 'bg-slate-700' },
-          { id: 'tintuc', name: 'Tin tức Tây Ninh', icon: 'fa-solid fa-newspaper', color: 'bg-emerald-600', badge: 'Mới' },
-          { id: 'tuyendung', name: 'Tuyển dụng & Việc làm', icon: 'fa-solid fa-briefcase', color: 'bg-blue-600', badge: 'Hot' },
-          { id: 'raovat', name: 'Rao vặt - Mua bán', icon: 'fa-solid fa-tag', color: 'bg-amber-600' },
-          { id: 'diadiem', name: 'Địa điểm & Review', icon: 'fa-solid fa-map-location-dot', color: 'bg-rose-600' }
-        ]);
+        const resetFilters = () => {
+          activeCategory.value = 'all';
+          activeSubcategory.value = '';
+          searchKeyword.value = '';
+          filterOpenNow.value = 'all';
+          filterDistance.value = 'all';
+          filterPrice.value = 'all';
+          selectedAmenities.value = [];
+        };
 
-        const urgentJobs = ref([
-          { id: 'j1', title: 'Kỹ sư Vận hành Máy CNC', company: 'Tập đoàn KCN Phước Đông', salary: '12 - 18 Triệu', location: 'Gò Dầu, Tây Ninh' },
-          { id: 'j2', title: 'Nhân viên Xuất Nhập Khẩu', company: 'Logistics Mộc Bài Tây Ninh', salary: '10 - 15 Triệu', location: 'Bến Cầu, Tây Ninh' },
-          { id: 'j3', title: 'Quản trị viên Nhà hàng SunWorld', company: 'KDL Quốc gia Núi Bà Đen', salary: '9 - 14 Triệu', location: 'TP. Tây Ninh' }
-        ]);
+        const toggleAmenityFilter = (key) => {
+          const idx = selectedAmenities.value.indexOf(key);
+          if (idx > -1) selectedAmenities.value.splice(idx, 1);
+          else selectedAmenities.value.push(key);
+        };
 
-        const leaderboard = ref([
-          { id: 'u1', name: 'Trần Văn Hưng', points: 1450, avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&h=80&q=80' },
-          { id: 'u2', name: 'Lê Thị Mai Thảo', points: 1220, avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=80&h=80&q=80' },
-          { id: 'u3', name: 'Nguyễn Thành Đạt', points: 980, avatar: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&w=80&h=80&q=80' }
-        ]);
+        const getAmenityLabel = (key) => {
+          const item = availableAmenities.find(a => a.key === key);
+          return item ? item.label : key;
+        };
 
-        // Toggle Dark Theme
-        const toggleDarkMode = () => {
-          isDark.value = !isDark.value;
-          if (isDark.value) {
-            document.documentElement.classList.add('dark');
-            localStorage.setItem('theme', 'dark');
-          } else {
-            document.documentElement.classList.remove('dark');
-            localStorage.setItem('theme', 'light');
+        const getCategoryBadgeClass = (cat) => {
+          if (cat === 'Ẩm thực & Giải trí') return 'bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300';
+          if (cat === 'Dịch vụ thiết yếu') return 'bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300';
+          return 'bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300';
+        };
+
+        const selectMainCategory = (cat) => {
+          activeCategory.value = cat;
+          activeSubcategory.value = '';
+        };
+
+        // Khởi tạo bản đồ Leaflet
+        const initMap = () => {
+          const mapEl = document.getElementById('directoryMap');
+          if (!mapEl) return;
+
+          mapInstance = L.map('directoryMap', { zoomControl: false }).setView([DEFAULT_LAT, DEFAULT_LNG], 12);
+          L.control.zoom({ position: 'topright' }).addTo(mapInstance);
+
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap | Tây Ninh Go'
+          }).addTo(mapInstance);
+
+          markersGroup = L.layerGroup().addTo(mapInstance);
+
+          // Click trên bản đồ để lấy tọa độ vào form đóng góp
+          mapInstance.on('click', (e) => {
+            newPlaceForm.value.lat = parseFloat(e.latlng.lat.toFixed(6));
+            newPlaceForm.value.lng = parseFloat(e.latlng.lng.toFixed(6));
+            showToast(`Đã chọn tọa độ: ${newPlaceForm.value.lat}, ${newPlaceForm.value.lng}`);
+          });
+
+          renderMarkers();
+        };
+
+        // Render markers lên bản đồ
+        const renderMarkers = () => {
+          if (!markersGroup || !mapInstance) return;
+          markersGroup.clearLayers();
+
+          filteredPlaces.value.forEach(place => {
+            if (!place.lat || !place.lng) return;
+
+            // Marker icon màu sắc theo category
+            let color = '#059669';
+            if (place.category === 'Ẩm thực & Giải trí') color = '#e11d48';
+            if (place.category === 'Dịch vụ thiết yếu') color = '#2563eb';
+            if (place.category === 'Hành chính công') color = '#d97706';
+
+            const customIcon = L.divIcon({
+              className: 'custom-map-marker',
+              html: `<div style="background-color:${color};width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 3px 8px rgba(0,0,0,0.3);border:2px solid #fff;"><i class="fa-solid fa-location-dot" style="font-size:13px;"></i></div>`,
+              iconSize: [28, 28],
+              iconAnchor: [14, 28]
+            });
+
+            const marker = L.marker([place.lat, place.lng], { icon: customIcon });
+
+            const popupContent = `
+              <div style="font-family:sans-serif;padding:6px;min-width:200px;">
+                <span style="font-size:10px;font-weight:bold;padding:2px 6px;border-radius:4px;background:#e0f2fe;color:#0369a1;">${place.category}</span>
+                <h4 style="margin:4px 0 2px 0;font-size:14px;color:#1e293b;">${place.name}</h4>
+                <p style="margin:0 0 6px 0;font-size:11px;color:#64748b;">${place.address}</p>
+                <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid #f1f5f9;padding-top:6px;">
+                  <span style="color:#d97706;font-weight:bold;font-size:11px;">⭐ ${(place.rating || 5.0).toFixed(1)}</span>
+                  <a href="https://www.google.com/maps?q=${place.lat},${place.lng}" target="_blank" style="color:#059669;font-weight:bold;font-size:11px;text-decoration:none;">🗺️ Chỉ đường</a>
+                </div>
+              </div>
+            `;
+            marker.bindPopup(popupContent);
+            markersGroup.addLayer(marker);
+          });
+        };
+
+        // Chọn place từ card
+        const selectPlace = (place) => {
+          selectedPlace.value = place;
+          if (mapInstance && place.lat && place.lng) {
+            mapInstance.flyTo([place.lat, place.lng], 16, { duration: 0.8 });
           }
         };
 
-        // Firebase Auth Google
+        // Mở modal chi tiết & tải đánh giá
+        const openDetailModal = async (place) => {
+          activePlaceDetail.value = place;
+          activePlaceReviews.value = [];
+          try {
+            const q = query(
+              collection(db, 'place_reviews'), 
+              where('placeId', '==', place.id),
+              limit(20)
+            );
+            const snapshot = await getDocs(q);
+            activePlaceReviews.value = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          } catch (e) {
+            console.warn('Reviews fallback:', e);
+          }
+        };
+
+        // Gửi đánh giá cho địa điểm
+        const submitReview = async () => {
+          if (!activePlaceDetail.value) return;
+          submittingReview.value = true;
+          try {
+            const reviewData = {
+              placeId: activePlaceDetail.value.id,
+              authorName: currentUser.value ? currentUser.value.displayName : 'Cộng đồng Tây Ninh',
+              authorId: currentUser.value ? currentUser.value.uid : 'anon',
+              rating: newReviewRating.value,
+              comment: newReviewComment.value.trim(),
+              createdAt: serverTimestamp(),
+              timeAgo: 'Vừa xong'
+            };
+
+            await addDoc(collection(db, 'place_reviews'), reviewData);
+            activePlaceReviews.value.unshift(reviewData);
+
+            // Cập nhật rating trung bình
+            const totalRating = activePlaceReviews.value.reduce((acc, r) => acc + (r.rating || 5), 0);
+            activePlaceDetail.value.rating = Math.round((totalRating / activePlaceReviews.value.length) * 10) / 10;
+
+            newReviewComment.value = '';
+            showToast('Cảm ơn bạn! Đánh giá đã được ghi nhận.');
+          } catch (err) {
+            console.error('Error submitting review:', err);
+            showToast('Lỗi gửi đánh giá, vui lòng thử lại.');
+          } finally {
+            submittingReview.value = false;
+          }
+        };
+
+        // Vị trí người dùng (GPS Geolocation)
+        const getUserLocation = () => {
+          if (!navigator.geolocation) {
+            showToast('Trình duyệt không hỗ trợ định vị GPS.');
+            return;
+          }
+          isLocating.value = true;
+          navigator.geolocation.getCurrentPosition(
+            (pos) => {
+              isLocating.value = false;
+              const lat = pos.coords.latitude;
+              const lng = pos.coords.longitude;
+              userCoords.value = { lat, lng };
+
+              // Tính lại khoảng cách cho tất cả các địa điểm
+              places.value.forEach(p => {
+                if (p.lat && p.lng) {
+                  p.distanceKm = calculateDistance(lat, lng, p.lat, p.lng);
+                }
+              });
+
+              if (mapInstance) {
+                mapInstance.flyTo([lat, lng], 14, { duration: 1 });
+                if (userMarker) mapInstance.removeLayer(userMarker);
+
+                const userIcon = L.divIcon({
+                  className: 'user-location-marker',
+                  html: '<div style="background-color:#0284c7;width:20px;height:20px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 10px rgba(2,132,199,0.8);animation:pulse 2s infinite;"></div>',
+                  iconSize: [20, 20],
+                  iconAnchor: [10, 10]
+                });
+                userMarker = L.marker([lat, lng], { icon: userIcon }).addTo(mapInstance)
+                  .bindPopup('<b>Vị trí của bạn</b>')
+                  .openPopup();
+              }
+              showToast('Đã xác định vị trí của bạn!');
+            },
+            (err) => {
+              isLocating.value = false;
+              showToast('Không thể lấy vị trí. Vui lòng cấp quyền GPS.');
+            },
+            { enableHighAccuracy: true, timeout: 8000 }
+          );
+        };
+
+        const resetMapView = () => {
+          if (mapInstance) {
+            mapInstance.flyTo([DEFAULT_LAT, DEFAULT_LNG], 12, { duration: 0.8 });
+          }
+        };
+
+        // Mở Modal Đóng góp địa điểm
+        const openContributeModal = () => {
+          if (userCoords.value) {
+            newPlaceForm.value.lat = userCoords.value.lat;
+            newPlaceForm.value.lng = userCoords.value.lng;
+          }
+          showContributeModal.value = true;
+        };
+
+        // Gửi đóng góp địa điểm mới lên Firestore
+        const submitNewPlace = async () => {
+          submittingPlace.value = true;
+          try {
+            const payload = {
+              name: newPlaceForm.value.name.trim(),
+              category: newPlaceForm.value.category,
+              subCategory: newPlaceForm.value.subCategory.trim(),
+              address: newPlaceForm.value.address.trim(),
+              lat: parseFloat(newPlaceForm.value.lat),
+              lng: parseFloat(newPlaceForm.value.lng),
+              openHours: newPlaceForm.value.openHours.trim(),
+              phone: newPlaceForm.value.phone.trim(),
+              priceLevel: newPlaceForm.value.priceLevel,
+              imageUrl: newPlaceForm.value.imageUrl.trim(),
+              amenities: newPlaceForm.value.amenities,
+              description: newPlaceForm.value.description.trim(),
+              rating: 5.0,
+              status: 'pending', // Chờ kiểm duyệt
+              authorId: currentUser.value ? currentUser.value.uid : 'anon',
+              createdAt: serverTimestamp()
+            };
+
+            await addDoc(collection(db, 'places'), payload);
+
+            showToast('Đóng góp thành công! Địa điểm sẽ hiển thị ngay sau khi duyệt.');
+            showContributeModal.value = false;
+            // Reset form
+            newPlaceForm.value.name = '';
+            newPlaceForm.value.address = '';
+            newPlaceForm.value.description = '';
+          } catch (err) {
+            console.error('Lỗi khi gửi đóng góp:', err);
+            showToast('Lỗi gửi dữ liệu: ' + err.message);
+          } finally {
+            submittingPlace.value = false;
+          }
+        };
+
+        // Tải danh sách địa điểm (Firestore + Seed Data)
+        const loadPlaces = () => {
+          loading.value = true;
+          try {
+            const q = query(collection(db, 'places'), where('status', '==', 'approved'));
+            onSnapshot(q, (snapshot) => {
+              const livePlaces = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+              // Hợp nhất dữ liệu mẫu & dữ liệu đám mây Firestore
+              places.value = [...SEED_PLACES, ...livePlaces];
+              loading.value = false;
+              renderMarkers();
+            }, (err) => {
+              console.warn('Firestore places read error (using seed data):', err);
+              places.value = SEED_PLACES;
+              loading.value = false;
+              renderMarkers();
+            });
+          } catch (e) {
+            places.value = SEED_PLACES;
+            loading.value = false;
+            renderMarkers();
+          }
+        };
+
+        // Auth
         const loginGoogle = async () => {
           try {
-            if (firebaseConfig.apiKey.includes('Dummy')) { showConfigModal.value = true; return; }
             const provider = new GoogleAuthProvider();
             const res = await signInWithPopup(auth, provider);
-            const user = res.user;
-            await setDoc(doc(db, 'users', user.uid), {
-              uid: user.uid,
-              displayName: user.displayName,
-              email: user.email,
-              photoURL: user.photoURL,
-              lastLogin: serverTimestamp()
-            }, { merge: true });
+            currentUser.value = res.user;
+            showToast(`Chào mừng ${res.user.displayName}!`);
           } catch (err) {
-            console.error('Firebase Auth Error:', err);
-            if (err.code === 'auth/api-key-not-valid' || (err.message && err.message.includes('api-key-not-valid'))) {
-              showConfigModal.value = true;
-            } else {
-              showPopup('Lỗi Đăng Nhập', 'Không thể hoàn tất đăng nhập Google: ' + err.message, 'error');
-            }
+            console.error(err);
+            // Chế độ demo
+            currentUser.value = {
+              displayName: 'Người Dùng Tây Ninh',
+              email: 'ptquang0968@gmail.com',
+              uid: 'demo_user'
+            };
+            showToast('Đã đăng nhập chế độ trải nghiệm.');
           }
         };
 
         const logout = async () => {
           await signOut(auth);
+          currentUser.value = null;
           userMenuOpen.value = false;
+          showToast('Đã đăng xuất.');
         };
 
-        // Listen Auth State
-        onAuthStateChanged(auth, (user) => {
-          currentUser.value = user;
-          if (user) {
-            applyForm.value.fullName = user.displayName || '';
-            applyForm.value.email = user.email || '';
-          }
+        const toggleDarkMode = () => {
+          isDark.value = !isDark.value;
+          localStorage.setItem('tayninh_dark', isDark.value);
+          if (isDark.value) document.documentElement.classList.add('dark');
+          else document.documentElement.classList.remove('dark');
+        };
+
+        const showToast = (message) => {
+          const id = Date.now();
+          toasts.value.push({ id, message });
+          setTimeout(() => {
+            toasts.value = toasts.value.filter(t => t.id !== id);
+          }, 4000);
+        };
+
+        // Watchers
+        watch(filteredPlaces, () => {
+          renderMarkers();
         });
 
-        // Filter Posts
-        const filteredPosts = computed(() => {
-          let list = [...posts.value];
-          if (selectedCategory.value !== 'all') {
-            list = list.filter(p => p.category === selectedCategory.value);
+        watch(viewMode, (newMode) => {
+          if (newMode === 'split') {
+            setTimeout(() => {
+              if (mapInstance) mapInstance.invalidateSize();
+            }, 300);
           }
-          if (activeTab.value === 'tuyendung') {
-            list = list.filter(p => p.category === 'tuyendung' || p.isJob);
-          } else if (activeTab.value === 'thaoluan') {
-            list = list.filter(p => p.category === 'tintuc' || p.category === 'diadiem');
-          } else if (activeTab.value === 'bookmark') {
-            list = list.filter(p => bookmarks.value.includes(p.id));
-          }
-          if (searchKeyword.value.trim()) {
-            const kw = searchKeyword.value.toLowerCase();
-            list = list.filter(p => (p.title && p.title.toLowerCase().includes(kw)) || (p.content && p.content.toLowerCase().includes(kw)));
-          }
-          return list;
         });
-
-        const selectCategory = (catId) => {
-          selectedCategory.value = catId;
-          activeTab.value = 'all';
-        };
-
-        // Fetch Blogger Feed & Merge with Firestore
-        const loadInitialData = async () => {
-          loading.value = true;
-          const merged = [];
-
-          try {
-            // 1. Fetch Blogger Native Feed JSON
-            const feedRes = await fetch('/feeds/posts/default?alt=json&max-results=10');
-            if (feedRes.ok) {
-              const feedData = await feedRes.json();
-              if (feedData.feed && feedData.feed.entry) {
-                feedData.feed.entry.forEach(entry => {
-                  const title = entry.title.$t;
-                  const content = entry.content ? entry.content.$t.replace(/<[^>]*>?/gm, '').substring(0, 220) + '...' : '';
-                  const url = entry.link.find(l => l.rel === 'alternate')?.href || '#';
-                  const published = entry.published.$t;
-                  const id = 'blogger_' + entry.id.$t.split('post-')[1];
-                  const img = entry.media$thumbnail ? entry.media$thumbnail.url.replace('/s72-c/', '/s1600/') : null;
-
-                  merged.push({
-                    id,
-                    title,
-                    content,
-                    url,
-                    authorName: entry.author[0]?.name.$t || 'Ban Biên Tập Tây Ninh',
-                    authorPhoto: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&h=120&q=80',
-                    createdAt: new Date(published).getTime(),
-                    category: 'tintuc',
-                    imageUrl: img,
-                    isVerified: true,
-                    likes: 15,
-                    commentCount: 4
-                  });
-                });
-              }
-            }
-          } catch (e) {
-            console.warn('Blogger feed fetch skipped or offline, using live data.');
-          }
-
-          // 2. Fetch Realtime Firestore Community Posts
-          try {
-            const q = query(collection(db, 'posts'), orderBy('createdAt', 'desc'), limit(20));
-            onSnapshot(q, (snapshot) => {
-              const livePosts = [];
-              snapshot.forEach(docSnap => {
-                livePosts.push({ id: docSnap.id, ...docSnap.data() });
-              });
-
-              const all = [...livePosts, ...merged];
-              if (all.length > 0) {
-                posts.value = all.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-              }
-              loading.value = false;
-            }, (err) => {
-              console.warn('Firestore offline/permission fallback:', err.message);
-              if (merged.length > 0) {
-                posts.value = merged;
-              }
-              loading.value = false;
-            });
-          } catch (err) {
-            console.error('Firestore sync error:', err);
-            if (merged.length > 0) {
-              posts.value = merged;
-            }
-            loading.value = false;
-          }
-        };
-
-        // Likes & Bookmarks
-        const isPostLiked = (post) => likedPostIds.value.has(post.id);
-        const toggleLike = async (post) => {
-          if (!currentUser.value) {
-            showToast('Vui lòng đăng nhập để thả tim bài viết!', 'warning', 'Yêu cầu đăng nhập');
-            return;
-          }
-          if (likedPostIds.value.has(post.id)) {
-            likedPostIds.value.delete(post.id);
-            post.likes = Math.max(0, (post.likes || 1) - 1);
-          } else {
-            likedPostIds.value.add(post.id);
-            post.likes = (post.likes || 0) + 1;
-            // Update Firestore meta
-            try {
-              const refDoc = doc(db, 'posts_meta', post.id);
-              await setDoc(refDoc, { likes: increment(1) }, { merge: true });
-            } catch (e) {}
-          }
-          localStorage.setItem('tayninh_likes', JSON.stringify([...likedPostIds.value]));
-        };
-
-        const isBookmarked = (id) => bookmarks.value.includes(id);
-        const toggleBookmark = (post) => {
-          const idx = bookmarks.value.indexOf(post.id);
-          if (idx >= 0) {
-            bookmarks.value.splice(idx, 1);
-          } else {
-            bookmarks.value.push(post.id);
-          }
-          localStorage.setItem('tayninh_bookmarks', JSON.stringify(bookmarks.value));
-        };
-
-        const sharePost = (post) => {
-          if (navigator.share) {
-            navigator.share({
-              title: post.title || 'Bài viết từ TayNinhInfo',
-              text: post.content,
-              url: post.url || window.location.href
-            }).catch(() => {});
-          } else {
-            navigator.clipboard.writeText(post.url || window.location.href);
-            showToast('Đã sao chép liên kết bài viết vào clipboard!', 'success', 'Chia sẻ');
-          }
-        };
-
-        // Comments System
-        const toggleCommentSection = (postId) => {
-          if (activeCommentPostId.value === postId) {
-            activeCommentPostId.value = null;
-          } else {
-            activeCommentPostId.value = postId;
-            loadComments(postId);
-          }
-        };
-
-        const loadComments = (postId) => {
-          const q = query(collection(db, 'comments'), where('postId', '==', postId), orderBy('createdAt', 'asc'));
-          onSnapshot(q, (snapshot) => {
-            const list = [];
-            snapshot.forEach(docSnap => list.push({ id: docSnap.id, ...docSnap.data() }));
-            postComments.value[postId] = list;
-          });
-        };
-
-        const submitComment = async (postId) => {
-          if (!currentUser.value) {
-            showToast('Vui lòng đăng nhập để gửi bình luận!', 'warning', 'Yêu cầu đăng nhập');
-            return;
-          }
-          if (!newCommentText.value.trim()) return;
-
-          try {
-            await addDoc(collection(db, 'comments'), {
-              postId: postId,
-              authorId: currentUser.value.uid,
-              authorName: currentUser.value.displayName,
-              authorPhoto: currentUser.value.photoURL,
-              text: newCommentText.value.trim(),
-              createdAt: Date.now()
-            });
-            newCommentText.value = '';
-          } catch (err) {
-            showToast('Không thể gửi bình luận: ' + err.message, 'error', 'Lỗi');
-          }
-        };
-
-        // 1-Click Apply Flow
-        const openApplyModal = (job) => {
-          selectedJobToApply.value = job;
-          showApplyModal.value = true;
-        };
-
-        const handleFileUpload = (e) => {
-          const file = e.target.files[0];
-          if (!file) return;
-          applyForm.value.fileName = file.name;
-          const reader = new FileReader();
-          reader.onload = (evt) => {
-            applyForm.value.fileBase64 = evt.target.result;
-          };
-          reader.readAsDataURL(file);
-        };
-
-        const submitApplication = async () => {
-          submittingApply.value = true;
-          try {
-            // 1. Lưu vào Firestore
-            const docRef = await addDoc(collection(db, 'job_applications'), {
-              jobId: selectedJobToApply.value.id,
-              jobTitle: selectedJobToApply.value.title,
-              userId: currentUser.value ? currentUser.value.uid : 'anonymous',
-              fullName: applyForm.value.fullName,
-              phone: applyForm.value.phone,
-              email: applyForm.value.email,
-              note: applyForm.value.note,
-              hasFile: !!applyForm.value.fileBase64,
-              createdAt: Date.now()
-            });
-
-            // 2. Gửi file đính kèm & kích hoạt email qua Google Apps Script
-            if (GAS_WEB_APP_URL && !GAS_WEB_APP_URL.includes('Dummy')) {
-              await fetch(GAS_WEB_APP_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  action: 'apply_job',
-                  jobTitle: selectedJobToApply.value.title,
-                  fullName: applyForm.value.fullName,
-                  phone: applyForm.value.phone,
-                  email: applyForm.value.email,
-                  note: applyForm.value.note,
-                  fileBase64: applyForm.value.fileBase64,
-                  fileName: applyForm.value.fileName
-                })
-              });
-            }
-
-            showPopup('Ứng Tuyển Thành Công!', 'Hồ sơ của bạn đã được gửi đến nhà tuyển dụng. Họ sẽ sớm liên hệ lại qua SĐT/Email.', 'success');
-            showApplyModal.value = false;
-            applyForm.value.note = '';
-          } catch (err) {
-            showPopup('Lỗi Nộp Hồ Sơ', 'Không thể gửi hồ sơ: ' + err.message, 'error');
-          } finally {
-            submittingApply.value = false;
-          }
-        };
-
-        // Quick Post Flow
-        const openCreatePostModal = (cat) => {
-          if (!currentUser.value) {
-            showPopup('Yêu Cầu Đăng Nhập', 'Vui lòng đăng nhập bằng Google để xác minh danh tính khi đăng tin.', 'warning', 'Đăng nhập ngay', () => loginGoogle());
-            return;
-          }
-          postForm.value.category = cat || 'tintuc';
-          showCreateModal.value = true;
-        };
-
-        const handlePostImageUpload = (e) => {
-          const file = e.target.files[0];
-          if (!file) return;
-          postForm.value.imageName = file.name;
-          const reader = new FileReader();
-          reader.onload = (evt) => {
-            postForm.value.imageBase64 = evt.target.result;
-          };
-          reader.readAsDataURL(file);
-        };
-
-        const submitPost = async () => {
-          submittingPost.value = true;
-          try {
-            let uploadedImageUrl = null;
-
-            // Đẩy ảnh lên Google Drive qua GAS Web App
-            if (postForm.value.imageBase64 && GAS_WEB_APP_URL && !GAS_WEB_APP_URL.includes('Dummy')) {
-              try {
-                const res = await fetch(GAS_WEB_APP_URL, {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({
-                    action: 'upload_image',
-                    fileBase64: postForm.value.imageBase64,
-                    fileName: postForm.value.imageName
-                  })
-                });
-                const data = await res.json();
-                if (data && data.fileUrl) {
-                  uploadedImageUrl = data.fileUrl;
-                }
-              } catch (e) {
-                console.warn('Lưu ảnh Google Drive thất bại, dùng Base64 trực tiếp');
-                uploadedImageUrl = postForm.value.imageBase64;
-              }
-            }
-
-            // Ghi vào Firestore
-            await addDoc(collection(db, 'posts'), {
-              title: postForm.value.title,
-              content: postForm.value.content,
-              category: postForm.value.category,
-              salary: postForm.value.salary || null,
-              location: postForm.value.location || null,
-              imageUrl: uploadedImageUrl,
-              authorId: currentUser.value.uid,
-              authorName: currentUser.value.displayName,
-              authorPhoto: currentUser.value.photoURL,
-              isVerified: true,
-              likes: 1,
-              commentCount: 0,
-              createdAt: Date.now()
-            });
-
-            // Đồng bộ sang bài viết Blogger qua Google Apps Script (Blogger API v3)
-            if (GAS_WEB_APP_URL && !GAS_WEB_APP_URL.includes('Dummy')) {
-              fetch(GAS_WEB_APP_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  action: 'create_blogger_post',
-                  title: postForm.value.title,
-                  content: `<p>${postForm.value.content}</p>${uploadedImageUrl ? `<img src="${uploadedImageUrl}"/>` : ''}`,
-                  labels: ['TayNinhInfo', postForm.value.category],
-                  isDraft: false
-                })
-              });
-            }
-
-            showToast('Bài viết của bạn đã được đăng thành công!', 'success', 'Hoàn tất');
-            showCreateModal.value = false;
-            postForm.value = { title: '', category: 'tintuc', salary: '', location: '', content: '', imageBase64: null, imageName: '' };
-          } catch (err) {
-            showPopup('Lỗi Đăng Bài', 'Không thể xuất bản bài viết: ' + err.message, 'error');
-          } finally {
-            submittingPost.value = false;
-          }
-        };
-
-        const formatRelativeTime = (timestamp) => {
-          if (!timestamp) return 'Vừa xong';
-          const diff = Math.floor((Date.now() - Number(timestamp)) / 1000);
-          if (diff < 60) return 'Vừa xong';
-          if (diff < 3600) return Math.floor(diff / 60) + ' phút trước';
-          if (diff < 86400) return Math.floor(diff / 3600) + ' giờ trước';
-          return Math.floor(diff / 86400) + ' ngày trước';
-        };
-
-        const searchPosts = () => {
-          // Handled reactively by filteredPosts
-        };
-
-        const onSearchKey = (e) => {
-          if (e.key === 'Enter') {
-            searchPosts();
-          }
-        };
-
-        const onCommentKey = (e, postId) => {
-          if (e.key === 'Enter') {
-            submitComment(postId);
-          }
-        };
 
         onMounted(() => {
-          const savedTheme = localStorage.getItem('theme');
-          if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            isDark.value = true;
-            document.documentElement.classList.add('dark');
-          }
-          loadInitialData();
+          if (isDark.value) document.documentElement.classList.add('dark');
+          onAuthStateChanged(auth, (user) => {
+            currentUser.value = user;
+          });
+          loadPlaces();
+          setTimeout(() => {
+            initMap();
+          }, 200);
         });
 
         return {
           isDark,
-          toggleDarkMode,
+          viewMode,
+          loading,
+          toasts,
           currentUser,
           userMenuOpen,
+          userCoords,
+          isLocating,
+          places,
+          selectedPlace,
+          activePlaceDetail,
+          activePlaceReviews,
+          searchKeyword,
+          activeCategory,
+          activeSubcategory,
+          currentSubcategories,
+          filterOpenNow,
+          filterDistance,
+          filterPrice,
+          selectedAmenities,
+          availableAmenities,
+          filteredPlaces,
+          hasActiveFilters,
+          showContributeModal,
+          submittingPlace,
+          newPlaceForm,
+          newReviewRating,
+          newReviewComment,
+          submittingReview,
+          selectMainCategory,
+          toggleAmenityFilter,
+          getAmenityLabel,
+          getCategoryBadgeClass,
+          isOpenNow,
+          resetFilters,
+          selectPlace,
+          openDetailModal,
+          submitReview,
+          getUserLocation,
+          resetMapView,
+          openContributeModal,
+          submitNewPlace,
           loginGoogle,
           logout,
-          userStats,
-          categories,
-          selectedCategory,
-          selectCategory,
-          activeTab,
-          searchKeyword,
-          loading,
-          filteredPosts,
-          bookmarks,
-          isPostLiked,
-          toggleLike,
-          isBookmarked,
-          toggleBookmark,
-          sharePost,
-          activeCommentPostId,
-          toggleCommentSection,
-          postComments,
-          newCommentText,
-          submitComment,
-          urgentJobs,
-          leaderboard,
-          showApplyModal,
-          selectedJobToApply,
-          submittingApply,
-          applyForm,
-          openApplyModal,
-          handleFileUpload,
-          submitApplication,
-          showCreateModal,
-          submittingPost,
-          postForm,
-          openCreatePostModal,
-          handlePostImageUpload,
-          submitPost,
-          formatRelativeTime,
-          searchPosts,
-          onSearchKey,
-          onCommentKey,
-          toasts,
-          popup,
-          showToast,
-          removeToast,
-          showPopup,
-          handlePopupConfirm,
-          showConfigModal,
-          customApiKey,
-          demoLogin,
-          saveCustomApiKey
+          toggleDarkMode
         };
       }
     }).mount('#app');
