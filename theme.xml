@@ -1,37 +1,57 @@
-﻿<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE html>
 <html b:css='false' b:defaultwidgetversion='2' b:layoutsversion='3' expr:dir='data:blog.languageDirection' lang='vi' xmlns='http://www.w3.org/1999/xhtml' xmlns:b='http://www.google.com/2005/gml/b' xmlns:data='http://www.google.com/2005/gml/data' xmlns:expr='http://www.google.com/2005/gml/expr' xmlns:v-on='http://vuejs.org' xmlns:v-bind='http://vuejs.org'>
 <head>
   <meta charset='utf-8'/>
   <meta content='width=device-width, initial-scale=1.0' name='viewport'/>
-  <title><data:blog.pageTitle/> - Tây Ninh Go: Cổng Thông Tin Địa Phương &amp; Bản Đồ Số</title>
+  <title><data:blog.pageTitle/> - Tây Ninh Go: Cổng Thông Tin Địa Phương &amp; Bản Đồ Dịch Vụ</title>
   <b:include data='blog' name='all-head-content'/>
 
-  <!-- CDNs: Tailwind CSS, FontAwesome 6, Vue 3, Leaflet.js -->
-  <script src='https://cdn.tailwindcss.com'></script>
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel='preconnect' href='https://fonts.googleapis.com'/>
+  <link rel='preconnect' href='https://fonts.gstatic.com' crossorigin=''/>
+  <link href='https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap' rel='stylesheet'/>
+
+  <!-- Tailwind CSS 3 CDN with Plugins (Forms, Typography, Aspect-ratio, Line-clamp) -->
+  <script src='https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp'></script>
   <script>
     tailwind.config = {
       darkMode: 'class',
       theme: {
         extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif']
+          },
           colors: {
             brand: {
               50: '#ecfdf5',
               100: '#d1fae5',
+              200: '#a7f3d0',
+              300: '#6ee7b7',
+              400: '#34d399',
               500: '#10b981',
               600: '#059669',
               700: '#047857',
-              800: '#065f46'
+              800: '#065f46',
+              900: '#064e3b',
+              950: '#022c22'
             }
+          },
+          boxShadow: {
+            'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+            'card': '0 2px 10px rgba(0, 0, 0, 0.04), 0 10px 25px -5px rgba(0, 0, 0, 0.05)',
+            'floating': '0 20px 35px -10px rgba(0, 0, 0, 0.15)'
           }
         }
       }
     }
   </script>
+
+  <!-- FontAwesome 6 & Vue 3 -->
   <link href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css' rel='stylesheet'/>
   <script src='https://unpkg.com/vue@3/dist/vue.global.prod.js'></script>
   
-  <!-- Leaflet CSS &amp; JS -->
+  <!-- Leaflet CSS & JS -->
   <link rel='stylesheet' href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'/>
   <script src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'></script>
 
@@ -39,7 +59,7 @@
     body {
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     }
     .custom-scrollbar::-webkit-scrollbar {
       width: 6px;
@@ -53,9 +73,9 @@
       border-radius: 9999px;
     }
     .leaflet-popup-content-wrapper {
-      border-radius: 12px;
-      padding: 4px;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
+      border-radius: 1rem;
+      padding: 6px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
     }
   ]]></b:skin>
 </head>
@@ -63,7 +83,7 @@
 
   <div id='app' class='flex flex-col h-screen overflow-hidden'>
     
-    <!-- 1. HEADER / NAVBAR -->
+    <!-- 1. HEADER / NAVBAR (TAILWIND CSS) -->
     <header class='flex-shrink-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors'>
       <div class='max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-3'>
         
@@ -75,16 +95,16 @@
             </div>
             <div>
               <span class='font-black text-lg bg-gradient-to-r from-brand-700 to-emerald-500 dark:from-brand-500 dark:to-emerald-400 bg-clip-text text-transparent leading-none'>Tây Ninh Go</span>
-              <span class='block text-[10px] font-semibold text-slate-500 dark:text-slate-400 tracking-wider uppercase'>Local Info &amp; Directory Hub</span>
+              <span class='block text-[10px] font-semibold text-slate-500 dark:text-slate-400 tracking-wider uppercase'>Cổng Thông Tin &amp; Bản Đồ Dịch Vụ</span>
             </div>
           </a>
         </div>
 
-        <!-- Search Bar -->
+        <!-- Search Bar with Tailwind styles -->
         <div class='flex-1 max-w-md mx-2 hidden sm:block'>
           <div class='relative'>
             <i class='fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm'></i>
-            <input type='text' v-model='searchKeyword' placeholder='Tìm quán ăn, nhà thuốc, sửa xe, cơ quan hành chính...' class='w-full pl-10 pr-9 py-2 text-xs rounded-full bg-slate-100 dark:bg-slate-800 border border-transparent focus:border-brand-500 focus:bg-white dark:focus:bg-slate-900 outline-none transition' />
+            <input type='text' v-model='searchKeyword' placeholder='Tìm quán ăn, nhà thuốc, sửa xe, cơ quan hành chính...' class='w-full pl-10 pr-9 py-2 text-xs rounded-full bg-slate-100 dark:bg-slate-800 border border-transparent focus:border-brand-500 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-brand-500/20 outline-none transition' />
             <button v-if='searchKeyword' v-on:click='searchKeyword = ""' class='absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs'>
               <i class='fa-solid fa-circle-xmark'></i>
             </button>
@@ -111,7 +131,7 @@
           </button>
 
           <!-- Nút Đóng góp địa điểm mới -->
-          <button v-on:click='openContributeModal' class='px-3 py-2 rounded-xl bg-gradient-to-r from-brand-600 to-emerald-600 hover:from-brand-700 hover:to-emerald-700 text-white font-semibold text-xs shadow-md shadow-brand-500/20 flex items-center gap-1.5 transition'>
+          <button v-on:click='openContributeModal' class='px-3 py-2 rounded-xl bg-gradient-to-r from-brand-600 to-emerald-600 hover:from-brand-700 hover:to-emerald-700 text-white font-semibold text-xs shadow-md shadow-brand-500/20 flex items-center gap-1.5 transition active:scale-95'>
             <i class='fa-solid fa-plus-circle'></i>
             <span class='hidden sm:inline'>Đóng góp</span>
           </button>
@@ -148,19 +168,19 @@
 
       <!-- 2. CATEGORY PILLS BAR -->
       <div class='max-w-7xl mx-auto px-4 py-2 border-t border-slate-100 dark:border-slate-800 flex items-center gap-2 overflow-x-auto custom-scrollbar text-xs'>
-        <button v-on:click='selectMainCategory("all")' v-bind:class='activeCategory === "all" ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 font-bold" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"' class='px-3.5 py-1.5 rounded-full whitespace-nowrap transition'>
+        <button v-on:click='selectMainCategory("all")' v-bind:class='activeCategory === "all" ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 font-bold shadow-sm" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"' class='px-3.5 py-1.5 rounded-full whitespace-nowrap transition'>
           🌐 Tất cả địa điểm ({{ places.length }})
         </button>
 
-        <button v-on:click='selectMainCategory("Ẩm thực & Giải trí")' v-bind:class='activeCategory === "Ẩm thực & Giải trí" ? "bg-rose-600 text-white font-bold" : "bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300 hover:bg-rose-100"' class='px-3.5 py-1.5 rounded-full whitespace-nowrap transition flex items-center gap-1.5'>
+        <button v-on:click='selectMainCategory("Ẩm thực & Giải trí")' v-bind:class='activeCategory === "Ẩm thực & Giải trí" ? "bg-rose-600 text-white font-bold shadow-sm shadow-rose-500/20" : "bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300 hover:bg-rose-100"' class='px-3.5 py-1.5 rounded-full whitespace-nowrap transition flex items-center gap-1.5'>
           🍜 Ẩm thực &amp; Giải trí
         </button>
 
-        <button v-on:click='selectMainCategory("Dịch vụ thiết yếu")' v-bind:class='activeCategory === "Dịch vụ thiết yếu" ? "bg-blue-600 text-white font-bold" : "bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300 hover:bg-blue-100"' class='px-3.5 py-1.5 rounded-full whitespace-nowrap transition flex items-center gap-1.5'>
+        <button v-on:click='selectMainCategory("Dịch vụ thiết yếu")' v-bind:class='activeCategory === "Dịch vụ thiết yếu" ? "bg-blue-600 text-white font-bold shadow-sm shadow-blue-500/20" : "bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300 hover:bg-blue-100"' class='px-3.5 py-1.5 rounded-full whitespace-nowrap transition flex items-center gap-1.5'>
           🛠️ Dịch vụ thiết yếu
         </button>
 
-        <button v-on:click='selectMainCategory("Hành chính công")' v-bind:class='activeCategory === "Hành chính công" ? "bg-amber-600 text-white font-bold" : "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300 hover:bg-amber-100"' class='px-3.5 py-1.5 rounded-full whitespace-nowrap transition flex items-center gap-1.5'>
+        <button v-on:click='selectMainCategory("Hành chính công")' v-bind:class='activeCategory === "Hành chính công" ? "bg-amber-600 text-white font-bold shadow-sm shadow-amber-500/20" : "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300 hover:bg-amber-100"' class='px-3.5 py-1.5 rounded-full whitespace-nowrap transition flex items-center gap-1.5'>
           🏛️ Hành chính công
         </button>
 
@@ -177,7 +197,7 @@
     <!-- 3. MAIN WORKSPACE -->
     <main class='flex-1 flex overflow-hidden relative'>
       
-      <!-- CỘT TRÁI: Bộ Lọc Thông Minh & Danh Sách Địa Điểm -->
+      <!-- CỘT TRÁI: BỘ LỌC THÔNG MINH & DANH SÁCH ĐỊA ĐIỂM -->
       <aside v-bind:class='viewMode === "grid" ? "w-full max-w-7xl mx-auto px-4 py-4" : "w-full md:w-[460px] lg:w-[500px]"' class='flex flex-col bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 h-full overflow-hidden flex-shrink-0 z-10 transition-all'>
         
         <!-- Bộ lọc nâng cao (Smart Filter) -->
@@ -187,13 +207,13 @@
           <div class='grid grid-cols-3 gap-2'>
             
             <!-- Trạng thái mở cửa -->
-            <select v-model='filterOpenNow' class='bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1.5 outline-none font-medium'>
+            <select v-model='filterOpenNow' class='bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5 outline-none font-medium focus:ring-2 focus:ring-brand-500/20'>
               <option value='all'>🕒 Tất cả giờ</option>
               <option value='open'>🟢 Đang mở cửa</option>
             </select>
 
             <!-- Khoảng cách -->
-            <select v-model='filterDistance' v-bind:disabled='!userCoords' class='bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1.5 outline-none font-medium disabled:opacity-50'>
+            <select v-model='filterDistance' v-bind:disabled='!userCoords' class='bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5 outline-none font-medium disabled:opacity-50 focus:ring-2 focus:ring-brand-500/20'>
               <option value='all'>📍 Khoảng cách</option>
               <option value='2'>Dưới 2 km</option>
               <option value='5'>Dưới 5 km</option>
@@ -201,7 +221,7 @@
             </select>
 
             <!-- Mức giá -->
-            <select v-model='filterPrice' class='bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1.5 outline-none font-medium'>
+            <select v-model='filterPrice' class='bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5 outline-none font-medium focus:ring-2 focus:ring-brand-500/20'>
               <option value='all'>💵 Mức giá</option>
               <option value='bình dân'>Bình dân ($)</option>
               <option value='tầm trung'>Tầm trung ($$)</option>
@@ -211,7 +231,7 @@
 
           <!-- Hàng 2: Tiện ích Tags (Amenities Filter) -->
           <div class='flex items-center gap-1.5 overflow-x-auto custom-scrollbar py-0.5'>
-            <button v-for='amenity in availableAmenities' v-bind:key='amenity.key' v-on:click='toggleAmenityFilter(amenity.key)' v-bind:class='selectedAmenities.includes(amenity.key) ? "bg-brand-600 text-white font-semibold shadow-sm" : "bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100"' class='px-2 py-1 rounded-md text-[11px] whitespace-nowrap transition flex items-center gap-1'>
+            <button v-for='amenity in availableAmenities' v-bind:key='amenity.key' v-on:click='toggleAmenityFilter(amenity.key)' v-bind:class='selectedAmenities.includes(amenity.key) ? "bg-brand-600 text-white font-semibold shadow-sm" : "bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100"' class='px-2.5 py-1 rounded-lg text-[11px] whitespace-nowrap transition flex items-center gap-1.5'>
               <i v-bind:class='amenity.icon'></i> {{ amenity.label }}
             </button>
           </div>
@@ -219,7 +239,7 @@
           <!-- Thanh kết quả & Xóa lọc -->
           <div class='flex items-center justify-between text-[11px] text-slate-500 pt-1'>
             <span>Tìm thấy <b>{{ filteredPlaces.length }}</b> địa điểm phù hợp</span>
-            <button v-if='hasActiveFilters' v-on:click='resetFilters' class='text-rose-500 hover:underline flex items-center gap-1'>
+            <button v-if='hasActiveFilters' v-on:click='resetFilters' class='text-rose-500 hover:underline flex items-center gap-1 font-semibold'>
               <i class='fa-solid fa-rotate-left'></i> Đặt lại bộ lọc
             </button>
           </div>
@@ -239,8 +259,8 @@
             <p class='text-xs text-slate-400 mt-1'>Thử thay đổi từ khóa hoặc đặt lại bộ lọc nâng cao.</p>
           </div>
 
-          <!-- Card Địa Điểm -->
-          <div v-for='place in filteredPlaces' v-bind:key='place.id' v-on:click='selectPlace(place)' v-bind:class='selectedPlace &amp;&amp; selectedPlace.id === place.id ? "ring-2 ring-brand-500 border-transparent shadow-md" : "hover:border-brand-400 hover:shadow-sm"' class='bg-white dark:bg-slate-800/80 rounded-2xl border border-slate-200 dark:border-slate-700/80 p-3.5 transition cursor-pointer flex flex-col justify-between gap-2.5'>
+          <!-- Card Địa Điểm (Tailwind Card) -->
+          <div v-for='place in filteredPlaces' v-bind:key='place.id' v-on:click='selectPlace(place)' v-bind:class='selectedPlace &amp;&amp; selectedPlace.id === place.id ? "ring-2 ring-brand-500 border-transparent shadow-lg bg-emerald-50/30 dark:bg-slate-800" : "hover:border-brand-400 hover:shadow-md bg-white dark:bg-slate-800/90"' class='rounded-2xl border border-slate-200 dark:border-slate-700/80 p-4 transition-all duration-200 cursor-pointer flex flex-col justify-between gap-3'>
             
             <div>
               <div class='flex items-start justify-between gap-2'>
@@ -252,34 +272,34 @@
                 </div>
 
                 <!-- Rating -->
-                <div class='flex items-center gap-1 bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 px-1.5 py-0.5 rounded-lg text-xs font-bold'>
+                <div class='flex items-center gap-1 bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 px-2 py-0.5 rounded-lg text-xs font-bold flex-shrink-0'>
                   <i class='fa-solid fa-star text-[10px]'></i>
                   <span>{{ (place.rating || 5.0).toFixed(1) }}</span>
                 </div>
               </div>
 
               <!-- Địa chỉ & Khoảng cách -->
-              <p class='text-xs text-slate-500 dark:text-slate-400 flex items-start gap-1.5 mt-1.5 line-clamp-2'>
+              <p class='text-xs text-slate-500 dark:text-slate-400 flex items-start gap-1.5 mt-2 line-clamp-2'>
                 <i class='fa-solid fa-location-dot mt-0.5 text-slate-400 flex-shrink-0'></i>
                 <span>{{ place.address }}</span>
               </p>
 
               <!-- Tiện ích badges tóm tắt -->
-              <div v-if='place.amenities &amp;&amp; place.amenities.length' class='flex flex-wrap gap-1 mt-2'>
-                <span v-for='amKey in place.amenities.slice(0, 3)' v-bind:key='amKey' class='text-[10px] bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-1.5 py-0.5 rounded'>
+              <div v-if='place.amenities &amp;&amp; place.amenities.length' class='flex flex-wrap gap-1 mt-2.5'>
+                <span v-for='amKey in place.amenities.slice(0, 3)' v-bind:key='amKey' class='text-[10px] bg-slate-100 dark:bg-slate-700/70 text-slate-600 dark:text-slate-300 px-1.5 py-0.5 rounded-md font-medium'>
                   {{ getAmenityLabel(amKey) }}
                 </span>
-                <span v-if='place.amenities.length > 3' class='text-[10px] text-slate-400'>+{{ place.amenities.length - 3 }}</span>
+                <span v-if='place.amenities.length > 3' class='text-[10px] text-slate-400 font-medium'>+{{ place.amenities.length - 3 }}</span>
               </div>
             </div>
 
             <!-- Footer: Trạng thái giờ, khoảng cách, và Nút Gọi / Chỉ đường -->
-            <div class='flex items-center justify-between border-t border-slate-100 dark:border-slate-700/60 pt-2 text-[11px] text-slate-500'>
+            <div class='flex items-center justify-between border-t border-slate-100 dark:border-slate-700/60 pt-2.5 text-[11px] text-slate-500'>
               <div class='flex items-center gap-2'>
                 <span v-if='place.openHours' v-bind:class='isOpenNow(place.openHours) ? "text-emerald-600 font-semibold" : "text-slate-400"'>
                   <i class='fa-solid fa-clock mr-0.5'></i> {{ isOpenNow(place.openHours) ? 'Mở cửa' : 'Đóng cửa' }}
                 </span>
-                <span v-if='place.distanceKm !== undefined' class='text-brand-600 font-semibold'>
+                <span v-if='place.distanceKm !== undefined' class='text-brand-600 font-bold'>
                   <i class='fa-solid fa-route mr-0.5'></i> {{ place.distanceKm }} km
                 </span>
               </div>
@@ -291,7 +311,7 @@
                 <a v-bind:href='"https://www.google.com/maps?q=" + place.lat + "," + place.lng' target='_blank' v-on:click.stop='' class='p-1.5 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-200 transition' title='Chỉ đường trên Google Maps'>
                   <i class='fa-solid fa-diamond-turn-right text-brand-600'></i>
                 </a>
-                <button v-on:click.stop='openDetailModal(place)' class='px-2 py-1 rounded-lg bg-brand-50 dark:bg-brand-950/50 text-brand-700 dark:text-brand-300 font-bold hover:bg-brand-100 transition'>
+                <button v-on:click.stop='openDetailModal(place)' class='px-2.5 py-1 rounded-lg bg-brand-50 dark:bg-brand-950/50 text-brand-700 dark:text-brand-300 font-bold hover:bg-brand-100 transition'>
                   Chi tiết
                 </button>
               </div>
@@ -306,19 +326,19 @@
       <section v-show='viewMode === "split"' class='flex-1 h-full relative'>
         <div id='directoryMap' class='w-full h-full z-0'></div>
 
-        <!-- Float Map Controls -->
+        <!-- Float Map Controls (Tailwind Glassmorphism) -->
         <div class='absolute top-4 right-4 z-10 flex flex-col gap-2'>
-          <button v-on:click='getUserLocation' class='w-10 h-10 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-lg text-slate-700 dark:text-slate-200 flex items-center justify-center hover:bg-slate-50 transition' title='Định vị vị trí của tôi'>
+          <button v-on:click='getUserLocation' class='w-10 h-10 rounded-xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-slate-200 dark:border-slate-800 shadow-floating text-slate-700 dark:text-slate-200 flex items-center justify-center hover:bg-slate-50 transition active:scale-90' title='Định vị vị trí của tôi'>
             <i class='fa-solid fa-crosshairs text-brand-600 text-sm'></i>
           </button>
-          <button v-on:click='resetMapView' class='w-10 h-10 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-lg text-slate-700 dark:text-slate-200 flex items-center justify-center hover:bg-slate-50 transition' title='Về trung tâm TP. Tây Ninh'>
+          <button v-on:click='resetMapView' class='w-10 h-10 rounded-xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-slate-200 dark:border-slate-800 shadow-floating text-slate-700 dark:text-slate-200 flex items-center justify-center hover:bg-slate-50 transition active:scale-90' title='Về trung tâm TP. Tây Ninh'>
             <i class='fa-solid fa-map-location text-sm'></i>
           </button>
         </div>
 
         <!-- Banner gợi ý bấm bản đồ khi muốn đóng góp -->
-        <div class='absolute bottom-4 left-4 right-4 md:left-6 md:right-auto z-10 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-800 shadow-lg text-xs flex items-center gap-2'>
-          <i class='fa-solid fa-hand-pointer text-brand-600 animate-bounce'></i>
+        <div class='absolute bottom-4 left-4 right-4 md:left-6 md:right-auto z-10 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-floating text-xs flex items-center gap-2.5'>
+          <i class='fa-solid fa-hand-pointer text-brand-600 animate-bounce text-sm'></i>
           <span>Bấm trực tiếp vào bất kỳ vị trí nào trên bản đồ để ghim tọa độ đóng góp địa điểm.</span>
         </div>
       </section>
@@ -326,7 +346,7 @@
     </main>
 
     <!-- 4. MODAL: ĐÓNG GÓP ĐỊA ĐIỂM MỚI (CONTRIBUTE MODAL) -->
-    <div v-if='showContributeModal' class='fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto'>
+    <div v-if='showContributeModal' class='fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto'>
       <div class='bg-white dark:bg-slate-900 rounded-3xl w-full max-w-xl max-h-[90vh] overflow-y-auto border border-slate-200 dark:border-slate-800 shadow-2xl p-6 custom-scrollbar'>
         
         <div class='flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3 mb-4'>
@@ -339,7 +359,7 @@
               <p class='text-xs text-slate-400'>Chia sẻ địa điểm hữu ích cho cộng đồng Tây Ninh</p>
             </div>
           </div>
-          <button v-on:click='showContributeModal = false' class='w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800'>
+          <button v-on:click='showContributeModal = false' class='w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition'>
             <i class='fa-solid fa-xmark'></i>
           </button>
         </div>
@@ -349,14 +369,14 @@
           <!-- Tên địa điểm -->
           <div>
             <label class='block font-semibold mb-1 text-slate-700 dark:text-slate-300'>Tên địa điểm (*)</label>
-            <input type='text' v-model='newPlaceForm.name' required='required' placeholder='Ví dụ: Bánh canh Trảng Bàng Út Huệ' class='w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none focus:border-brand-500 text-xs' />
+            <input type='text' v-model='newPlaceForm.name' required='required' placeholder='Ví dụ: Bánh canh Trảng Bàng Út Huệ' class='w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 text-xs transition' />
           </div>
 
           <!-- Danh mục chính & Danh mục con -->
           <div class='grid grid-cols-1 sm:grid-cols-2 gap-3'>
             <div>
               <label class='block font-semibold mb-1 text-slate-700 dark:text-slate-300'>Danh mục chính (*)</label>
-              <select v-model='newPlaceForm.category' required='required' class='w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none focus:border-brand-500 text-xs'>
+              <select v-model='newPlaceForm.category' required='required' class='w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 text-xs transition'>
                 <option value='Ẩm thực & Giải trí'>🍜 Ẩm thực &amp; Giải trí</option>
                 <option value='Dịch vụ thiết yếu'>🛠️ Dịch vụ thiết yếu</option>
                 <option value='Hành chính công'>🏛️ Hành chính công</option>
@@ -365,25 +385,25 @@
 
             <div>
               <label class='block font-semibold mb-1 text-slate-700 dark:text-slate-300'>Phân loại chi tiết</label>
-              <input type='text' v-model='newPlaceForm.subCategory' placeholder='Ví dụ: Quán ăn đặc sản, Bệnh viện, UBND...' class='w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none focus:border-brand-500 text-xs' />
+              <input type='text' v-model='newPlaceForm.subCategory' placeholder='Ví dụ: Quán ăn đặc sản, Bệnh viện, UBND...' class='w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 text-xs transition' />
             </div>
           </div>
 
           <!-- Địa chỉ chi tiết -->
           <div>
             <label class='block font-semibold mb-1 text-slate-700 dark:text-slate-300'>Địa chỉ chi tiết (*)</label>
-            <input type='text' v-model='newPlaceForm.address' required='required' placeholder='Số nhà, tên đường, ấp/khu phố, huyện/thị xã...' class='w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none focus:border-brand-500 text-xs' />
+            <input type='text' v-model='newPlaceForm.address' required='required' placeholder='Số nhà, tên đường, ấp/khu phố, huyện/thị xã...' class='w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 text-xs transition' />
           </div>
 
           <!-- Tọa độ Lat / Lng -->
           <div class='grid grid-cols-2 gap-3'>
             <div>
               <label class='block font-semibold mb-1 text-slate-700 dark:text-slate-300'>Vĩ độ (Lat) (*)</label>
-              <input type='number' step='any' v-model.number='newPlaceForm.lat' required='required' class='w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none focus:border-brand-500 text-xs' />
+              <input type='number' step='any' v-model.number='newPlaceForm.lat' required='required' class='w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 text-xs transition' />
             </div>
             <div>
               <label class='block font-semibold mb-1 text-slate-700 dark:text-slate-300'>Kinh độ (Lng) (*)</label>
-              <input type='number' step='any' v-model.number='newPlaceForm.lng' required='required' class='w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none focus:border-brand-500 text-xs' />
+              <input type='number' step='any' v-model.number='newPlaceForm.lng' required='required' class='w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 text-xs transition' />
             </div>
           </div>
 
@@ -391,12 +411,12 @@
           <div class='grid grid-cols-1 sm:grid-cols-2 gap-3'>
             <div>
               <label class='block font-semibold mb-1 text-slate-700 dark:text-slate-300'>Giờ mở cửa (VD: 07:00 - 22:00)</label>
-              <input type='text' v-model='newPlaceForm.openHours' placeholder='06:30 - 21:00 hoặc 24/7' class='w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none focus:border-brand-500 text-xs' />
+              <input type='text' v-model='newPlaceForm.openHours' placeholder='06:30 - 21:00 hoặc 24/7' class='w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 text-xs transition' />
             </div>
 
             <div>
               <label class='block font-semibold mb-1 text-slate-700 dark:text-slate-300'>Số điện thoại liên hệ / Hotline</label>
-              <input type='tel' v-model='newPlaceForm.phone' placeholder='090xxxxxxx hoặc 113 / 115' class='w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none focus:border-brand-500 text-xs' />
+              <input type='tel' v-model='newPlaceForm.phone' placeholder='090xxxxxxx hoặc 113 / 115' class='w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 text-xs transition' />
             </div>
           </div>
 
@@ -404,7 +424,7 @@
           <div class='grid grid-cols-1 sm:grid-cols-2 gap-3'>
             <div>
               <label class='block font-semibold mb-1 text-slate-700 dark:text-slate-300'>Mức giá</label>
-              <select v-model='newPlaceForm.priceLevel' class='w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none focus:border-brand-500 text-xs'>
+              <select v-model='newPlaceForm.priceLevel' class='w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 text-xs transition'>
                 <option value='bình dân'>Bình dân (20k - 50k)</option>
                 <option value='tầm trung'>Tầm trung (50k - 200k)</option>
                 <option value='cao cấp'>Cao cấp (> 200k)</option>
@@ -413,7 +433,7 @@
 
             <div>
               <label class='block font-semibold mb-1 text-slate-700 dark:text-slate-300'>Link hình ảnh thực tế (URL)</label>
-              <input type='url' v-model='newPlaceForm.imageUrl' placeholder='https://images.unsplash.com/...' class='w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none focus:border-brand-500 text-xs' />
+              <input type='url' v-model='newPlaceForm.imageUrl' placeholder='https://images.unsplash.com/...' class='w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 text-xs transition' />
             </div>
           </div>
 
@@ -421,7 +441,7 @@
           <div>
             <label class='block font-semibold mb-1.5 text-slate-700 dark:text-slate-300'>Tiện ích nổi bật</label>
             <div class='grid grid-cols-2 sm:grid-cols-3 gap-2'>
-              <label v-for='am in availableAmenities' v-bind:key='am.key' class='flex items-center gap-2 p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 cursor-pointer'>
+              <label v-for='am in availableAmenities' v-bind:key='am.key' class='flex items-center gap-2 p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 cursor-pointer hover:bg-slate-100 transition'>
                 <input type='checkbox' v-model='newPlaceForm.amenities' v-bind:value='am.key' class='rounded text-brand-600 focus:ring-brand-500' />
                 <span class='text-[11px] font-medium'>{{ am.label }}</span>
               </label>
@@ -431,14 +451,14 @@
           <!-- Mô tả chi tiết -->
           <div>
             <label class='block font-semibold mb-1 text-slate-700 dark:text-slate-300'>Mô tả chi tiết / Hướng dẫn thêm</label>
-            <textarea v-model='newPlaceForm.description' rows='3' placeholder='Điểm nổi bật của quán, thủ tục cần mang theo khi đến cơ quan, bãi đỗ xe...' class='w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none focus:border-brand-500 text-xs'></textarea>
+            <textarea v-model='newPlaceForm.description' rows='3' placeholder='Điểm nổi bật của quán, thủ tục cần mang theo khi đến cơ quan, bãi đỗ xe...' class='w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 text-xs transition'></textarea>
           </div>
 
           <div class='flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800'>
-            <button type='button' v-on:click='showContributeModal = false' class='px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100'>
+            <button type='button' v-on:click='showContributeModal = false' class='px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 transition'>
               Hủy bỏ
             </button>
-            <button type='submit' v-bind:disabled='submittingPlace' class='px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold flex items-center gap-2 shadow-md shadow-brand-500/20 disabled:opacity-50'>
+            <button type='submit' v-bind:disabled='submittingPlace' class='px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold flex items-center gap-2 shadow-md shadow-brand-500/20 disabled:opacity-50 transition active:scale-95'>
               <i class='fa-solid fa-paper-plane' v-bind:class='{"fa-spin": submittingPlace}'></i>
               <span>{{ submittingPlace ? 'Đang gửi...' : 'Gửi đóng góp' }}</span>
             </button>
@@ -450,7 +470,7 @@
     </div>
 
     <!-- 5. MODAL: CHI TIẾT ĐỊA ĐIỂM & ĐÁNH GIÁ (DETAIL & REVIEW MODAL) -->
-    <div v-if='activePlaceDetail' class='fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto'>
+    <div v-if='activePlaceDetail' class='fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto'>
       <div class='bg-white dark:bg-slate-900 rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-slate-200 dark:border-slate-800 shadow-2xl p-6 custom-scrollbar space-y-5 text-xs'>
         
         <div class='flex items-start justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-3'>
@@ -463,36 +483,36 @@
               <i class='fa-solid fa-location-dot text-brand-600'></i> {{ activePlaceDetail.address }}
             </p>
           </div>
-          <button v-on:click='activePlaceDetail = null' class='w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800'>
+          <button v-on:click='activePlaceDetail = null' class='w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition'>
             <i class='fa-solid fa-xmark text-sm'></i>
           </button>
         </div>
 
         <!-- Ảnh thực tế nếu có -->
-        <div v-if='activePlaceDetail.imageUrl' class='w-full h-48 rounded-2xl overflow-hidden bg-slate-100'>
+        <div v-if='activePlaceDetail.imageUrl' class='w-full h-48 rounded-2xl overflow-hidden bg-slate-100 shadow-inner'>
           <img v-bind:src='activePlaceDetail.imageUrl' class='w-full h-full object-cover' />
         </div>
 
         <!-- Thông tin nhanh (Giờ mở cửa, Giá, Hotline, Chỉ đường) -->
         <div class='grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center'>
-          <div class='p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-100 dark:border-slate-800'>
+          <div class='p-3 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-100 dark:border-slate-800'>
             <span class='block text-[10px] text-slate-400 font-semibold uppercase'>Giờ mở cửa</span>
             <span class='font-bold text-slate-800 dark:text-slate-100 mt-0.5 block'>{{ activePlaceDetail.openHours || 'Đang cập nhật' }}</span>
           </div>
 
-          <div class='p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-100 dark:border-slate-800'>
+          <div class='p-3 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-100 dark:border-slate-800'>
             <span class='block text-[10px] text-slate-400 font-semibold uppercase'>Mức giá</span>
             <span class='font-bold text-slate-800 dark:text-slate-100 mt-0.5 block capitalize'>{{ activePlaceDetail.priceLevel || 'Bình dân' }}</span>
           </div>
 
-          <div class='p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-100 dark:border-slate-800'>
+          <div class='p-3 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-100 dark:border-slate-800'>
             <span class='block text-[10px] text-slate-400 font-semibold uppercase'>Đánh giá</span>
             <span class='font-bold text-amber-500 mt-0.5 block flex items-center justify-center gap-1'>
               <i class='fa-solid fa-star'></i> {{ (activePlaceDetail.rating || 5.0).toFixed(1) }} ({{ activePlaceReviews.length }})
             </span>
           </div>
 
-          <a v-bind:href='"https://www.google.com/maps?q=" + activePlaceDetail.lat + "," + activePlaceDetail.lng' target='_blank' class='p-3 bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300 rounded-xl border border-brand-200 dark:border-brand-800 flex flex-col justify-center items-center hover:bg-brand-100 transition'>
+          <a v-bind:href='"https://www.google.com/maps?q=" + activePlaceDetail.lat + "," + activePlaceDetail.lng' target='_blank' class='p-3 bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300 rounded-2xl border border-brand-200 dark:border-brand-800 flex flex-col justify-center items-center hover:bg-brand-100 transition shadow-sm'>
             <i class='fa-solid fa-diamond-turn-right text-base text-brand-600 mb-0.5'></i>
             <span class='font-bold text-[11px]'>Mở Google Maps</span>
           </a>
@@ -502,7 +522,7 @@
         <div v-if='activePlaceDetail.amenities &amp;&amp; activePlaceDetail.amenities.length'>
           <h4 class='font-bold text-slate-800 dark:text-slate-200 mb-2'>Tiện ích tại địa điểm</h4>
           <div class='flex flex-wrap gap-2'>
-            <span v-for='amKey in activePlaceDetail.amenities' v-bind:key='amKey' class='px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium flex items-center gap-1.5'>
+            <span v-for='amKey in activePlaceDetail.amenities' v-bind:key='amKey' class='px-3 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium flex items-center gap-1.5'>
               <i class='fa-solid fa-check text-brand-600'></i> {{ getAmenityLabel(amKey) }}
             </span>
           </div>
@@ -511,7 +531,7 @@
         <!-- Giới thiệu / Hướng dẫn -->
         <div>
           <h4 class='font-bold text-slate-800 dark:text-slate-200 mb-1.5'>Giới thiệu chi tiết</h4>
-          <p class='text-slate-600 dark:text-slate-300 leading-relaxed bg-slate-50 dark:bg-slate-800/40 p-3.5 rounded-2xl border border-slate-100 dark:border-slate-800'>
+          <p class='text-slate-600 dark:text-slate-300 leading-relaxed bg-slate-50 dark:bg-slate-800/40 p-4 rounded-2xl border border-slate-100 dark:border-slate-800'>
             {{ activePlaceDetail.description || 'Địa điểm được xác thực và đóng góp bởi cộng đồng Tây Ninh Go.' }}
           </p>
         </div>
@@ -531,13 +551,13 @@
               </div>
             </div>
 
-            <textarea v-model='newReviewComment' rows='2' required='required' placeholder='Chia sẻ cảm nhận về món ăn, thái độ phục vụ, mức giá hoặc kinh nghiệm đến đây...' class='w-full px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 outline-none focus:border-brand-500 text-xs'></textarea>
+            <textarea v-model='newReviewComment' rows='2' required='required' placeholder='Chia sẻ cảm nhận về món ăn, thái độ phục vụ, mức giá hoặc kinh nghiệm đến đây...' class='w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 text-xs transition'></textarea>
 
             <div class='flex items-center justify-between'>
               <span class='text-[11px] text-slate-400'>
                 Đăng nhập với tư cách: <b>{{ currentUser ? currentUser.displayName : 'Khách ẩn danh' }}</b>
               </span>
-              <button type='submit' v-bind:disabled='submittingReview' class='px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold flex items-center gap-1.5 transition disabled:opacity-50'>
+              <button type='submit' v-bind:disabled='submittingReview' class='px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold flex items-center gap-1.5 transition disabled:opacity-50 active:scale-95'>
                 <i class='fa-solid fa-paper-plane'></i> Gửi đánh giá
               </button>
             </div>
@@ -548,7 +568,7 @@
             <div v-if='activePlaceReviews.length === 0' class='text-center py-4 text-slate-400'>
               Chưa có đánh giá nào. Hãy là người đầu tiên trải nghiệm và chia sẻ!
             </div>
-            <div v-for='rev in activePlaceReviews' v-bind:key='rev.id' class='p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700'>
+            <div v-for='rev in activePlaceReviews' v-bind:key='rev.id' class='p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm'>
               <div class='flex items-center justify-between mb-1'>
                 <span class='font-bold text-slate-800 dark:text-slate-100'>{{ rev.authorName || 'Người dùng Tây Ninh' }}</span>
                 <div class='flex items-center text-amber-400 text-[10px]'>
@@ -565,11 +585,11 @@
       </div>
     </div>
 
-    <!-- TOAST THÔNG BÁO -->
+    <!-- TOAST THÔNG BÁO (TAILWIND TOAST) -->
     <div class='fixed bottom-4 right-4 z-50 space-y-2'>
-      <div v-for='t in toasts' v-bind:key='t.id' class='px-4 py-2.5 rounded-xl bg-slate-900/95 dark:bg-white/95 text-white dark:text-slate-900 text-xs shadow-xl flex items-center gap-2 border border-slate-700'>
-        <i class='fa-solid fa-circle-check text-emerald-400'></i>
-        <span>{{ t.message }}</span>
+      <div v-for='t in toasts' v-bind:key='t.id' class='px-4 py-3 rounded-2xl bg-slate-900/95 dark:bg-white/95 text-white dark:text-slate-900 text-xs shadow-2xl flex items-center gap-2.5 border border-slate-700/50 backdrop-blur-md animate-fade-in'>
+        <i class='fa-solid fa-circle-check text-emerald-400 text-sm'></i>
+        <span class='font-medium'>{{ t.message }}</span>
       </div>
     </div>
 
