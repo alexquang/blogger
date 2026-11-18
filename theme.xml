@@ -587,9 +587,56 @@
         const activeTab = ref('all');
         const selectedCategory = ref('all');
         const searchKeyword = ref('');
-        const loading = ref(true);
+        const loading = ref(false);
 
-        const posts = ref([]);
+        const sampleFallbackPosts = [
+          {
+            id: 'sp1',
+            title: 'Tây Ninh đón hơn 3 triệu lượt khách du lịch đầu năm 2026',
+            content: 'Khu du lịch Quốc gia Núi Bà Đen ghi nhận lượng du khách kỷ lục với các công trình tâm linh hoành tráng và tuyến cáp treo hiện đại. Tỉnh tiếp tục mở rộng các tuyến giao thông liên vùng kết nối TP.HCM và Mộc Bài.',
+            url: '#',
+            authorName: 'Ban Biên Tập TayNinhInfo',
+            authorPhoto: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&amp;fit=crop&amp;w=120&amp;h=120&amp;q=80',
+            createdAt: Date.now() - 3600000 * 2,
+            category: 'tintuc',
+            imageUrl: 'https://images.unsplash.com/photo-1590059390046-52bb6c8a7732?auto=format&amp;fit=crop&amp;w=800&amp;q=80',
+            isVerified: true,
+            likes: 42,
+            commentCount: 9
+          },
+          {
+            id: 'sp2',
+            title: 'Tuyển gấp 50 Kỹ thuật viên & Công nhân Vận hành KCN Phước Đông',
+            content: 'Nhà máy chế tạo công nghệ cao cần tuyển dụng nhân sự làm việc tại Trảng Bàng, Tây Ninh. Thu nhập 9 - 16 triệu/tháng, đầy đủ chế độ BHXH, xe đưa rước các huyện.',
+            salary: '9 - 16 Triệu',
+            location: 'KCN Phước Đông, Trảng Bàng',
+            url: '#',
+            authorName: 'HR KCN Phước Đông',
+            authorPhoto: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&amp;fit=crop&amp;w=120&amp;h=120&amp;q=80',
+            createdAt: Date.now() - 3600000 * 5,
+            category: 'tuyendung',
+            isJob: true,
+            isVerified: true,
+            likes: 18,
+            commentCount: 5
+          },
+          {
+            id: 'sp3',
+            title: 'Góc Review: Ẩm thực Bánh tráng phơi sương Trảng Bàng chính hiệu',
+            content: 'Chia sẻ địa chỉ các quán bánh tráng cuốn thịt luộc, rau rừng chuẩn vị truyền thống Tây Ninh cho du khách và người dân địa phương tham khảo.',
+            url: '#',
+            authorName: 'Ẩm Thực Tây Ninh',
+            authorPhoto: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&amp;fit=crop&amp;w=120&amp;h=120&amp;q=80',
+            createdAt: Date.now() - 3600000 * 12,
+            category: 'diadiem',
+            imageUrl: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&amp;fit=crop&amp;w=800&amp;q=80',
+            isVerified: true,
+            likes: 67,
+            commentCount: 14
+          }
+        ];
+
+        const posts = ref([...sampleFallbackPosts]);
         const bookmarks = ref(JSON.parse(localStorage.getItem('tayninh_bookmarks') || '[]'));
         const likedPostIds = ref(new Set(JSON.parse(localStorage.getItem('tayninh_likes') || '[]')));
 
@@ -764,13 +811,23 @@
                 livePosts.push({ id: docSnap.id, ...docSnap.data() });
               });
 
-              // Merge Firestore with Blogger feed
-              posts.value = [...livePosts, ...merged].sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+              const all = [...livePosts, ...merged];
+              if (all.length > 0) {
+                posts.value = all.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+              }
+              loading.value = false;
+            }, (err) => {
+              console.warn('Firestore offline/permission fallback:', err.message);
+              if (merged.length > 0) {
+                posts.value = merged;
+              }
               loading.value = false;
             });
           } catch (err) {
             console.error('Firestore sync error:', err);
-            posts.value = merged;
+            if (merged.length > 0) {
+              posts.value = merged;
+            }
             loading.value = false;
           }
         };
