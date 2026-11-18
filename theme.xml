@@ -4,14 +4,10 @@
 <head>
   <meta charset='utf-8'/>
   <meta content='width=device-width, initial-scale=1.0' name='viewport'/>
-  <title><data:blog.pageTitle/> - Tây Ninh Go: Cổng Thông Tin Địa Phương &amp; Bản Đồ Dịch Vụ</title>
+  <title><data:blog.pageTitle/> - Tây Ninh Go: Cổng Thông Tin Địa Phương - Bản Đồ Dịch Vụ</title>
   <b:include data='blog' name='all-head-content'/>
 
   <!-- Google Fonts: Plus Jakarta Sans -->
-  <link rel='preconnect' href='https://fonts.googleapis.com'/>
-  <link rel='preconnect' href='https://fonts.gstatic.com' crossorigin=''/>
-  <link href='https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap' rel='stylesheet'/>
-
   <!-- Tailwind CSS 3 CDN with Plugins (Forms, Typography, Aspect-ratio, Line-clamp) -->
   <script src='https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp'></script>
   <script>
@@ -56,6 +52,8 @@
   <script src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'></script>
 
   <b:skin><![CDATA[
+    @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap");
+
     body {
       margin: 0;
       padding: 0;
@@ -95,7 +93,7 @@
             </div>
             <div>
               <span class='font-black text-lg bg-gradient-to-r from-brand-700 to-emerald-500 dark:from-brand-500 dark:to-emerald-400 bg-clip-text text-transparent leading-none'>Tây Ninh Go</span>
-              <span class='block text-[10px] font-semibold text-slate-500 dark:text-slate-400 tracking-wider uppercase'>Cổng Thông Tin &amp; Bản Đồ Dịch Vụ</span>
+              <span class='block text-[10px] font-semibold text-slate-500 dark:text-slate-400 tracking-wider uppercase'>Cổng Thông Tin và Bản Đồ Dịch Vụ</span>
             </div>
           </a>
         </div>
@@ -116,7 +114,7 @@
           
           <!-- Chế độ xem: Bản đồ / Danh bạ -->
           <div class='flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-xl text-xs font-semibold'>
-            <button v-on:click='viewMode = "split"' v-bind:class='viewMode === "split" ? "bg-white dark:bg-slate-900 text-brand-600 shadow-sm" : "text-slate-500 hover:text-slate-900 dark:hover:text-white"' class='px-3 py-1.5 rounded-lg transition flex items-center gap-1.5' title='Bản đồ &amp; Danh bạ'>
+            <button v-on:click='viewMode = "split"' v-bind:class='viewMode === "split" ? "bg-white dark:bg-slate-900 text-brand-600 shadow-sm" : "text-slate-500 hover:text-slate-900 dark:hover:text-white"' class='px-3 py-1.5 rounded-lg transition flex items-center gap-1.5' title='Bản đồ và Danh bạ'>
               <i class='fa-solid fa-table-columns'></i> <span class='hidden md:inline'>Kết hợp</span>
             </button>
             <button v-on:click='viewMode = "grid"' v-bind:class='viewMode === "grid" ? "bg-white dark:bg-slate-900 text-brand-600 shadow-sm" : "text-slate-500 hover:text-slate-900 dark:hover:text-white"' class='px-3 py-1.5 rounded-lg transition flex items-center gap-1.5' title='Chỉ hiển thị Danh sách'>
@@ -144,7 +142,7 @@
           <!-- User Menu / Login -->
           <div class='relative'>
             <button v-if='currentUser' v-on:click='userMenuOpen = !userMenuOpen' class='flex items-center gap-2 pl-2 pr-1 py-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition'>
-              <img v-bind:src='currentUser.photoURL || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&amp;fit=crop&amp;w=80&amp;h=80&amp;q=80"' class='w-8 h-8 rounded-full object-cover ring-2 ring-brand-500/40' />
+              <img v-bind:src='currentUser.photoURL || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde"' class='w-8 h-8 rounded-full object-cover ring-2 ring-brand-500/40' />
             </button>
             <button v-else='true' v-on:click='loginGoogle' class='px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold hover:bg-slate-100 dark:hover:bg-slate-800 transition'>
               Đăng nhập
@@ -172,8 +170,8 @@
           🌐 Tất cả địa điểm ({{ places.length }})
         </button>
 
-        <button v-on:click='selectMainCategory("Ẩm thực &amp; Giải trí")' v-bind:class='activeCategory === "Ẩm thực &amp; Giải trí" ? "bg-rose-600 text-white font-bold shadow-sm shadow-rose-500/20" : "bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300 hover:bg-rose-100"' class='px-3.5 py-1.5 rounded-full whitespace-nowrap transition flex items-center gap-1.5'>
-          🍜 Ẩm thực &amp; Giải trí
+        <button v-on:click='selectMainCategory("Ẩm thực và Giải trí")' v-bind:class='activeCategory === "Ẩm thực và Giải trí" ? "bg-rose-600 text-white font-bold shadow-sm shadow-rose-500/20" : "bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300 hover:bg-rose-100"' class='px-3.5 py-1.5 rounded-full whitespace-nowrap transition flex items-center gap-1.5'>
+          🍜 Ẩm thực và Giải trí
         </button>
 
         <button v-on:click='selectMainCategory("Dịch vụ thiết yếu")' v-bind:class='activeCategory === "Dịch vụ thiết yếu" ? "bg-blue-600 text-white font-bold shadow-sm shadow-blue-500/20" : "bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300 hover:bg-blue-100"' class='px-3.5 py-1.5 rounded-full whitespace-nowrap transition flex items-center gap-1.5'>
@@ -260,7 +258,7 @@
           </div>
 
           <!-- Card Địa Điểm (Tailwind Card) -->
-          <div v-for='place in filteredPlaces' v-bind:key='place.id' v-on:click='selectPlace(place)' v-bind:class='selectedPlace &amp;&amp; selectedPlace.id === place.id ? "ring-2 ring-brand-500 border-transparent shadow-lg bg-emerald-50/30 dark:bg-slate-800" : "hover:border-brand-400 hover:shadow-md bg-white dark:bg-slate-800/90"' class='rounded-2xl border border-slate-200 dark:border-slate-700/80 p-4 transition-all duration-200 cursor-pointer flex flex-col justify-between gap-3'>
+          <div v-for='place in filteredPlaces' v-bind:key='place.id' v-on:click='selectPlace(place)' v-bind:class='selectedPlace?.id === place.id ? "ring-2 ring-brand-500 border-transparent shadow-lg bg-emerald-50/30 dark:bg-slate-800" : "hover:border-brand-400 hover:shadow-md bg-white dark:bg-slate-800/90"' class='rounded-2xl border border-slate-200 dark:border-slate-700/80 p-4 transition-all duration-200 cursor-pointer flex flex-col justify-between gap-3'>
             
             <div>
               <div class='flex items-start justify-between gap-2'>
@@ -285,7 +283,7 @@
               </p>
 
               <!-- Tiện ích badges tóm tắt -->
-              <div v-if='place.amenities &amp;&amp; place.amenities.length' class='flex flex-wrap gap-1 mt-2.5'>
+              <div v-if='(place.amenities || []).length' class='flex flex-wrap gap-1 mt-2.5'>
                 <span v-for='amKey in place.amenities.slice(0, 3)' v-bind:key='amKey' class='text-[10px] bg-slate-100 dark:bg-slate-700/70 text-slate-600 dark:text-slate-300 px-1.5 py-0.5 rounded-md font-medium'>
                   {{ getAmenityLabel(amKey) }}
                 </span>
@@ -377,7 +375,7 @@
             <div>
               <label class='block font-semibold mb-1 text-slate-700 dark:text-slate-300'>Danh mục chính (*)</label>
               <select v-model='newPlaceForm.category' required='required' class='w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 text-xs transition'>
-                <option value='Ẩm thực &amp; Giải trí'>🍜 Ẩm thực &amp; Giải trí</option>
+                <option value='Ẩm thực và Giải trí'>🍜 Ẩm thực và Giải trí</option>
                 <option value='Dịch vụ thiết yếu'>🛠️ Dịch vụ thiết yếu</option>
                 <option value='Hành chính công'>🏛️ Hành chính công</option>
               </select>
@@ -519,7 +517,7 @@
         </div>
 
         <!-- Tiện ích -->
-        <div v-if='activePlaceDetail.amenities &amp;&amp; activePlaceDetail.amenities.length'>
+        <div v-if='(activePlaceDetail.amenities || []).length'>
           <h4 class='font-bold text-slate-800 dark:text-slate-200 mb-2'>Tiện ích tại địa điểm</h4>
           <div class='flex flex-wrap gap-2'>
             <span v-for='amKey in activePlaceDetail.amenities' v-bind:key='amKey' class='px-3 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium flex items-center gap-1.5'>
@@ -539,7 +537,7 @@
         <!-- KHU VỰC ĐÁNH GIÁ và BÌNH LUẬN (REVIEWS) -->
         <div class='border-t border-slate-100 dark:border-slate-800 pt-4 space-y-4'>
           <h4 class='font-bold text-sm text-slate-800 dark:text-slate-100 flex items-center gap-2'>
-            <i class='fa-regular fa-comments text-brand-600'></i> Đánh giá &amp; Trải nghiệm thực tế ({{ activePlaceReviews.length }})
+            <i class='fa-regular fa-comments text-brand-600'></i> Đánh giá và Trải nghiệm thực tế ({{ activePlaceReviews.length }})
           </h4>
 
           <!-- Form viết đánh giá mới -->
@@ -547,7 +545,7 @@
             <div class='flex items-center justify-between'>
               <span class='font-semibold'>Chấm điểm của bạn:</span>
               <div class='flex items-center gap-1 text-base text-slate-300 cursor-pointer'>
-                <i v-for='star in 5' v-bind:key='star' v-on:click='newReviewRating = star' v-bind:class='star &lt;= newReviewRating ? "fa-solid fa-star text-amber-400" : "fa-regular fa-star hover:text-amber-300"' class='transition-colors'></i>
+                <i v-for='star in 5' v-bind:key='star' v-on:click='newReviewRating = star' v-bind:class='newReviewRating >= star ? "fa-solid fa-star text-amber-400" : "fa-regular fa-star hover:text-amber-300"' class='transition-colors'></i>
               </div>
             </div>
 
@@ -663,7 +661,7 @@
       {
         id: 'seed-1',
         name: 'Núi Bà Đen - Đỉnh Núi Huyền Thoại',
-        category: 'Ẩm thực & Giải trí',
+        category: 'Ẩm thực và Giải trí',
         subCategory: 'Điểm check-in du lịch',
         address: 'Thạnh Tân, TP. Tây Ninh, Tây Ninh',
         lat: 11.3789,
@@ -673,14 +671,14 @@
         priceLevel: 'tầm trung',
         rating: 4.9,
         amenities: ['parking', 'card', 'aircon', 'wifi'],
-        imageUrl: 'https://images.unsplash.com/photo-1596401057633-54a8fe8ef647?auto=format&fit=crop&w=600&q=80',
+        imageUrl: 'https://images.unsplash.com/photo-1596401057633-54a8fe8ef647',
         description: 'Nóc nhà Đông Nam Bộ với tượng Phật Bà Tây Bổ Đà Sơn và hệ thống cáp treo Sun World hiện đại bậc nhất.',
         status: 'approved'
       },
       {
         id: 'seed-2',
         name: 'Tòa Thánh Tây Ninh',
-        category: 'Ẩm thực & Giải trí',
+        category: 'Ẩm thực và Giải trí',
         subCategory: 'Điểm check-in du lịch',
         address: 'Phạm Hộ Pháp, Thị xã Hòa Thành, Tây Ninh',
         lat: 11.3006,
@@ -690,14 +688,14 @@
         priceLevel: 'bình dân',
         rating: 4.8,
         amenities: ['parking'],
-        imageUrl: 'https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=600&q=80',
+        imageUrl: 'https://images.unsplash.com/photo-1548013146-72479768bada',
         description: 'Trung tâm tôn giáo Cao Đài nổi tiếng với kiến trúc độc đáo, uy nghiêm và lễ hội đón tiếp hàng triệu du khách.',
         status: 'approved'
       },
       {
         id: 'seed-3',
         name: 'Bánh Canh Trảng Bàng Năm Dung',
-        category: 'Ẩm thực & Giải trí',
+        category: 'Ẩm thực và Giải trí',
         subCategory: 'Quán ăn đặc sản',
         address: '90 Nguyễn Du, Thị xã Trảng Bàng, Tây Ninh',
         lat: 11.0331,
@@ -707,14 +705,14 @@
         priceLevel: 'bình dân',
         rating: 4.7,
         amenities: ['parking', 'card', 'delivery'],
-        imageUrl: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80',
+        imageUrl: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5',
         description: 'Đặc sản bánh canh Trảng Bàng gia truyền sợi dẻo mềm, nước dùng thanh ngọt cùng đĩa thịt luộc và rau rừng Tây Ninh.',
         status: 'approved'
       },
       {
         id: 'seed-4',
         name: 'Bò Tơ Tây Ninh Năm Sánh',
-        category: 'Ẩm thực & Giải trí',
+        category: 'Ẩm thực và Giải trí',
         subCategory: 'Nhà hàng',
         address: 'Quốc Lộ 22B, Hiệp Tân, Hòa Thành, Tây Ninh',
         lat: 11.2721,
@@ -724,7 +722,7 @@
         priceLevel: 'tầm trung',
         rating: 4.6,
         amenities: ['parking', 'card', 'aircon', 'wifi'],
-        imageUrl: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80',
+        imageUrl: 'https://images.unsplash.com/photo-1544025162-d76694265947',
         description: 'Bò tơ tươi nướng than hoa, bóp thấu, lẩu đuôi bò đậm đà đặc sản Tây Ninh.',
         status: 'approved'
       },
@@ -831,7 +829,7 @@
         const submittingPlace = ref(false);
         const newPlaceForm = ref({
           name: '',
-          category: 'Ẩm thực & Giải trí',
+          category: 'Ẩm thực và Giải trí',
           subCategory: 'Quán ăn đặc sản',
           address: '',
           lat: DEFAULT_LAT,
@@ -878,7 +876,7 @@
 
         // Lấy danh mục con tương ứng
         const currentSubcategories = computed(() => {
-          if (activeCategory.value === 'Ẩm thực & Giải trí') {
+          if (activeCategory.value === 'Ẩm thực và Giải trí') {
             return ['Quán cà phê', 'Quán ăn đặc sản', 'Nhà hàng', 'Điểm check-in du lịch'];
           }
           if (activeCategory.value === 'Dịch vụ thiết yếu') {
@@ -987,7 +985,7 @@
         };
 
         const getCategoryBadgeClass = (cat) => {
-          if (cat === 'Ẩm thực & Giải trí') return 'bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300';
+          if (cat === 'Ẩm thực và Giải trí') return 'bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300';
           if (cat === 'Dịch vụ thiết yếu') return 'bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300';
           return 'bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300';
         };
@@ -1032,7 +1030,7 @@
 
             // Marker icon màu sắc theo category
             let color = '#059669';
-            if (place.category === 'Ẩm thực & Giải trí') color = '#e11d48';
+            if (place.category === 'Ẩm thực và Giải trí') color = '#e11d48';
             if (place.category === 'Dịch vụ thiết yếu') color = '#2563eb';
             if (place.category === 'Hành chính công') color = '#d97706';
 
