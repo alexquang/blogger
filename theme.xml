@@ -1003,11 +1003,11 @@
           mapInstance = L.map('directoryMap', { zoomControl: false }).setView([DEFAULT_LAT, DEFAULT_LNG], 12);
           L.control.zoom({ position: 'topright' }).addTo(mapInstance);
 
-          // Tile Server CartoDB Voyager - Tốc độ cực nhanh tại Việt Nam qua Fastly CDN Singapore
-          L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-            maxZoom: 19,
-            subdomains: 'abcd',
-            attribution: '© CartoDB © OpenStreetMap | Tây Ninh Go'
+          // Bản đồ Google Maps chính hãng (Không cần API Key, siêu mượt tại Việt Nam)
+          L.tileLayer('https://mt{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+            maxZoom: 20,
+            subdomains: ['0', '1', '2', '3'],
+            attribution: '© Google Maps | Tây Ninh Go'
           }).addTo(mapInstance);
 
           markersGroup = L.layerGroup().addTo(mapInstance);

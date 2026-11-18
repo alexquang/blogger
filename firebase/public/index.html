@@ -285,10 +285,10 @@
     const map = L.map('map', { zoomControl: false }).setView([11.3117, 106.0988], 12);
     L.control.zoom({ position: 'topright' }).addTo(map);
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-      maxZoom: 19,
-      subdomains: 'abcd',
-      attribution: '&copy; CartoDB &copy; OpenStreetMap | Tây Ninh Go'
+    L.tileLayer('https://mt{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+      maxZoom: 20,
+      subdomains: ['0', '1', '2', '3'],
+      attribution: '&copy; Google Maps | Tây Ninh Go'
     }).addTo(map);
 
     let allPlaces = [];
