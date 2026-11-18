@@ -514,7 +514,6 @@
       </div>
     </div>
 
-  </div>
 
     <!-- TAILWIND TOAST NOTIFICATION STACK -->
     <div class='fixed top-20 right-4 z-50 flex flex-col gap-2.5 pointer-events-none max-w-sm w-full'>
@@ -620,6 +619,7 @@
       </div>
     </div>
 
+  </div>
   <!-- Blogger Standard Section Required by Engine -->
   <div style='display:none;'>
     <b:section class='main' id='main' showaddelement='yes'>
