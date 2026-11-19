@@ -394,95 +394,30 @@
           </div>
         </div>
 
-        <!-- Stylized Dot Map Container -->
-        <div class='bg-slate-50/80 rounded-2xl p-4 border border-slate-100 relative min-h-[220px] flex items-center justify-center overflow-hidden'>
-          <!-- SVG Stylized Dots Representing Tay Ninh Map -->
-          <svg class='w-48 h-48 opacity-90' viewBox='0 0 200 200' fill='none' xmlns='http://www.w3.org/2000/svg'>
-            <!-- Green dots pattern for Tay Ninh Province Shape -->
-            <g fill='#10b981' opacity='0.75'>
-              <circle cx='90' cy='30' r='3'/>
-              <circle cx='100' cy='30' r='3'/>
-              <circle cx='110' cy='30' r='3'/>
-              <circle cx='80' cy='40' r='3'/>
-              <circle cx='90' cy='40' r='3'/>
-              <circle cx='100' cy='40' r='3'/>
-              <circle cx='110' cy='40' r='3'/>
-              <circle cx='120' cy='40' r='3'/>
-              <circle cx='70' cy='50' r='3'/>
-              <circle cx='80' cy='50' r='3'/>
-              <circle cx='90' cy='50' r='3'/>
-              <circle cx='100' cy='50' r='3'/>
-              <circle cx='110' cy='50' r='3'/>
-              <circle cx='120' cy='50' r='3'/>
-              <circle cx='130' cy='50' r='3'/>
-              <circle cx='70' cy='60' r='3'/>
-              <circle cx='80' cy='60' r='3'/>
-              <circle cx='90' cy='60' r='3'/>
-              <circle cx='100' cy='60' r='3'/>
-              <circle cx='110' cy='60' r='3'/>
-              <circle cx='120' cy='60' r='3'/>
-              <circle cx='130' cy='60' r='3'/>
-              <circle cx='70' cy='70' r='3'/>
-              <circle cx='80' cy='70' r='3'/>
-              <circle cx='90' cy='70' r='3'/>
-              <circle cx='100' cy='70' r='3'/>
-              <circle cx='110' cy='70' r='3'/>
-              <circle cx='120' cy='70' r='3'/>
-              <circle cx='80' cy='80' r='3'/>
-              <circle cx='90' cy='80' r='3'/>
-              <circle cx='100' cy='80' r='3'/>
-              <circle cx='110' cy='80' r='3'/>
-              <circle cx='90' cy='90' r='3'/>
-              <circle cx='100' cy='90' r='3'/>
-              <circle cx='110' cy='90' r='3'/>
-              <circle cx='100' cy='100' r='3'/>
-              <circle cx='110' cy='100' r='3'/>
-              <circle cx='110' cy='110' r='3'/>
-              <circle cx='120' cy='110' r='3'/>
-              <circle cx='120' cy='120' r='3'/>
-              <circle cx='130' cy='120' r='3'/>
-            </g>
+        <!-- Google Maps Tây Ninh Container -->
+        <div class='bg-slate-100 rounded-2xl overflow-hidden border border-slate-200/90 shadow-sm relative h-64 w-full group'>
+          <iframe 
+            v-bind:src='mapEmbedUrl' 
+            class='w-full h-full border-0 rounded-2xl' 
+            loading='lazy' 
+            referrerpolicy='no-referrer-when-downgrade'
+            title='Google Maps Tây Ninh'>
+          </iframe>
 
-            <!-- Numbered Pins matching design -->
-            <!-- Pin 1 -->
-            <g class='cursor-pointer' v-on:click='selectPin(1)'>
-              <circle cx='40' cy='100' r='8' fill='#0f172a'/>
-              <text x='40' y='103' fill='white' font-size='9' font-weight='bold' text-anchor='middle'>1</text>
-            </g>
-
-            <!-- Pin 2 -->
-            <g class='cursor-pointer' v-on:click='selectPin(2)'>
-              <circle cx='95' cy='55' r='8' fill='#0f172a'/>
-              <text x='95' y='58' fill='white' font-size='9' font-weight='bold' text-anchor='middle'>2</text>
-            </g>
-
-            <!-- Pin 3 -->
-            <g class='cursor-pointer' v-on:click='selectPin(3)'>
-              <circle cx='130' cy='65' r='8' fill='#0f172a'/>
-              <text x='130' y='68' fill='white' font-size='9' font-weight='bold' text-anchor='middle'>3</text>
-            </g>
-
-            <!-- Pin 4 -->
-            <g class='cursor-pointer' v-on:click='selectPin(4)'>
-              <circle cx='95' cy='95' r='8' fill='#0f172a'/>
-              <text x='95' y='98' fill='white' font-size='9' font-weight='bold' text-anchor='middle'>4</text>
-            </g>
-
-            <!-- Pin 5 -->
-            <g class='cursor-pointer' v-on:click='selectPin(5)'>
-              <circle cx='125' cy='125' r='8' fill='#0f172a'/>
-              <text x='125' y='128' fill='white' font-size='9' font-weight='bold' text-anchor='middle'>5</text>
-            </g>
-          </svg>
-
-          <!-- Hover Card Popup On Map -->
-          <div class='absolute bottom-3 left-3 right-3 bg-white/95 backdrop-blur-md rounded-xl p-2.5 shadow-lg border border-slate-200/80 flex items-center gap-2.5 transition'>
+          <!-- Active Pin Card Overlay on Google Maps -->
+          <div class='absolute bottom-2.5 left-2.5 right-2.5 bg-white/95 backdrop-blur-md rounded-xl p-2.5 shadow-lg border border-slate-200/80 flex items-center gap-2.5 transition group-hover:opacity-95'>
             <img v-bind:src='activePinItem.image' class='w-10 h-10 rounded-lg object-cover' />
             <div class='flex-1 min-w-0'>
               <h5 class='font-bold text-[11px] text-slate-900 truncate'>{{ activePinItem.title }}</h5>
               <p class='text-[10px] text-slate-500 font-semibold text-emerald-600'>{{ activePinItem.price }}</p>
-              <p class='text-[9px] text-slate-400 truncate'>{{ activePinItem.location }}</p>
+              <p class='text-[9px] text-slate-400 truncate flex items-center gap-1'>
+                <i class='fa-solid fa-location-dot text-rose-500 text-[8px]'></i>
+                <span>{{ activePinItem.location }}</span>
+              </p>
             </div>
+            <a v-bind:href='"https://www.google.com/maps/search/?api=1&amp;query=" + encodeURIComponent(activePinItem.location + " Tây Ninh")' target='_blank' class='w-7 h-7 rounded-lg bg-teal-50 text-teal-700 flex items-center justify-center hover:bg-teal-600 hover:text-white transition' title='Mở trên Google Maps'>
+              <i class='fa-solid fa-arrow-up-right-from-square text-[10px]'></i>
+            </a>
           </div>
         </div>
 
@@ -779,7 +714,7 @@
       console.warn('Firebase init notice:', e.message);
     }
 
-    const { createApp, ref, computed, onMounted } = Vue;
+    const { createApp, ref, computed, onMounted, watch } = Vue;
 
     createApp({
       setup() {
@@ -4068,25 +4003,32 @@
         ]);
 
         const activePinItem = ref({
-          title: 'Nhân viên Kinh doanh',
-          price: '12-15 Tr',
-          location: 'VM - TP. Tây Ninh',
+          title: 'Nhân viên Kinh doanh (Sales)',
+          price: '12-18 Tr/Tháng',
+          location: 'TP. Tây Ninh',
           image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=120&h=120&q=80'
         });
 
+        const mapEmbedUrl = ref("https://maps.google.com/maps?q=T%C3%A2y+Ninh,+Vi%E1%BB%87t+Nam&t=&z=11&ie=UTF8&iwloc=&output=embed");
+
         const selectPin = (pinNum) => {
           if (pinNum === 1) {
-            activePinItem.value = { title: 'Nhân viên Kinh doanh', price: '12-15 Tr', location: 'VM - TP. Tây Ninh', image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=120&h=120&q=80' };
+            activePinItem.value = { title: 'Nhân viên Kinh doanh (Sales)', price: '12-18 Tr/Tháng', location: 'TP. Tây Ninh', image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=120&h=120&q=80' };
+            mapEmbedUrl.value = "https://maps.google.com/maps?q=Th%C3%A0nh+ph%E1%BB%91+T%C3%A2y+Ninh&t=&z=13&ie=UTF8&iwloc=&output=embed";
           } else if (pinNum === 2) {
             activePinItem.value = { title: 'Căn hộ Phú Gia', price: '1.8 Tỷ', location: 'Phường 3, TP. Tây Ninh', image: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=120&h=120&q=80' };
+            mapEmbedUrl.value = "https://maps.google.com/maps?q=Ph%C6%B0%E1%BB%9Dng+3+T%C3%A2y+Ninh&t=&z=14&ie=UTF8&iwloc=&output=embed";
           } else if (pinNum === 3) {
-            activePinItem.value = { title: 'Khách sạn Luxury', price: '450k/Đêm', location: 'TP. Tây Ninh', image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=120&h=120&q=80' };
+            activePinItem.value = { title: 'Xe Honda Vision', price: '22.5 Tr', location: 'Trảng Bàng, Tây Ninh', image: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=120&h=120&q=80' };
+            mapEmbedUrl.value = "https://maps.google.com/maps?q=Tr%E1%BA%A3ng+B%C3%A0ng+T%C3%A2y+Ninh&t=&z=13&ie=UTF8&iwloc=&output=embed";
           } else if (pinNum === 4) {
-            activePinItem.value = { title: 'Điện lạnh Mr. Dung', price: 'Báo giá nhanh', location: 'Hoà Thành', image: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=120&h=120&q=80' };
+            activePinItem.value = { title: 'Điện lạnh Mr. Dung', price: 'Báo giá nhanh', location: 'Hoà Thành, Tây Ninh', image: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=120&h=120&q=80' };
+            mapEmbedUrl.value = "https://maps.google.com/maps?q=H%C3%B2a+Th%C3%A0nh+T%C3%A2y+Ninh&t=&z=14&ie=UTF8&iwloc=&output=embed";
           } else {
-            activePinItem.value = { title: 'Xe Honda Vision', price: '22.5 Tr', location: 'Trảng Bàng', image: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=120&h=120&q=80' };
+            activePinItem.value = { title: 'Khách sạn Luxury', price: '450k/Đêm', location: 'TP. Tây Ninh', image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=120&h=120&q=80' };
+            mapEmbedUrl.value = "https://maps.google.com/maps?q=N%C3%BAi+B%C3%A0+%C4%90en+T%C3%A2y+Ninh&t=&z=13&ie=UTF8&iwloc=&output=embed";
           }
-          showToast(`Đã chọn địa điểm số ${pinNum} trên bản đồ Tây Ninh`, 'info');
+          showToast('Google Maps đã chuyển đến: ' + activePinItem.value.location, 'info');
         };
 
         const selectQuickListItem = (item) => {
@@ -4167,8 +4109,31 @@
         };
 
         const zoomMap = () => {
-          showToast('Bản đồ Tây Ninh đã được phóng to chi tiết', 'info');
+          mapEmbedUrl.value = "https://maps.google.com/maps?q=" + encodeURIComponent(activePinItem.value.location + " Tây Ninh") + "&t=&z=15&ie=UTF8&iwloc=&output=embed";
+          showToast('Google Maps đã phóng to cận cảnh ' + activePinItem.value.location, 'info');
         };
+
+        watch(activeDistrict, (newDist) => {
+          if (newDist === 'trangbang') {
+            mapEmbedUrl.value = "https://maps.google.com/maps?q=Tr%E1%BA%A3ng+B%C3%A0ng+T%C3%A2y+Ninh&t=&z=12&ie=UTF8&iwloc=&output=embed";
+          } else if (newDist === 'hoathanh') {
+            mapEmbedUrl.value = "https://maps.google.com/maps?q=H%C3%B2a+Th%C3%A0nh+T%C3%A2y+Ninh&t=&z=13&ie=UTF8&iwloc=&output=embed";
+          } else if (newDist === 'godau') {
+            mapEmbedUrl.value = "https://maps.google.com/maps?q=G%C3%B2+D%E1%BA%A7u+T%C3%A2y+Ninh&t=&z=12&ie=UTF8&iwloc=&output=embed";
+          } else if (newDist === 'duongminhchau') {
+            mapEmbedUrl.value = "https://maps.google.com/maps?q=D%C6%B0%C6%A1ng+Minh+Ch%C3%A2u+T%C3%A2y+Ninh&t=&z=12&ie=UTF8&iwloc=&output=embed";
+          } else if (newDist === 'tanchau') {
+            mapEmbedUrl.value = "https://maps.google.com/maps?q=T%C3%A2n+Ch%C3%A2u+T%C3%A2y+Ninh&t=&z=11&ie=UTF8&iwloc=&output=embed";
+          } else if (newDist === 'tanbien') {
+            mapEmbedUrl.value = "https://maps.google.com/maps?q=T%C3%A2n+Bi%C3%AAn+T%C3%A2y+Ninh&t=&z=11&ie=UTF8&iwloc=&output=embed";
+          } else if (newDist === 'bencau') {
+            mapEmbedUrl.value = "https://maps.google.com/maps?q=B%E1%BA%BFn+C%E1%BA%A7u+T%C3%A2y+Ninh&t=&z=12&ie=UTF8&iwloc=&output=embed";
+          } else if (newDist === 'tptayninh') {
+            mapEmbedUrl.value = "https://maps.google.com/maps?q=Th%C3%A0nh+ph%E1%BB%91+T%C3%A2y+Ninh&t=&z=13&ie=UTF8&iwloc=&output=embed";
+          } else {
+            mapEmbedUrl.value = "https://maps.google.com/maps?q=T%C3%A2y+Ninh,+Vi%E1%BB%87t+Nam&t=&z=11&ie=UTF8&iwloc=&output=embed";
+          }
+        });
 
         const onSearchKey = (e) => {
           if (e.key === 'Enter') {
@@ -4361,6 +4326,7 @@
           filteredCards,
           mapQuickList,
           activePinItem,
+          mapEmbedUrl,
           applyForm,
           contactForm,
           postForm,
