@@ -4354,7 +4354,7 @@
                   liveList.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
                   cards.value = liveList;
                   isFirebaseConnected.value = true;
-                  console.log(Đã đồng bộ realtime  tin từ Cloud Firestore);
+                  console.log('Đã đồng bộ realtime từ Cloud Firestore: ' + liveList.length);
                 }
               }, (err) => {
                 console.warn('Firestore snapshot error:', err);
@@ -4366,6 +4366,15 @@
         });
 
         return {
+          displayLimit,
+          activeDistrict,
+          activePriceRange,
+          sortAsc,
+          isFirebaseConnected,
+          totalFilteredCount,
+          hasMoreCards,
+          remainingCardsCount,
+          loadMore,
           activeTab,
           activeCategory,
           viewMode,
