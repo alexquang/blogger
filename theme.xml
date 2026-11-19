@@ -4892,62 +4892,68 @@
           if (card.description && card.description.trim()) {
             return card.description;
           }
+          const title = card.title || '';
+          const subtitle = card.subtitle || '';
+          const price = card.price || '';
+          const subprice = card.subprice || '';
+          const location = card.location || 'Tây Ninh';
+
           if (card.category === 'tuyendung') {
-            return THÔNG TIN TUYỂN DỤNG CHI TIẾT:\n +
-              • Vị trí:  + card.title + \n +
-              • Đơn vị tuyển dụng:  + (card.subtitle || 'Doanh nghiệp tại Tây Ninh') + \n +
-              • Mức thu nhập:  + card.price +  ( + (card.subprice || 'Hoa hồng + Phụ cấp') + )\n +
-              • Khu vực làm việc:  + (card.location || 'Tây Ninh') + \n\n +
-              MÔ TẢ CÔNG VIỆC:\n +
-              - Phụ trách các công việc chuyên môn theo sự phân công của quản lý bộ phận.\n +
-              - Phối hợp làm việc cùng đội ngũ nhằm đạt mục tiêu kinh doanh và chất lượng công việc.\n\n +
-              YÊU CẦU ỨNG VIÊN:\n +
-              - Nhanh nhẹn, trung thực, có tinh thần trách nhiệm cao trong công việc.\n +
-              - Ưu tiên ứng viên cư trú tại Tây Ninh hoặc các khu vực lân cận.\n\n +
-              QUYỀN LỢI ĐƯỢC HƯỞNG:\n +
-              - Lương thưởng minh bạch, đóng BHXH, BHYT đầy đủ theo quy định của pháp luật.\n +
-              - Nghỉ lễ tết, thưởng tháng 13 và du lịch hàng năm cùng công ty.;
+            return "THÔNG TIN TUYỂN DỤNG CHI TIẾT:\n" +
+              "• Vị trí: " + title + "\n" +
+              "• Đơn vị tuyển dụng: " + (subtitle || 'Doanh nghiệp tại Tây Ninh') + "\n" +
+              "• Mức thu nhập: " + price + (subprice ? " (" + subprice + ")" : "") + "\n" +
+              "• Khu vực làm việc: " + location + "\n\n" +
+              "MÔ TẢ CÔNG VIỆC:\n" +
+              "- Phụ trách các công việc chuyên môn theo sự phân công của quản lý bộ phận.\n" +
+              "- Phối hợp làm việc cùng đội ngũ nhằm đạt mục tiêu kinh doanh và chất lượng công việc.\n\n" +
+              "YÊU CẦU ỨNG VIÊN:\n" +
+              "- Nhanh nhẹn, trung thực, có tinh thần trách nhiệm cao trong công việc.\n" +
+              "- Ưu tiên ứng viên cư trú tại Tây Ninh hoặc các khu vực lân cận.\n\n" +
+              "QUYỀN LỢI ĐƯỢC HƯỞNG:\n" +
+              "- Lương thưởng minh bạch, đóng BHXH, BHYT đầy đủ theo quy định của pháp luật.\n" +
+              "- Nghỉ lễ tết, thưởng tháng 13 và du lịch hàng năm cùng công ty.";
           } else if (card.category === 'batdongsan') {
-            return THÔNG TIN BẤT ĐỘNG SẢN CHI TIẾT:\n +
-              • Tiêu đề:  + card.title + \n +
-              • Vị trí:  + (card.subtitle || card.location) + \n +
-              • Giá bán:  + card.price +  ( + (card.subprice || 'Sổ hồng riêng') + )\n +
-              • Khu vực:  + (card.location || 'Tây Ninh') + \n\n +
-              THÔNG TIN QUY HOẠCH & TIỀM NĂNG:\n +
-              - Pháp lý chuẩn, sổ hồng riêng chính chủ, công chứng sang tên ngay trong ngày.\n +
-              - Đường trước nhà thông thoáng, ô tô ra vào thoải mái, gần khu dân cư đông đúc.\n +
-              - Bán kính 1km đầy đủ tiện ích: chợ, trường học, trạm y tế, ủy ban nhân dân.\n +
-              - Phù hợp xây nhà định cư lâu dài hoặc đầu tư sinh lời bền vững. Hỗ trợ vay ngân hàng 70%.;
+            return "THÔNG TIN BẤT ĐỘNG SẢN CHI TIẾT:\n" +
+              "• Tiêu đề: " + title + "\n" +
+              "• Vị trí: " + (subtitle || location) + "\n" +
+              "• Giá bán: " + price + (subprice ? " (" + subprice + ")" : "") + "\n" +
+              "• Khu vực: " + location + "\n\n" +
+              "THÔNG TIN QUY HOẠCH & TIỀM NĂNG:\n" +
+              "- Pháp lý chuẩn, sổ hồng riêng chính chủ, công chứng sang tên ngay trong ngày.\n" +
+              "- Đường trước nhà thông thoáng, ô tô ra vào thoải mái, gần khu dân cư đông đúc.\n" +
+              "- Bán kính 1km đầy đủ tiện ích: chợ, trường học, trạm y tế, ủy ban nhân dân.\n" +
+              "- Phù hợp xây nhà định cư lâu dài hoặc đầu tư sinh lời bền vững. Hỗ trợ vay ngân hàng 70%.";
           } else if (card.category === 'raovat') {
-            return THÔNG TIN SẢN PHẨM RAO VẶT CHI TIẾT:\n +
-              • Sản phẩm:  + card.title + \n +
-              • Nguồn gốc / Đơn vị:  + (card.subtitle || 'Tây Ninh') + \n +
-              • Giá bán:  + card.price +  ( + (card.subprice || 'Có thương lượng') + )\n +
-              • Khu vực:  + (card.location || 'Tây Ninh') + \n\n +
-              MÔ TẢ TÌNH TRẠNG:\n +
-              - Hàng cá nhân sử dụng kỹ, còn rất mới và hoạt động trơn tru 100%.\n +
-              - Ngoại hình đẹp, đầy đủ phụ kiện đi kèm theo máy/xe.\n +
-              - Mua bán trực tiếp tại nhà riêng để kiểm tra thoải mái, bao test 7 ngày cho người mua yên tâm.;
+            return "THÔNG TIN SẢN PHẨM RAO VẶT CHI TIẾT:\n" +
+              "• Sản phẩm: " + title + "\n" +
+              "• Nguồn gốc / Đơn vị: " + (subtitle || 'Tây Ninh') + "\n" +
+              "• Giá bán: " + price + (subprice ? " (" + subprice + ")" : "") + "\n" +
+              "• Khu vực: " + location + "\n\n" +
+              "MÔ TẢ TÌNH TRẠNG:\n" +
+              "- Hàng cá nhân sử dụng kỹ, còn rất mới và hoạt động trơn tru 100%.\n" +
+              "- Ngoại hình đẹp, đầy đủ phụ kiện đi kèm theo máy/xe.\n" +
+              "- Mua bán trực tiếp tại nhà riêng để kiểm tra thoải mái, bao test 7 ngày cho người mua yên tâm.";
           } else if (card.category === 'suachua') {
-            return THÔNG TIN DỊCH VỤ SỬA CHỮA TẬN NƠI:\n +
-              • Hạng mục:  + card.title + \n +
-              • Cơ sở phục vụ:  + (card.subtitle || 'Dịch vụ Tây Ninh 24/7') + \n +
-              • Chi phí:  + card.price +  ( + (card.subprice || 'Khảo sát tận nơi miễn phí') + )\n +
-              • Khu vực phục vụ:  + (card.location || 'Toàn tỉnh Tây Ninh') + \n\n +
-              CAM KẾT DỊCH VỤ:\n +
-              - Đội ngũ kỹ thuật viên lành nghề, nhiều năm kinh nghiệm, phục vụ chu đáo.\n +
-              - Có mặt tận nơi sau 15 - 30 phút liên hệ, phục vụ tất cả các ngày trong tuần.\n +
-              - Báo giá rõ ràng trước khi sửa chữa, linh kiện thay thế chính hãng có tem bảo hành.;
+            return "THÔNG TIN DỊCH VỤ SỬA CHỮA TẬN NƠI:\n" +
+              "• Hạng mục: " + title + "\n" +
+              "• Cơ sở phục vụ: " + (subtitle || 'Dịch vụ Tây Ninh 24/7') + "\n" +
+              "• Chi phí: " + price + (subprice ? " (" + subprice + ")" : "") + "\n" +
+              "• Khu vực phục vụ: " + location + "\n\n" +
+              "CAM KẾT DỊCH VỤ:\n" +
+              "- Đội ngũ kỹ thuật viên lành nghề, nhiều năm kinh nghiệm, phục vụ chu đáo.\n" +
+              "- Có mặt tận nơi sau 15 - 30 phút liên hệ, phục vụ tất cả các ngày trong tuần.\n" +
+              "- Báo giá rõ ràng trước khi sửa chữa, linh kiện thay thế chính hãng có tem bảo hành.";
           } else {
-            return THÔNG TIN ẨM THỰC & KHÁCH SẠN:\n +
-              • Địa điểm:  + card.title + \n +
-              • Đơn vị:  + (card.subtitle || 'Ẩm thực Tây Ninh') + \n +
-              • Mức giá:  + card.price +  ( + (card.subprice || 'Món ngon mỗi ngày') + )\n +
-              • Địa chỉ:  + (card.location || 'Tây Ninh') + \n\n +
-              GIỚI THIỆU KHÔNG GIAN:\n +
-              - Thực đơn phong phú các món ăn đặc sản Tây Ninh chế biến đậm đà, tươi ngon.\n +
-              - Không gian thoáng mát, sạch sẽ, bãi đỗ xe ô tô và xe máy rộng rãi, an ninh.\n +
-              - Nhận phục vụ tiệc họp mặt gia đình, sinh nhật, liên hoan theo yêu cầu.;
+            return "THÔNG TIN ẨM THỰC & KHÁCH SẠN:\n" +
+              "• Địa điểm: " + title + "\n" +
+              "• Đơn vị: " + (subtitle || 'Ẩm thực Tây Ninh') + "\n" +
+              "• Mức giá: " + price + (subprice ? " (" + subprice + ")" : "") + "\n" +
+              "• Địa chỉ: " + location + "\n\n" +
+              "GIỚI THIỆU KHÔNG GIAN:\n" +
+              "- Thực đơn phong phú các món ăn đặc sản Tây Ninh chế biến đậm đà, tươi ngon.\n" +
+              "- Không gian thoáng mát, sạch sẽ, bãi đỗ xe ô tô và xe máy rộng rãi, an ninh.\n" +
+              "- Nhận phục vụ tiệc họp mặt gia đình, sinh nhật, liên hoan theo yêu cầu.";
           }
         };
 
