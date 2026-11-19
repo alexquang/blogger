@@ -1,0 +1,129 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---------------------------------------------
+    // CÁC HÀM BỔ TRỢ XÁC THỰC VÀ PHÂN QUYỀN
+    // ---------------------------------------------
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Kiểm tra quyền Quản trị viên (Chủ sở hữu Blogger: ptquang0968@gmail.com)
+    function isAdmin() {
+      return isAuthenticated() && (
+        request.auth.token.email == 'ptquang0968@gmail.com' ||
+        request.auth.token.admin == true
+      );
+    }
+
+    // 1. Collection 'users' (Thông tin tài khoản)
+    match /users/{userId} {
+      allow read: if true;
+      allow create, update: if isOwner(userId) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // 2. Collection 'posts' (Bài viết cộng đồng)
+    match /posts/{postId} {
+      allow read: if true;
+      allow create: if isAuthenticated()
+        && request.resource.data.authorId == request.auth.uid
+        && request.resource.data.title is string
+        && request.resource.data.content is string;
+      allow update: if isAuthenticated() && (
+        resource.data.authorId == request.auth.uid ||
+        isAdmin() ||
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likes', 'commentCount'])
+      );
+      allow delete: if isAdmin() || (isAuthenticated() && resource.data.authorId == request.auth.uid);
+    }
+
+    // 3. Collection 'posts_meta' (Lưu lượt like, view, bookmark)
+    match /posts_meta/{postId} {
+      allow read: if true;
+      allow create, update: if true;
+      allow delete: if isAdmin();
+    }
+
+    // 4. Collection 'comments' (Bình luận thời gian thực)
+    match /comments/{commentId} {
+      allow read: if true;
+      allow create: if isAuthenticated()
+        && request.resource.data.authorId == request.auth.uid
+        && request.resource.data.text is string;
+      allow update, delete: if isAdmin() || (isAuthenticated() && resource.data.authorId == request.auth.uid);
+    }
+
+    // 5. Collection 'job_applications' (Ứng tuyển 1-click Easy Apply)
+    match /job_applications/{appId} {
+      allow read: if isAuthenticated() && (
+        resource.data.userId == request.auth.uid ||
+        isAdmin()
+      );
+      allow create: if request.resource.data.fullName is string
+        && request.resource.data.phone is string
+        && request.resource.data.email is string;
+      allow update, delete: if isAuthenticated() && (
+        resource.data.userId == request.auth.uid ||
+        isAdmin()
+      );
+    }
+
+    // 6. Collection 'places' (Tây Ninh Go - Danh bạ địa điểm & Bản đồ)
+    match /places/{placeId} {
+      // Cho phép cộng đồng đọc công khai danh bạ địa điểm
+      allow read: if true;
+
+      // Cho phép đóng góp địa điểm mới
+      allow create: if request.resource.data.name is string
+        && request.resource.data.lat is number
+        && request.resource.data.lng is number;
+
+      // Cập nhật thông tin địa điểm (thành viên hoặc admin)
+      allow update: if isAuthenticated();
+
+      // Chỉ Quản trị viên (ptquang0968@gmail.com) mới có quyền xóa địa điểm
+      allow delete: if isAdmin();
+    }
+
+    // 7. Collection 'place_reviews' (Đánh giá & Bình luận địa điểm)
+    match /place_reviews/{reviewId} {
+      allow read: if true;
+      allow create: if request.resource.data.placeId is string
+        && request.resource.data.comment is string;
+      allow update, delete: if isAdmin() || isAuthenticated();
+    }
+
+    // 8. Collection 'listings' (Tin đăng tổng hợp Tây Ninh Hub - Đang nạp 202+ tin)
+    match /listings/{listingId} {
+      // Đọc công khai dữ liệu tin đăng
+      allow read: if true;
+
+      // Cho phép đăng tin mới khi đã đăng nhập Google
+      allow create: if isAuthenticated();
+
+      // Cho phép cập nhật lượt thích, lượt xem và bình luận realtime
+      allow update: if true;
+
+      // CHỈ ADMIN (ptquang0968@gmail.com) HOẶC CHÍNH TÁC GIẢ BÀI ĐĂNG MỚI ĐƯỢC XÓA
+      allow delete: if isAdmin() || (
+        isAuthenticated() && 
+        resource.data.authorEmail == request.auth.token.email
+      );
+    }
+
+    // 9. Collection 'messages' (Tin nhắn & Thông báo cộng đồng realtime)
+    match /messages/{messageId} {
+      // Cho phép cộng đồng đọc và gửi tin nhắn
+      allow read, create: if true;
+
+      // Chỉ Quản trị viên mới được quyền chỉnh sửa hoặc xóa tin nhắn
+      allow update, delete: if isAdmin();
+    }
+  }
+}
