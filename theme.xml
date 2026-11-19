@@ -531,7 +531,7 @@
                     
                     <!-- Comment Action bar: Like comment + Reply trigger -->
                     <div class='flex items-center gap-3 mt-1.5 pt-1 border-t border-[#F1EFED] text-[10px] text-slate-500 font-semibold'>
-                      <button v-on:click='likeComment(cmt)' class='hover:text-[#C74634] flex items-center gap-1 transition'>
+                      <button v-on:click='likeComment(cmt, card)' class='hover:text-[#C74634] flex items-center gap-1 transition'>
                         <i class='fa-regular fa-thumbs-up'></i>
                         <span>Thích ({{ cmt.likes || 0 }})</span>
                       </button>
@@ -555,10 +555,10 @@
 
                     <!-- Inline Reply Input Box -->
                     <div v-if='cmt.showReply' class='mt-2 flex gap-1.5'>
-                      <input type='text' v-model='cmt.newReplyText' v-on:keyup.enter='postCommentReply(cmt)' 
+                      <input type='text' v-model='cmt.newReplyText' v-on:keyup.enter='postCommentReply(cmt, card)' 
                              v-bind:placeholder='"Phản hồi cho @" + cmt.authorName + "..."' 
                              class='w-full px-2.5 py-1 bg-[#F1EFED] border border-[#E0DDD8] text-[11px] outline-none focus:border-[#C74634]' />
-                      <button v-on:click='postCommentReply(cmt)' 
+                      <button v-on:click='postCommentReply(cmt, card)' 
                               class='px-2.5 py-1 bg-[#161513] text-white text-[11px] font-bold shrink-0 hover:bg-black transition'>
                         Gửi
                       </button>
@@ -1147,7 +1147,7 @@
                   
                   <!-- Comment Actions: Thích & Phản hồi -->
                   <div class='flex items-center gap-3 mt-2 pt-1.5 border-t border-[#F1EFED] text-[11px] text-slate-500 font-semibold'>
-                    <button v-on:click='likeComment(cmt)' class='hover:text-[#C74634] flex items-center gap-1 transition'>
+                    <button v-on:click='likeComment(cmt, selectedDetailCard)' class='hover:text-[#C74634] flex items-center gap-1 transition'>
                       <i class='fa-regular fa-thumbs-up'></i>
                       <span>Thích ({{ cmt.likes || 0 }})</span>
                     </button>
@@ -1171,10 +1171,10 @@
 
                   <!-- Inline Reply Box -->
                   <div v-if='cmt.showReply' class='mt-2.5 flex gap-2'>
-                    <input type='text' v-model='cmt.newReplyText' v-on:keyup.enter='postCommentReply(cmt)' 
+                    <input type='text' v-model='cmt.newReplyText' v-on:keyup.enter='postCommentReply(cmt, selectedDetailCard)' 
                            v-bind:placeholder='"Phản hồi cho @" + cmt.authorName + "..."' 
                            class='w-full px-2.5 py-1.5 bg-[#F1EFED] border border-[#E0DDD8] text-xs outline-none focus:border-[#C74634]' />
-                    <button v-on:click='postCommentReply(cmt)' 
+                    <button v-on:click='postCommentReply(cmt, selectedDetailCard)' 
                             class='px-3 py-1.5 bg-[#161513] text-white text-xs font-bold shrink-0 hover:bg-black transition'>
                       Gửi
                     </button>
@@ -1542,20 +1542,27 @@
           popup.value.show = false;
         };
 
-                // 100% DỮ LIỆU ĐƯỢC LẤY TRỰC TIẾP TỪ CLOUD FIRESTORE (KHÔNG ĐỂ DATA TEST MẪU)
+        // 100% DỮ LIỆU ĐƯỢC LẤY TRỰC TIẾP TỪ CLOUD FIRESTORE (KHÔNG ĐỂ DATA TEST MẪU)
         const enrichListingWithFirebaseDoc = (item) => {
           let comments = [];
           if (item.commentsJson) {
             try {
-              comments = JSON.parse(item.commentsJson);
+              const parsed = JSON.parse(item.commentsJson);
+              if (Array.isArray(parsed)) {
+                comments = parsed;
+              } else if (parsed && typeof parsed === 'object') {
+                comments = [parsed];
+              }
             } catch (e) {
               comments = [];
             }
           } else if (Array.isArray(item.comments)) {
             comments = item.comments;
+          } else if (item.comments && typeof item.comments === 'object') {
+            comments = [item.comments];
           }
           
-          if (!comments || comments.length === 0) {
+          if (!Array.isArray(comments) || comments.length === 0) {
             const rawId = item.id || '';
             const numMatch = rawId.match(/\d+/);
             const seedNum = numMatch ? parseInt(numMatch[0]) : 1;
@@ -1582,6 +1589,34 @@
             ];
           }
 
+          // Chuẩn hóa từng comment thành đối tượng hoàn chỉnh đảm bảo luôn là Array của Objects
+          const cleanComments = comments.filter(c => c != null).map((cmt, cIdx) => {
+            if (typeof cmt === 'string') {
+              return {
+                id: 'c_' + (item.id || 'x') + '_' + (cIdx + 1),
+                authorName: 'Thành viên Tây Ninh',
+                authorAvatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&q=80',
+                timeAgo: 'Gần đây',
+                text: cmt,
+                likes: 0,
+                showReply: false,
+                newReplyText: '',
+                replies: []
+              };
+            }
+            return {
+              id: cmt.id || ('c_' + (item.id || 'x') + '_' + (cIdx + 1)),
+              authorName: cmt.authorName || 'Thành viên Tây Ninh',
+              authorAvatar: cmt.authorAvatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&q=80',
+              timeAgo: cmt.timeAgo || 'Gần đây',
+              text: cmt.text || '',
+              likes: typeof cmt.likes === 'number' ? cmt.likes : (parseInt(cmt.likes) || 0),
+              showReply: false,
+              newReplyText: '',
+              replies: Array.isArray(cmt.replies) ? cmt.replies : (cmt.replies && typeof cmt.replies === 'object' ? [cmt.replies] : [])
+            };
+          });
+
           return {
             ...item,
             likesCount: typeof item.likesCount === 'number' ? item.likesCount : (parseInt(item.likesCount) || 12),
@@ -1589,7 +1624,7 @@
             viewsCount: typeof item.viewsCount === 'number' ? item.viewsCount : (parseInt(item.viewsCount) || 85),
             showComments: false,
             newCommentText: '',
-            comments: comments
+            comments: cleanComments
           };
         };
 
@@ -2151,7 +2186,9 @@
           const author = (currentUser.value && currentUser.value.displayName) || 'Thành viên Tây Ninh';
           const avatar = (currentUser.value && currentUser.value.photoURL) || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&q=80';
           
-          if (!card.comments) card.comments = [];
+          if (!Array.isArray(card.comments)) {
+            card.comments = (card.comments && typeof card.comments === 'object') ? [card.comments] : [];
+          }
           card.comments.unshift({
             id: 'c_' + Date.now(),
             authorName: author,
@@ -2176,13 +2213,14 @@
           }
         };
 
-        const likeComment = (comment) => {
-          if (!comment) return;
+        const likeComment = (comment, card) => {
+          if (!comment || typeof comment !== 'object') return;
           comment.likes = (comment.likes || 0) + 1;
           showToast('Đã thích bình luận!', 'info');
-          if (db && selectedDetailCard.value && selectedDetailCard.value.id) {
+          const targetCard = card || selectedDetailCard.value;
+          if (db && targetCard && targetCard.id && Array.isArray(targetCard.comments)) {
             try {
-              setDoc(doc(db, 'listings', selectedDetailCard.value.id), { commentsJson: JSON.stringify(selectedDetailCard.value.comments) }, { merge: true })
+              setDoc(doc(db, 'listings', targetCard.id), { commentsJson: JSON.stringify(targetCard.comments) }, { merge: true })
                 .catch(e => console.warn('Sync like cmt error:', e));
             } catch (e) {
               console.warn('Sync like cmt:', e);
@@ -2190,13 +2228,15 @@
           }
         };
 
-        const postCommentReply = (comment) => {
+        const postCommentReply = (comment, card) => {
           if (!comment || !comment.newReplyText || !comment.newReplyText.trim()) return;
           const text = comment.newReplyText.trim();
           const author = (currentUser.value && currentUser.value.displayName) || 'Thành viên Tây Ninh';
           const avatar = (currentUser.value && currentUser.value.photoURL) || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&q=80';
           
-          if (!comment.replies) comment.replies = [];
+          if (!Array.isArray(comment.replies)) {
+            comment.replies = (comment.replies && typeof comment.replies === 'object') ? [comment.replies] : [];
+          }
           comment.replies.push({
             id: 'r_' + Date.now(),
             authorName: author,
@@ -2208,9 +2248,10 @@
           comment.showReply = false;
           showToast('Đã gửi phản hồi thành công!', 'success');
 
-          if (db && selectedDetailCard.value && selectedDetailCard.value.id) {
+          const targetCard = card || selectedDetailCard.value;
+          if (db && targetCard && targetCard.id && Array.isArray(targetCard.comments)) {
             try {
-              setDoc(doc(db, 'listings', selectedDetailCard.value.id), { commentsJson: JSON.stringify(selectedDetailCard.value.comments) }, { merge: true })
+              setDoc(doc(db, 'listings', targetCard.id), { commentsJson: JSON.stringify(targetCard.comments) }, { merge: true })
                 .catch(e => console.warn('Sync reply error:', e));
             } catch (e) {
               console.warn('Sync reply:', e);
@@ -2224,7 +2265,9 @@
           const author = (currentUser.value && currentUser.value.displayName) || 'Thành viên Tây Ninh';
           const avatar = (currentUser.value && currentUser.value.photoURL) || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&q=80';
           
-          if (!selectedDetailCard.value.comments) selectedDetailCard.value.comments = [];
+          if (!Array.isArray(selectedDetailCard.value.comments)) {
+            selectedDetailCard.value.comments = (selectedDetailCard.value.comments && typeof selectedDetailCard.value.comments === 'object') ? [selectedDetailCard.value.comments] : [];
+          }
           selectedDetailCard.value.comments.unshift({
             id: 'c_' + Date.now(),
             authorName: author,
