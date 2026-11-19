@@ -4543,10 +4543,10 @@
           title: 'Nhân viên Kinh doanh (Sales)',
           price: '12-18 Tr/Tháng',
           location: 'TP. Tây Ninh',
-          image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&amp;fit=crop&amp;w=120&amp;h=120&amp;q=80'
+          image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=120&h=120&q=80'
         });
 
-        const mapEmbedUrl = ref("https://maps.google.com/maps?q=T%C3%A2y+Ninh,+Vi%E1%BB%87t+Nam&amp;t=&amp;z=11&amp;ie=UTF8&amp;iwloc=&amp;output=embed");
+        const mapEmbedUrl = ref("https://maps.google.com/maps?q=T%C3%A2y+Ninh,+Vi%E1%BB%87t+Nam&t=&z=11&ie=UTF8&iwloc=&output=embed");
 
         // YOUTUBE VIDEOS TỈNH TÂY NINH (100% TÂY NINH)
         const tayNinhVideos = ref([
@@ -4558,8 +4558,8 @@
             duration: '12:45',
             views: '1.2M lượt xem',
             location: 'TP. Tây Ninh',
-            category: 'Du lịch &amp; Tâm linh',
-            thumbnail: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&amp;fit=crop&amp;w=800&amp;q=80',
+            category: 'Du lịch & Tâm linh',
+            thumbnail: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80',
             embedUrl: 'https://www.youtube.com/embed/fT-3E5n4zrk'
           },
           {
@@ -4570,8 +4570,8 @@
             duration: '15:20',
             views: '850K lượt xem',
             location: 'TX. Hòa Thành',
-            category: 'Văn hóa &amp; Di sản',
-            thumbnail: 'https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&amp;fit=crop&amp;w=800&amp;q=80',
+            category: 'Văn hóa & Di sản',
+            thumbnail: 'https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=800&q=80',
             embedUrl: 'https://www.youtube.com/embed/6iB42fS0L20'
           },
           {
@@ -4582,20 +4582,20 @@
             duration: '09:18',
             views: '620K lượt xem',
             location: 'Huyện Dương Minh Châu',
-            category: 'Cắm trại &amp; Dã ngoại',
-            thumbnail: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&amp;fit=crop&amp;w=800&amp;q=80',
+            category: 'Cắm trại & Dã ngoại',
+            thumbnail: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80',
             embedUrl: 'https://www.youtube.com/embed/qg9b8L1bTmg'
           },
           {
             id: 'v4',
             youtubeId: 'WlP82x_2T1o',
-            title: 'Ẩm Thực Tây Ninh: Bánh Tráng Phơi Sương Trảng Bàng &amp; Bò Tơ',
+            title: 'Ẩm Thực Tây Ninh: Bánh Tráng Phơi Sương Trảng Bàng & Bò Tơ',
             channel: 'Ẩm Thực Quê Hương',
             duration: '18:05',
             views: '940K lượt xem',
             location: 'TX. Trảng Bàng',
             category: 'Ẩm thực đặc sản',
-            thumbnail: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&amp;fit=crop&amp;w=800&amp;q=80',
+            thumbnail: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80',
             embedUrl: 'https://www.youtube.com/embed/WlP82x_2T1o'
           },
           {
@@ -4606,8 +4606,8 @@
             duration: '14:32',
             views: '480K lượt xem',
             location: 'TP. Tây Ninh',
-            category: 'Trekking &amp; Khám phá',
-            thumbnail: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&amp;fit=crop&amp;w=800&amp;q=80',
+            category: 'Trekking & Khám phá',
+            thumbnail: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80',
             embedUrl: 'https://www.youtube.com/embed/a8m8zUfZmS0'
           },
           {
@@ -4618,8 +4618,8 @@
             duration: '11:50',
             views: '350K lượt xem',
             location: 'Huyện Tân Biên',
-            category: 'Lịch sử &amp; Nguồn cội',
-            thumbnail: 'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&amp;fit=crop&amp;w=800&amp;q=80',
+            category: 'Lịch sử & Nguồn cội',
+            thumbnail: 'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=800&q=80',
             embedUrl: 'https://www.youtube.com/embed/oX9V5vI9q2g'
           }
         ]);
@@ -4641,7 +4641,7 @@
             id: 'msg_1',
             senderName: 'Phạm Thanh Quang',
             senderEmail: 'ptquang0968@gmail.com',
-            text: 'Chào mừng quý bà con và đối tác đến với Cổng thông tin &amp; Mạng xã hội TNHub Tây Ninh!',
+            text: 'Chào mừng quý bà con và đối tác đến với Cổng thông tin & Mạng xã hội TNHub Tây Ninh!',
             createdAt: new Date(Date.now() - 3600000).toISOString()
           },
           {
@@ -4725,7 +4725,7 @@
               image: found.image
             };
             const queryLocation = encodeURIComponent(found.location + ', Tây Ninh, Việt Nam');
-            mapEmbedUrl.value = 'https://maps.google.com/maps?q=' + queryLocation + '&amp;t=&amp;z=13&amp;ie=UTF8&amp;iwloc=&amp;output=embed';
+            mapEmbedUrl.value = 'https://maps.google.com/maps?q=' + queryLocation + '&t=&z=13&ie=UTF8&iwloc=&output=embed';
             showToast('Đang xem vị trí: ' + found.title + ' (' + found.location + ')', 'info');
           }
         };
@@ -4745,16 +4745,16 @@
           }
 
           if (activeDistrict.value !== 'all') {
-            list = list.filter(c => c.district === activeDistrict.value || (c.location &amp;&amp; c.location.toLowerCase().includes(activeDistrict.value.toLowerCase())));
+            list = list.filter(c => c.district === activeDistrict.value || (c.location && c.location.toLowerCase().includes(activeDistrict.value.toLowerCase())));
           }
 
           if (searchKeyword.value.trim() !== '') {
             const kw = searchKeyword.value.toLowerCase().trim();
             list = list.filter(c => 
-              (c.title &amp;&amp; c.title.toLowerCase().includes(kw)) || 
-              (c.subtitle &amp;&amp; c.subtitle.toLowerCase().includes(kw)) ||
-              (c.location &amp;&amp; c.location.toLowerCase().includes(kw)) ||
-              (c.description &amp;&amp; c.description.toLowerCase().includes(kw))
+              (c.title && c.title.toLowerCase().includes(kw)) || 
+              (c.subtitle && c.subtitle.toLowerCase().includes(kw)) ||
+              (c.location && c.location.toLowerCase().includes(kw)) ||
+              (c.description && c.description.toLowerCase().includes(kw))
             );
           }
 
@@ -4773,15 +4773,15 @@
             list = list.filter(c => c.category === activeCategory.value);
           }
           if (activeDistrict.value !== 'all') {
-            list = list.filter(c => c.district === activeDistrict.value || (c.location &amp;&amp; c.location.toLowerCase().includes(activeDistrict.value.toLowerCase())));
+            list = list.filter(c => c.district === activeDistrict.value || (c.location && c.location.toLowerCase().includes(activeDistrict.value.toLowerCase())));
           }
           if (searchKeyword.value.trim() !== '') {
             const kw = searchKeyword.value.toLowerCase().trim();
             list = list.filter(c => 
-              (c.title &amp;&amp; c.title.toLowerCase().includes(kw)) || 
-              (c.subtitle &amp;&amp; c.subtitle.toLowerCase().includes(kw)) ||
-              (c.location &amp;&amp; c.location.toLowerCase().includes(kw)) ||
-              (c.description &amp;&amp; c.description.toLowerCase().includes(kw))
+              (c.title && c.title.toLowerCase().includes(kw)) || 
+              (c.subtitle && c.subtitle.toLowerCase().includes(kw)) ||
+              (c.location && c.location.toLowerCase().includes(kw)) ||
+              (c.description && c.description.toLowerCase().includes(kw))
             );
           }
           return list.length;
@@ -4889,7 +4889,7 @@
 
         const getCardDescription = (card) => {
           if (!card) return '';
-          if (card.description &amp;&amp; card.description.trim()) {
+          if (card.description && card.description.trim()) {
             return card.description;
           }
           if (card.category === 'tuyendung') {
@@ -4913,7 +4913,7 @@
               • Vị trí:  + (card.subtitle || card.location) + \n +
               • Giá bán:  + card.price +  ( + (card.subprice || 'Sổ hồng riêng') + )\n +
               • Khu vực:  + (card.location || 'Tây Ninh') + \n\n +
-              THÔNG TIN QUY HOẠCH &amp; TIỀM NĂNG:\n +
+              THÔNG TIN QUY HOẠCH & TIỀM NĂNG:\n +
               - Pháp lý chuẩn, sổ hồng riêng chính chủ, công chứng sang tên ngay trong ngày.\n +
               - Đường trước nhà thông thoáng, ô tô ra vào thoải mái, gần khu dân cư đông đúc.\n +
               - Bán kính 1km đầy đủ tiện ích: chợ, trường học, trạm y tế, ủy ban nhân dân.\n +
@@ -4939,7 +4939,7 @@
               - Có mặt tận nơi sau 15 - 30 phút liên hệ, phục vụ tất cả các ngày trong tuần.\n +
               - Báo giá rõ ràng trước khi sửa chữa, linh kiện thay thế chính hãng có tem bảo hành.;
           } else {
-            return THÔNG TIN ẨM THỰC &amp; KHÁCH SẠN:\n +
+            return THÔNG TIN ẨM THỰC & KHÁCH SẠN:\n +
               • Địa điểm:  + card.title + \n +
               • Đơn vị:  + (card.subtitle || 'Ẩm thực Tây Ninh') + \n +
               • Mức giá:  + card.price +  ( + (card.subprice || 'Món ngon mỗi ngày') + )\n +
@@ -4969,11 +4969,11 @@
 
         const selectPresetImage = () => {
           const presets = {
-            'tuyendung': 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&amp;fit=crop&amp;w=800&amp;q=80',
-            'batdongsan': 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&amp;fit=crop&amp;w=800&amp;q=80',
-            'raovat': 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&amp;fit=crop&amp;w=800&amp;q=80',
-            'suachua': 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&amp;fit=crop&amp;w=800&amp;q=80',
-            'amthuc': 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&amp;fit=crop&amp;w=800&amp;q=80'
+            'tuyendung': 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80',
+            'batdongsan': 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80',
+            'raovat': 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=800&q=80',
+            'suachua': 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=800&q=80',
+            'amthuc': 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80'
           };
           postForm.value.previewUrl = presets[postForm.value.category] || presets['tuyendung'];
           showToast('Đã chọn ảnh minh họa sắc nét chuẩn theo chuyên mục!', 'success');
@@ -5029,7 +5029,7 @@
               'Đăng nhập Google ngay',
               async () => {
                 const ok = await loginGoogle();
-                if (ok &amp;&amp; currentUser.value &amp;&amp; currentUser.value.uid) {
+                if (ok && currentUser.value && currentUser.value.uid) {
                   postForm.value.contactName = currentUser.value.displayName || '';
                   showPostModal.value = true;
                 }
@@ -5066,7 +5066,7 @@
         const submitApplication = async () => {
           submittingApply.value = true;
           try {
-            if (GAS_WEB_APP_URL &amp;&amp; !GAS_WEB_APP_URL.includes('Dummy')) {
+            if (GAS_WEB_APP_URL && !GAS_WEB_APP_URL.includes('Dummy')) {
               await fetch(GAS_WEB_APP_URL, {
                 method: 'POST',
                 mode: 'no-cors',
@@ -5092,7 +5092,7 @@
         };
 
         const submitContactInquiry = async () => {
-          if (GAS_WEB_APP_URL &amp;&amp; !GAS_WEB_APP_URL.includes('Dummy')) {
+          if (GAS_WEB_APP_URL && !GAS_WEB_APP_URL.includes('Dummy')) {
             fetch(GAS_WEB_APP_URL, {
               method: 'POST',
               mode: 'no-cors',
@@ -5115,7 +5115,7 @@
           const newCard = {
             id: 'tn_' + Date.now(),
             badge: postForm.value.badge || 'Mới đăng',
-            image: postForm.value.imageBase64 || postForm.value.previewUrl || 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&amp;fit=crop&amp;w=800&amp;q=80',
+            image: postForm.value.imageBase64 || postForm.value.previewUrl || 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80',
             title: postForm.value.title,
             subtitle: (postForm.value.address ? postForm.value.address + ' - ' : '') + locName,
             price: postForm.value.price || 'Thỏa thuận',
