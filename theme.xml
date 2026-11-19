@@ -223,7 +223,10 @@
           <div class='flex items-center gap-2 mb-1.5'>
             <img v-if='currentUser.photoURL' v-bind:src='currentUser.photoURL' class='w-7 h-7 object-cover border border-[#C74634]' />
             <div class='min-w-0 flex-1'>
-              <p class='font-bold text-slate-900 truncate'>{{ currentUser.displayName }}</p>
+              <p class='font-bold text-slate-900 truncate flex items-center gap-1.5'>
+                <span>{{ currentUser.displayName }}</span>
+                <span v-if='isAdmin' class='px-1.5 py-0.2 bg-[#C74634] text-white text-[9px] font-black uppercase tracking-wider'>Admin</span>
+              </p>
               <p class='text-[10px] text-slate-500 truncate'>{{ currentUser.email }}</p>
             </div>
           </div>
@@ -270,6 +273,7 @@
               <img v-if='currentUser.photoURL' v-bind:src='currentUser.photoURL' class='w-4 h-4 object-cover' />
               <i v-else='true' class='fa-regular fa-user text-xs'></i>
               <span>{{ currentUser.displayName ? currentUser.displayName.split(' ')[0] : 'Tài khoản' }}</span>
+              <span v-if='isAdmin' class='ml-1 px-1.5 py-0.2 bg-[#C74634] text-white text-[9px] font-black uppercase tracking-wider'>Admin</span>
             </div>
             <button v-on:click='logoutGoogle' class='px-2 py-1.5 bg-white border border-[#E0DDD8] text-slate-500 hover:text-rose-600 text-xs transition' title='Đăng xuất'>
               <i class='fa-solid fa-arrow-right-from-bracket'></i>
@@ -436,9 +440,20 @@
                   </p>
                 </div>
               </div>
-              <button v-on:click.stop='toggleBookmark(card)' v-bind:class='isBookmarked(card.id) ? "text-[#C74634]" : "text-slate-400 hover:text-slate-700"' class='p-1.5 transition'>
-                <i v-bind:class='isBookmarked(card.id) ? "fa-solid fa-bookmark" : "fa-regular fa-bookmark"' class='text-sm'></i>
-              </button>
+              <div class='flex items-center gap-1.5'>
+                <!-- Nút Xóa bài đăng dành cho Admin: ptquang0968@gmail.com -->
+                <button v-if='isAdmin' 
+                        type='button' 
+                        v-on:click.stop='confirmDeletePost(card)' 
+                        class='px-2.5 py-1 text-[11px] font-bold text-rose-600 hover:text-white bg-rose-50 hover:bg-rose-600 border border-rose-300 transition flex items-center gap-1 shadow-sm' 
+                        title='Xóa bài đăng này (Admin)'>
+                  <i class='fa-solid fa-trash-can text-[11px]'></i>
+                  <span>Xóa</span>
+                </button>
+                <button v-on:click.stop='toggleBookmark(card)' v-bind:class='isBookmarked(card.id) ? "text-[#C74634]" : "text-slate-400 hover:text-slate-700"' class='p-1.5 transition'>
+                  <i v-bind:class='isBookmarked(card.id) ? "fa-solid fa-bookmark" : "fa-regular fa-bookmark"' class='text-sm'></i>
+                </button>
+              </div>
             </div>
 
             <!-- 2. Post Title & Excerpt -->
@@ -1019,9 +1034,20 @@
               {{ selectedDetailCard.badge }}
             </span>
           </div>
-          <button v-on:click='showDetailModal = false' class='w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-700 flex items-center justify-center transition'>
-            <i class='fa-solid fa-xmark text-sm'></i>
-          </button>
+          <div class='flex items-center gap-2'>
+            <!-- Nút Xóa bài đăng Admin trong modal chi tiết -->
+            <button v-if='isAdmin' 
+                    type='button' 
+                    v-on:click='confirmDeletePost(selectedDetailCard)' 
+                    class='px-3 py-1.5 text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 shadow-sm transition flex items-center gap-1.5' 
+                    title='Xóa bài đăng (Admin)'>
+              <i class='fa-solid fa-trash-can text-xs'></i>
+              <span>Xóa bài (Admin)</span>
+            </button>
+            <button v-on:click='showDetailModal = false' class='w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-700 flex items-center justify-center transition'>
+              <i class='fa-solid fa-xmark text-sm'></i>
+            </button>
+          </div>
         </div>
 
         <!-- Modal Scrollable Content -->
@@ -1465,6 +1491,7 @@
       initializeFirestore, 
       collection, 
       addDoc, 
+      deleteDoc,
       query, 
       orderBy, 
       limit, 
@@ -1521,10 +1548,13 @@
         const submittingApply = ref(false);
         const selectedItem = ref(null);
 
-        const currentUser = ref({
-          displayName: 'Phạm Thanh Quang',
-          email: 'ptquang0968@gmail.com',
-          photoURL: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&h=120&q=80'
+        const currentUser = ref(null);
+        const isAdmin = computed(() => {
+          return !!(
+            currentUser.value && 
+            currentUser.value.uid && 
+            currentUser.value.email === 'ptquang0968@gmail.com'
+          );
         });
 
         const bookmarks = ref(JSON.parse(localStorage.getItem('tnhub_bookmarks') || '["c1"]'));
@@ -2397,6 +2427,40 @@
           showDetailModal.value = true;
         };
 
+        // TÍNH NĂNG XÓA BÀI ĐĂNG DÀNH CHO ADMIN (ptquang0968@gmail.com)
+        const confirmDeletePost = (card) => {
+          if (!card || !card.id) return;
+          showPopup(
+            'Xác Nhận Xóa Bài Đăng (Admin)',
+            'Bạn có chắc chắn muốn xóa vĩnh viễn bài đăng:\n"' + (card.title || 'Bài viết này') + '"\nkhỏi hệ thống cơ sở dữ liệu không?',
+            'error',
+            'Xóa vĩnh viễn',
+            async () => {
+              await executeDeletePost(card);
+            },
+            true,
+            'Hủy bỏ'
+          );
+        };
+
+        const executeDeletePost = async (card) => {
+          if (!card || !card.id) return;
+          try {
+            if (db) {
+              await deleteDoc(doc(db, 'listings', card.id));
+            }
+            cards.value = cards.value.filter(c => c.id !== card.id);
+            if (selectedDetailCard.value && selectedDetailCard.value.id === card.id) {
+              showDetailModal.value = false;
+              selectedDetailCard.value = null;
+            }
+            showToast('Đã xóa bài đăng "' + (card.title || '') + '" thành công!', 'success', 'Quản Trị Viên');
+          } catch (err) {
+            console.error('Delete post error:', err);
+            showToast('Lỗi khi xóa bài đăng: ' + err.message, 'error', 'Lỗi');
+          }
+        };
+
         // YÊU CẦU GOOGLE LOGIN TRƯỚC KHI ĐĂNG BÀI
         const openPostModal = () => {
           if (!currentUser.value || !currentUser.value.uid) {
@@ -2646,6 +2710,8 @@
                   email: user.email,
                   photoURL: user.photoURL
                 };
+              } else {
+                currentUser.value = null;
               }
             });
           }
@@ -2809,6 +2875,9 @@
           openContactModal,
           openCallModal,
           openDetailModal,
+          isAdmin,
+          confirmDeletePost,
+          executeDeletePost,
           handleImgError,
           openPostModal,
           openPostModalWithCategory,
