@@ -52,9 +52,9 @@
     }
   ]]></b:skin>
 </head>
-<body class='bg-[#f4f5f7] text-slate-800 antialiased min-h-screen'>
+<body class='bg-[#e4e7ec] text-slate-800 antialiased min-h-screen p-3 sm:p-5 lg:p-8 flex flex-col justify-center items-center'>
 
-  <div id='app' class='flex h-screen overflow-hidden'>
+  <div id='app' class='w-full max-w-7xl 2xl:max-w-[1440px] bg-white rounded-[28px] shadow-2xl border border-slate-200/80 overflow-hidden flex h-[92vh] max-h-[960px] min-h-[680px] my-auto'>
     
     <!-- 1. CỰC TRÁI: MINI ICON SIDEBAR -->
     <aside class='w-16 bg-white border-r border-slate-200/80 flex flex-col items-center py-5 justify-between shrink-0 z-30'>
