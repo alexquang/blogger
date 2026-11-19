@@ -231,7 +231,7 @@
       </div>
     </aside>
     <!-- 3. MAIN CENTER FEED (ORACLE REDWOOD STYLE) -->
-    <main class='flex-1 overflow-y-auto custom-scroll p-6 lg:p-8 space-y-6'>
+    <main class='flex-1 min-w-0 overflow-y-auto custom-scroll p-6 lg:p-8 space-y-6'>
       
       <!-- Top Bar: Search, Realtime Bell, Google Account (Oracle Style) -->
       <div class='flex items-center justify-between gap-4'>
