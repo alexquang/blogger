@@ -961,6 +961,20 @@
             </div>
           </div>
 
+          <!-- Section: THÔNG SỐ ĐẶC THÙ THEO CHUYÊN MỤC -->
+          <div v-if='selectedDetailCard.specs &amp;&amp; selectedDetailCard.specs.length > 0' class='bg-[#F1EFED] p-3.5 border border-[#E0DDD8]'>
+            <h5 class='text-xs font-bold text-[#161513] uppercase tracking-wide mb-2 flex items-center gap-1.5'>
+              <i class='fa-solid fa-list-check text-[#C74634]'></i>
+              <span>Thông Số Chi Tiết Chuyên Mục</span>
+            </h5>
+            <div class='grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs'>
+              <div v-for='spec in selectedDetailCard.specs' v-bind:key='spec.label' class='bg-white p-2 border border-[#E0DDD8] flex flex-col'>
+                <span class='text-[10px] text-slate-400 font-medium'>{{ spec.label }}</span>
+                <span class='font-bold text-slate-800 mt-0.5'>{{ spec.val }}</span>
+              </div>
+            </div>
+          </div>
+
           <!-- Section: MÔ TẢ CHI TIẾT -->
           <div class='pt-2'>
             <h4 class='text-sm font-bold text-slate-900 uppercase tracking-wide mb-2.5 flex items-center gap-2'>
@@ -5118,6 +5132,32 @@
 
         const submitNewPost = () => {
           const locName = getDistrictName(postForm.value.district);
+          const specs = [];
+          if (postForm.value.category === 'tuyendung') {
+            if (postForm.value.jobType) specs.push({ label: 'Hình thức', val: postForm.value.jobType });
+            if (postForm.value.jobExperience) specs.push({ label: 'Kinh nghiệm', val: postForm.value.jobExperience });
+            if (postForm.value.jobGender) specs.push({ label: 'Giới tính', val: postForm.value.jobGender });
+            if (postForm.value.jobQuantity) specs.push({ label: 'Số lượng tuyển', val: postForm.value.jobQuantity });
+          } else if (postForm.value.category === 'batdongsan') {
+            if (postForm.value.bdsType) specs.push({ label: 'Loại hình BĐS', val: postForm.value.bdsType });
+            if (postForm.value.bdsArea) specs.push({ label: 'Diện tích', val: postForm.value.bdsArea });
+            if (postForm.value.bdsLegal) specs.push({ label: 'Pháp lý', val: postForm.value.bdsLegal });
+            if (postForm.value.bdsDirection) specs.push({ label: 'Hướng đất/nhà', val: postForm.value.bdsDirection });
+            if (postForm.value.bdsRoad) specs.push({ label: 'Đường vào', val: postForm.value.bdsRoad });
+          } else if (postForm.value.category === 'raovat') {
+            if (postForm.value.itemCondition) specs.push({ label: 'Tình trạng', val: postForm.value.itemCondition });
+            if (postForm.value.itemBrand) specs.push({ label: 'Hãng sản xuất', val: postForm.value.itemBrand });
+            if (postForm.value.itemWarranty) specs.push({ label: 'Bảo hành', val: postForm.value.itemWarranty });
+          } else if (postForm.value.category === 'suachua') {
+            if (postForm.value.serviceScope) specs.push({ label: 'Phạm vi', val: postForm.value.serviceScope });
+            if (postForm.value.serviceSpeed) specs.push({ label: 'Thời gian', val: postForm.value.serviceSpeed });
+            if (postForm.value.serviceWarranty) specs.push({ label: 'Bảo hành thợ', val: postForm.value.serviceWarranty });
+          } else if (postForm.value.category === 'amthuc') {
+            if (postForm.value.foodType) specs.push({ label: 'Loại hình', val: postForm.value.foodType });
+            if (postForm.value.foodHours) specs.push({ label: 'Giờ mở cửa', val: postForm.value.foodHours });
+            if (postForm.value.foodAmenity) specs.push({ label: 'Tiện ích', val: postForm.value.foodAmenity });
+          }
+
           const newCard = {
             id: 'tn_' + Date.now(),
             badge: postForm.value.badge || 'Mới đăng',
@@ -5131,6 +5171,7 @@
             location: locName,
             district: postForm.value.district,
             description: postForm.value.description,
+            specs: specs,
             authorName: postForm.value.contactName || (currentUser.value ? currentUser.value.displayName : 'Phạm Thanh Quang'),
             phone: postForm.value.contactPhone || '0908.123.456',
             authorEmail: currentUser.value ? currentUser.value.email : 'ptquang0968@gmail.com',
