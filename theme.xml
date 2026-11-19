@@ -4788,12 +4788,12 @@
         });
 
         const hasMoreCards = computed(() => {
-          return displayLimit.value &lt; totalFilteredCount.value;
+          return displayLimit.value < totalFilteredCount.value;
         });
 
         const remainingCardsCount = computed(() => {
           const diff = totalFilteredCount.value - displayLimit.value;
-          return diff &gt; 0 ? diff : 0;
+          return diff > 0 ? diff : 0;
         });
 
         const loadMore = () => {
@@ -4819,7 +4819,7 @@
 
         const toggleBookmark = (card) => {
           const index = bookmarks.value.indexOf(card.id);
-          if (index &gt; -1) {
+          if (index > -1) {
             bookmarks.value.splice(index, 1);
             showToast('Đã bỏ lưu tin: ' + card.title, 'info');
           } else {
@@ -5135,7 +5135,7 @@
 
           if (db) {
             try {
-              addDoc(collection(db, 'listings'), newCard).catch(e =&gt; console.warn('Sync post to firestore notice:', e));
+              addDoc(collection(db, 'listings'), newCard).catch(e => console.warn('Sync post to firestore notice:', e));
             } catch (e) {
               console.warn('Firestore addDoc:', e);
             }
@@ -5236,7 +5236,7 @@
                 const liveMsgs = [];
                 snapshot.forEach(d => liveMsgs.push({ id: d.id, ...d.data() }));
                 liveMsgs.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
-                if (liveMsgs.length &gt; 0) {
+                if (liveMsgs.length > 0) {
                   communityMessages.value = liveMsgs;
                 }
 
