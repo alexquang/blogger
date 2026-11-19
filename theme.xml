@@ -471,13 +471,13 @@
 
             <!-- 5. LinkedIn Action Bar: Like, Comment, Share, Action Button -->
             <div class='px-2 py-1.5 flex items-center justify-between bg-[#FAF9F8] border-b border-[#E0DDD8]'>
-              <button v-on:click='toggleLike(card)' 
+              <button type='button' v-on:click.prevent='toggleLike(card)' 
                       v-bind:class='card.likedByMe ? "text-[#C74634] font-bold" : "text-slate-600 hover:text-slate-900"' 
                       class='flex-1 py-1.5 flex items-center justify-center gap-1.5 text-xs transition hover:bg-[#F1EFED]'>
                 <i v-bind:class='card.likedByMe ? "fa-solid fa-thumbs-up" : "fa-regular fa-thumbs-up"' class='text-sm'></i>
                 <span>{{ card.likedByMe ? 'Đã thích' : 'Thích' }}</span>
               </button>
-              <button v-on:click='toggleComments(card)' 
+              <button type='button' v-on:click.prevent='toggleComments(card)' 
                       class='flex-1 py-1.5 flex items-center justify-center gap-1.5 text-xs text-slate-600 hover:text-slate-900 transition hover:bg-[#F1EFED]'>
                 <i class='fa-regular fa-comment text-sm'></i>
                 <span>Bình luận</span>
@@ -507,10 +507,12 @@
                 <img v-bind:src='(currentUser &amp;&amp; currentUser.photoURL) || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&amp;fit=crop&amp;w=80&amp;q=80"' 
                      class='w-7 h-7 object-cover border border-[#E0DDD8] shrink-0 mt-0.5' />
                 <div class='flex-1 flex gap-1.5'>
-                  <input type='text' v-model='card.newCommentText' v-on:keyup.enter='postCardComment(card)' 
+                  <input type='text' v-model='card.newCommentText' 
+                         v-on:keydown.enter.prevent='postCardComment(card)' 
                          placeholder='Viết bình luận công khai...' 
                          class='w-full px-3 py-1.5 bg-white border border-[#E0DDD8] text-xs outline-none focus:border-[#C74634]' />
-                  <button v-on:click='postCardComment(card)' 
+                  <button type='button' 
+                          v-on:click.prevent='postCardComment(card)' 
                           class='px-3 py-1.5 bg-[#C74634] hover:bg-[#B13C2C] text-white text-xs font-bold shrink-0 transition'>
                     Đăng
                   </button>
@@ -531,12 +533,12 @@
                     
                     <!-- Comment Action bar: Like comment + Reply trigger -->
                     <div class='flex items-center gap-3 mt-1.5 pt-1 border-t border-[#F1EFED] text-[10px] text-slate-500 font-semibold'>
-                      <button v-on:click='likeComment(cmt, card)' class='hover:text-[#C74634] flex items-center gap-1 transition'>
+                      <button type='button' v-on:click.prevent='likeComment(cmt, card)' class='hover:text-[#C74634] flex items-center gap-1 transition'>
                         <i class='fa-regular fa-thumbs-up'></i>
                         <span>Thích ({{ cmt.likes || 0 }})</span>
                       </button>
                       <span>•</span>
-                      <button v-on:click='cmt.showReply = !cmt.showReply' class='hover:text-[#C74634] flex items-center gap-1 transition'>
+                      <button type='button' v-on:click.prevent='cmt.showReply = !cmt.showReply' class='hover:text-[#C74634] flex items-center gap-1 transition'>
                         <i class='fa-regular fa-comment-dots'></i>
                         <span>Phản hồi ({{ (cmt.replies &amp;&amp; cmt.replies.length) || 0 }})</span>
                       </button>
@@ -555,10 +557,12 @@
 
                     <!-- Inline Reply Input Box -->
                     <div v-if='cmt.showReply' class='mt-2 flex gap-1.5'>
-                      <input type='text' v-model='cmt.newReplyText' v-on:keyup.enter='postCommentReply(cmt, card)' 
+                      <input type='text' v-model='cmt.newReplyText' 
+                             v-on:keydown.enter.prevent='postCommentReply(cmt, card)' 
                              v-bind:placeholder='"Phản hồi cho @" + cmt.authorName + "..."' 
                              class='w-full px-2.5 py-1 bg-[#F1EFED] border border-[#E0DDD8] text-[11px] outline-none focus:border-[#C74634]' />
-                      <button v-on:click='postCommentReply(cmt, card)' 
+                      <button type='button' 
+                              v-on:click.prevent='postCommentReply(cmt, card)' 
                               class='px-2.5 py-1 bg-[#161513] text-white text-[11px] font-bold shrink-0 hover:bg-black transition'>
                         Gửi
                       </button>
@@ -1089,7 +1093,7 @@
             <!-- Social Bar Header: Stats & Actions -->
             <div class='p-3 bg-[#FAF9F8] border-b border-[#E0DDD8] flex items-center justify-between text-xs'>
               <div class='flex items-center gap-3'>
-                <button v-on:click='toggleLike(selectedDetailCard)' 
+                <button type='button' v-on:click.prevent='toggleLike(selectedDetailCard)' 
                         v-bind:class='selectedDetailCard.likedByMe ? "text-[#C74634] font-bold" : "text-slate-700 hover:text-slate-900"' 
                         class='px-3 py-1.5 bg-white border border-[#E0DDD8] flex items-center gap-1.5 transition'>
                   <i v-bind:class='selectedDetailCard.likedByMe ? "fa-solid fa-thumbs-up text-[#C74634]" : "fa-regular fa-thumbs-up"' class='text-sm'></i>
@@ -1113,10 +1117,12 @@
                 <img v-bind:src='(currentUser &amp;&amp; currentUser.photoURL) || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&amp;fit=crop&amp;w=80&amp;q=80"' 
                      class='w-8 h-8 object-cover border border-[#E0DDD8] shrink-0 mt-0.5' />
                 <div class='flex-1 flex gap-2'>
-                  <input type='text' v-model='modalNewCommentText' v-on:keyup.enter='postDetailComment' 
+                  <input type='text' v-model='modalNewCommentText' 
+                         v-on:keydown.enter.prevent='postDetailComment' 
                          placeholder='Viết bình luận công khai về bài đăng này...' 
                          class='w-full px-3 py-2 bg-[#F1EFED] border border-[#E0DDD8] text-xs outline-none focus:border-[#C74634] focus:bg-white transition' />
-                  <button v-on:click='postDetailComment' 
+                  <button type='button' 
+                          v-on:click.prevent='postDetailComment' 
                           class='px-4 py-2 bg-[#C74634] hover:bg-[#B13C2C] text-white text-xs font-bold shrink-0 transition'>
                     Gửi
                   </button>
@@ -1147,12 +1153,12 @@
                   
                   <!-- Comment Actions: Thích & Phản hồi -->
                   <div class='flex items-center gap-3 mt-2 pt-1.5 border-t border-[#F1EFED] text-[11px] text-slate-500 font-semibold'>
-                    <button v-on:click='likeComment(cmt, selectedDetailCard)' class='hover:text-[#C74634] flex items-center gap-1 transition'>
+                    <button type='button' v-on:click.prevent='likeComment(cmt, selectedDetailCard)' class='hover:text-[#C74634] flex items-center gap-1 transition'>
                       <i class='fa-regular fa-thumbs-up'></i>
                       <span>Thích ({{ cmt.likes || 0 }})</span>
                     </button>
                     <span>•</span>
-                    <button v-on:click='cmt.showReply = !cmt.showReply' class='hover:text-[#C74634] flex items-center gap-1 transition'>
+                    <button type='button' v-on:click.prevent='cmt.showReply = !cmt.showReply' class='hover:text-[#C74634] flex items-center gap-1 transition'>
                       <i class='fa-regular fa-comment-dots'></i>
                       <span>Phản hồi ({{ (cmt.replies &amp;&amp; cmt.replies.length) || 0 }})</span>
                     </button>
@@ -1171,10 +1177,12 @@
 
                   <!-- Inline Reply Box -->
                   <div v-if='cmt.showReply' class='mt-2.5 flex gap-2'>
-                    <input type='text' v-model='cmt.newReplyText' v-on:keyup.enter='postCommentReply(cmt, selectedDetailCard)' 
+                    <input type='text' v-model='cmt.newReplyText' 
+                           v-on:keydown.enter.prevent='postCommentReply(cmt, selectedDetailCard)' 
                            v-bind:placeholder='"Phản hồi cho @" + cmt.authorName + "..."' 
                            class='w-full px-2.5 py-1.5 bg-[#F1EFED] border border-[#E0DDD8] text-xs outline-none focus:border-[#C74634]' />
-                    <button v-on:click='postCommentReply(cmt, selectedDetailCard)' 
+                    <button type='button' 
+                            v-on:click.prevent='postCommentReply(cmt, selectedDetailCard)' 
                             class='px-3 py-1.5 bg-[#161513] text-white text-xs font-bold shrink-0 hover:bg-black transition'>
                       Gửi
                     </button>
@@ -2165,6 +2173,18 @@
             card.likesCount = (card.likesCount || 0) + 1;
             showToast('Đã thích bài đăng!', 'success');
           }
+
+          // Đồng bộ tức thì giữa Card ngoài feed và Modal chi tiết
+          if (selectedDetailCard.value && card.id && selectedDetailCard.value.id === card.id) {
+            selectedDetailCard.value.likesCount = card.likesCount;
+            selectedDetailCard.value.likedByMe = card.likedByMe;
+          }
+          const targetInCards = cards.value.find(c => c.id === card.id);
+          if (targetInCards) {
+            targetInCards.likesCount = card.likesCount;
+            targetInCards.likedByMe = card.likedByMe;
+          }
+
           if (db && card.id) {
             try {
               setDoc(doc(db, 'listings', card.id), { likesCount: card.likesCount }, { merge: true })
@@ -2186,10 +2206,13 @@
           const author = (currentUser.value && currentUser.value.displayName) || 'Thành viên Tây Ninh';
           const avatar = (currentUser.value && currentUser.value.photoURL) || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&q=80';
           
+          // Luôn giữ mở khung bình luận, không bao giờ tự đóng
+          card.showComments = true;
+
           if (!Array.isArray(card.comments)) {
             card.comments = (card.comments && typeof card.comments === 'object') ? [card.comments] : [];
           }
-          card.comments.unshift({
+          const newCmt = {
             id: 'c_' + Date.now(),
             authorName: author,
             authorAvatar: avatar,
@@ -2199,9 +2222,18 @@
             showReply: false,
             newReplyText: '',
             replies: []
-          });
+          };
+          card.comments.unshift(newCmt);
           card.newCommentText = '';
           showToast('Đã đăng bình luận thành công!', 'success');
+
+          // Nếu đang mở Modal chi tiết cùng bài này thì đồng bộ ngay
+          if (selectedDetailCard.value && selectedDetailCard.value.id === card.id) {
+            if (!Array.isArray(selectedDetailCard.value.comments)) selectedDetailCard.value.comments = [];
+            if (!selectedDetailCard.value.comments.some(c => c.id === newCmt.id)) {
+              selectedDetailCard.value.comments.unshift(newCmt);
+            }
+          }
 
           if (db && card.id) {
             try {
@@ -2218,12 +2250,22 @@
           comment.likes = (comment.likes || 0) + 1;
           showToast('Đã thích bình luận!', 'info');
           const targetCard = card || selectedDetailCard.value;
-          if (db && targetCard && targetCard.id && Array.isArray(targetCard.comments)) {
-            try {
-              setDoc(doc(db, 'listings', targetCard.id), { commentsJson: JSON.stringify(targetCard.comments) }, { merge: true })
-                .catch(e => console.warn('Sync like cmt error:', e));
-            } catch (e) {
-              console.warn('Sync like cmt:', e);
+          if (targetCard && targetCard.id) {
+            // Đồng bộ giữa feed và modal
+            if (selectedDetailCard.value && selectedDetailCard.value.id === targetCard.id) {
+              const cmtInModal = (selectedDetailCard.value.comments || []).find(c => c.id === comment.id);
+              if (cmtInModal) cmtInModal.likes = comment.likes;
+            }
+            const cmtInCard = (targetCard.comments || []).find(c => c.id === comment.id);
+            if (cmtInCard) cmtInCard.likes = comment.likes;
+
+            if (db && Array.isArray(targetCard.comments)) {
+              try {
+                setDoc(doc(db, 'listings', targetCard.id), { commentsJson: JSON.stringify(targetCard.comments) }, { merge: true })
+                  .catch(e => console.warn('Sync like cmt error:', e));
+              } catch (e) {
+                console.warn('Sync like cmt:', e);
+              }
             }
           }
         };
@@ -2268,7 +2310,7 @@
           if (!Array.isArray(selectedDetailCard.value.comments)) {
             selectedDetailCard.value.comments = (selectedDetailCard.value.comments && typeof selectedDetailCard.value.comments === 'object') ? [selectedDetailCard.value.comments] : [];
           }
-          selectedDetailCard.value.comments.unshift({
+          const newCmt = {
             id: 'c_' + Date.now(),
             authorName: author,
             authorAvatar: avatar,
@@ -2278,9 +2320,20 @@
             showReply: false,
             newReplyText: '',
             replies: []
-          });
+          };
+          selectedDetailCard.value.comments.unshift(newCmt);
           modalNewCommentText.value = '';
           showToast('Đã đăng bình luận lên bài viết!', 'success');
+
+          // Đồng bộ tức thời vào danh sách cards ngoài Feed
+          const targetInCards = cards.value.find(c => c.id === selectedDetailCard.value.id);
+          if (targetInCards) {
+            targetInCards.showComments = true;
+            if (!Array.isArray(targetInCards.comments)) targetInCards.comments = [];
+            if (!targetInCards.comments.some(c => c.id === newCmt.id)) {
+              targetInCards.comments.unshift(newCmt);
+            }
+          }
 
           if (db && selectedDetailCard.value.id) {
             try {
@@ -2565,12 +2618,44 @@
               const listingsRef = collection(db, 'listings');
               onSnapshot(listingsRef, (snapshot) => {
                 if (!snapshot.empty) {
+                  // Lưu giữ trạng thái UI hiện tại của từng thẻ (không tự ý đóng khung comment, giữ like, giữ text đang gõ)
+                  const stateMap = {};
+                  cards.value.forEach(c => {
+                    if (c && c.id) {
+                      stateMap[c.id] = {
+                        showComments: c.showComments,
+                        likedByMe: c.likedByMe,
+                        newCommentText: c.newCommentText
+                      };
+                    }
+                  });
+
                   const liveList = [];
                   snapshot.forEach((d) => {
-                    liveList.push(enrichListingWithFirebaseDoc({ id: d.id, ...d.data() }));
+                    const rawData = { id: d.id, ...d.data() };
+                    const enriched = enrichListingWithFirebaseDoc(rawData);
+                    // Phục hồi trạng thái UI của thẻ
+                    if (stateMap[d.id]) {
+                      if (stateMap[d.id].showComments !== undefined) enriched.showComments = stateMap[d.id].showComments;
+                      if (stateMap[d.id].likedByMe !== undefined) enriched.likedByMe = stateMap[d.id].likedByMe;
+                      if (stateMap[d.id].newCommentText) enriched.newCommentText = stateMap[d.id].newCommentText;
+                    }
+                    liveList.push(enriched);
                   });
                   liveList.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
                   cards.value = liveList;
+
+                  // ĐỒNG BỘ REALTIME VÀO MODAL CHI TIẾT NẾU ĐANG MỞ (Không làm tắt modal)
+                  if (selectedDetailCard.value && selectedDetailCard.value.id) {
+                    const matched = liveList.find(c => c.id === selectedDetailCard.value.id);
+                    if (matched) {
+                      selectedDetailCard.value.comments = matched.comments;
+                      selectedDetailCard.value.likesCount = matched.likesCount;
+                      selectedDetailCard.value.viewsCount = matched.viewsCount;
+                      if (matched.likedByMe !== undefined) selectedDetailCard.value.likedByMe = matched.likedByMe;
+                    }
+                  }
+
                   isFirebaseConnected.value = true;
                   isDataLoading.value = false;
                   console.log('Đã đồng bộ ' + liveList.length + ' tin đăng realtime từ Cloud Firestore');
