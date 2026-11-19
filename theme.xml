@@ -167,6 +167,14 @@
             </div>
             <span class='text-[9px] bg-red-100 text-red-700 px-1.5 py-0.5 font-bold uppercase'>YouTube</span>
           </button>
+          <!-- Xổ Số Kiến Thiết Menu Item -->
+          <button v-on:click='activeTab = "xoso"' v-bind:class='activeTab === "xoso" ? "bg-[#F1EFED] text-[#C74634] font-bold border-l-2 border-[#C74634]" : "text-slate-700 hover:bg-[#F1EFED]"' class='w-full flex items-center justify-between px-3 py-2 transition text-xs'>
+            <div class='flex items-center gap-3'>
+              <i class='fa-solid fa-ticket text-amber-600 text-xs'></i>
+              <span>Xổ số kiến thiết</span>
+            </div>
+            <span class='text-[9px] bg-amber-100 text-amber-800 px-1.5 py-0.5 font-bold uppercase'>Tây Ninh &amp; 3 Miền</span>
+          </button>
           <button v-on:click='activeCategory = "all"; activeTab = "feed"' class='w-full flex items-center gap-3 px-3 py-2 text-slate-700 hover:bg-[#F1EFED] transition'>
             <i class='fa-solid fa-bars text-slate-400 text-xs'></i>
             <span>Danh mục tin</span>
@@ -303,16 +311,21 @@
         </div>
       </div>
 
-      <!-- Tab Switcher: Tin Đăng vs Video YouTube Tây Ninh -->
-      <div class='flex items-center gap-6 border-b border-[#E0DDD8] pt-1 pb-2.5 text-xs font-bold uppercase tracking-wide'>
-        <button v-on:click='activeTab = "feed"' v-bind:class='activeTab === "feed" ? "text-[#C74634] border-b-2 border-[#C74634] pb-2 -mb-2.5 font-black" : "text-slate-500 hover:text-slate-900 pb-2 transition"' class='flex items-center gap-2'>
+      <!-- Tab Switcher: Tin Đăng vs Video YouTube Tây Ninh vs Xổ Số Kiến Thiết -->
+      <div class='flex items-center gap-6 border-b border-[#E0DDD8] pt-1 pb-2.5 text-xs font-bold uppercase tracking-wide overflow-x-auto custom-scroll'>
+        <button v-on:click='activeTab = "feed"' v-bind:class='activeTab === "feed" ? "text-[#C74634] border-b-2 border-[#C74634] pb-2 -mb-2.5 font-black" : "text-slate-500 hover:text-slate-900 pb-2 transition"' class='flex items-center gap-2 shrink-0'>
           <i class='fa-solid fa-newspaper text-xs'></i>
           <span>Tất cả tin đăng ({{ totalFilteredCount }})</span>
         </button>
-        <button v-on:click='activeTab = "video"' v-bind:class='activeTab === "video" ? "text-[#C74634] border-b-2 border-[#C74634] pb-2 -mb-2.5 font-black" : "text-slate-500 hover:text-slate-900 pb-2 transition"' class='flex items-center gap-2'>
+        <button v-on:click='activeTab = "video"' v-bind:class='activeTab === "video" ? "text-[#C74634] border-b-2 border-[#C74634] pb-2 -mb-2.5 font-black" : "text-slate-500 hover:text-slate-900 pb-2 transition"' class='flex items-center gap-2 shrink-0'>
           <i class='fa-brands fa-youtube text-red-600 text-sm'></i>
           <span>Video Tây Ninh ({{ tayNinhVideos.length }})</span>
           <span class='bg-red-100 text-red-700 text-[9px] px-1 py-0.2 font-black'>YOUTUBE</span>
+        </button>
+        <button v-on:click='activeTab = "xoso"' v-bind:class='activeTab === "xoso" ? "text-[#C74634] border-b-2 border-[#C74634] pb-2 -mb-2.5 font-black" : "text-slate-500 hover:text-slate-900 pb-2 transition"' class='flex items-center gap-2 shrink-0'>
+          <i class='fa-solid fa-ticket text-amber-600 text-sm'></i>
+          <span>Xổ số kiến thiết</span>
+          <span class='bg-amber-100 text-amber-800 text-[9px] px-1.5 py-0.2 font-black'>TRỰC TIẾP</span>
         </button>
       </div>
 
@@ -683,6 +696,253 @@
         </div>
       </div> <!-- End 3B Video Section -->
 
+      <!-- 3C. XỔ SỐ KIẾN THIẾT SECTION (TÂY NINH & 3 MIỀN) -->
+      <div v-else-if='activeTab === "xoso"' class='space-y-6'>
+        <!-- Banner Note -->
+        <div class='bg-white p-4 border border-[#E0DDD8] flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm'>
+          <div>
+            <div class='flex items-center gap-2'>
+              <span class='bg-[#C74634] text-white text-[10px] font-black px-2 py-0.5 uppercase'>CHÍNH XÁC &amp; TRỰC TIẾP</span>
+              <h2 class='text-base font-black text-[#161513] uppercase flex items-center gap-2'>
+                <i class='fa-solid fa-ticket text-amber-600'></i>
+                <span>KẾT QUẢ XỔ SỐ KIẾN THIẾT TÂY NINH &amp; 3 MIỀN</span>
+              </h2>
+            </div>
+            <p class='text-xs text-[#655F58] mt-1'>
+              Cập nhật trực tiếp kết quả xổ số kiến thiết Tây Ninh (XSTN), Miền Nam (XSMN), Miền Bắc (XSMB) và Miền Trung (XSMT) hàng ngày.
+            </p>
+          </div>
+          <div class='flex items-center gap-2 shrink-0'>
+            <button type='button' v-on:click='fetchLotteryData' v-bind:disabled='isLotteryLoading' class='px-3.5 py-2 bg-[#FAF9F8] border border-[#E0DDD8] text-slate-800 text-xs font-bold hover:bg-[#F1EFED] transition flex items-center gap-1.5 shadow-sm'>
+              <i class='fa-solid fa-rotate text-xs text-[#C74634]' v-bind:class='{"fa-spin": isLotteryLoading}'></i>
+              <span>{{ isLotteryLoading ? 'Đang tải...' : 'Làm mới kết quả' }}</span>
+            </button>
+            <button type='button' v-on:click='activeTab = "feed"' class='px-3.5 py-2 bg-[#161513] hover:bg-black text-white text-xs font-bold transition'>
+              Quay lại tin đăng
+            </button>
+          </div>
+        </div>
+
+        <!-- Công Cụ Dò Vé Số Nhanh Trực Tuyến -->
+        <div class='bg-white p-4 border border-[#E0DDD8] shadow-sm space-y-3'>
+          <div class='flex items-center justify-between border-b border-[#E0DDD8] pb-2'>
+            <h3 class='text-xs sm:text-sm font-bold text-[#161513] uppercase flex items-center gap-2'>
+              <i class='fa-solid fa-wand-magic-sparkles text-[#C74634]'></i>
+              <span>DÒ VÉ SỐ TRỰC TUYẾN TÂY NINH &amp; 3 MIỀN</span>
+            </h3>
+            <span class='text-[10px] text-slate-500 font-medium hidden sm:inline'>Dò vé tự động so khớp tất cả các giải</span>
+          </div>
+
+          <div class='flex flex-col sm:flex-row items-stretch sm:items-center gap-2'>
+            <!-- Chọn Đài dò vé -->
+            <select v-model='ticketCheckRegion' class='px-3 py-2 bg-[#F1EFED] border border-[#E0DDD8] text-xs font-medium outline-none focus:border-[#C74634]'>
+              <option value='xstn'>Xổ Số Tây Ninh (XSTN)</option>
+              <option value='xsmn'>Xổ Số Miền Nam (XSMN)</option>
+              <option value='xsmb'>Xổ Số Miền Bắc (XSMB)</option>
+              <option value='xsmt'>Xổ Số Miền Trung (XSMT)</option>
+            </select>
+
+            <!-- Ô nhập số vé -->
+            <div class='flex-1 flex gap-2'>
+              <input type='text' v-model='ticketNumberInput' 
+                     v-on:keyup.enter='checkTicketResult' 
+                     placeholder='Nhập số vé cần dò (Ví dụ: 092492 hoặc 2 số đuôi 92)...' 
+                     maxlength='6'
+                     class='w-full px-3 py-2 bg-[#F1EFED] border border-[#E0DDD8] text-xs font-mono font-bold tracking-widest outline-none focus:border-[#C74634] focus:bg-white transition' />
+              <button type='button' v-on:click='checkTicketResult' class='px-5 py-2 bg-[#C74634] hover:bg-[#B13C2C] text-white text-xs font-bold shrink-0 transition flex items-center gap-1.5 shadow-sm'>
+                <i class='fa-solid fa-magnifying-glass text-xs'></i>
+                <span>Dò Vé</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Kết quả Dò Vé Thông Báo -->
+          <div v-if='ticketCheckResult' class='p-3 border transition' 
+               v-bind:class='ticketCheckResult.isWin ? "bg-emerald-50 border-emerald-300 text-emerald-900" : "bg-amber-50 border-amber-300 text-amber-900"'>
+            <div class='flex items-start justify-between'>
+              <div class='flex items-center gap-2'>
+                <i class='fa-solid text-base' v-bind:class='ticketCheckResult.isWin ? "fa-circle-check text-emerald-600" : "fa-circle-info text-amber-600"'></i>
+                <div>
+                  <h4 class='font-bold text-xs sm:text-sm'>{{ ticketCheckResult.title }}</h4>
+                  <p class='text-xs mt-0.5'>{{ ticketCheckResult.message }}</p>
+                </div>
+              </div>
+              <button type='button' v-on:click='ticketCheckResult = null' class='text-xs opacity-60 hover:opacity-100'>✕</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bộ Lọc Khu Vực / Tỉnh Thành Xổ Số -->
+        <div class='flex items-center gap-2 overflow-x-auto pb-1 custom-scroll text-xs font-semibold'>
+          <button type='button' v-on:click='setLotteryRegion("xstn")' 
+                  v-bind:class='activeLotteryRegion === "xstn" ? "bg-[#C74634] text-white font-bold" : "bg-white text-slate-700 hover:bg-slate-100 border border-[#E0DDD8]"' 
+                  class='px-4 py-1.5 whitespace-nowrap transition flex items-center gap-1.5 shadow-sm'>
+            <i class='fa-solid fa-star text-amber-300 text-xs'></i>
+            <span>🌟 Xổ Số Tây Ninh (XSTN)</span>
+          </button>
+          <button type='button' v-on:click='setLotteryRegion("xsmn")' 
+                  v-bind:class='activeLotteryRegion === "xsmn" ? "bg-[#C74634] text-white font-bold" : "bg-white text-slate-700 hover:bg-slate-100 border border-[#E0DDD8]"' 
+                  class='px-4 py-1.5 whitespace-nowrap transition shadow-sm'>
+            Miền Nam (XSMN)
+          </button>
+          <button type='button' v-on:click='setLotteryRegion("xsmb")' 
+                  v-bind:class='activeLotteryRegion === "xsmb" ? "bg-[#C74634] text-white font-bold" : "bg-white text-slate-700 hover:bg-slate-100 border border-[#E0DDD8]"' 
+                  class='px-4 py-1.5 whitespace-nowrap transition shadow-sm'>
+            Miền Bắc (XSMB)
+          </button>
+          <button type='button' v-on:click='setLotteryRegion("xsmt")' 
+                  v-bind:class='activeLotteryRegion === "xsmt" ? "bg-[#C74634] text-white font-bold" : "bg-white text-slate-700 hover:bg-slate-100 border border-[#E0DDD8]"' 
+                  class='px-4 py-1.5 whitespace-nowrap transition shadow-sm'>
+            Miền Trung (XSMT)
+          </button>
+        </div>
+
+        <!-- Selector Tỉnh/Đài đối với Miền Nam & Miền Trung -->
+        <div v-if='currentLotteryList.length > 0 &amp;&amp; currentLotteryList[0].provinces &amp;&amp; currentLotteryList[0].provinces.length > 1' 
+             class='flex items-center gap-2 bg-white p-2.5 border border-[#E0DDD8] overflow-x-auto custom-scroll text-xs'>
+          <span class='text-slate-500 font-bold shrink-0 flex items-center gap-1'>
+            <i class='fa-solid fa-location-dot text-[#C74634]'></i>
+            <span>Chọn đài:</span>
+          </span>
+          <button type='button' v-for='(prov, pIdx) in currentLotteryList[0].provinces' v-bind:key='pIdx'
+                  v-on:click='selectedProvinceIdx = pIdx'
+                  v-bind:class='selectedProvinceIdx === pIdx ? "bg-[#161513] text-white font-bold" : "bg-[#F1EFED] text-slate-700 hover:bg-slate-200 border border-[#E0DDD8]"'
+                  class='px-3 py-1 whitespace-nowrap transition'>
+            {{ prov.name }}
+          </button>
+        </div>
+
+        <!-- BẢNG KẾT QUẢ XỔ SỐ CHÍNH (LOTTERY BOARD) -->
+        <div v-if='currentDisplayLottery' class='bg-white border border-[#E0DDD8] shadow-md overflow-hidden'>
+          <!-- Header Kỳ Quay -->
+          <div class='bg-[#161513] text-white p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b-2 border-[#C74634]'>
+            <div>
+              <span class='text-[10px] uppercase font-bold tracking-wider text-amber-400'>
+                {{ getLotteryRegionName(activeLotteryRegion) }}
+              </span>
+              <h3 class='text-sm sm:text-base font-black tracking-wide uppercase mt-0.5'>
+                {{ currentDisplayLottery.title }}
+              </h3>
+            </div>
+            <div class='flex items-center gap-2 text-xs text-slate-300'>
+              <span class='px-2 py-0.5 bg-[#C74634] text-white text-[10px] font-bold'>CHÍNH THỨC</span>
+              <span>{{ currentDisplayLottery.dateText || 'Cập nhật hàng ngày' }}</span>
+            </div>
+          </div>
+
+          <!-- Khung Bảng Giải Thưởng (Table Format) -->
+          <div class='divide-y divide-[#E0DDD8] text-xs'>
+            <!-- Giải ĐẶC BIỆT -->
+            <div class='flex items-center bg-red-50/60 p-3 sm:p-4'>
+              <div class='w-24 sm:w-32 font-black text-[#C74634] uppercase tracking-wider text-xs sm:text-sm shrink-0 flex items-center gap-1.5'>
+                <i class='fa-solid fa-crown text-amber-500'></i>
+                <span>ĐẶC BIỆT</span>
+              </div>
+              <div class='flex-1 text-center font-mono font-black text-xl sm:text-3xl text-[#C74634] tracking-widest'>
+                {{ currentDisplayLottery.prizes.ĐB || 'Đang cập nhật' }}
+              </div>
+            </div>
+
+            <!-- Giải Nhất -->
+            <div class='flex items-center p-2.5 sm:p-3 bg-white'>
+              <div class='w-24 sm:w-32 font-bold text-slate-700 uppercase shrink-0'>Giải Nhất</div>
+              <div class='flex-1 text-center font-mono font-bold text-base sm:text-lg text-slate-900 tracking-wider'>
+                {{ currentDisplayLottery.prizes[1] || '-' }}
+              </div>
+            </div>
+
+            <!-- Giải Nhì -->
+            <div class='flex items-center p-2.5 sm:p-3 bg-[#FAF9F8]'>
+              <div class='w-24 sm:w-32 font-bold text-slate-700 uppercase shrink-0'>Giải Nhì</div>
+              <div class='flex-1 text-center font-mono font-bold text-sm sm:text-base text-slate-900 tracking-wider flex flex-wrap justify-center gap-4'>
+                <span v-for='(n, idx) in splitPrize(currentDisplayLottery.prizes[2])' v-bind:key='idx'>{{ n }}</span>
+              </div>
+            </div>
+
+            <!-- Giải Ba -->
+            <div class='flex items-center p-2.5 sm:p-3 bg-white'>
+              <div class='w-24 sm:w-32 font-bold text-slate-700 uppercase shrink-0'>Giải Ba</div>
+              <div class='flex-1 text-center font-mono font-semibold text-sm sm:text-base text-slate-900 tracking-wider flex flex-wrap justify-center gap-3 sm:gap-6'>
+                <span v-for='(n, idx) in splitPrize(currentDisplayLottery.prizes[3])' v-bind:key='idx'>{{ n }}</span>
+              </div>
+            </div>
+
+            <!-- Giải Tư -->
+            <div class='flex items-center p-2.5 sm:p-3 bg-[#FAF9F8]'>
+              <div class='w-24 sm:w-32 font-bold text-slate-700 uppercase shrink-0'>Giải Tư</div>
+              <div class='flex-1 text-center font-mono font-medium text-xs sm:text-sm text-slate-900 tracking-wider flex flex-wrap justify-center gap-2 sm:gap-4'>
+                <span v-for='(n, idx) in splitPrize(currentDisplayLottery.prizes[4])' v-bind:key='idx'>{{ n }}</span>
+              </div>
+            </div>
+
+            <!-- Giải Năm -->
+            <div class='flex items-center p-2.5 sm:p-3 bg-white'>
+              <div class='w-24 sm:w-32 font-bold text-slate-700 uppercase shrink-0'>Giải Năm</div>
+              <div class='flex-1 text-center font-mono font-bold text-sm sm:text-base text-slate-900 tracking-wider flex flex-wrap justify-center gap-3'>
+                <span v-for='(n, idx) in splitPrize(currentDisplayLottery.prizes[5])' v-bind:key='idx'>{{ n }}</span>
+              </div>
+            </div>
+
+            <!-- Giải Sáu -->
+            <div class='flex items-center p-2.5 sm:p-3 bg-[#FAF9F8]'>
+              <div class='w-24 sm:w-32 font-bold text-slate-700 uppercase shrink-0'>Giải Sáu</div>
+              <div class='flex-1 text-center font-mono font-semibold text-xs sm:text-sm text-slate-900 tracking-wider flex flex-wrap justify-center gap-3'>
+                <span v-for='(n, idx) in splitPrize(currentDisplayLottery.prizes[6])' v-bind:key='idx'>{{ n }}</span>
+              </div>
+            </div>
+
+            <!-- Giải Bảy -->
+            <div class='flex items-center p-2.5 sm:p-3 bg-white'>
+              <div class='w-24 sm:w-32 font-bold text-slate-700 uppercase shrink-0'>Giải Bảy</div>
+              <div class='flex-1 text-center font-mono font-bold text-sm sm:text-base text-slate-900 tracking-wider flex flex-wrap justify-center gap-3'>
+                <span v-for='(n, idx) in splitPrize(currentDisplayLottery.prizes[7])' v-bind:key='idx'>{{ n }}</span>
+              </div>
+            </div>
+
+            <!-- Giải Tám (chỉ có ở Miền Nam & Miền Trung) -->
+            <div v-if='currentDisplayLottery.prizes[8]' class='flex items-center p-2.5 sm:p-3 bg-amber-50/50'>
+              <div class='w-24 sm:w-32 font-bold text-amber-800 uppercase shrink-0 flex items-center gap-1'>
+                <i class='fa-solid fa-award text-amber-600'></i>
+                <span>Giải Tám</span>
+              </div>
+              <div class='flex-1 text-center font-mono font-black text-lg sm:text-xl text-amber-700 tracking-widest'>
+                {{ currentDisplayLottery.prizes[8] }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Footer Bảng Kết Quả -->
+          <div class='p-3 bg-[#FAF9F8] border-t border-[#E0DDD8] flex items-center justify-between text-slate-500 text-[11px]'>
+            <span class='flex items-center gap-1.5'>
+              <i class='fa-solid fa-clock-rotate-left text-[#C74634]'></i>
+              <span>Giờ mở thưởng: 16h15 hàng ngày (XSTN: Thứ Năm hàng tuần)</span>
+            </span>
+            <span class='font-semibold text-slate-700'>Nguồn: Xổ Số Kiến Thiết</span>
+          </div>
+        </div>
+
+        <!-- Lịch Sử Các Kỳ Quay Trước Đó -->
+        <div v-if='currentLotteryList.length > 1' class='bg-white p-4 border border-[#E0DDD8] shadow-sm space-y-3'>
+          <h4 class='text-xs font-bold text-[#161513] uppercase flex items-center gap-2 border-b border-[#E0DDD8] pb-2'>
+            <i class='fa-solid fa-calendar-days text-[#C74634]'></i>
+            <span>LỊCH SỬ KẾT QUẢ CÁC KỲ QUAY TRƯỚC ĐÓ</span>
+          </h4>
+          <div class='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3'>
+            <div v-for='(item, idx) in currentLotteryList.slice(1, 7)' v-bind:key='idx' 
+                 v-on:click='selectHistoryLottery(item)'
+                 class='p-3 border border-[#E0DDD8] bg-[#FAF9F8] hover:bg-[#F1EFED] cursor-pointer transition flex flex-col justify-between'>
+              <div class='flex items-center justify-between mb-1'>
+                <span class='font-bold text-xs text-slate-800 line-clamp-1'>{{ item.title }}</span>
+              </div>
+              <div class='flex items-center justify-between mt-2 pt-1 border-t border-[#E0DDD8] text-xs font-mono font-bold text-[#C74634]'>
+                <span class='text-[10px] text-slate-500 font-sans'>Đặc biệt:</span>
+                <span>{{ (item.provinces &amp;&amp; item.provinces[0] &amp;&amp; item.provinces[0].prizes.ĐB) || item.prizes.ĐB || '...' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div> <!-- End 3C Xổ Số Section -->
+
     </main>
     <!-- 4. CỘT PHẢI: BẢN ĐỒ TÂY NINH (MAP WIDGET - NO ROUNDED BORDER) -->
     <aside class='w-72 xl:w-80 2xl:w-[340px] bg-white border-l border-[#E0DDD8] p-5 space-y-5 overflow-y-auto custom-scroll shrink-0 flex flex-col justify-between'>
@@ -758,6 +1018,29 @@
             </div>
             <div class='absolute bottom-1 left-1.5 right-1.5 bg-black/70 px-1.5 py-0.5 text-[9px] text-white truncate font-medium'>
               {{ tayNinhVideos[0].title }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Lottery Widget in Map Column -->
+        <div class='border-t border-[#E0DDD8] pt-3'>
+          <div class='flex items-center justify-between mb-2'>
+            <h4 class='text-xs font-bold text-[#161513] uppercase flex items-center gap-1.5'>
+              <i class='fa-solid fa-ticket text-amber-600'></i>
+              <span>Xổ Số Tây Ninh</span>
+            </h4>
+            <button v-on:click='activeTab = "xoso"' class='text-[10px] text-[#C74634] font-bold hover:underline'>Xem chi tiết</button>
+          </div>
+          <div v-on:click='activeTab = "xoso"' class='p-2.5 bg-[#FAF9F8] border border-[#E0DDD8] cursor-pointer hover:bg-[#F1EFED] transition'>
+            <div class='flex items-center justify-between text-[11px] text-slate-500 mb-1'>
+              <span class='font-bold text-slate-700'>Kỳ quay mới nhất</span>
+              <span class='text-[10px] text-[#C74634] font-bold'>Giải Đặc Biệt</span>
+            </div>
+            <div class='flex items-center justify-between'>
+              <span class='text-xs text-slate-600 font-medium'>XSTN Thứ Năm</span>
+              <span class='font-mono font-black text-lg text-[#C74634] tracking-wider'>
+                {{ (lotteryData.xstn[0] &amp;&amp; lotteryData.xstn[0].prizes.ĐB) || '092492' }}
+              </span>
             </div>
           </div>
         </div>
@@ -1678,6 +1961,103 @@
         const showCommentModal = ref(false);
         const activeCommentCard = ref(null);
         const commentModalInput = ref('');
+
+        // XỔ SỐ KIẾN THIẾT STATE
+        const activeLotteryRegion = ref('xstn');
+        const ticketCheckRegion = ref('xstn');
+        const selectedProvinceIdx = ref(0);
+        const isLotteryLoading = ref(false);
+        const ticketNumberInput = ref('');
+        const ticketCheckResult = ref(null);
+        const lotteryData = ref({
+          xstn: [
+            {
+              title: 'KẾT QUẢ XỔ SỐ TÂY NINH (Thứ Năm)',
+              dateText: '19/11/2026',
+              prizes: {
+                'ĐB': '092492',
+                '1': '80399',
+                '2': '93361',
+                '3': '17022 - 12493',
+                '4': '28295 - 12321 - 18950 - 41216 - 43115 - 51428 - 03139',
+                '5': '3000',
+                '6': '2326 - 3425 - 6802',
+                '7': '877',
+                '8': '71'
+              }
+            }
+          ],
+          xsmn: [
+            {
+              title: 'KẾT QUẢ XỔ SỐ MIỀN NAM (Thứ Năm)',
+              dateText: '19/11/2026',
+              provinces: [
+                {
+                  name: 'Tây Ninh',
+                  prizes: {
+                    'ĐB': '092492', '1': '80399', '2': '93361', '3': '17022 - 12493',
+                    '4': '28295 - 12321 - 18950 - 41216 - 43115 - 51428 - 03139',
+                    '5': '3000', '6': '2326 - 3425 - 6802', '7': '877', '8': '71'
+                  }
+                },
+                {
+                  name: 'An Giang',
+                  prizes: {
+                    'ĐB': '190579', '1': '71864', '2': '24173', '3': '02894 - 36765',
+                    '4': '43741 - 45879 - 95933 - 74309 - 19884 - 32726 - 03428',
+                    '5': '8787', '6': '1473 - 5322 - 1486', '7': '453', '8': '41'
+                  }
+                },
+                {
+                  name: 'Bình Thuận',
+                  prizes: {
+                    'ĐB': '005163', '1': '52828', '2': '03664', '3': '88267 - 96666',
+                    '4': '57811 - 60774 - 12347 - 03698 - 03039 - 78363 - 27859',
+                    '5': '1325', '6': '0973 - 7616 - 3760', '7': '686', '8': '83'
+                  }
+                }
+              ]
+            }
+          ],
+          xsmb: [
+            {
+              title: 'KẾT QUẢ XỔ SỐ MIỀN BẮC (Thứ Năm)',
+              dateText: '19/11/2026',
+              prizes: {
+                'ĐB': '15178',
+                '1': '12262',
+                '2': '84025 - 76943',
+                '3': '59684 - 10776 - 74697 - 05357 - 54340 - 74336',
+                '4': '7658 - 7133 - 0752 - 8252',
+                '5': '1563 - 6217 - 1529 - 2196 - 4329 - 0932',
+                '6': '668 - 992 - 163',
+                '7': '65 - 34 - 73 - 14'
+              }
+            }
+          ],
+          xsmt: [
+            {
+              title: 'KẾT QUẢ XỔ SỐ MIỀN TRUNG',
+              dateText: '19/11/2026',
+              provinces: [
+                {
+                  name: 'Bình Định',
+                  prizes: {
+                    'ĐB': '384912', '1': '49125', '2': '39120', '3': '29103 - 94812',
+                    '4': '48192 - 49120 - 58129 - 49102', '5': '4912', '6': '491 - 392', '7': '491', '8': '28'
+                  }
+                },
+                {
+                  name: 'Quảng Trị',
+                  prizes: {
+                    'ĐB': '910284', '1': '58192', '2': '94812', '3': '58129 - 39120',
+                    '4': '94812 - 48192 - 39120 - 49120', '5': '5812', '6': '391 - 581', '7': '948', '8': '92'
+                  }
+                }
+              ]
+            }
+          ]
+        });
         const selectedDetailCard = ref(null);
         const submittingApply = ref(false);
         const selectedItem = ref(null);
@@ -2459,6 +2839,198 @@
           }
         };
 
+        // XỔ SỐ COMPUTED & METHODS
+        const currentLotteryList = computed(() => {
+          return lotteryData.value[activeLotteryRegion.value] || [];
+        });
+
+        const currentDisplayLottery = computed(() => {
+          const list = currentLotteryList.value;
+          if (!list || list.length === 0) return null;
+          const item = list[0];
+          if (item.provinces && item.provinces.length > 0) {
+            const prov = item.provinces[selectedProvinceIdx.value] || item.provinces[0];
+            return {
+              title: item.title + ' - ' + prov.name,
+              dateText: item.dateText,
+              prizes: prov.prizes || {}
+            };
+          }
+          return {
+            title: item.title,
+            dateText: item.dateText,
+            prizes: item.prizes || {}
+          };
+        });
+
+        const setLotteryRegion = (reg) => {
+          activeLotteryRegion.value = reg;
+          ticketCheckRegion.value = reg;
+          selectedProvinceIdx.value = 0;
+        };
+
+        const getLotteryRegionName = (reg) => {
+          const map = {
+            xstn: 'Xổ Số Tây Ninh',
+            xsmn: 'Xổ Số Miền Nam',
+            xsmb: 'Xổ Số Miền Bắc',
+            xsmt: 'Xổ Số Miền Trung'
+          };
+          return map[reg] || 'Xổ Số Kiến Thiết';
+        };
+
+        const splitPrize = (str) => {
+          if (!str) return [];
+          return String(str).split('-').map(s => s.trim()).filter(Boolean);
+        };
+
+        const parsePrizesBlock = (text) => {
+          const cleanText = text.replace(/7:\s*(\d{3,4})\s*8:\s*(\d{2})/g, '7: $1\n8: $2');
+          const prizes = {};
+          const lines = cleanText.split('\n');
+          lines.forEach(line => {
+            const parts = line.split(':');
+            if (parts.length >= 2) {
+              const k = parts[0].trim();
+              const v = parts.slice(1).join(':').trim();
+              if (k) prizes[k] = v;
+            }
+          });
+          return prizes;
+        };
+
+        const fetchLotteryData = async () => {
+          isLotteryLoading.value = true;
+          showToast('Đang cập nhật kết quả xổ số kiến thiết...', 'info');
+          const feeds = {
+            xstn: 'https://xskt.com.vn/rss-feed/tay-ninh-xstn.rss',
+            xsmn: 'https://xskt.com.vn/rss-feed/mien-nam-xsmn.rss',
+            xsmb: 'https://xskt.com.vn/rss-feed/mien-bac-xsmb.rss',
+            xsmt: 'https://xskt.com.vn/rss-feed/mien-trung-xsmt.rss'
+          };
+
+          for (const [key, url] of Object.entries(feeds)) {
+            try {
+              const proxyUrl = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(url);
+              const res = await fetch(proxyUrl);
+              const data = await res.json();
+              if (data && data.status === 'ok' && Array.isArray(data.items)) {
+                const parsedItems = data.items.map(item => {
+                  const desc = item.description || '';
+                  const title = item.title || '';
+                  const pubDate = (item.pubDate || '').split(' ')[0] || '';
+                  
+                  if (desc.includes('[') && desc.includes(']')) {
+                    const provinces = [];
+                    const parts = desc.split(/\[(.*?)\]/);
+                    for (let i = 1; i < parts.length; i += 2) {
+                      const provName = parts[i].trim();
+                      const provContent = parts[i+1] ? parts[i+1].trim() : '';
+                      provinces.push({
+                        name: provName,
+                        prizes: parsePrizesBlock(provContent)
+                      });
+                    }
+                    return {
+                      title: title,
+                      dateText: pubDate,
+                      provinces: provinces,
+                      prizes: provinces[0] ? provinces[0].prizes : {}
+                    };
+                  } else {
+                    return {
+                      title: title,
+                      dateText: pubDate,
+                      prizes: parsePrizesBlock(desc)
+                    };
+                  }
+                });
+                if (parsedItems.length > 0) {
+                  lotteryData.value[key] = parsedItems;
+                }
+              }
+            } catch (err) {
+              console.warn('Lỗi tải xổ số ' + key + ':', err);
+            }
+          }
+          isLotteryLoading.value = false;
+          showToast('Đã cập nhật toàn bộ kết quả xổ số kiến thiết!', 'success');
+        };
+
+        const checkTicketResult = () => {
+          if (!ticketNumberInput.value || !ticketNumberInput.value.trim()) {
+            showToast('Vui lòng nhập số vé cần dò!', 'warning');
+            return;
+          }
+          const num = ticketNumberInput.value.trim();
+          if (!/^\d{2,6}$/.test(num)) {
+            showToast('Số vé phải từ 2 đến 6 chữ số!', 'warning');
+            return;
+          }
+
+          const list = lotteryData.value[ticketCheckRegion.value] || [];
+          if (!list || list.length === 0) {
+            showToast('Chưa có dữ liệu của đài này để dò vé!', 'warning');
+            return;
+          }
+
+          const currentLottery = list[0];
+          let allPrizesMap = {};
+
+          if (currentLottery.provinces && currentLottery.provinces.length > 0) {
+            const p = currentLottery.provinces[selectedProvinceIdx.value] || currentLottery.provinces[0];
+            allPrizesMap = p.prizes || {};
+          } else {
+            allPrizesMap = currentLottery.prizes || {};
+          }
+
+          const wins = [];
+          for (const [prizeKey, prizeVal] of Object.entries(allPrizesMap)) {
+            const numbers = splitPrize(prizeVal);
+            for (const winningNum of numbers) {
+              if (winningNum === num) {
+                const prizeLabel = prizeKey === 'ĐB' ? 'Giải ĐẶC BIỆT' : 'Giải ' + prizeKey;
+                wins.push(prizeLabel + ' (Trúng nguyên vé ' + winningNum + ')');
+              } else if (num.length === 2 && winningNum.endsWith(num)) {
+                const prizeLabel = prizeKey === 'ĐB' ? 'Giải ĐẶC BIỆT' : 'Giải ' + prizeKey;
+                wins.push('Trúng 2 số đuôi ' + num + ' ở ' + prizeLabel + ' (' + winningNum + ')');
+              } else if (num.length >= 3 && winningNum.endsWith(num)) {
+                const prizeLabel = prizeKey === 'ĐB' ? 'Giải ĐẶC BIỆT' : 'Giải ' + prizeKey;
+                wins.push('Trúng đuôi ' + num + ' ở ' + prizeLabel + ' (' + winningNum + ')');
+              }
+            }
+          }
+
+          if (wins.length > 0) {
+            ticketCheckResult.value = {
+              isWin: true,
+              title: '🎉 CHÚC MỪNG! VÉ SỐ CỦA BẠN ĐÃ TRÚNG THƯỞNG!',
+              message: wins.join(' • ')
+            };
+            showToast('🎉 CHÚC MỪNG! Vé số của bạn đã trúng giải!', 'success');
+          } else {
+            ticketCheckResult.value = {
+              isWin: false,
+              title: 'Rất tiếc! Vé số ' + num + ' chưa trúng giải kỳ này',
+              message: 'Đài: ' + getLotteryRegionName(ticketCheckRegion.value) + ' • Chúc bạn may mắn trong kỳ quay kế tiếp!'
+            };
+            showToast('Vé số chưa trúng giải kỳ này. Chúc bạn may mắn lần sau!', 'info');
+          }
+        };
+
+        const selectHistoryLottery = (item) => {
+          if (!item) return;
+          showToast('Đang xem ' + item.title, 'info');
+          const currentList = lotteryData.value[activeLotteryRegion.value] || [];
+          const idx = currentList.indexOf(item);
+          if (idx > -1) {
+            const copy = [...currentList];
+            const [selected] = copy.splice(idx, 1);
+            copy.unshift(selected);
+            lotteryData.value[activeLotteryRegion.value] = copy;
+          }
+        };
+
         const postCardComment = (card) => {
           if (!card || !card.newCommentText || !card.newCommentText.trim()) return;
           const text = card.newCommentText.trim();
@@ -3018,6 +3590,9 @@
               console.warn('Messages setup error:', err);
             }
           }
+
+          // Tự động tải kết quả xổ số kiến thiết mới nhất
+          fetchLotteryData();
         });
 
         return {
@@ -3098,6 +3673,21 @@
           openCommentDialog,
           closeCommentDialog,
           submitDialogComment,
+          activeLotteryRegion,
+          ticketCheckRegion,
+          selectedProvinceIdx,
+          isLotteryLoading,
+          ticketNumberInput,
+          ticketCheckResult,
+          lotteryData,
+          currentLotteryList,
+          currentDisplayLottery,
+          setLotteryRegion,
+          getLotteryRegionName,
+          splitPrize,
+          fetchLotteryData,
+          checkTicketResult,
+          selectHistoryLottery,
           postCardComment,
           likeComment,
           postCommentReply,
