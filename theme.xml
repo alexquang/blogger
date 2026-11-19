@@ -91,7 +91,7 @@
         <button v-on:click='showPopup("Trung Tâm Hỗ Trợ TN Hub", "Cổng thông tin &amp; mạng xã hội tỉnh Tây Ninh kết nối việc làm, nhà đất, mua bán, dịch vụ.\nHotline/Zalo: 090.xxxx.xxx\nEmail: ptquang0968@gmail.com", "info")' class='w-10 h-10 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 flex items-center justify-center transition'>
           <i class='fa-regular fa-circle-question text-sm'></i>
         </button>
-        <button v-on:click='showConfigModal = true' class='w-10 h-10 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 flex items-center justify-center transition' title='Cài đặt Firebase'>
+        <button v-on:click='showToast("Hệ thống TN Hub đang hoạt động ổn định", "info")' class='w-10 h-10 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 flex items-center justify-center transition' title='Cài đặt'>
           <i class='fa-solid fa-gear text-sm'></i>
         </button>
 
@@ -709,31 +709,7 @@
       </div>
     </div>
 
-    <!-- 10. MODAL CẤU HÌNH FIREBASE SDK -->
-    <div v-if='showConfigModal' class='fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4'>
-      <div class='bg-white rounded-3xl max-w-md w-full p-6 border border-slate-200 shadow-2xl relative text-xs'>
-        <button v-on:click='showConfigModal = false' class='absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-base'>
-          <i class='fa-solid fa-xmark'></i>
-        </button>
 
-        <h3 class='text-base font-bold text-slate-900 mb-1 flex items-center gap-2'>
-          <i class='fa-solid fa-cloud text-teal-600'></i>
-          <span>Cấu Hình TNHub-FireBase</span>
-        </h3>
-        <p class='text-slate-500 mb-4'>Tài khoản quản trị: <strong class='text-slate-800'>ptquang0968@gmail.com</strong></p>
-
-        <div class='space-y-3'>
-          <div>
-            <label class='block font-semibold mb-1'>Firebase Web API Key</label>
-            <input type='text' v-model='customApiKey' placeholder='AIzaSy...' class='w-full px-3 py-2 rounded-xl bg-slate-100 border-none outline-none font-mono text-[11px]' />
-          </div>
-
-          <button v-if='customApiKey.trim()' v-on:click='saveCustomApiKey' class='w-full py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-semibold transition'>
-            Lưu Khóa API
-          </button>
-        </div>
-      </div>
-    </div>
 
   </div> <!-- Close #app -->
 
@@ -812,10 +788,8 @@
         const showApplyModal = ref(false);
         const showContactModal = ref(false);
         const showPostModal = ref(false);
-        const showConfigModal = ref(false);
         const submittingApply = ref(false);
         const selectedItem = ref(null);
-        const customApiKey = ref(localStorage.getItem('tnhub_firebase_api_key') || '');
 
         const currentUser = ref({
           displayName: 'Phạm Thanh Quang',
@@ -4325,14 +4299,6 @@
           }
         };
 
-        const saveCustomApiKey = () => {
-          if (customApiKey.value.trim()) {
-            localStorage.setItem('tnhub_firebase_api_key', customApiKey.value.trim());
-            showToast('Đã lưu API Key! Đang tải lại...', 'success');
-            setTimeout(() => window.location.reload(), 800);
-          }
-        };
-
         onMounted(() => {
           if (auth) {
             onAuthStateChanged(auth, (user) => {
@@ -4382,10 +4348,8 @@
           showApplyModal,
           showContactModal,
           showPostModal,
-          showConfigModal,
           submittingApply,
           selectedItem,
-          customApiKey,
           currentUser,
           bookmarks,
           toasts,
@@ -4420,8 +4384,7 @@
           submitApplication,
           submitContactInquiry,
           submitNewPost,
-          loginGoogle,
-          saveCustomApiKey
+          loginGoogle
         };
       }
     }).mount('#app');
