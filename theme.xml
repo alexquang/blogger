@@ -55,9 +55,9 @@
     }
   ]]></b:skin>
 </head>
-<body class='bg-[#e4e7ec] text-slate-800 antialiased min-h-screen p-3 sm:p-5 lg:p-8 flex flex-col justify-center items-center'>
+<body class='bg-[#e4e7ec] text-slate-800 antialiased min-h-screen py-3 sm:py-5 px-3 sm:px-6 lg:px-8 xl:px-10 flex flex-col justify-center items-center'>
 
-  <div id='app' v-cloak='true' class='w-full max-w-7xl 2xl:max-w-[1440px] bg-white rounded-[28px] shadow-2xl border border-slate-200/80 overflow-hidden flex h-[92vh] max-h-[960px] min-h-[680px] my-auto'>
+  <div id='app' v-cloak='true' class='w-full max-w-[1580px] 2xl:max-w-[1680px] bg-white rounded-[28px] shadow-2xl border border-slate-200/80 overflow-hidden flex h-[93vh] max-h-[960px] min-h-[680px] my-auto'>
     
     <!-- 1. CỰC TRÁI: MINI ICON SIDEBAR -->
     <aside class='w-16 bg-white border-r border-slate-200/80 flex flex-col items-center py-5 justify-between shrink-0 z-30'>
@@ -107,7 +107,7 @@
     </aside>
 
     <!-- 2. SUB-SIDEBAR: MENU ĐIỀU HƯỚNG TN HUB -->
-    <aside class='w-64 bg-white border-r border-slate-200/80 p-5 flex flex-col justify-between shrink-0 overflow-y-auto custom-scroll hidden md:flex'>
+    <aside class='w-56 xl:w-60 bg-white border-r border-slate-200/80 p-4 xl:p-5 flex flex-col justify-between shrink-0 overflow-y-auto custom-scroll hidden md:flex'>
       <div class='space-y-6'>
         <!-- Logo Text -->
         <div>
@@ -379,7 +379,7 @@
     </main>
 
     <!-- 4. CỘT PHẢI: BẢN ĐỒ TÂY NINH (MAP WIDGET) -->
-    <aside class='w-80 bg-white border-l border-slate-200/80 p-5 space-y-5 overflow-y-auto custom-scroll shrink-0 hidden xl:flex xl:flex-col justify-between'>
+    <aside class='w-72 xl:w-80 2xl:w-[340px] bg-white border-l border-slate-200/80 p-5 space-y-5 overflow-y-auto custom-scroll shrink-0 flex flex-col justify-between'>
       <div class='space-y-4'>
         <!-- Header Bản đồ Tây Ninh -->
         <div class='flex items-center justify-between'>
