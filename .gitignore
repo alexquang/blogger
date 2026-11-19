@@ -1,0 +1,7 @@
+# Ignore sensitive backend code
+gas/
+firebase/
+*.gs
+*.json
+*.sh
+.env
