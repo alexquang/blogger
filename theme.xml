@@ -43,6 +43,22 @@
 
   <b:include data='blog' name='all-head-content'/>
 
+  <!-- Mute Tailwind Dev Notice in Console -->
+  <script>
+  //<![CDATA[
+  (function(){
+    try {
+      const origWarn = console.warn;
+      console.warn = function() {
+        if (arguments[0] && typeof arguments[0] === 'string' && arguments[0].indexOf('cdn.tailwindcss.com') !== -1) {
+          return;
+        }
+        origWarn.apply(console, arguments);
+      };
+    } catch(e) {}
+  })();
+  //]]>
+  </script>
   <!-- Tailwind CSS & FontAwesome & Vue 3 CDNs -->
   <script src='https://cdn.tailwindcss.com'></script>
   <script>
@@ -812,7 +828,7 @@
 
         <!-- Video Iframe -->
         <div class='relative w-full aspect-video bg-black'>
-          <iframe v-bind:src='activePlayingVideo.embedUrl + "?autoplay=1&amp;rel=0"' class='w-full h-full' frameborder='0' allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture' allowfullscreen='true'></iframe>
+          <iframe v-bind:src='activePlayingVideo.embedUrl + "?autoplay=1&amp;rel=0"' class='w-full h-full' frameborder='0' allow='autoplay; fullscreen; picture-in-picture' allowfullscreen='true'></iframe>
         </div>
 
         <!-- Video Details Footer -->
@@ -1445,7 +1461,8 @@
       onAuthStateChanged 
     } from 'https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js';
     import { 
-      getFirestore, 
+      getFirestore,
+      initializeFirestore, 
       collection, 
       addDoc, 
       query, 
@@ -1476,7 +1493,13 @@
     try {
       app = initializeApp(firebaseConfig);
       auth = getAuth(app);
-      db = getFirestore(app);
+      try {
+        db = initializeFirestore(app, {
+          experimentalForceLongPolling: true
+        });
+      } catch (errDb) {
+        db = getFirestore(app);
+      }
     } catch (e) {
       console.warn('Firebase init notice:', e.message);
     }
@@ -1625,8 +1648,16 @@
             };
           });
 
+          // Tự động làm sạch và thay thế link ảnh bị hỏng / 404 từ Unsplash
+          let validImage = item.image;
+          const badImageMarkers = ['1486006920555', 'undefined', 'null', 'example.com'];
+          if (!validImage || typeof validImage !== 'string' || badImageMarkers.some(m => validImage.indexOf(m) !== -1)) {
+            validImage = 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&amp;fit=crop&amp;w=800&amp;q=80';
+          }
+
           return {
             ...item,
+            image: validImage,
             likesCount: typeof item.likesCount === 'number' ? item.likesCount : (parseInt(item.likesCount) || 12),
             likedByMe: item.likedByMe || false,
             viewsCount: typeof item.viewsCount === 'number' ? item.viewsCount : (parseInt(item.viewsCount) || 85),
