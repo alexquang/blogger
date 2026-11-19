@@ -52,3 +52,12 @@ updated: 2026-11-19
 - **`messages`:** Lưu trữ tin nhắn và thông báo đẩy realtime cho cộng đồng Tây Ninh.
 - **`place_reviews`:** Lưu trữ các đánh giá trải nghiệm thực tế từ người dùng.
 - **Quy tắc Rules:** Đặt tại `/data/projects/blogger/firebase/firestore.rules`.
+
+---
+
+## 5. Tự động Upload / Đồng bộ Giao diện lên Blogger
+- Sau khi chỉnh sửa và kiểm tra cú pháp XML thành công, Antigravity có thể tự động đồng bộ giao diện lên Blogger bằng lệnh:
+  ```bash
+  ~/blogger-bot/.venv/bin/python ~/blogger-bot/upload_blogger.py /data/projects/blogger/theme.xml
+  ```
+- Script sử dụng Playwright và profile Chrome lưu tại `~/blogger-bot/chrome-profile` để tự động vào mục Theme -> More options -> Restore và nạp file `theme.xml`.
