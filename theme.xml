@@ -50,11 +50,14 @@
       background: #cbd5e1;
       border-radius: 9999px;
     }
+    [v-cloak] {
+      display: none !important;
+    }
   ]]></b:skin>
 </head>
 <body class='bg-[#e4e7ec] text-slate-800 antialiased min-h-screen p-3 sm:p-5 lg:p-8 flex flex-col justify-center items-center'>
 
-  <div id='app' class='w-full max-w-7xl 2xl:max-w-[1440px] bg-white rounded-[28px] shadow-2xl border border-slate-200/80 overflow-hidden flex h-[92vh] max-h-[960px] min-h-[680px] my-auto'>
+  <div id='app' v-cloak='true' class='w-full max-w-7xl 2xl:max-w-[1440px] bg-white rounded-[28px] shadow-2xl border border-slate-200/80 overflow-hidden flex h-[92vh] max-h-[960px] min-h-[680px] my-auto'>
     
     <!-- 1. CỰC TRÁI: MINI ICON SIDEBAR -->
     <aside class='w-16 bg-white border-r border-slate-200/80 flex flex-col items-center py-5 justify-between shrink-0 z-30'>
@@ -536,7 +539,7 @@
     </div>
 
     <!-- 6. POPUP MODAL DIALOG -->
-    <div v-if='popup.show' class='fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4'>
+    <div v-if='popup.show' v-cloak='true' style='display: none;' v-bind:style='popup.show ? "display: flex !important;" : "display: none !important;"' class='fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4'>
       <div class='bg-white rounded-3xl max-w-md w-full p-6 border border-slate-200 shadow-2xl text-center relative'>
         <button v-on:click='popup.show = false' class='absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-base'>
           <i class='fa-solid fa-xmark'></i>
@@ -573,7 +576,7 @@
     </div>
 
     <!-- 7. MODAL ỨNG TUYỂN NHANH (EASY APPLY) -->
-    <div v-if='showApplyModal' class='fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4'>
+    <div v-if='showApplyModal' v-cloak='true' style='display: none;' v-bind:style='showApplyModal ? "display: flex !important;" : "display: none !important;"' class='fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4'>
       <div class='bg-white rounded-3xl max-w-lg w-full p-6 border border-slate-200 shadow-2xl relative text-xs'>
         <button v-on:click='showApplyModal = false' class='absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-base'>
           <i class='fa-solid fa-xmark'></i>
@@ -620,7 +623,7 @@
     </div>
 
     <!-- 8. MODAL LIÊN HỆ & BÁO GIÁ (BẤT ĐỘNG SẢN / DỊCH VỤ) -->
-    <div v-if='showContactModal' class='fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4'>
+    <div v-if='showContactModal' v-cloak='true' style='display: none;' v-bind:style='showContactModal ? "display: flex !important;" : "display: none !important;"' class='fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4'>
       <div class='bg-white rounded-3xl max-w-md w-full p-6 border border-slate-200 shadow-2xl relative text-xs'>
         <button v-on:click='showContactModal = false' class='absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-base'>
           <i class='fa-solid fa-xmark'></i>
@@ -657,7 +660,7 @@
     </div>
 
     <!-- 9. MODAL ĐĂNG TIN MỚI -->
-    <div v-if='showPostModal' class='fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4'>
+    <div v-if='showPostModal' v-cloak='true' style='display: none;' v-bind:style='showPostModal ? "display: flex !important;" : "display: none !important;"' class='fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4'>
       <div class='bg-white rounded-3xl max-w-lg w-full p-6 border border-slate-200 shadow-2xl relative text-xs'>
         <button v-on:click='showPostModal = false' class='absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-base'>
           <i class='fa-solid fa-xmark'></i>
