@@ -281,12 +281,6 @@
             </span>
           </p>
         </div>
-        <div class='flex items-center gap-2'>
-          <button v-on:click='openPostModal' class='px-4 py-2 bg-[#C74634] hover:bg-[#B13C2C] text-white font-bold text-xs shadow-sm transition flex items-center gap-1.5'>
-            <i class='fa-solid fa-pen-to-square'></i>
-            <span>Đăng tin mới</span>
-          </button>
-        </div>
       </div>
 
       <!-- Tab Switcher: Tin Đăng vs Video YouTube Tây Ninh -->
@@ -389,24 +383,6 @@
                     class='flex-1 text-left px-4 py-2.5 bg-[#F1EFED] hover:bg-[#E0DDD8] border border-[#E0DDD8] text-slate-600 hover:text-slate-900 text-xs sm:text-sm font-medium transition flex items-center justify-between'>
               <span>{{ currentUser ? (currentUser.displayName + ' ơi, bạn muốn chia sẻ tin tức hay cơ hội gì tại Tây Ninh?') : 'Bắt đầu bài viết hoặc chia sẻ cơ hội, việc làm, nhà đất tại Tây Ninh...' }}</span>
               <i class='fa-regular fa-pen-to-square text-[#C74634]'></i>
-            </button>
-          </div>
-          <div class='flex items-center justify-between pt-3 mt-3 border-t border-[#E0DDD8] text-xs font-semibold text-slate-600'>
-            <button v-on:click='openPostModal' class='flex items-center gap-2 px-3 py-1.5 hover:bg-[#F1EFED] text-[#C74634] transition'>
-              <i class='fa-regular fa-image text-sm'></i>
-              <span>Đăng hình ảnh</span>
-            </button>
-            <button v-on:click='openPostModalWithCategory("tuyendung")' class='flex items-center gap-2 px-3 py-1.5 hover:bg-[#F1EFED] text-blue-600 transition'>
-              <i class='fa-solid fa-briefcase text-sm'></i>
-              <span>Tuyển dụng</span>
-            </button>
-            <button v-on:click='openPostModalWithCategory("batdongsan")' class='flex items-center gap-2 px-3 py-1.5 hover:bg-[#F1EFED] text-amber-600 transition'>
-              <i class='fa-solid fa-building text-sm'></i>
-              <span>Bất động sản</span>
-            </button>
-            <button v-on:click='openPostModal' class='hidden sm:flex items-center gap-2 px-3 py-1.5 hover:bg-[#F1EFED] text-emerald-600 transition'>
-              <i class='fa-regular fa-newspaper text-sm'></i>
-              <span>Viết bài</span>
             </button>
           </div>
         </div>
