@@ -1,10 +1,46 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+﻿<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE html>
 <html b:css='false' b:defaultwidgetversion='2' b:layoutsversion='3' expr:dir='data:blog.languageDirection' lang='vi' xmlns='http://www.w3.org/1999/xhtml' xmlns:b='http://www.google.com/2005/gml/b' xmlns:data='http://www.google.com/2005/gml/data' xmlns:expr='http://www.google.com/2005/gml/expr' xmlns:v-on='http://vuejs.org' xmlns:v-bind='http://vuejs.org'>
 <head>
   <meta charset='utf-8'/>
   <meta content='width=device-width, initial-scale=1.0' name='viewport'/>
-  <title><data:blog.pageTitle/></title>
+  <title>TNHub - Cổng Thông Tin, Việc Làm &amp; Bất Động Sản Tây Ninh</title>
+  <meta name='description' content='TNHub là cổng thông tin điện tử kết nối số toàn tỉnh Tây Ninh: Tuyển dụng việc làm, nhà đất bất động sản, rao vặt, dịch vụ thợ sửa chữa, ẩm thực và video khám phá Tây Ninh.'/>
+  <meta name='keywords' content='Tây Ninh, TNHub, tayninhinfo, việc làm Tây Ninh, tuyển dụng Tây Ninh, bất động sản Tây Ninh, nhà đất Tây Ninh, du lịch Tây Ninh, núi Bà Đen, Trảng Bàng, Hòa Thành, Gò Dầu, ẩm thực Tây Ninh'/>
+  <meta name='robots' content='index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'/>
+  <meta name='author' content='TNHub Tây Ninh'/>
+  <meta name='geo.region' content='VN-37'/>
+  <meta name='geo.placename' content='Tây Ninh'/>
+  <meta name='theme-color' content='#C74634'/>
+  
+  <!-- Open Graph / Facebook SEO -->
+  <meta property='og:locale' content='vi_VN'/>
+  <meta property='og:type' content='website'/>
+  <meta property='og:title' content='TNHub - Cổng Thông Tin, Việc Làm &amp; Bất Động Sản Tây Ninh'/>
+  <meta property='og:description' content='Cổng thông tin kết nối số tỉnh Tây Ninh: 200+ tin đăng việc làm, nhà đất chính chủ, dịch vụ tận nơi và video khám phá Tây Ninh.'/>
+  <meta property='og:url' content='https://www.tayninhinfo.com/'/>
+  <meta property='og:site_name' content='TNHub Tây Ninh'/>
+  <meta property='og:image' content='https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&amp;fit=crop&amp;w=1200&amp;h=630&amp;q=80'/>
+
+  <!-- Twitter Card SEO -->
+  <meta name='twitter:card' content='summary_large_image'/>
+  <meta name='twitter:title' content='TNHub - Cổng Thông Tin Số Tỉnh Tây Ninh'/>
+  <meta name='twitter:description' content='Tìm kiếm việc làm, mua bán nhà đất, dịch vụ sửa chữa và video danh lam thắng cảnh Tây Ninh trên TNHub.'/>
+  <meta name='twitter:image' content='https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&amp;fit=crop&amp;w=1200&amp;h=630&amp;q=80'/>
+
+  <!-- Schema.org JSON-LD Structured Data for SEO -->
+  <script type='application/ld+json'>
+  //<![CDATA[
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "TNHub Tây Ninh",
+    "url": "https://www.tayninhinfo.com/",
+    "description": "Cổng thông tin việc làm, bất động sản và video khám phá tỉnh Tây Ninh"
+  }
+  //]]>
+  </script>
+
   <b:include data='blog' name='all-head-content'/>
 
   <!-- Tailwind CSS & FontAwesome & Vue 3 CDNs -->
@@ -15,14 +51,23 @@
       theme: {
         extend: {
           colors: {
+            oracle: {
+              red: '#C74634',
+              hover: '#B13C2C',
+              dark: '#161513',
+              warm: '#F1EFED',
+              border: '#E0DDD8',
+              charcoal: '#312E2B',
+              yellow: '#F1B13F'
+            },
             tnhub: {
-              50: '#f0fdfa',
-              100: '#ccfbf1',
-              500: '#14b8a6',
-              600: '#0d9488',
-              700: '#0f766e',
-              800: '#115e59',
-              900: '#134e4a'
+              50: '#fdf3f2',
+              100: '#fbe4e2',
+              500: '#C74634',
+              600: '#B13C2C',
+              700: '#9B3325',
+              800: '#7E2A1E',
+              900: '#161513'
             }
           }
         }
@@ -33,11 +78,15 @@
   <script src='https://unpkg.com/vue@3/dist/vue.global.prod.js'></script>
 
   <b:skin><![CDATA[
+    * {
+      border-radius: 0px !important;
+    }
     body {
       margin: 0;
       padding: 0;
-      background-color: #f4f5f7;
+      background-color: #F1EFED;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #161513;
     }
     .custom-scroll::-webkit-scrollbar {
       width: 5px;
@@ -47,385 +96,509 @@
       background: transparent;
     }
     .custom-scroll::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
-      border-radius: 9999px;
+      background: #C74634;
+      border-radius: 0px !important;
     }
     [v-cloak] {
       display: none !important;
     }
   ]]></b:skin>
 </head>
-<body class='bg-[#e5e7eb] text-slate-800 antialiased min-h-screen py-4 sm:py-6 px-4 sm:px-8 md:px-12 lg:px-16 flex flex-col justify-center items-center'>
-
-  <div id='app' v-cloak='true' class='w-full max-w-[1420px] 2xl:max-w-[1520px] bg-white rounded-[28px] shadow-2xl border border-slate-200/80 overflow-hidden flex h-[92vh] max-h-[950px] min-h-[680px] my-auto'>
+<body class='bg-[#F1EFED] text-[#161513] antialiased min-h-screen py-4 sm:py-6 px-4 sm:px-8 md:px-12 lg:px-16 flex flex-col justify-center items-center'>
+  <div id='app' v-cloak='true' class='w-full max-w-[1420px] 2xl:max-w-[1520px] bg-white border border-[#E0DDD8] shadow-2xl overflow-hidden flex h-[92vh] max-h-[950px] min-h-[680px] my-auto'>
     
-    <!-- 1. CỰC TRÁI: MINI ICON SIDEBAR -->
-    <aside class='w-16 bg-white border-r border-slate-200/80 flex flex-col items-center py-5 justify-between shrink-0 z-30'>
+    <!-- 1. CỰC TRÁI: MINI ICON SIDEBAR (ORACLE REDWOOD STYLE) -->
+    <aside class='w-16 bg-[#161513] border-r border-[#312E2B] flex flex-col items-center py-5 justify-between shrink-0 z-30'>
       <!-- Top Icons -->
       <div class='flex flex-col items-center gap-6 w-full'>
-        <!-- Logo Box -->
-        <a href='/' class='w-10 h-10 rounded-xl bg-teal-600 flex items-center justify-center text-white font-black text-base shadow-sm hover:scale-105 transition-transform'>
-          TN
+        <!-- Oracle-Style TNHub Logo Badge -->
+        <a href='/' class='w-12 h-8 bg-[#C74634] hover:bg-[#B13C2C] flex items-center justify-center text-white font-black text-xs tracking-wider shadow-sm transition select-none' title='TNHub Tây Ninh'>
+          TNHub
         </a>
 
         <!-- Icon Stack -->
         <nav class='flex flex-col items-center gap-4 w-full'>
-          <button v-on:click='activeCategory = "all"' v-bind:class='activeCategory === "all" ? "bg-slate-900 text-white shadow-sm" : "text-slate-400 hover:text-slate-700 hover:bg-slate-100"' class='w-10 h-10 rounded-xl flex items-center justify-center transition'>
+          <button v-on:click='activeCategory = "all"; activeTab = "feed"' v-bind:class='activeCategory === "all" &amp;&amp; activeTab === "feed" ? "bg-[#C74634] text-white shadow-sm" : "text-slate-400 hover:text-white hover:bg-white/10"' class='w-10 h-10 flex items-center justify-center transition' title='Trang chủ'>
             <i class='fa-solid fa-house text-sm'></i>
           </button>
-          <button v-on:click='activeTab = "feed"' v-bind:class='activeTab === "feed" ? "bg-slate-900 text-white" : "text-slate-400 hover:text-slate-700 hover:bg-slate-100"' class='w-10 h-10 rounded-xl flex items-center justify-center transition'>
+          <button v-on:click='activeTab = "feed"' v-bind:class='activeTab === "feed" ? "bg-[#C74634] text-white shadow-sm" : "text-slate-400 hover:text-white hover:bg-white/10"' class='w-10 h-10 flex items-center justify-center transition' title='Danh sách tin đăng'>
             <i class='fa-solid fa-list text-sm'></i>
           </button>
-          <button v-on:click='showToast("Tính năng Lịch cộng đồng đang cập nhật", "info")' class='w-10 h-10 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 flex items-center justify-center transition'>
-            <i class='fa-regular fa-clock text-sm'></i>
+          <!-- Video Tây Ninh YouTube Tab Button -->
+          <button v-on:click='activeTab = "video"' v-bind:class='activeTab === "video" ? "bg-[#C74634] text-white shadow-sm" : "text-slate-400 hover:text-white hover:bg-white/10"' class='w-10 h-10 flex items-center justify-center transition' title='Video YouTube Tây Ninh'>
+            <i class='fa-brands fa-youtube text-base'></i>
           </button>
-          <button v-on:click='filterBookmarks' v-bind:class='activeCategory === "bookmark" ? "bg-slate-900 text-white" : "text-slate-400 hover:text-slate-700 hover:bg-slate-100"' class='w-10 h-10 rounded-xl flex items-center justify-center transition' title='Đã lưu'>
+          <button v-on:click='filterBookmarks' v-bind:class='activeCategory === "bookmark" ? "bg-[#C74634] text-white shadow-sm" : "text-slate-400 hover:text-white hover:bg-white/10"' class='w-10 h-10 flex items-center justify-center transition' title='Đã lưu'>
             <i class='fa-regular fa-folder text-sm'></i>
           </button>
-          <button v-on:click='showToast("Bạn có 3 thông báo mới từ Tây Ninh", "info")' class='relative w-10 h-10 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 flex items-center justify-center transition'>
+          <!-- Realtime Notifications & Chat Drawer Button -->
+          <button v-on:click='openChatDrawer' class='relative w-10 h-10 text-slate-400 hover:text-white hover:bg-white/10 flex items-center justify-center transition' title='Tin nhắn &amp; Thông báo Realtime'>
             <i class='fa-regular fa-bell text-sm'></i>
-            <span class='absolute top-2 right-2 w-2 h-2 rounded-full bg-rose-500'></span>
+            <span v-if='unreadMessageCount > 0' class='absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-[#C74634]'></span>
           </button>
         </nav>
       </div>
 
       <!-- Bottom Icons -->
       <div class='flex flex-col items-center gap-4 w-full'>
-        <button v-on:click='showPopup("Trung Tâm Hỗ Trợ TN Hub", "Cổng thông tin &amp; mạng xã hội tỉnh Tây Ninh kết nối việc làm, nhà đất, mua bán, dịch vụ.\nHotline/Zalo: 090.xxxx.xxx\nEmail: ptquang0968@gmail.com", "info")' class='w-10 h-10 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 flex items-center justify-center transition'>
+        <button v-on:click='showPopup("Trung Tâm Hỗ Trợ TNHub", "Cổng thông tin số tỉnh Tây Ninh kết nối việc làm, nhà đất, mua bán, dịch vụ.\nHotline/Zalo: 0908.123.456\nEmail: ptquang0968@gmail.com", "info")' class='w-10 h-10 text-slate-400 hover:text-white hover:bg-white/10 flex items-center justify-center transition'>
           <i class='fa-regular fa-circle-question text-sm'></i>
         </button>
-        <button v-on:click='showToast("Hệ thống TN Hub đang hoạt động ổn định", "info")' class='w-10 h-10 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 flex items-center justify-center transition' title='Cài đặt'>
-          <i class='fa-solid fa-gear text-sm'></i>
-        </button>
 
-        <!-- User Profile Avatar -->
-        <div class='relative cursor-pointer' v-on:click='userMenuOpen = !userMenuOpen'>
-          <img v-bind:src='currentUser.photoURL' v-bind:alt='currentUser.displayName' class='w-9 h-9 rounded-full object-cover ring-2 ring-teal-600/30' />
-          <span class='absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-white rounded-full'></span>
+        <!-- User Profile Avatar / Google Login -->
+        <div class='relative cursor-pointer' v-on:click='currentUser ? (userMenuOpen = !userMenuOpen) : loginGoogle()' v-bind:title='currentUser ? ("Đã đăng nhập: " + currentUser.email) : "Nhấp để đăng nhập Google"'>
+          <img v-if='currentUser &amp;&amp; currentUser.photoURL' v-bind:src='currentUser.photoURL' v-bind:alt='currentUser.displayName' class='w-9 h-9 object-cover border border-[#C74634]' />
+          <div v-else='true' class='w-9 h-9 bg-[#312E2B] text-slate-300 hover:text-white hover:bg-[#C74634] flex items-center justify-center transition'>
+            <i class='fa-brands fa-google text-xs'></i>
+          </div>
+          <span v-if='currentUser' class='absolute bottom-0 right-0 w-2 h-2 bg-emerald-500 border border-white'></span>
         </div>
       </div>
     </aside>
 
-    <!-- 2. SUB-SIDEBAR: MENU ĐIỀU HƯỚNG TN HUB -->
-    <aside class='w-56 xl:w-60 bg-white border-r border-slate-200/80 p-4 xl:p-5 flex flex-col justify-between shrink-0 overflow-y-auto custom-scroll hidden md:flex'>
+    <!-- 2. SUB-SIDEBAR: MENU ĐIỀU HƯỚNG TN HUB (ORACLE REDWOOD STYLE) -->
+    <aside class='w-56 xl:w-60 bg-white border-r border-[#E0DDD8] p-4 xl:p-5 flex flex-col justify-between shrink-0 overflow-y-auto custom-scroll hidden md:flex'>
       <div class='space-y-6'>
-        <!-- Logo Text -->
+        <!-- Oracle-Style Logo Header -->
         <div>
-          <h2 class='text-xl font-bold tracking-tight text-slate-900'>TN Hub</h2>
-          <span class='text-[11px] text-slate-400 font-medium'>Cộng đồng số Tây Ninh</span>
+          <div class='flex items-center gap-2'>
+            <span class='bg-[#C74634] text-white font-black px-2.5 py-1 text-sm tracking-wider select-none'>TNHub</span>
+            <span class='text-xs font-black text-[#161513] tracking-tight uppercase'>TÂY NINH</span>
+          </div>
+          <span class='text-[10px] text-[#655F58] font-bold uppercase tracking-wider block mt-1.5'>CỔNG THÔNG TIN SỐ</span>
         </div>
 
         <!-- Top Menu Items -->
         <nav class='space-y-1 text-sm font-medium'>
-          <a href='/' class='flex items-center gap-3 px-3 py-2 rounded-xl bg-slate-100 text-slate-900 font-semibold'>
-            <i class='fa-solid fa-house text-slate-500 text-xs'></i>
+          <a href='/' class='flex items-center gap-3 px-3 py-2 bg-[#F1EFED] text-[#161513] font-bold border-l-2 border-[#C74634]'>
+            <i class='fa-solid fa-house text-[#C74634] text-xs'></i>
             <span>Trang chủ</span>
           </a>
-          <button v-on:click='showToast("Hộp thư tin nhắn riêng tư đang được chuẩn bị", "info")' class='w-full flex items-center gap-3 px-3 py-2 rounded-xl text-slate-600 hover:bg-slate-50 transition'>
-            <i class='fa-regular fa-comment-dots text-slate-400 text-xs'></i>
-            <span>Tin nhắn</span>
+          <!-- Realtime Messages Button -->
+          <button v-on:click='openChatDrawer' class='w-full flex items-center justify-between px-3 py-2 text-slate-700 hover:bg-[#F1EFED] transition'>
+            <div class='flex items-center gap-3'>
+              <i class='fa-regular fa-comment-dots text-slate-500 text-xs'></i>
+              <span>Tin nhắn</span>
+            </div>
+            <span v-if='unreadMessageCount > 0' class='bg-[#C74634] text-white text-[10px] font-bold px-1.5 py-0.2'>{{ unreadMessageCount }}</span>
           </button>
-          <button v-on:click='activeCategory = "all"' class='w-full flex items-center gap-3 px-3 py-2 rounded-xl text-slate-600 hover:bg-slate-50 transition'>
+          <!-- Video YouTube Tây Ninh Menu Item -->
+          <button v-on:click='activeTab = "video"' v-bind:class='activeTab === "video" ? "bg-[#F1EFED] text-[#C74634] font-bold border-l-2 border-[#C74634]" : "text-slate-700 hover:bg-[#F1EFED]"' class='w-full flex items-center justify-between px-3 py-2 transition text-xs'>
+            <div class='flex items-center gap-3'>
+              <i class='fa-brands fa-youtube text-red-600 text-xs'></i>
+              <span>Video Tây Ninh</span>
+            </div>
+            <span class='text-[9px] bg-red-100 text-red-700 px-1.5 py-0.5 font-bold uppercase'>YouTube</span>
+          </button>
+          <button v-on:click='activeCategory = "all"; activeTab = "feed"' class='w-full flex items-center gap-3 px-3 py-2 text-slate-700 hover:bg-[#F1EFED] transition'>
             <i class='fa-solid fa-bars text-slate-400 text-xs'></i>
-            <span>Danh mục</span>
+            <span>Danh mục tin</span>
           </button>
         </nav>
 
         <!-- Khám phá Tây Ninh -->
         <div>
-          <h4 class='text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2 px-3'>Khám phá Tây Ninh</h4>
+          <h4 class='text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2 px-3'>Khám phá Tây Ninh</h4>
           <ul class='space-y-1 text-sm font-medium'>
             <li>
-              <button v-on:click='setCategory("all")' v-bind:class='activeCategory === "all" ? "bg-slate-100 text-slate-900 font-bold" : "text-slate-600 hover:bg-slate-50"' class='w-full flex items-center gap-3 px-3 py-2 rounded-xl transition'>
+              <button v-on:click='setCategory("all"); activeTab = "feed"' v-bind:class='activeCategory === "all" &amp;&amp; activeTab === "feed" ? "bg-[#F1EFED] text-[#161513] font-bold border-l-2 border-[#C74634]" : "text-slate-600 hover:bg-slate-50"' class='w-full flex items-center gap-3 px-3 py-2 transition'>
                 <i class='fa-solid fa-border-all text-xs text-slate-400'></i>
                 <span>Tất cả tin</span>
               </button>
             </li>
             <li>
-              <button v-on:click='setCategory("tuyendung")' v-bind:class='activeCategory === "tuyendung" ? "bg-slate-100 text-slate-900 font-bold" : "text-slate-600 hover:bg-slate-50"' class='w-full flex items-center gap-3 px-3 py-2 rounded-xl transition'>
-                <i class='fa-solid fa-briefcase text-xs text-blue-500'></i>
+              <button v-on:click='setCategory("tuyendung"); activeTab = "feed"' v-bind:class='activeCategory === "tuyendung" ? "bg-[#F1EFED] text-[#161513] font-bold border-l-2 border-[#C74634]" : "text-slate-600 hover:bg-slate-50"' class='w-full flex items-center gap-3 px-3 py-2 transition'>
+                <i class='fa-solid fa-briefcase text-xs text-blue-600'></i>
                 <span>Tuyển dụng</span>
               </button>
             </li>
             <li>
-              <button v-on:click='setCategory("batdongsan")' v-bind:class='activeCategory === "batdongsan" ? "bg-slate-100 text-slate-900 font-bold" : "text-slate-600 hover:bg-slate-50"' class='w-full flex items-center gap-3 px-3 py-2 rounded-xl transition'>
-                <i class='fa-solid fa-house text-xs text-emerald-500'></i>
+              <button v-on:click='setCategory("batdongsan"); activeTab = "feed"' v-bind:class='activeCategory === "batdongsan" ? "bg-[#F1EFED] text-[#161513] font-bold border-l-2 border-[#C74634]" : "text-slate-600 hover:bg-slate-50"' class='w-full flex items-center gap-3 px-3 py-2 transition'>
+                <i class='fa-solid fa-house text-xs text-emerald-600'></i>
                 <span>Bất động sản</span>
               </button>
             </li>
             <li>
-              <button v-on:click='setCategory("amthuc")' v-bind:class='activeCategory === "amthuc" ? "bg-slate-100 text-slate-900 font-bold" : "text-slate-600 hover:bg-slate-50"' class='w-full flex items-center gap-3 px-3 py-2 rounded-xl transition'>
-                <i class='fa-solid fa-utensils text-xs text-amber-500'></i>
-                <span>Ẩm thực &amp; Hotel</span>
+              <button v-on:click='setCategory("amthuc"); activeTab = "feed"' v-bind:class='activeCategory === "amthuc" ? "bg-[#F1EFED] text-[#161513] font-bold border-l-2 border-[#C74634]" : "text-slate-600 hover:bg-slate-50"' class='w-full flex items-center gap-3 px-3 py-2 transition'>
+                <i class='fa-solid fa-utensils text-xs text-amber-600'></i>
+                <span>Ẩm thực &amp; Khách sạn</span>
               </button>
             </li>
             <li>
-              <button v-on:click='setCategory("raovat")' v-bind:class='activeCategory === "raovat" ? "bg-slate-100 text-slate-900 font-bold" : "text-slate-600 hover:bg-slate-50"' class='w-full flex items-center gap-3 px-3 py-2 rounded-xl transition'>
-                <i class='fa-solid fa-cart-shopping text-xs text-indigo-500'></i>
+              <button v-on:click='setCategory("raovat"); activeTab = "feed"' v-bind:class='activeCategory === "raovat" ? "bg-[#F1EFED] text-[#161513] font-bold border-l-2 border-[#C74634]" : "text-slate-600 hover:bg-slate-50"' class='w-full flex items-center gap-3 px-3 py-2 transition'>
+                <i class='fa-solid fa-cart-shopping text-xs text-indigo-600'></i>
                 <span>Rao vặt</span>
               </button>
             </li>
             <li>
-              <button v-on:click='setCategory("suachua")' v-bind:class='activeCategory === "suachua" ? "bg-slate-100 text-slate-900 font-bold" : "text-slate-600 hover:bg-slate-50"' class='w-full flex items-center gap-3 px-3 py-2 rounded-xl transition'>
-                <i class='fa-solid fa-wrench text-xs text-rose-500'></i>
-                <span>Sửa chữa</span>
+              <button v-on:click='setCategory("suachua"); activeTab = "feed"' v-bind:class='activeCategory === "suachua" ? "bg-[#F1EFED] text-[#161513] font-bold border-l-2 border-[#C74634]" : "text-slate-600 hover:bg-slate-50"' class='w-full flex items-center gap-3 px-3 py-2 transition'>
+                <i class='fa-solid fa-wrench text-xs text-rose-600'></i>
+                <span>Dịch vụ sửa chữa</span>
               </button>
             </li>
           </ul>
         </div>
       </div>
 
-      <!-- Bottom User Account Card -->
-      <div class='bg-slate-50 rounded-2xl p-4 border border-slate-100 text-xs mt-6'>
-        <h5 class='font-bold text-slate-900 mb-1'>Tài khoản cá nhân</h5>
-        <p class='text-[11px] text-slate-500 mb-3 leading-relaxed'>Personal account. Đăng tin một lần đăng gởi Tây Ninh.</p>
-        <button v-on:click='openPostModal' class='w-full py-2 px-3 rounded-xl bg-white border border-slate-200 text-slate-800 font-bold hover:bg-slate-100 shadow-sm transition'>
-          Đăng tin mới
+      <!-- Bottom User Account Card (Google Auth State) -->
+      <div class='bg-[#F1EFED] p-3.5 border border-[#E0DDD8] text-xs mt-6'>
+        <div v-if='currentUser &amp;&amp; currentUser.uid' class='mb-2.5'>
+          <div class='flex items-center gap-2 mb-1.5'>
+            <img v-if='currentUser.photoURL' v-bind:src='currentUser.photoURL' class='w-7 h-7 object-cover border border-[#C74634]' />
+            <div class='min-w-0 flex-1'>
+              <p class='font-bold text-slate-900 truncate'>{{ currentUser.displayName }}</p>
+              <p class='text-[10px] text-slate-500 truncate'>{{ currentUser.email }}</p>
+            </div>
+          </div>
+          <button v-on:click='logoutGoogle' class='text-[10px] text-rose-600 hover:underline font-semibold'>
+            Đăng xuất Google
+          </button>
+        </div>
+        <div v-else='true' class='mb-2.5'>
+          <h5 class='font-bold text-[#161513] mb-0.5'>Tài khoản Google</h5>
+          <p class='text-[10px] text-slate-500 mb-2'>Đăng nhập để đăng tin lên Cổng thông tin TN Hub.</p>
+          <button v-on:click='loginGoogle' class='w-full py-1.5 px-2 bg-white border border-[#E0DDD8] text-slate-800 font-bold hover:bg-slate-100 flex items-center justify-center gap-1.5 shadow-sm transition mb-2'>
+            <i class='fa-brands fa-google text-red-600 text-xs'></i>
+            <span>Đăng nhập Google</span>
+          </button>
+        </div>
+
+        <button v-on:click='openPostModal' class='w-full py-2 px-3 bg-[#C74634] hover:bg-[#B13C2C] text-white font-bold shadow-sm transition flex items-center justify-center gap-1.5'>
+          <i class='fa-solid fa-pen-to-square'></i>
+          <span>Đăng tin mới</span>
         </button>
       </div>
     </aside>
-
-    <!-- 3. MAIN CENTER FEED -->
+    <!-- 3. MAIN CENTER FEED (ORACLE REDWOOD STYLE) -->
     <main class='flex-1 overflow-y-auto custom-scroll p-6 lg:p-8 space-y-6'>
       
-      <!-- Top Bar: Search, Notification, Account, Compare -->
+      <!-- Top Bar: Search, Realtime Bell, Google Account (Oracle Style) -->
       <div class='flex items-center justify-between gap-4'>
         <div class='relative flex-1 max-w-md'>
           <i class='fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-xs'></i>
-          <input type='text' v-model='searchKeyword' v-on:keyup='onSearchKey' placeholder='Tìm việc làm, nhà đất, dịch vụ...' class='w-full pl-9 pr-4 py-2 text-xs rounded-full bg-white border border-slate-200/80 focus:ring-2 focus:ring-teal-500 outline-none shadow-sm' />
+          <input type='text' v-model='searchKeyword' v-on:keyup='onSearchKey' placeholder='Tìm việc làm, nhà đất, dịch vụ Tây Ninh...' class='w-full pl-9 pr-4 py-2 text-xs bg-white border border-[#E0DDD8] focus:border-[#C74634] outline-none shadow-sm' />
         </div>
 
         <div class='flex items-center gap-2.5'>
-          <!-- Notification Bell -->
-          <button v-on:click='showToast("Bạn có 3 thông báo việc làm mới", "info")' class='relative w-9 h-9 rounded-full bg-white border border-slate-200/80 flex items-center justify-center text-slate-600 hover:bg-slate-50 shadow-sm transition'>
-            <i class='fa-regular fa-bell text-xs'></i>
-            <span class='absolute -top-1 -right-1 w-4 h-4 bg-rose-500 text-white rounded-full text-[9px] font-bold flex items-center justify-center'>3</span>
+          <!-- Realtime Bell Notification with Unread Count -->
+          <button v-on:click='openChatDrawer' class='relative px-3 py-1.5 bg-white border border-[#E0DDD8] flex items-center gap-1.5 text-xs text-slate-700 hover:bg-[#F1EFED] shadow-sm transition' title='Mở tin nhắn &amp; thông báo'>
+            <i class='fa-regular fa-bell text-xs text-[#C74634]'></i>
+            <span class='font-semibold hidden sm:inline'>Tin nhắn</span>
+            <span v-if='unreadMessageCount > 0' class='bg-[#C74634] text-white text-[10px] font-bold px-1.5 py-0.2'>{{ unreadMessageCount }}</span>
           </button>
 
-          <!-- Button Tài khoản -->
-          <button v-on:click='loginGoogle' class='inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-slate-200/80 text-xs font-semibold text-slate-700 hover:bg-slate-50 shadow-sm transition'>
-            <i class='fa-regular fa-user text-xs'></i>
-            <span>{{ currentUser.displayName ? currentUser.displayName.split(' ')[0] : 'Tài khoản' }}</span>
-          </button>
-
-          <!-- Button So sánh -->
-          <button v-on:click='showToast("Đã thêm 2 mục vào danh sách so sánh", "info")' class='inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-slate-200/80 text-xs font-semibold text-slate-700 hover:bg-slate-50 shadow-sm transition'>
-            <i class='fa-solid fa-sliders text-xs'></i>
-            <span>So sánh</span>
+          <!-- Button Google Login / Profile -->
+          <div v-if='currentUser &amp;&amp; currentUser.uid' class='flex items-center gap-2'>
+            <div class='inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#F1EFED] border border-[#E0DDD8] text-xs font-semibold text-slate-800 shadow-sm'>
+              <img v-if='currentUser.photoURL' v-bind:src='currentUser.photoURL' class='w-4 h-4 object-cover' />
+              <i v-else='true' class='fa-regular fa-user text-xs'></i>
+              <span>{{ currentUser.displayName ? currentUser.displayName.split(' ')[0] : 'Tài khoản' }}</span>
+            </div>
+            <button v-on:click='logoutGoogle' class='px-2 py-1.5 bg-white border border-[#E0DDD8] text-slate-500 hover:text-rose-600 text-xs transition' title='Đăng xuất'>
+              <i class='fa-solid fa-arrow-right-from-bracket'></i>
+            </button>
+          </div>
+          <button v-else='true' v-on:click='loginGoogle' class='inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-[#C74634] hover:bg-[#B13C2C] text-xs font-bold text-white shadow-sm transition'>
+            <i class='fa-brands fa-google text-xs'></i>
+            <span>Đăng nhập Google</span>
           </button>
         </div>
       </div>
 
-      <!-- Main Title & Subtitle -->
+      <!-- Main Title (UPPERCASE & ORACLE LOGO ACCENT) -->
       <div class='flex flex-wrap items-center justify-between gap-3'>
         <div>
-          <h1 class='text-2xl font-black text-slate-900 tracking-tight'>Cộng Đồng Tây Ninh</h1>
-          <p class='text-xs text-slate-500 mt-0.5 flex items-center gap-2'>
-            <span>Tổng hợp {{ totalFilteredCount }} tin việc làm, nhà đất, dịch vụ trên toàn tỉnh.</span>
-            <span class='inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200'>
-              <span class='w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse'></span>
-              <span>Firebase Realtime (200 tin)</span>
+          <h1 class='text-2xl font-black text-[#161513] tracking-tight uppercase flex items-center gap-2.5'>
+            <span>CỘNG ĐỒNG TÂY NINH</span>
+            <span class='text-xs bg-[#C74634] text-white font-black px-2 py-0.5 tracking-wider uppercase select-none'>TNHub</span>
+          </h1>
+          <p class='text-xs text-[#655F58] mt-1 flex items-center gap-2'>
+            <span>Nền tảng kết nối số việc làm, bất động sản, ẩm thực và video tỉnh Tây Ninh.</span>
+            <span class='inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 border border-emerald-200'>
+              <span class='w-1.5 h-1.5 bg-emerald-500 animate-pulse'></span>
+              <span>Firestore Live (200 tin)</span>
             </span>
           </p>
         </div>
-        <button v-on:click='showToast("Dữ liệu được cập nhật trực tiếp từ Cloud Firestore!", "success")' class='text-xs font-semibold px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/80 hover:bg-emerald-100 transition'>
-          <i class='fa-solid fa-database text-[10px] mr-1'></i>
-          <span>Firestore Live</span>
-        </button>
-      </div>
-
-      <!-- Category Filter Pills -->
-      <div class='flex items-center gap-2 overflow-x-auto pb-1 custom-scroll text-xs font-semibold'>
-        <button v-on:click='setCategory("all")' v-bind:class='activeCategory === "all" ? "bg-slate-900 text-white shadow-sm" : "bg-white text-slate-600 hover:bg-slate-50 border border-slate-200/80"' class='px-4 py-1.5 rounded-full whitespace-nowrap transition'>
-          Tất cả
-        </button>
-        <button v-on:click='setCategory("tuyendung")' v-bind:class='activeCategory === "tuyendung" ? "bg-slate-900 text-white shadow-sm" : "bg-white text-slate-600 hover:bg-slate-50 border border-slate-200/80"' class='px-4 py-1.5 rounded-full whitespace-nowrap transition'>
-          Tuyển dụng
-        </button>
-        <button v-on:click='setCategory("batdongsan")' v-bind:class='activeCategory === "batdongsan" ? "bg-slate-900 text-white shadow-sm" : "bg-white text-slate-600 hover:bg-slate-50 border border-slate-200/80"' class='px-4 py-1.5 rounded-full whitespace-nowrap transition'>
-          Bất động sản
-        </button>
-        <button v-on:click='setCategory("raovat")' v-bind:class='activeCategory === "raovat" ? "bg-slate-900 text-white shadow-sm" : "bg-white text-slate-600 hover:bg-slate-50 border border-slate-200/80"' class='px-4 py-1.5 rounded-full whitespace-nowrap transition'>
-          Mua bán
-        </button>
-        <button v-on:click='setCategory("suachua")' v-bind:class='activeCategory === "suachua" ? "bg-slate-900 text-white shadow-sm" : "bg-white text-slate-600 hover:bg-slate-50 border border-slate-200/80"' class='px-4 py-1.5 rounded-full whitespace-nowrap transition'>
-          Dịch vụ
-        </button>
-        <button v-on:click='setCategory("amthuc")' v-bind:class='activeCategory === "amthuc" ? "bg-slate-900 text-white shadow-sm" : "bg-white text-slate-600 hover:bg-slate-50 border border-slate-200/80"' class='px-4 py-1.5 rounded-full whitespace-nowrap transition'>
-          Khách sạn
-        </button>
-      </div>
-
-      <!-- Secondary Filters & View Modes -->
-      <div class='flex flex-wrap items-center justify-between gap-3 text-xs'>
-        <div class='flex flex-wrap items-center gap-2'>
-          <!-- Khu vực dropdown linh hoạt -->
-          <div class='relative'>
-            <select v-model='activeDistrict' class='px-3 py-1.5 rounded-full bg-white border border-slate-200/80 text-slate-700 font-medium text-xs hover:bg-slate-50 shadow-sm outline-none cursor-pointer'>
-              <option value='all'>Khu vực: Toàn tỉnh Tây Ninh</option>
-              <option value='tptayninh'>TP. Tây Ninh</option>
-              <option value='trangbang'>Trảng Bàng</option>
-              <option value='hoathanh'>Hòa Thành</option>
-              <option value='godau'>Gò Dầu</option>
-              <option value='duongminhchau'>Dương Minh Châu</option>
-              <option value='tanchau'>Tân Châu</option>
-              <option value='tanbien'>Tân Biên</option>
-              <option value='bencau'>Bến Cầu</option>
-            </select>
-          </div>
-
-          <!-- Khoảng giá -->
-          <button v-on:click='showToast("Lọc khoảng giá linh hoạt", "info")' class='flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-slate-200/80 text-slate-700 font-medium hover:bg-slate-50 shadow-sm'>
-            <span>Khoảng giá</span>
-            <i class='fa-solid fa-chevron-down text-[10px] text-slate-400'></i>
-          </button>
-
-          <!-- Ngành nghề -->
-          <button v-on:click='showToast("Lọc theo tất cả ngành nghề Tây Ninh", "info")' class='flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-slate-200/80 text-slate-700 font-medium hover:bg-slate-50 shadow-sm'>
-            <span>Ngành nghề</span>
-            <i class='fa-solid fa-chevron-down text-[10px] text-slate-400'></i>
-          </button>
-
-          <!-- Sắp xếp -->
-          <button v-on:click='toggleSort' class='flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-slate-200/80 text-slate-700 font-medium hover:bg-slate-50 shadow-sm'>
-            <span>Sắp xếp</span>
-            <i class='fa-solid fa-chevron-down text-[10px] text-slate-400'></i>
-          </button>
-        </div>
-
-        <!-- View Mode Buttons -->
-        <div class='flex items-center gap-1 bg-white p-1 rounded-full border border-slate-200/80 shadow-sm'>
-          <button v-on:click='viewMode = "grid"' v-bind:class='viewMode === "grid" ? "bg-slate-100 text-slate-900 font-bold" : "text-slate-500 hover:text-slate-800"' class='px-3 py-1 rounded-full text-xs flex items-center gap-1.5 transition'>
-            <i class='fa-solid fa-table-cells-large text-[11px]'></i>
-            <span>Lưới</span>
-          </button>
-          <button v-on:click='viewMode = "map"' v-bind:class='viewMode === "map" ? "bg-slate-100 text-slate-900 font-bold" : "text-slate-500 hover:text-slate-800"' class='px-3 py-1 rounded-full text-xs flex items-center gap-1.5 transition'>
-            <i class='fa-solid fa-map-location-dot text-[11px]'></i>
-            <span>Bản đồ</span>
-          </button>
-          <button v-on:click='viewMode = "list"' v-bind:class='viewMode === "list" ? "bg-slate-100 text-slate-900 font-bold" : "text-slate-500 hover:text-slate-800"' class='px-3 py-1 rounded-full text-xs flex items-center gap-1.5 transition'>
-            <i class='fa-solid fa-list text-[11px]'></i>
-            <span>Danh sách</span>
+        <div class='flex items-center gap-2'>
+          <button v-on:click='openPostModal' class='px-4 py-2 bg-[#C74634] hover:bg-[#B13C2C] text-white font-bold text-xs shadow-sm transition flex items-center gap-1.5'>
+            <i class='fa-solid fa-pen-to-square'></i>
+            <span>Đăng tin mới</span>
           </button>
         </div>
       </div>
 
-      <!-- MAIN CARD GRID: 2 COLUMNS CHUẨN ẢNH THIẾT KẾ -->
-      <div class='grid grid-cols-1 md:grid-cols-2 gap-5'>
-        
-        <article v-for='card in filteredCards' v-bind:key='card.id' class='bg-white rounded-2xl overflow-hidden border border-slate-200/80 shadow-sm hover:shadow-md transition flex flex-col justify-between'>
-          <!-- Top Card Image Container -->
-          <div class='relative h-48 w-full overflow-hidden bg-slate-100 cursor-pointer' v-on:click='openDetailModal(card)'>
-            <img v-bind:src='card.image' v-bind:alt='card.title' class='w-full h-full object-cover hover:scale-105 transition-transform duration-300' />
-            
-            <!-- Badge góc trái -->
-            <span class='absolute top-3 left-3 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-white/90 backdrop-blur-md text-slate-800 shadow-sm flex items-center gap-1'>
-              <i class='fa-regular fa-clock text-[10px] text-slate-500'></i>
-              <span>{{ card.badge }}</span>
-            </span>
+      <!-- Tab Switcher: Tin Đăng vs Video YouTube Tây Ninh -->
+      <div class='flex items-center gap-6 border-b border-[#E0DDD8] pt-1 pb-2.5 text-xs font-bold uppercase tracking-wide'>
+        <button v-on:click='activeTab = "feed"' v-bind:class='activeTab === "feed" ? "text-[#C74634] border-b-2 border-[#C74634] pb-2 -mb-2.5 font-black" : "text-slate-500 hover:text-slate-900 pb-2 transition"' class='flex items-center gap-2'>
+          <i class='fa-solid fa-newspaper text-xs'></i>
+          <span>Tất cả tin đăng ({{ totalFilteredCount }})</span>
+        </button>
+        <button v-on:click='activeTab = "video"' v-bind:class='activeTab === "video" ? "text-[#C74634] border-b-2 border-[#C74634] pb-2 -mb-2.5 font-black" : "text-slate-500 hover:text-slate-900 pb-2 transition"' class='flex items-center gap-2'>
+          <i class='fa-brands fa-youtube text-red-600 text-sm'></i>
+          <span>Video Tây Ninh ({{ tayNinhVideos.length }})</span>
+          <span class='bg-red-100 text-red-700 text-[9px] px-1 py-0.2 font-black'>YOUTUBE</span>
+        </button>
+      </div>
 
-            <!-- Nút Bookmark góc phải -->
-            <button v-on:click='toggleBookmark(card)' v-bind:class='isBookmarked(card.id) ? "bg-amber-500 text-white" : "bg-white/90 text-slate-700 hover:bg-white"' class='absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center shadow-sm transition'>
-              <i v-bind:class='isBookmarked(card.id) ? "fa-solid fa-bookmark" : "fa-regular fa-bookmark"' class='text-xs'></i>
+      <!-- 3A. LISTINGS FEED SECTION -->
+      <div v-if='activeTab === "feed"' class='space-y-6'>
+        <!-- Category Filter Pills (Oracle Redwood Style) -->
+        <div class='flex items-center gap-2 overflow-x-auto pb-1 custom-scroll text-xs font-semibold'>
+          <button v-on:click='setCategory("all")' v-bind:class='activeCategory === "all" ? "bg-[#C74634] text-white font-bold" : "bg-white text-slate-700 hover:bg-slate-100 border border-[#E0DDD8]"' class='px-4 py-1.5 whitespace-nowrap transition'>
+            Tất cả
+          </button>
+          <button v-on:click='setCategory("tuyendung")' v-bind:class='activeCategory === "tuyendung" ? "bg-[#C74634] text-white font-bold" : "bg-white text-slate-700 hover:bg-slate-100 border border-[#E0DDD8]"' class='px-4 py-1.5 whitespace-nowrap transition'>
+            Tuyển dụng
+          </button>
+          <button v-on:click='setCategory("batdongsan")' v-bind:class='activeCategory === "batdongsan" ? "bg-[#C74634] text-white font-bold" : "bg-white text-slate-700 hover:bg-slate-100 border border-[#E0DDD8]"' class='px-4 py-1.5 whitespace-nowrap transition'>
+            Bất động sản
+          </button>
+          <button v-on:click='setCategory("raovat")' v-bind:class='activeCategory === "raovat" ? "bg-[#C74634] text-white font-bold" : "bg-white text-slate-700 hover:bg-slate-100 border border-[#E0DDD8]"' class='px-4 py-1.5 whitespace-nowrap transition'>
+            Mua bán
+          </button>
+          <button v-on:click='setCategory("suachua")' v-bind:class='activeCategory === "suachua" ? "bg-[#C74634] text-white font-bold" : "bg-white text-slate-700 hover:bg-slate-100 border border-[#E0DDD8]"' class='px-4 py-1.5 whitespace-nowrap transition'>
+            Dịch vụ
+          </button>
+          <button v-on:click='setCategory("amthuc")' v-bind:class='activeCategory === "amthuc" ? "bg-[#C74634] text-white font-bold" : "bg-white text-slate-700 hover:bg-slate-100 border border-[#E0DDD8]"' class='px-4 py-1.5 whitespace-nowrap transition'>
+            Khách sạn
+          </button>
+        </div>
+
+        <!-- Secondary Filters & View Modes -->
+        <div class='flex flex-wrap items-center justify-between gap-3 text-xs'>
+          <div class='flex flex-wrap items-center gap-2'>
+            <!-- Khu vực dropdown linh hoạt -->
+            <div class='relative'>
+              <select v-model='activeDistrict' class='px-3 py-1.5 bg-white border border-[#E0DDD8] text-slate-700 font-medium text-xs hover:bg-slate-50 shadow-sm outline-none cursor-pointer'>
+                <option value='all'>Khu vực: Toàn tỉnh Tây Ninh</option>
+                <option value='tptayninh'>TP. Tây Ninh</option>
+                <option value='trangbang'>Trảng Bàng</option>
+                <option value='hoathanh'>Hòa Thành</option>
+                <option value='godau'>Gò Dầu</option>
+                <option value='duongminhchau'>Dương Minh Châu</option>
+                <option value='tanchau'>Tân Châu</option>
+                <option value='tanbien'>Tân Biên</option>
+                <option value='bencau'>Bến Cầu</option>
+              </select>
+            </div>
+
+            <!-- Khoảng giá -->
+            <button v-on:click='showToast("Lọc khoảng giá linh hoạt", "info")' class='flex items-center gap-2 px-3 py-1.5 bg-white border border-[#E0DDD8] text-slate-700 font-medium hover:bg-slate-50 shadow-sm'>
+              <span>Khoảng giá</span>
+              <i class='fa-solid fa-chevron-down text-[10px] text-slate-400'></i>
+            </button>
+
+            <!-- Ngành nghề -->
+            <button v-on:click='showToast("Lọc theo tất cả ngành nghề Tây Ninh", "info")' class='flex items-center gap-2 px-3 py-1.5 bg-white border border-[#E0DDD8] text-slate-700 font-medium hover:bg-slate-50 shadow-sm'>
+              <span>Ngành nghề</span>
+              <i class='fa-solid fa-chevron-down text-[10px] text-slate-400'></i>
+            </button>
+
+            <!-- Sắp xếp -->
+            <button v-on:click='toggleSort' class='flex items-center gap-2 px-3 py-1.5 bg-white border border-[#E0DDD8] text-slate-700 font-medium hover:bg-slate-50 shadow-sm'>
+              <span>Sắp xếp</span>
+              <i class='fa-solid fa-chevron-down text-[10px] text-slate-400'></i>
             </button>
           </div>
 
-          <!-- Bottom Card Content -->
-          <div class='p-4 flex-1 flex flex-col justify-between'>
-            <div>
-              <h3 class='font-bold text-sm text-slate-900 line-clamp-1 mb-0.5 hover:text-teal-600 transition cursor-pointer' v-on:click='openDetailModal(card)'>
-                {{ card.title }}
-              </h3>
-              <p class='text-xs text-slate-500 line-clamp-1'>{{ card.subtitle }}</p>
+          <!-- View Mode Buttons -->
+          <div class='flex items-center gap-1 bg-white p-1 border border-[#E0DDD8] shadow-sm'>
+            <button v-on:click='viewMode = "grid"' v-bind:class='viewMode === "grid" ? "bg-[#161513] text-white font-bold" : "text-slate-500 hover:text-slate-800"' class='px-3 py-1 text-xs flex items-center gap-1.5 transition'>
+              <i class='fa-solid fa-table-cells-large text-[11px]'></i>
+              <span>Lưới</span>
+            </button>
+            <button v-on:click='viewMode = "map"' v-bind:class='viewMode === "map" ? "bg-[#161513] text-white font-bold" : "text-slate-500 hover:text-slate-800"' class='px-3 py-1 text-xs flex items-center gap-1.5 transition'>
+              <i class='fa-solid fa-map-location-dot text-[11px]'></i>
+              <span>Bản đồ</span>
+            </button>
+            <button v-on:click='viewMode = "list"' v-bind:class='viewMode === "list" ? "bg-[#161513] text-white font-bold" : "text-slate-500 hover:text-slate-800"' class='px-3 py-1 text-xs flex items-center gap-1.5 transition'>
+              <i class='fa-solid fa-list text-[11px]'></i>
+              <span>Danh sách</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- MAIN CARD GRID: 2 COLUMNS (NO ROUNDED BORDER) -->
+        <div class='grid grid-cols-1 md:grid-cols-2 gap-5'>
+          
+          <article v-for='card in filteredCards' v-bind:key='card.id' class='bg-white border border-[#E0DDD8] shadow-sm hover:shadow-md transition flex flex-col justify-between'>
+            <!-- Top Card Image Container -->
+            <div class='relative h-48 w-full overflow-hidden bg-slate-100 cursor-pointer' v-on:click='openDetailModal(card)'>
+              <img v-bind:src='card.image' v-bind:alt='card.title' class='w-full h-full object-cover hover:scale-105 transition-transform duration-300' />
+              
+              <!-- Badge góc trái -->
+              <span class='absolute top-3 left-3 px-2.5 py-1 text-[11px] font-bold bg-[#161513] text-white shadow-sm flex items-center gap-1'>
+                <i class='fa-regular fa-clock text-[10px] text-amber-400'></i>
+                <span>{{ card.badge }}</span>
+              </span>
+
+              <!-- Nút Bookmark góc phải -->
+              <button v-on:click.stop='toggleBookmark(card)' v-bind:class='isBookmarked(card.id) ? "bg-[#C74634] text-white" : "bg-white/90 text-slate-700 hover:bg-white"' class='absolute top-3 right-3 w-8 h-8 flex items-center justify-center shadow-sm transition'>
+                <i v-bind:class='isBookmarked(card.id) ? "fa-solid fa-bookmark" : "fa-regular fa-bookmark"' class='text-xs'></i>
+              </button>
             </div>
 
-            <!-- Price & Action Button Row -->
-            <div class='flex items-center justify-between pt-4 mt-2 border-t border-slate-100'>
+            <!-- Bottom Card Content -->
+            <div class='p-4 flex-1 flex flex-col justify-between'>
               <div>
-                <span class='block font-black text-sm text-slate-900'>{{ card.price }}</span>
-                <span class='text-[10px] text-slate-400'>{{ card.subprice }}</span>
+                <h3 class='font-bold text-sm text-[#161513] line-clamp-1 mb-0.5 hover:text-[#C74634] transition cursor-pointer' v-on:click='openDetailModal(card)'>
+                  {{ card.title }}
+                </h3>
+                <p class='text-xs text-slate-500 line-clamp-1'>{{ card.subtitle }}</p>
               </div>
 
-              <!-- Button theo loại tin -->
-              <button v-if='card.btnType === "apply"' v-on:click='openApplyModal(card)' class='px-4 py-1.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-sm transition'>
-                Ứng tuyển
-              </button>
-              <button v-else-if='card.btnType === "contact"' v-on:click='openContactModal(card)' class='px-4 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs shadow-sm transition'>
-                Liên hệ
-              </button>
-              <button v-else-if='card.btnType === "detail"' v-on:click='openDetailModal(card)' class='px-4 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-800 font-semibold text-xs shadow-sm transition'>
-                Chi tiết
-              </button>
-              <button v-else-if='card.btnType === "call"' v-on:click='openCallModal(card)' class='px-4 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs shadow-sm transition'>
-                Gọi ngay
-              </button>
+              <!-- Price & Action Button Row -->
+              <div class='flex items-center justify-between pt-4 mt-2 border-t border-[#E0DDD8]'>
+                <div>
+                  <span class='block font-black text-sm text-[#C74634]'>{{ card.price }}</span>
+                  <span class='text-[10px] text-slate-400'>{{ card.subprice }}</span>
+                </div>
+
+                <!-- Button theo loại tin -->
+                <button v-if='card.btnType === "apply"' v-on:click='openApplyModal(card)' class='px-4 py-1.5 bg-[#C74634] hover:bg-[#B13C2C] text-white font-bold text-xs shadow-sm transition'>
+                  Ứng tuyển
+                </button>
+                <button v-else-if='card.btnType === "contact"' v-on:click='openContactModal(card)' class='px-4 py-1.5 bg-[#161513] hover:bg-black text-white font-bold text-xs shadow-sm transition'>
+                  Liên hệ
+                </button>
+                <button v-else-if='card.btnType === "detail"' v-on:click='openDetailModal(card)' class='px-4 py-1.5 bg-[#F1EFED] hover:bg-slate-200 border border-[#E0DDD8] text-slate-800 font-bold text-xs shadow-sm transition'>
+                  Chi tiết
+                </button>
+                <button v-else-if='card.btnType === "call"' v-on:click='openCallModal(card)' class='px-4 py-1.5 bg-[#161513] hover:bg-black text-white font-bold text-xs shadow-sm transition'>
+                  Gọi ngay
+                </button>
+              </div>
             </div>
+          </article>
+
+        </div>
+
+        <!-- Nút xem thêm / Phân trang tải dữ liệu 200 tin -->
+        <div v-if='hasMoreCards' class='text-center pt-4 pb-2'>
+          <button v-on:click='loadMore' class='px-6 py-2.5 bg-white border border-[#E0DDD8] text-slate-800 font-bold text-xs hover:bg-[#F1EFED] shadow-sm transition inline-flex items-center gap-2'>
+            <span>Xem thêm tin đăng (Còn {{ remainingCardsCount }} tin)</span>
+            <i class='fa-solid fa-angle-down text-xs'></i>
+          </button>
+        </div>
+        <div v-else='true' class='text-center pt-3 pb-1 text-xs text-slate-400 font-medium'>
+          Đã hiển thị toàn bộ {{ totalFilteredCount }} tin đăng tại Tây Ninh
+        </div>
+      </div> <!-- End 3A Feed Section -->
+
+      <!-- 3B. YOUTUBE VIDEO SECTION (CHỈ LẤY VIDEO TỈNH TÂY NINH) -->
+      <div v-else-if='activeTab === "video"' class='space-y-5'>
+        <!-- Banner Note -->
+        <div class='bg-white p-4 border border-[#E0DDD8] flex flex-col sm:flex-row sm:items-center justify-between gap-3'>
+          <div>
+            <div class='flex items-center gap-2'>
+              <span class='bg-[#C74634] text-white text-[10px] font-black px-2 py-0.5 uppercase'>CHÍNH THỨC</span>
+              <h2 class='text-base font-black text-[#161513] uppercase flex items-center gap-2'>
+                <i class='fa-brands fa-youtube text-red-600'></i>
+                <span>VIDEO YOUTUBE KHÁM PHÁ TỈNH TÂY NINH</span>
+              </h2>
+            </div>
+            <p class='text-xs text-[#655F58] mt-1'>
+              Tổng hợp 100% video chất lượng cao từ YouTube về danh lam, văn hoá, tâm linh và ẩm thực tỉnh Tây Ninh. Không lấy ngoài tỉnh.
+            </p>
           </div>
-        </article>
+          <button v-on:click='activeTab = "feed"' class='px-4 py-2 bg-[#161513] hover:bg-black text-white text-xs font-bold transition shrink-0'>
+            Quay lại tin đăng
+          </button>
+        </div>
 
-      </div>
+        <!-- Video Cards Grid -->
+        <div class='grid grid-cols-1 md:grid-cols-2 gap-5'>
+          <article v-for='video in tayNinhVideos' v-bind:key='video.id' v-on:click='playVideo(video)' class='bg-white border border-[#E0DDD8] overflow-hidden hover:shadow-lg transition cursor-pointer flex flex-col justify-between group'>
+            <!-- Thumbnail Image Container -->
+            <div class='relative h-52 w-full bg-black overflow-hidden'>
+              <img v-bind:src='video.thumbnail' v-bind:alt='video.title' class='w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-300' />
+              <!-- Play Button Center Overlay -->
+              <div class='absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/5 transition'>
+                <div class='w-14 h-14 bg-[#C74634] group-hover:bg-[#B13C2C] text-white flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform'>
+                  <i class='fa-solid fa-play text-lg ml-0.5'></i>
+                </div>
+              </div>
+              <!-- Duration Badge -->
+              <span class='absolute bottom-2.5 right-2.5 bg-black/85 text-white text-[10px] font-bold px-2 py-0.5 tracking-wider'>
+                {{ video.duration }}
+              </span>
+              <!-- Location Badge -->
+              <span class='absolute top-2.5 left-2.5 bg-[#C74634] text-white text-[10px] font-bold px-2.5 py-0.5 flex items-center gap-1.5 shadow'>
+                <i class='fa-solid fa-location-dot text-[9px]'></i>
+                <span>{{ video.location }}</span>
+              </span>
+            </div>
 
-      <!-- Nút xem thêm / Phân trang tải dữ liệu 200 tin -->
-      <div v-if='hasMoreCards' class='text-center pt-4 pb-2'>
-        <button v-on:click='loadMore' class='px-6 py-2.5 rounded-full bg-white border border-slate-300 text-slate-800 font-bold text-xs hover:bg-slate-100 shadow-sm hover:shadow transition inline-flex items-center gap-2'>
-          <span>Xem thêm tin đăng (Còn {{ remainingCardsCount }} tin)</span>
-          <i class='fa-solid fa-angle-down text-xs'></i>
-        </button>
-      </div>
-      <div v-else='true' class='text-center pt-3 pb-1 text-xs text-slate-400 font-medium'>
-        Đã hiển thị toàn bộ {{ totalFilteredCount }} tin đăng tại Tây Ninh
-      </div>
+            <!-- Content Bottom -->
+            <div class='p-4 flex-1 flex flex-col justify-between'>
+              <div>
+                <span class='text-[10px] text-[#C74634] font-bold uppercase tracking-wider block mb-1'>{{ video.category }}</span>
+                <h3 class='font-bold text-sm text-[#161513] line-clamp-2 group-hover:text-[#C74634] transition leading-snug'>
+                  {{ video.title }}
+                </h3>
+              </div>
+              <div class='flex items-center justify-between text-xs text-slate-500 pt-3 mt-3 border-t border-[#E0DDD8]'>
+                <span class='font-semibold text-slate-700 truncate max-w-[170px] flex items-center gap-1.5'>
+                  <i class='fa-brands fa-youtube text-red-600 text-xs'></i>
+                  <span>{{ video.channel }}</span>
+                </span>
+                <span class='text-[11px] font-medium'>{{ video.views }}</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div> <!-- End 3B Video Section -->
 
     </main>
-
-    <!-- 4. CỘT PHẢI: BẢN ĐỒ TÂY NINH (MAP WIDGET) -->
-    <aside class='w-72 xl:w-80 2xl:w-[340px] bg-white border-l border-slate-200/80 p-5 space-y-5 overflow-y-auto custom-scroll shrink-0 flex flex-col justify-between'>
+    <!-- 4. CỘT PHẢI: BẢN ĐỒ TÂY NINH (MAP WIDGET - NO ROUNDED BORDER) -->
+    <aside class='w-72 xl:w-80 2xl:w-[340px] bg-white border-l border-[#E0DDD8] p-5 space-y-5 overflow-y-auto custom-scroll shrink-0 flex flex-col justify-between'>
       <div class='space-y-4'>
         <!-- Header Bản đồ Tây Ninh -->
         <div class='flex items-center justify-between'>
-          <h3 class='font-bold text-sm text-slate-900'>Bản đồ Tây Ninh</h3>
+          <h3 class='font-bold text-sm text-[#161513] uppercase tracking-wide flex items-center gap-1.5'>
+            <i class='fa-solid fa-map-location-dot text-[#C74634]'></i>
+            <span>Bản đồ Tây Ninh</span>
+          </h3>
           <div class='flex items-center gap-1 text-slate-400'>
-            <button v-on:click='zoomMap' class='w-6 h-6 rounded flex items-center justify-center hover:bg-slate-100 transition' title='Phóng to'>
+            <button v-on:click='zoomMap' class='w-6 h-6 flex items-center justify-center hover:bg-slate-100 transition' title='Phóng to'>
               <i class='fa-solid fa-plus text-xs'></i>
-            </button>
-            <button v-on:click='showToast("Đã đóng khung bản đồ thu nhỏ", "info")' class='w-6 h-6 rounded flex items-center justify-center hover:bg-slate-100 transition' title='Đóng'>
-              <i class='fa-solid fa-xmark text-xs'></i>
             </button>
           </div>
         </div>
 
         <!-- Google Maps Tây Ninh Container -->
-        <div class='bg-slate-100 rounded-2xl overflow-hidden border border-slate-200/90 shadow-sm relative h-64 w-full group'>
+        <div class='bg-slate-100 overflow-hidden border border-[#E0DDD8] shadow-sm relative h-64 w-full group'>
           <iframe 
             v-bind:src='mapEmbedUrl' 
-            class='w-full h-full border-0 rounded-2xl' 
+            class='w-full h-full border-0' 
             loading='lazy' 
             referrerpolicy='no-referrer-when-downgrade'
             title='Google Maps Tây Ninh'>
           </iframe>
 
           <!-- Active Pin Card Overlay on Google Maps -->
-          <div class='absolute bottom-2.5 left-2.5 right-2.5 bg-white/95 backdrop-blur-md rounded-xl p-2.5 shadow-lg border border-slate-200/80 flex items-center gap-2.5 transition group-hover:opacity-95'>
-            <img v-bind:src='activePinItem.image' class='w-10 h-10 rounded-lg object-cover' />
+          <div class='absolute bottom-2 left-2 right-2 bg-white/95 backdrop-blur-md p-2.5 shadow-lg border border-[#E0DDD8] flex items-center gap-2.5 transition'>
+            <img v-bind:src='activePinItem.image' class='w-10 h-10 object-cover border border-[#E0DDD8]' />
             <div class='flex-1 min-w-0'>
-              <h5 class='font-bold text-[11px] text-slate-900 truncate'>{{ activePinItem.title }}</h5>
-              <p class='text-[10px] text-slate-500 font-semibold text-emerald-600'>{{ activePinItem.price }}</p>
-              <p class='text-[9px] text-slate-400 truncate flex items-center gap-1'>
-                <i class='fa-solid fa-location-dot text-rose-500 text-[8px]'></i>
+              <h5 class='font-bold text-[11px] text-[#161513] truncate'>{{ activePinItem.title }}</h5>
+              <p class='text-[10px] text-[#C74634] font-bold'>{{ activePinItem.price }}</p>
+              <p class='text-[9px] text-slate-500 truncate flex items-center gap-1'>
+                <i class='fa-solid fa-location-dot text-[#C74634] text-[8px]'></i>
                 <span>{{ activePinItem.location }}</span>
               </p>
             </div>
-            <a v-bind:href='"https://www.google.com/maps/search/?api=1&amp;query=" + encodeURIComponent(activePinItem.location + " Tây Ninh")' target='_blank' class='w-7 h-7 rounded-lg bg-teal-50 text-teal-700 flex items-center justify-center hover:bg-teal-600 hover:text-white transition' title='Mở trên Google Maps'>
+            <a v-bind:href='"https://www.google.com/maps/search/?api=1&amp;query=" + encodeURIComponent(activePinItem.location + " Tây Ninh")' target='_blank' class='w-7 h-7 bg-[#C74634] text-white flex items-center justify-center hover:bg-[#B13C2C] transition' title='Mở trên Google Maps'>
               <i class='fa-solid fa-arrow-up-right-from-square text-[10px]'></i>
             </a>
           </div>
         </div>
 
         <!-- Numbered Quick List Below Map -->
-        <ol class='space-y-2 text-xs'>
-          <li v-for='item in mapQuickList' v-bind:key='item.id' v-on:click='selectQuickListItem(item)' class='flex items-start justify-between cursor-pointer p-1.5 rounded-lg hover:bg-slate-50 transition'>
+        <ol class='space-y-1.5 text-xs'>
+          <li v-for='item in mapQuickList' v-bind:key='item.id' v-on:click='selectQuickListItem(item)' class='flex items-start justify-between cursor-pointer p-1.5 hover:bg-[#F1EFED] transition border-b border-slate-100'>
             <div class='flex items-start gap-2'>
-              <span class='font-bold text-slate-900'>{{ item.number }}.</span>
+              <span class='font-black text-[#C74634]'>{{ item.number }}.</span>
               <div>
                 <p class='font-bold text-slate-800 line-clamp-1'>{{ item.title }}</p>
                 <span class='text-[10px] text-slate-400'>{{ item.location }}</span>
@@ -433,20 +606,134 @@
             </div>
           </li>
         </ol>
+
+        <!-- Quick Video Spotlight Widget in Map Column -->
+        <div class='border-t border-[#E0DDD8] pt-3'>
+          <div class='flex items-center justify-between mb-2'>
+            <h4 class='text-xs font-bold text-[#161513] uppercase flex items-center gap-1.5'>
+              <i class='fa-brands fa-youtube text-red-600'></i>
+              <span>Video Tây Ninh</span>
+            </h4>
+            <button v-on:click='activeTab = "video"' class='text-[10px] text-[#C74634] font-bold hover:underline'>Xem tất cả</button>
+          </div>
+          <div v-on:click='playVideo(tayNinhVideos[0])' class='relative cursor-pointer group bg-black overflow-hidden border border-[#E0DDD8]'>
+            <img v-bind:src='tayNinhVideos[0].thumbnail' class='w-full h-24 object-cover opacity-80 group-hover:opacity-100 transition' />
+            <div class='absolute inset-0 flex items-center justify-center'>
+              <div class='w-8 h-8 bg-[#C74634] text-white flex items-center justify-center shadow'>
+                <i class='fa-solid fa-play text-xs'></i>
+              </div>
+            </div>
+            <div class='absolute bottom-1 left-1.5 right-1.5 bg-black/70 px-1.5 py-0.5 text-[9px] text-white truncate font-medium'>
+              {{ tayNinhVideos[0].title }}
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Bottom Banner Card -->
-      <a href='javascript:void(0)' v-on:click='showToast("Hôm nay có hơn 120 tin đăng mới trên toàn tỉnh Tây Ninh!", "success")' class='bg-slate-50 rounded-2xl p-3 border border-slate-100 flex items-center justify-between hover:bg-slate-100 transition group'>
+      <a href='javascript:void(0)' v-on:click='showToast("Hôm nay có hơn 120 tin đăng mới trên toàn tỉnh Tây Ninh!", "success")' class='bg-[#F1EFED] p-3 border border-[#E0DDD8] flex items-center justify-between hover:bg-slate-200 transition group'>
         <div class='flex items-center gap-2.5'>
-          <img src='https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&amp;fit=crop&amp;w=80&amp;h=80&amp;q=80' class='w-8 h-8 rounded-lg object-cover' />
-          <p class='text-[11px] font-semibold text-slate-700 leading-snug'>
-            Có hơn 120+ tin đăng mới hôm nay trên toàn tỉnh.
+          <img src='https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&amp;fit=crop&amp;w=80&amp;h=80&amp;q=80' class='w-8 h-8 object-cover border border-[#E0DDD8]' />
+          <p class='text-[11px] font-semibold text-slate-800 leading-snug'>
+            Hơn 200+ tin đăng và video đặc sắc toàn tỉnh Tây Ninh.
           </p>
         </div>
-        <i class='fa-solid fa-arrow-up-right-from-square text-xs text-slate-400 group-hover:text-slate-800 transition'></i>
+        <i class='fa-solid fa-arrow-up-right-from-square text-xs text-[#C74634] transition'></i>
       </a>
     </aside>
+    <!-- 4.5 REALTIME CHAT & NOTIFICATION DRAWER (ORACLE REDWOOD ENTERPRISE STYLE) -->
+    <div v-if='showChatDrawer' v-cloak='true' style='display: none;' v-bind:style='showChatDrawer ? "display: flex !important;" : "display: none !important;"' class='fixed inset-0 z-50 flex items-center justify-end bg-black/60 backdrop-blur-sm'>
+      <div class='bg-white w-full max-w-md h-full flex flex-col shadow-2xl border-l border-[#E0DDD8]'>
+        <!-- Drawer Header -->
+        <div class='bg-[#161513] text-white p-4 flex items-center justify-between border-b-2 border-[#C74634]'>
+          <div class='flex items-center gap-2'>
+            <span class='bg-[#C74634] text-white font-black text-xs px-2 py-0.5 select-none'>TNHub</span>
+            <div>
+              <h3 class='font-bold text-sm tracking-wide uppercase'>Tin Nhắn &amp; Thông Báo Realtime</h3>
+              <span class='text-[10px] text-emerald-400 flex items-center gap-1'>
+                <span class='w-1.5 h-1.5 bg-emerald-400 animate-pulse'></span>
+                <span>Kết nối trực tiếp Cloud Firestore fir-1b417</span>
+              </span>
+            </div>
+          </div>
+          <button v-on:click='showChatDrawer = false' class='w-8 h-8 flex items-center justify-center hover:bg-white/10 text-slate-300 hover:text-white transition'>
+            <i class='fa-solid fa-xmark text-base'></i>
+          </button>
+        </div>
 
+        <!-- Messages List -->
+        <div class='flex-1 overflow-y-auto p-4 space-y-3 bg-[#F1EFED] custom-scroll'>
+          <div v-if='communityMessages.length === 0' class='text-center py-10 text-slate-400 text-xs'>
+            Chưa có tin nhắn nào. Bạn hãy là người gửi tin nhắn đầu tiên!
+          </div>
+          <div v-for='msg in communityMessages' v-bind:key='msg.id' class='bg-white p-3.5 border border-[#E0DDD8] shadow-sm'>
+            <div class='flex items-center justify-between mb-1.5'>
+              <span class='font-bold text-xs text-[#161513] flex items-center gap-1.5'>
+                <i class='fa-solid fa-circle-user text-[#C74634] text-sm'></i>
+                <span>{{ msg.senderName || 'Thành viên Tây Ninh' }}</span>
+              </span>
+              <span class='text-[10px] text-slate-400 font-medium'>{{ formatTime(msg.createdAt) }}</span>
+            </div>
+            <p class='text-xs text-slate-800 leading-relaxed whitespace-pre-line'>{{ msg.text }}</p>
+          </div>
+        </div>
+
+        <!-- Chat Input Footer -->
+        <div class='p-3.5 bg-white border-t border-[#E0DDD8]'>
+          <div class='flex gap-2'>
+            <input type='text' v-model='chatMessageInput' v-on:keyup.enter='sendCommunityMessage' placeholder='Nhập tin nhắn / thông báo gửi toàn cộng đồng...' class='flex-1 px-3 py-2 text-xs bg-[#F1EFED] border border-[#E0DDD8] outline-none focus:border-[#C74634]' />
+            <button v-on:click='sendCommunityMessage' class='px-4 py-2 bg-[#C74634] hover:bg-[#B13C2C] text-white font-bold text-xs shadow-sm transition'>
+              Gửi tin
+            </button>
+          </div>
+          <p class='text-[10px] text-slate-400 mt-2 flex items-center gap-1'>
+            <i class='fa-solid fa-bolt text-[#C74634]'></i>
+            <span>Realtime Firestore: Thông báo sẽ ngay lập tức phát âm thanh và hiển thị lên toàn bộ người dùng đang online.</span>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4.6 MODAL XEM VIDEO YOUTUBE TÂY NINH (EMBEDDED HD PLAYER) -->
+    <div v-if='showVideoPlayerModal &amp;&amp; activePlayingVideo' v-cloak='true' style='display: none;' v-bind:style='showVideoPlayerModal ? "display: flex !important;" : "display: none !important;"' class='fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4'>
+      <div class='bg-white max-w-3xl w-full border border-[#E0DDD8] shadow-2xl flex flex-col overflow-hidden my-auto'>
+        <!-- Modal Top Bar -->
+        <div class='bg-[#161513] text-white px-4 py-3 flex items-center justify-between border-b-2 border-[#C74634]'>
+          <div class='flex items-center gap-2 truncate pr-2'>
+            <span class='bg-[#C74634] text-white text-[10px] font-black px-1.5 py-0.5 uppercase'>YouTube</span>
+            <span class='font-bold text-xs truncate'>{{ activePlayingVideo.title }}</span>
+          </div>
+          <button v-on:click='showVideoPlayerModal = false' class='w-7 h-7 flex items-center justify-center hover:bg-white/20 text-white transition'>
+            <i class='fa-solid fa-xmark text-sm'></i>
+          </button>
+        </div>
+
+        <!-- Video Iframe -->
+        <div class='relative w-full aspect-video bg-black'>
+          <iframe v-bind:src='activePlayingVideo.embedUrl + "?autoplay=1&amp;rel=0"' class='w-full h-full' frameborder='0' allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture' allowfullscreen='true'></iframe>
+        </div>
+
+        <!-- Video Details Footer -->
+        <div class='p-4 bg-white flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-[#E0DDD8]'>
+          <div>
+            <h4 class='font-bold text-sm text-[#161513]'>{{ activePlayingVideo.title }}</h4>
+            <div class='flex flex-wrap items-center gap-3 text-xs text-slate-500 mt-1'>
+              <span class='font-bold text-[#C74634] flex items-center gap-1'>
+                <i class='fa-solid fa-location-dot'></i>
+                <span>{{ activePlayingVideo.location }}</span>
+              </span>
+              <span>•</span>
+              <span>Kênh: {{ activePlayingVideo.channel }}</span>
+              <span>•</span>
+              <span>{{ activePlayingVideo.views }}</span>
+            </div>
+          </div>
+          <button v-on:click='showVideoPlayerModal = false' class='px-4 py-2 bg-[#161513] hover:bg-black text-white text-xs font-bold transition shrink-0'>
+            Đóng video
+          </button>
+        </div>
+      </div>
+    </div>
     <!-- 5. TOAST NOTIFICATION STACK -->
     <div class='fixed top-5 right-5 z-50 flex flex-col gap-2.5 pointer-events-none max-w-sm w-full'>
       <div v-for='toast in toasts' v-bind:key='toast.id'
@@ -456,7 +743,7 @@
              "bg-amber-50 border-amber-500 text-amber-900": toast.type === "warning",
              "bg-blue-50 border-blue-500 text-blue-900": toast.type === "info"
            }'
-           class='pointer-events-auto p-3.5 rounded-2xl border shadow-xl flex items-start gap-3 transition-all duration-300'>
+           class='pointer-events-auto p-3.5 rounded-none border border-[#E0DDD8] border shadow-xl flex items-start gap-3 transition-all duration-300'>
         <div class='text-base mt-0.5'>
           <i v-if='toast.type === "success"' class='fa-solid fa-circle-check text-emerald-500'></i>
           <i v-else-if='toast.type === "error"' class='fa-solid fa-circle-exclamation text-rose-500'></i>
@@ -475,11 +762,11 @@
 
     <!-- 6. POPUP MODAL DIALOG -->
     <div v-if='popup.show' v-cloak='true' style='display: none;' v-bind:style='popup.show ? "display: flex !important;" : "display: none !important;"' class='fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4'>
-      <div class='bg-white rounded-3xl max-w-md w-full p-6 border border-slate-200 shadow-2xl text-center relative'>
+      <div class='bg-white rounded-none border border-[#E0DDD8] max-w-md w-full p-6 border border-slate-200 shadow-2xl text-center relative'>
         <button v-on:click='popup.show = false' class='absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-base'>
           <i class='fa-solid fa-xmark'></i>
         </button>
-        <div class='w-12 h-12 rounded-2xl mx-auto flex items-center justify-center text-xl mb-3'
+        <div class='w-12 h-12 rounded-none border border-[#E0DDD8] mx-auto flex items-center justify-center text-xl mb-3'
              v-bind:class='{
                "bg-emerald-100 text-emerald-600": popup.type === "success",
                "bg-rose-100 text-rose-600": popup.type === "error",
@@ -494,7 +781,7 @@
         <h4 class='text-base font-bold text-slate-900 mb-2'>{{ popup.title }}</h4>
         <p class='text-xs text-slate-600 leading-relaxed mb-6 whitespace-pre-line'>{{ popup.message }}</p>
         <div class='flex gap-3 justify-center'>
-          <button v-if='popup.showCancel' v-on:click='popup.show = false' class='px-5 py-2.5 rounded-xl bg-slate-100 text-slate-700 text-xs font-semibold hover:bg-slate-200 transition'>
+          <button v-if='popup.showCancel' v-on:click='popup.show = false' class='px-5 py-2.5 rounded-none bg-slate-100 text-slate-700 text-xs font-semibold hover:bg-slate-200 transition'>
             {{ popup.cancelText || 'Hủy' }}
           </button>
           <button v-on:click='handlePopupConfirm'
@@ -503,7 +790,7 @@
                     "bg-rose-600 hover:bg-rose-700 text-white": popup.type === "error",
                     "bg-amber-600 hover:bg-amber-700 text-white": popup.type === "warning"
                   }'
-                  class='px-6 py-2.5 rounded-xl text-xs font-semibold shadow-lg transition'>
+                  class='px-6 py-2.5 rounded-none text-xs font-semibold shadow-lg transition'>
             {{ popup.confirmText || 'Đã hiểu' }}
           </button>
         </div>
@@ -512,7 +799,7 @@
 
     <!-- 7. MODAL ỨNG TUYỂN NHANH (EASY APPLY) -->
     <div v-if='showApplyModal' v-cloak='true' style='display: none;' v-bind:style='showApplyModal ? "display: flex !important;" : "display: none !important;"' class='fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4'>
-      <div class='bg-white rounded-3xl max-w-lg w-full p-6 border border-slate-200 shadow-2xl relative text-xs'>
+      <div class='bg-white rounded-none border border-[#E0DDD8] max-w-lg w-full p-6 border border-slate-200 shadow-2xl relative text-xs'>
         <button v-on:click='showApplyModal = false' class='absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-base'>
           <i class='fa-solid fa-xmark'></i>
         </button>
@@ -526,16 +813,16 @@
         <form v-on:submit.prevent='submitApplication' class='space-y-3'>
           <div>
             <label class='block font-semibold mb-1'>Họ và tên của bạn</label>
-            <input type='text' v-model='applyForm.fullName' required='required' class='w-full px-3 py-2 rounded-xl bg-slate-100 border-none outline-none focus:ring-2 focus:ring-blue-500' placeholder='Nguyễn Văn A' />
+            <input type='text' v-model='applyForm.fullName' required='required' class='w-full px-3 py-2 rounded-none bg-slate-100 border-none outline-none focus:ring-2 focus:ring-blue-500' placeholder='Nguyễn Văn A' />
           </div>
           <div class='grid grid-cols-2 gap-3'>
             <div>
               <label class='block font-semibold mb-1'>Số điện thoại / Zalo</label>
-              <input type='tel' v-model='applyForm.phone' required='required' class='w-full px-3 py-2 rounded-xl bg-slate-100 border-none outline-none focus:ring-2 focus:ring-blue-500' placeholder='090xxxxxxx' />
+              <input type='tel' v-model='applyForm.phone' required='required' class='w-full px-3 py-2 rounded-none bg-slate-100 border-none outline-none focus:ring-2 focus:ring-blue-500' placeholder='090xxxxxxx' />
             </div>
             <div>
               <label class='block font-semibold mb-1'>Email</label>
-              <input type='email' v-model='applyForm.email' required='required' class='w-full px-3 py-2 rounded-xl bg-slate-100 border-none outline-none focus:ring-2 focus:ring-blue-500' placeholder='email@domain.com' />
+              <input type='email' v-model='applyForm.email' required='required' class='w-full px-3 py-2 rounded-none bg-slate-100 border-none outline-none focus:ring-2 focus:ring-blue-500' placeholder='email@domain.com' />
             </div>
           </div>
           <div>
@@ -544,12 +831,12 @@
           </div>
           <div>
             <label class='block font-semibold mb-1'>Ghi chú cho nhà tuyển dụng</label>
-            <textarea v-model='applyForm.note' rows='3' class='w-full px-3 py-2 rounded-xl bg-slate-100 border-none outline-none focus:ring-2 focus:ring-blue-500' placeholder='Kinh nghiệm làm việc, thời gian có thể đi làm...'></textarea>
+            <textarea v-model='applyForm.note' rows='3' class='w-full px-3 py-2 rounded-none bg-slate-100 border-none outline-none focus:ring-2 focus:ring-blue-500' placeholder='Kinh nghiệm làm việc, thời gian có thể đi làm...'></textarea>
           </div>
 
           <div class='flex items-center justify-end gap-2 pt-3 border-t border-slate-100'>
-            <button type='button' v-on:click='showApplyModal = false' class='px-4 py-2 rounded-xl bg-slate-100 font-semibold hover:bg-slate-200'>Hủy</button>
-            <button type='submit' v-bind:disabled='submittingApply' class='px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold transition disabled:opacity-50'>
+            <button type='button' v-on:click='showApplyModal = false' class='px-4 py-2 rounded-none bg-slate-100 font-semibold hover:bg-slate-200'>Hủy</button>
+            <button type='submit' v-bind:disabled='submittingApply' class='px-5 py-2 rounded-none bg-blue-600 hover:bg-blue-700 text-white font-semibold transition disabled:opacity-50'>
               {{ submittingApply ? 'Đang nộp hồ sơ...' : 'Nộp hồ sơ ngay' }}
             </button>
           </div>
@@ -559,7 +846,7 @@
 
     <!-- 8. MODAL LIÊN HỆ & BÁO GIÁ (BẤT ĐỘNG SẢN / DỊCH VỤ) -->
     <div v-if='showContactModal' v-cloak='true' style='display: none;' v-bind:style='showContactModal ? "display: flex !important;" : "display: none !important;"' class='fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4'>
-      <div class='bg-white rounded-3xl max-w-md w-full p-6 border border-slate-200 shadow-2xl relative text-xs'>
+      <div class='bg-white rounded-none border border-[#E0DDD8] max-w-md w-full p-6 border border-slate-200 shadow-2xl relative text-xs'>
         <button v-on:click='showContactModal = false' class='absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-base'>
           <i class='fa-solid fa-xmark'></i>
         </button>
@@ -573,20 +860,20 @@
         <form v-on:submit.prevent='submitContactInquiry' class='space-y-3'>
           <div>
             <label class='block font-semibold mb-1'>Họ và tên của bạn</label>
-            <input type='text' v-model='contactForm.name' required='required' class='w-full px-3 py-2 rounded-xl bg-slate-100 border-none outline-none focus:ring-2 focus:ring-teal-500' placeholder='Nguyễn Văn A' />
+            <input type='text' v-model='contactForm.name' required='required' class='w-full px-3 py-2 rounded-none bg-slate-100 border-none outline-none focus:ring-2 focus:ring-[#C74634]' placeholder='Nguyễn Văn A' />
           </div>
           <div>
             <label class='block font-semibold mb-1'>Số điện thoại để liên hệ lại</label>
-            <input type='tel' v-model='contactForm.phone' required='required' class='w-full px-3 py-2 rounded-xl bg-slate-100 border-none outline-none focus:ring-2 focus:ring-teal-500' placeholder='090xxxxxxx' />
+            <input type='tel' v-model='contactForm.phone' required='required' class='w-full px-3 py-2 rounded-none bg-slate-100 border-none outline-none focus:ring-2 focus:ring-[#C74634]' placeholder='090xxxxxxx' />
           </div>
           <div>
             <label class='block font-semibold mb-1'>Nội dung quan tâm / Yêu cầu</label>
-            <textarea v-model='contactForm.message' rows='3' class='w-full px-3 py-2 rounded-xl bg-slate-100 border-none outline-none focus:ring-2 focus:ring-teal-500' placeholder='Tôi muốn xem nhà / cần tư vấn báo giá sửa chữa...'></textarea>
+            <textarea v-model='contactForm.message' rows='3' class='w-full px-3 py-2 rounded-none bg-slate-100 border-none outline-none focus:ring-2 focus:ring-[#C74634]' placeholder='Tôi muốn xem nhà / cần tư vấn báo giá sửa chữa...'></textarea>
           </div>
 
           <div class='flex items-center justify-end gap-2 pt-3 border-t border-slate-100'>
-            <button type='button' v-on:click='showContactModal = false' class='px-4 py-2 rounded-xl bg-slate-100 font-semibold hover:bg-slate-200'>Hủy</button>
-            <button type='submit' class='px-5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold transition'>
+            <button type='button' v-on:click='showContactModal = false' class='px-4 py-2 rounded-none bg-slate-100 font-semibold hover:bg-slate-200'>Hủy</button>
+            <button type='submit' class='px-5 py-2 rounded-none bg-slate-900 hover:bg-slate-800 text-white font-semibold transition'>
               Gửi yêu cầu
             </button>
           </div>
@@ -596,7 +883,7 @@
 
     <!-- 8.5 MODAL CHI TIẾT BÀI ĐĂNG (RICH POST DETAIL MODAL) -->
     <div v-if='showDetailModal &amp;&amp; selectedDetailCard' v-cloak='true' style='display: none;' v-bind:style='showDetailModal ? "display: flex !important;" : "display: none !important;"' class='fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-3 sm:p-5 overflow-y-auto'>
-      <div class='bg-white rounded-3xl max-w-2xl w-full max-h-[92vh] overflow-hidden flex flex-col shadow-2xl relative my-auto border border-slate-200'>
+      <div class='bg-white rounded-none border border-[#E0DDD8] max-w-2xl w-full max-h-[92vh] overflow-hidden flex flex-col shadow-2xl relative my-auto border border-slate-200'>
         <!-- Modal Top Bar -->
         <div class='flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/70 sticky top-0 z-10 backdrop-blur'>
           <div class='flex items-center gap-2'>
@@ -622,7 +909,7 @@
         <!-- Modal Scrollable Content -->
         <div class='overflow-y-auto p-6 space-y-5 flex-1 text-slate-700 text-xs sm:text-sm leading-relaxed'>
           <!-- Hero Image -->
-          <div class='relative h-60 sm:h-72 w-full rounded-2xl overflow-hidden bg-slate-100 shadow-inner group'>
+          <div class='relative h-60 sm:h-72 w-full rounded-none border border-[#E0DDD8] overflow-hidden bg-slate-100 shadow-inner group'>
             <img v-bind:src='selectedDetailCard.image' v-bind:alt='selectedDetailCard.title' class='w-full h-full object-cover' />
             <div class='absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent'></div>
             <div class='absolute bottom-3 left-4 right-4 text-white flex items-end justify-between'>
@@ -643,7 +930,7 @@
             </h2>
             <div class='flex flex-wrap items-center gap-3 text-xs text-slate-500'>
               <span class='flex items-center gap-1.5 text-slate-700 font-medium'>
-                <i class='fa-solid fa-location-dot text-teal-600'></i>
+                <i class='fa-solid fa-location-dot text-[#C74634]'></i>
                 <span>{{ selectedDetailCard.subtitle || selectedDetailCard.location }}</span>
               </span>
               <span class='text-slate-300'>•</span>
@@ -655,14 +942,14 @@
           </div>
 
           <!-- Quick Specs Box -->
-          <div class='grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-100'>
+          <div class='grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50 p-3.5 rounded-none border border-[#E0DDD8] border border-slate-100'>
             <div class='flex flex-col'>
               <span class='text-[10px] text-slate-400 font-medium uppercase'>Chuyên mục</span>
               <span class='font-bold text-slate-800 mt-0.5 truncate'>{{ getCategoryLabel(selectedDetailCard.category) }}</span>
             </div>
             <div class='flex flex-col'>
               <span class='text-[10px] text-slate-400 font-medium uppercase'>Mức giá / Lương</span>
-              <span class='font-bold text-teal-600 mt-0.5 truncate'>{{ selectedDetailCard.price }}</span>
+              <span class='font-bold text-[#C74634] mt-0.5 truncate'>{{ selectedDetailCard.price }}</span>
             </div>
             <div class='flex flex-col'>
               <span class='text-[10px] text-slate-400 font-medium uppercase'>Khu vực</span>
@@ -677,27 +964,27 @@
           <!-- Section: MÔ TẢ CHI TIẾT -->
           <div class='pt-2'>
             <h4 class='text-sm font-bold text-slate-900 uppercase tracking-wide mb-2.5 flex items-center gap-2'>
-              <i class='fa-solid fa-align-left text-teal-600'></i>
+              <i class='fa-solid fa-align-left text-[#C74634]'></i>
               <span>Mô Tả Chi Tiết Bài Đăng</span>
             </h4>
-            <div class='bg-slate-50/70 p-4 rounded-2xl border border-slate-100 whitespace-pre-line text-slate-700 leading-relaxed font-normal'>
+            <div class='bg-slate-50/70 p-4 rounded-none border border-[#E0DDD8] border border-slate-100 whitespace-pre-line text-slate-700 leading-relaxed font-normal'>
               {{ getCardDescription(selectedDetailCard) }}
             </div>
           </div>
 
           <!-- Section: THÔNG TIN LIÊN HỆ -->
-          <div class='bg-teal-50/50 p-4 rounded-2xl border border-teal-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3'>
+          <div class='bg-teal-50/50 p-4 rounded-none border border-[#E0DDD8] border border-teal-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3'>
             <div>
               <span class='text-[11px] font-semibold text-teal-800 uppercase block mb-0.5'>Đơn vị / Người đăng tin</span>
               <p class='font-bold text-slate-900 text-sm'>{{ selectedDetailCard.authorName || selectedDetailCard.subtitle || 'Ban Quản Trị TN Hub' }}</p>
               <p class='text-xs text-slate-500 mt-0.5'>Hotline/Zalo: <span class='font-semibold text-teal-700'>{{ selectedDetailCard.phone || '0908.123.456' }}</span></p>
             </div>
             <div class='flex items-center gap-2 w-full sm:w-auto'>
-              <a v-bind:href='"tel:" + (selectedDetailCard.phone || "0908123456")' class='flex-1 sm:flex-none px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition'>
+              <a v-bind:href='"tel:" + (selectedDetailCard.phone || "0908123456")' class='flex-1 sm:flex-none px-4 py-2 rounded-none bg-[#C74634] hover:bg-[#B13C2C] text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition'>
                 <i class='fa-solid fa-phone'></i>
                 <span>Gọi điện</span>
               </a>
-              <a v-bind:href='"https://zalo.me/" + (selectedDetailCard.phone ? selectedDetailCard.phone.replace(/[^0-9]/g, "") : "0908123456")' target='_blank' class='flex-1 sm:flex-none px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition'>
+              <a v-bind:href='"https://zalo.me/" + (selectedDetailCard.phone ? selectedDetailCard.phone.replace(/[^0-9]/g, "") : "0908123456")' target='_blank' class='flex-1 sm:flex-none px-4 py-2 rounded-none bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition'>
                 <i class='fa-solid fa-comment-dots'></i>
                 <span>Chat Zalo</span>
               </a>
@@ -708,26 +995,26 @@
         <!-- Modal Bottom Actions Bar -->
         <div class='flex items-center justify-between px-6 py-3.5 border-t border-slate-100 bg-slate-50/80'>
           <div class='flex items-center gap-2'>
-            <button v-on:click='toggleBookmark(selectedDetailCard)' class='px-3.5 py-2 rounded-xl border border-slate-200 font-semibold text-xs flex items-center gap-1.5 transition'
+            <button v-on:click='toggleBookmark(selectedDetailCard)' class='px-3.5 py-2 rounded-none border border-slate-200 font-semibold text-xs flex items-center gap-1.5 transition'
                     v-bind:class='isBookmarked(selectedDetailCard.id) ? "bg-amber-50 border-amber-300 text-amber-700" : "bg-white text-slate-700 hover:bg-slate-100"'>
               <i v-bind:class='isBookmarked(selectedDetailCard.id) ? "fa-solid fa-bookmark text-amber-500" : "fa-regular fa-bookmark"'></i>
               <span>{{ isBookmarked(selectedDetailCard.id) ? "Đã lưu tin" : "Lưu tin" }}</span>
             </button>
-            <button v-on:click='shareCard(selectedDetailCard)' class='px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 font-semibold text-xs flex items-center gap-1.5 transition'>
+            <button v-on:click='shareCard(selectedDetailCard)' class='px-3.5 py-2 rounded-none bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 font-semibold text-xs flex items-center gap-1.5 transition'>
               <i class='fa-solid fa-share-nodes text-slate-500'></i>
               <span>Chia sẻ</span>
             </button>
           </div>
           <div class='flex items-center gap-2'>
-            <button v-if='selectedDetailCard.btnType === "apply"' v-on:click='showDetailModal = false; openApplyModal(selectedDetailCard)' class='px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-sm transition flex items-center gap-1.5'>
+            <button v-if='selectedDetailCard.btnType === "apply"' v-on:click='showDetailModal = false; openApplyModal(selectedDetailCard)' class='px-5 py-2 rounded-none bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-sm transition flex items-center gap-1.5'>
               <i class='fa-solid fa-paper-plane'></i>
               <span>Ứng tuyển ngay</span>
             </button>
-            <button v-else-if='selectedDetailCard.btnType === "contact"' v-on:click='showDetailModal = false; openContactModal(selectedDetailCard)' class='px-5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-sm transition flex items-center gap-1.5'>
+            <button v-else-if='selectedDetailCard.btnType === "contact"' v-on:click='showDetailModal = false; openContactModal(selectedDetailCard)' class='px-5 py-2 rounded-none bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-sm transition flex items-center gap-1.5'>
               <i class='fa-solid fa-envelope'></i>
               <span>Gửi liên hệ</span>
             </button>
-            <button v-else='true' v-on:click='showDetailModal = false' class='px-5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-sm transition'>
+            <button v-else='true' v-on:click='showDetailModal = false' class='px-5 py-2 rounded-none bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-sm transition'>
               Đóng
             </button>
           </div>
@@ -737,12 +1024,12 @@
 
     <!-- 9. MODAL ĐĂNG TIN MỚI NÂNG CAO -->
     <div v-if='showPostModal' v-cloak='true' style='display: none;' v-bind:style='showPostModal ? "display: flex !important;" : "display: none !important;"' class='fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-3 sm:p-5 overflow-y-auto'>
-      <div class='bg-white rounded-3xl max-w-xl w-full max-h-[92vh] overflow-hidden flex flex-col border border-slate-200 shadow-2xl relative my-auto text-xs'>
+      <div class='bg-white rounded-none border border-[#E0DDD8] max-w-xl w-full max-h-[92vh] overflow-hidden flex flex-col border border-slate-200 shadow-2xl relative my-auto text-xs'>
         <!-- Modal Header -->
         <div class='flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/70 sticky top-0 z-10 backdrop-blur'>
           <div>
             <h3 class='text-base font-bold text-slate-900 flex items-center gap-2'>
-              <i class='fa-solid fa-pen-to-square text-teal-600'></i>
+              <i class='fa-solid fa-pen-to-square text-[#C74634]'></i>
               <span>Đăng Tin Mới Lên TN Hub</span>
             </h3>
             <p class='text-[11px] text-slate-500 mt-0.5'>Đăng tin tuyển dụng, nhà đất, mua bán, dịch vụ Tây Ninh miễn phí.</p>
@@ -753,12 +1040,29 @@
         </div>
 
         <!-- Scrollable Form Body -->
+                <!-- Google Account Status Banner in Post Form -->
+        <div class='bg-[#F1EFED] p-3 border border-[#E0DDD8] mb-1 flex items-center justify-between'>
+          <div class='flex items-center gap-2'>
+            <img v-if='currentUser &amp;&amp; currentUser.photoURL' v-bind:src='currentUser.photoURL' class='w-7 h-7 object-cover border border-[#C74634]' />
+            <div class='w-7 h-7 bg-[#C74634] text-white flex items-center justify-center font-bold text-xs' v-else='true'>
+              <i class='fa-brands fa-google'></i>
+            </div>
+            <div>
+              <p class='font-bold text-xs text-[#161513]'>{{ currentUser ? currentUser.displayName : 'Tài khoản Google' }}</p>
+              <p class='text-[10px] text-slate-500'>{{ currentUser ? currentUser.email : 'ptquang0968@gmail.com' }}</p>
+            </div>
+          </div>
+          <span class='text-[10px] font-bold text-[#C74634] bg-white px-2 py-0.5 border border-[#E0DDD8]'>
+            Đã xác thực Google
+          </span>
+        </div>
+
         <form v-on:submit.prevent='submitNewPost' class='overflow-y-auto p-6 space-y-4 flex-1'>
           <!-- Row 1: Chuyên mục & Khu vực quận/huyện -->
           <div class='grid grid-cols-1 sm:grid-cols-2 gap-3'>
             <div>
               <label class='block font-semibold mb-1 text-slate-700'>Chuyên mục tin đăng <span class='text-rose-500'>*</span></label>
-              <select v-model='postForm.category' v-on:change='onPostCategoryChange' class='w-full px-3 py-2.5 rounded-xl bg-slate-100 border border-transparent outline-none focus:border-teal-500 focus:bg-white transition font-medium'>
+              <select v-model='postForm.category' v-on:change='onPostCategoryChange' class='w-full px-3 py-2.5 rounded-none bg-slate-100 border border-transparent outline-none focus:border-[#C74634] focus:bg-white transition font-medium'>
                 <option value='tuyendung'>💼 Tuyển dụng &amp; Việc làm</option>
                 <option value='batdongsan'>🏡 Bất động sản &amp; Nhà đất</option>
                 <option value='raovat'>📦 Mua bán - Rao vặt</option>
@@ -768,7 +1072,7 @@
             </div>
             <div>
               <label class='block font-semibold mb-1 text-slate-700'>Huyện / Thị xã tại Tây Ninh <span class='text-rose-500'>*</span></label>
-              <select v-model='postForm.district' class='w-full px-3 py-2.5 rounded-xl bg-slate-100 border border-transparent outline-none focus:border-teal-500 focus:bg-white transition font-medium'>
+              <select v-model='postForm.district' class='w-full px-3 py-2.5 rounded-none bg-slate-100 border border-transparent outline-none focus:border-[#C74634] focus:bg-white transition font-medium'>
                 <option value='tptayninh'>TP. Tây Ninh</option>
                 <option value='trangbang'>TX. Trảng Bàng</option>
                 <option value='hoathanh'>TX. Hòa Thành</option>
@@ -785,18 +1089,18 @@
           <!-- Row 2: Tiêu đề bài đăng -->
           <div>
             <label class='block font-semibold mb-1 text-slate-700'>Tiêu đề bài đăng <span class='text-rose-500'>*</span></label>
-            <input type='text' v-model='postForm.title' required='required' class='w-full px-3.5 py-2.5 rounded-xl bg-slate-100 border border-transparent outline-none focus:border-teal-500 focus:bg-white transition font-semibold text-slate-900' placeholder='Nhập tiêu đề rõ ràng, thu hút người xem...' />
+            <input type='text' v-model='postForm.title' required='required' class='w-full px-3.5 py-2.5 rounded-none bg-slate-100 border border-transparent outline-none focus:border-[#C74634] focus:bg-white transition font-semibold text-slate-900' placeholder='Nhập tiêu đề rõ ràng, thu hút người xem...' />
           </div>
 
           <!-- Row 3: Giá & Thông tin phụ -->
           <div class='grid grid-cols-1 sm:grid-cols-2 gap-3'>
             <div>
               <label class='block font-semibold mb-1 text-slate-700'>Mức giá / Mức lương</label>
-              <input type='text' v-model='postForm.price' placeholder='VD: 12-18 Tr/Tháng hoặc 1.2 Tỷ' class='w-full px-3.5 py-2 rounded-xl bg-slate-100 border border-transparent outline-none focus:border-teal-500 focus:bg-white transition' />
+              <input type='text' v-model='postForm.price' placeholder='VD: 12-18 Tr/Tháng hoặc 1.2 Tỷ' class='w-full px-3.5 py-2 rounded-none bg-slate-100 border border-transparent outline-none focus:border-[#C74634] focus:bg-white transition' />
             </div>
             <div>
               <label class='block font-semibold mb-1 text-slate-700'>Thông tin phụ / Phụ cấp / Diện tích</label>
-              <input type='text' v-model='postForm.subprice' placeholder='VD: Hoa hồng cao, 100m² thổ cư, BHXH...' class='w-full px-3.5 py-2 rounded-xl bg-slate-100 border border-transparent outline-none focus:border-teal-500 focus:bg-white transition' />
+              <input type='text' v-model='postForm.subprice' placeholder='VD: Hoa hồng cao, 100m² thổ cư, BHXH...' class='w-full px-3.5 py-2 rounded-none bg-slate-100 border border-transparent outline-none focus:border-[#C74634] focus:bg-white transition' />
             </div>
           </div>
 
@@ -804,11 +1108,11 @@
           <div class='grid grid-cols-1 sm:grid-cols-2 gap-3'>
             <div>
               <label class='block font-semibold mb-1 text-slate-700'>Tên Đơn vị / Công ty / Địa chỉ cụ thể</label>
-              <input type='text' v-model='postForm.address' placeholder='VD: Cty May Tây Ninh - KCN Trảng Bàng' class='w-full px-3.5 py-2 rounded-xl bg-slate-100 border border-transparent outline-none focus:border-teal-500 focus:bg-white transition' />
+              <input type='text' v-model='postForm.address' placeholder='VD: Cty May Tây Ninh - KCN Trảng Bàng' class='w-full px-3.5 py-2 rounded-none bg-slate-100 border border-transparent outline-none focus:border-[#C74634] focus:bg-white transition' />
             </div>
             <div>
               <label class='block font-semibold mb-1 text-slate-700'>Thẻ nổi bật (Badge)</label>
-              <select v-model='postForm.badge' class='w-full px-3 py-2 rounded-xl bg-slate-100 border border-transparent outline-none focus:border-teal-500 focus:bg-white transition'>
+              <select v-model='postForm.badge' class='w-full px-3 py-2 rounded-none bg-slate-100 border border-transparent outline-none focus:border-[#C74634] focus:bg-white transition'>
                 <option value='Tuyển gấp'>🔥 Tuyển gấp</option>
                 <option value='Chính chủ'>🏡 Chính chủ</option>
                 <option value='Giá tốt'>💰 Giá tốt</option>
@@ -823,29 +1127,29 @@
           <div>
             <div class='flex items-center justify-between mb-1'>
               <label class='block font-semibold text-slate-700'>Mô tả chi tiết bài đăng <span class='text-rose-500'>*</span></label>
-              <button type='button' v-on:click='fillTemplateDescription' class='text-[11px] text-teal-600 hover:text-teal-700 font-semibold flex items-center gap-1 hover:underline'>
+              <button type='button' v-on:click='fillTemplateDescription' class='text-[11px] text-[#C74634] hover:text-teal-700 font-semibold flex items-center gap-1 hover:underline'>
                 <i class='fa-solid fa-wand-magic-sparkles'></i>
                 <span>Gợi ý mẫu nhanh</span>
               </button>
             </div>
-            <textarea v-model='postForm.description' rows='5' required='required' class='w-full px-3.5 py-2.5 rounded-xl bg-slate-100 border border-transparent outline-none focus:border-teal-500 focus:bg-white transition font-normal text-slate-800 leading-relaxed' placeholder='Nhập mô tả chi tiết: yêu cầu công việc, quyền lợi, pháp lý nhà đất, tình trạng sản phẩm, chính sách bảo hành...'></textarea>
+            <textarea v-model='postForm.description' rows='5' required='required' class='w-full px-3.5 py-2.5 rounded-none bg-slate-100 border border-transparent outline-none focus:border-[#C74634] focus:bg-white transition font-normal text-slate-800 leading-relaxed' placeholder='Nhập mô tả chi tiết: yêu cầu công việc, quyền lợi, pháp lý nhà đất, tình trạng sản phẩm, chính sách bảo hành...'></textarea>
             <p class='text-[11px] text-slate-400 mt-1'>Mẹo: Nhấn nút &quot;Gợi ý mẫu nhanh&quot; ở trên để tự động chèn dàn ý chi tiết chuẩn theo từng chuyên mục.</p>
           </div>
 
           <!-- Row 6: Thông tin liên hệ người đăng -->
-          <div class='bg-slate-50 p-3.5 rounded-2xl border border-slate-100 space-y-3'>
+          <div class='bg-slate-50 p-3.5 rounded-none border border-[#E0DDD8] border border-slate-100 space-y-3'>
             <span class='text-xs font-bold text-slate-800 flex items-center gap-1.5'>
-              <i class='fa-solid fa-id-card text-teal-600'></i>
+              <i class='fa-solid fa-id-card text-[#C74634]'></i>
               <span>Thông tin người đăng &amp; liên hệ</span>
             </span>
             <div class='grid grid-cols-1 sm:grid-cols-2 gap-3'>
               <div>
                 <label class='block font-medium mb-1 text-slate-600'>Họ tên người đăng</label>
-                <input type='text' v-model='postForm.contactName' class='w-full px-3 py-2 rounded-xl bg-white border border-slate-200 outline-none focus:border-teal-500' placeholder='Nguyễn Văn A' />
+                <input type='text' v-model='postForm.contactName' class='w-full px-3 py-2 rounded-none bg-white border border-slate-200 outline-none focus:border-[#C74634]' placeholder='Nguyễn Văn A' />
               </div>
               <div>
                 <label class='block font-medium mb-1 text-slate-600'>Số điện thoại / Zalo <span class='text-rose-500'>*</span></label>
-                <input type='tel' v-model='postForm.contactPhone' required='required' class='w-full px-3 py-2 rounded-xl bg-white border border-slate-200 outline-none focus:border-teal-500 font-semibold' placeholder='0908.xxx.xxx' />
+                <input type='tel' v-model='postForm.contactPhone' required='required' class='w-full px-3 py-2 rounded-none bg-white border border-slate-200 outline-none focus:border-[#C74634] font-semibold' placeholder='0908.xxx.xxx' />
               </div>
             </div>
           </div>
@@ -855,13 +1159,13 @@
             <label class='block font-semibold mb-1 text-slate-700'>Hình ảnh đính kèm bài đăng</label>
             <div class='flex flex-col sm:flex-row gap-3 items-center'>
               <input type='file' v-on:change='handlePostImageUpload' accept='image/*' class='w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100 cursor-pointer' />
-              <button type='button' v-on:click='selectPresetImage' class='shrink-0 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs flex items-center gap-1 transition'>
+              <button type='button' v-on:click='selectPresetImage' class='shrink-0 px-3 py-2 rounded-none bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs flex items-center gap-1 transition'>
                 <i class='fa-solid fa-image text-slate-500'></i>
                 <span>Ảnh minh họa mẫu</span>
               </button>
             </div>
             <!-- Image Preview if available -->
-            <div v-if='postForm.imageBase64 || postForm.previewUrl' class='mt-2.5 relative w-24 h-24 rounded-xl overflow-hidden border border-slate-200 shadow-sm'>
+            <div v-if='postForm.imageBase64 || postForm.previewUrl' class='mt-2.5 relative w-24 h-24 rounded-none overflow-hidden border border-slate-200 shadow-sm'>
               <img v-bind:src='postForm.imageBase64 || postForm.previewUrl' class='w-full h-full object-cover' />
               <button type='button' v-on:click='postForm.imageBase64 = null; postForm.previewUrl = ""' class='absolute top-1 right-1 w-5 h-5 rounded-full bg-black/60 text-white flex items-center justify-center text-[10px]'>
                 <i class='fa-solid fa-xmark'></i>
@@ -871,8 +1175,8 @@
 
           <!-- Modal Actions Footer -->
           <div class='flex items-center justify-end gap-2 pt-4 border-t border-slate-100 sticky bottom-0 bg-white'>
-            <button type='button' v-on:click='showPostModal = false' class='px-4 py-2.5 rounded-xl bg-slate-100 font-semibold hover:bg-slate-200 transition'>Hủy bỏ</button>
-            <button type='submit' class='px-6 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold transition flex items-center gap-2 shadow-sm'>
+            <button type='button' v-on:click='showPostModal = false' class='px-4 py-2.5 rounded-none bg-slate-100 font-semibold hover:bg-slate-200 transition'>Hủy bỏ</button>
+            <button type='submit' class='px-6 py-2.5 rounded-none bg-slate-900 hover:bg-slate-800 text-white font-bold transition flex items-center gap-2 shadow-sm'>
               <i class='fa-solid fa-paper-plane'></i>
               <span>Đăng bài ngay</span>
             </button>
@@ -899,8 +1203,6 @@
       </b:widget>
     </b:section>
   </div>
-
-  <!-- FIREBASE MODULAR SDK V10 &amp; APPLICATION SCRIPT -->
   <script type='module'>
     //<![CDATA[
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js';
@@ -4221,7 +4523,6 @@
     }
 ]
 ;
-
         const cards = ref(SEED_200_LISTINGS);
         const displayLimit = ref(12);
         const activeDistrict = ref('all');
@@ -4242,144 +4543,308 @@
           title: 'Nhân viên Kinh doanh (Sales)',
           price: '12-18 Tr/Tháng',
           location: 'TP. Tây Ninh',
-          image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=120&h=120&q=80'
+          image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&amp;fit=crop&amp;w=120&amp;h=120&amp;q=80'
         });
 
-        const mapEmbedUrl = ref("https://maps.google.com/maps?q=T%C3%A2y+Ninh,+Vi%E1%BB%87t+Nam&t=&z=11&ie=UTF8&iwloc=&output=embed");
+        const mapEmbedUrl = ref("https://maps.google.com/maps?q=T%C3%A2y+Ninh,+Vi%E1%BB%87t+Nam&amp;t=&amp;z=11&amp;ie=UTF8&amp;iwloc=&amp;output=embed");
+
+        // YOUTUBE VIDEOS TỈNH TÂY NINH (100% TÂY NINH)
+        const tayNinhVideos = ref([
+          {
+            id: 'v1',
+            youtubeId: 'fT-3E5n4zrk',
+            title: 'Khám Phá Đỉnh Núi Bà Đen - Nóc Nhà Nam Bộ Tây Ninh',
+            channel: 'Sun World Ba Den Mountain',
+            duration: '12:45',
+            views: '1.2M lượt xem',
+            location: 'TP. Tây Ninh',
+            category: 'Du lịch &amp; Tâm linh',
+            thumbnail: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&amp;fit=crop&amp;w=800&amp;q=80',
+            embedUrl: 'https://www.youtube.com/embed/fT-3E5n4zrk'
+          },
+          {
+            id: 'v2',
+            youtubeId: '6iB42fS0L20',
+            title: 'Kiến Trúc Độc Đáo Toà Thánh Tây Ninh - Đạo Cao Đài',
+            channel: 'Nét Đẹp Tây Ninh',
+            duration: '15:20',
+            views: '850K lượt xem',
+            location: 'TX. Hòa Thành',
+            category: 'Văn hóa &amp; Di sản',
+            thumbnail: 'https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&amp;fit=crop&amp;w=800&amp;q=80',
+            embedUrl: 'https://www.youtube.com/embed/6iB42fS0L20'
+          },
+          {
+            id: 'v3',
+            youtubeId: 'qg9b8L1bTmg',
+            title: 'Hồ Dầu Tiếng Tây Ninh - Toạ Độ Cắm Trại Ngắm Hoàng Hôn Đẹp Nhất',
+            channel: 'Phượt Tây Ninh',
+            duration: '09:18',
+            views: '620K lượt xem',
+            location: 'Huyện Dương Minh Châu',
+            category: 'Cắm trại &amp; Dã ngoại',
+            thumbnail: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&amp;fit=crop&amp;w=800&amp;q=80',
+            embedUrl: 'https://www.youtube.com/embed/qg9b8L1bTmg'
+          },
+          {
+            id: 'v4',
+            youtubeId: 'WlP82x_2T1o',
+            title: 'Ẩm Thực Tây Ninh: Bánh Tráng Phơi Sương Trảng Bàng &amp; Bò Tơ',
+            channel: 'Ẩm Thực Quê Hương',
+            duration: '18:05',
+            views: '940K lượt xem',
+            location: 'TX. Trảng Bàng',
+            category: 'Ẩm thực đặc sản',
+            thumbnail: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&amp;fit=crop&amp;w=800&amp;q=80',
+            embedUrl: 'https://www.youtube.com/embed/WlP82x_2T1o'
+          },
+          {
+            id: 'v5',
+            youtubeId: 'a8m8zUfZmS0',
+            title: 'Hành Trình Chinh Phục Thung Lũng Ma Thiên Lãnh Hoang Sơ',
+            channel: 'Khám Phá Miền Đông',
+            duration: '14:32',
+            views: '480K lượt xem',
+            location: 'TP. Tây Ninh',
+            category: 'Trekking &amp; Khám phá',
+            thumbnail: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&amp;fit=crop&amp;w=800&amp;q=80',
+            embedUrl: 'https://www.youtube.com/embed/a8m8zUfZmS0'
+          },
+          {
+            id: 'v6',
+            youtubeId: 'oX9V5vI9q2g',
+            title: 'Di Tích Lịch Sử Căn Cứ Trung Ương Cục Miền Nam Tây Ninh',
+            channel: 'Lịch Sử Tây Ninh',
+            duration: '11:50',
+            views: '350K lượt xem',
+            location: 'Huyện Tân Biên',
+            category: 'Lịch sử &amp; Nguồn cội',
+            thumbnail: 'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&amp;fit=crop&amp;w=800&amp;q=80',
+            embedUrl: 'https://www.youtube.com/embed/oX9V5vI9q2g'
+          }
+        ]);
+
+        const activePlayingVideo = ref(null);
+        const showVideoPlayerModal = ref(false);
+
+        const playVideo = (v) => {
+          activePlayingVideo.value = v;
+          showVideoPlayerModal.value = true;
+        };
+
+        // REALTIME CHAT & NOTIFICATIONS
+        const showChatDrawer = ref(false);
+        const chatMessageInput = ref('');
+        const unreadMessageCount = ref(0);
+        const communityMessages = ref([
+          {
+            id: 'msg_1',
+            senderName: 'Phạm Thanh Quang',
+            senderEmail: 'ptquang0968@gmail.com',
+            text: 'Chào mừng quý bà con và đối tác đến với Cổng thông tin &amp; Mạng xã hội TNHub Tây Ninh!',
+            createdAt: new Date(Date.now() - 3600000).toISOString()
+          },
+          {
+            id: 'msg_2',
+            senderName: 'BQL KCN Trảng Bàng',
+            senderEmail: 'kcn.trangbang@tayninh.gov.vn',
+            text: 'Thông báo: Nhiều doanh nghiệp tại KCN Trảng Bàng đang tuyển dụng hơn 500 vị trí lao động và kỹ thuật viên.',
+            createdAt: new Date(Date.now() - 1800000).toISOString()
+          }
+        ]);
+
+        const openChatDrawer = () => {
+          showChatDrawer.value = true;
+          unreadMessageCount.value = 0;
+        };
+
+        const playNotificationSound = () => {
+          try {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (!AudioContext) return;
+            const ctx = new AudioContext();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+            osc.frequency.setValueAtTime(880, ctx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.15, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.35);
+          } catch (e) {}
+        };
+
+        const formatTime = (isoString) => {
+          if (!isoString) return 'Vừa xong';
+          try {
+            const diff = Math.floor((Date.now() - new Date(isoString).getTime()) / 1000);
+            if (diff < 60) return 'Vừa xong';
+            if (diff < 3600) return Math.floor(diff / 60) + ' phút trước';
+            if (diff < 86400) return Math.floor(diff / 3600) + ' giờ trước';
+            return Math.floor(diff / 86400) + ' ngày trước';
+          } catch (e) {
+            return 'Gần đây';
+          }
+        };
+
+        const sendCommunityMessage = async () => {
+          const text = chatMessageInput.value.trim();
+          if (!text) return;
+
+          const newMsg = {
+            senderName: currentUser.value ? (currentUser.value.displayName || 'Thành viên Google') : 'Thành viên Tây Ninh',
+            senderEmail: currentUser.value ? currentUser.value.email : 'ptquang0968@gmail.com',
+            text: text,
+            createdAt: new Date().toISOString()
+          };
+
+          communityMessages.value.unshift({ id: 'msg_' + Date.now(), ...newMsg });
+
+          if (db) {
+            try {
+              addDoc(collection(db, 'messages'), newMsg).catch(err => console.warn('Sync message:', err));
+            } catch (e) {
+              console.warn('Error sending message:', e);
+            }
+          }
+
+          chatMessageInput.value = '';
+          showToast('Đã gửi tin nhắn lên cộng đồng Tây Ninh!', 'success');
+        };
 
         const selectPin = (pinNum) => {
-          if (pinNum === 1) {
-            activePinItem.value = { title: 'Nhân viên Kinh doanh (Sales)', price: '12-18 Tr/Tháng', location: 'TP. Tây Ninh', image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=120&h=120&q=80' };
-            mapEmbedUrl.value = "https://maps.google.com/maps?q=Th%C3%A0nh+ph%E1%BB%91+T%C3%A2y+Ninh&t=&z=13&ie=UTF8&iwloc=&output=embed";
-          } else if (pinNum === 2) {
-            activePinItem.value = { title: 'Căn hộ Phú Gia', price: '1.8 Tỷ', location: 'Phường 3, TP. Tây Ninh', image: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=120&h=120&q=80' };
-            mapEmbedUrl.value = "https://maps.google.com/maps?q=Ph%C6%B0%E1%BB%9Dng+3+T%C3%A2y+Ninh&t=&z=14&ie=UTF8&iwloc=&output=embed";
-          } else if (pinNum === 3) {
-            activePinItem.value = { title: 'Xe Honda Vision', price: '22.5 Tr', location: 'Trảng Bàng, Tây Ninh', image: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=120&h=120&q=80' };
-            mapEmbedUrl.value = "https://maps.google.com/maps?q=Tr%E1%BA%A3ng+B%C3%A0ng+T%C3%A2y+Ninh&t=&z=13&ie=UTF8&iwloc=&output=embed";
-          } else if (pinNum === 4) {
-            activePinItem.value = { title: 'Điện lạnh Mr. Dung', price: 'Báo giá nhanh', location: 'Hoà Thành, Tây Ninh', image: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=120&h=120&q=80' };
-            mapEmbedUrl.value = "https://maps.google.com/maps?q=H%C3%B2a+Th%C3%A0nh+T%C3%A2y+Ninh&t=&z=14&ie=UTF8&iwloc=&output=embed";
-          } else {
-            activePinItem.value = { title: 'Khách sạn Luxury', price: '450k/Đêm', location: 'TP. Tây Ninh', image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=120&h=120&q=80' };
-            mapEmbedUrl.value = "https://maps.google.com/maps?q=N%C3%BAi+B%C3%A0+%C4%90en+T%C3%A2y+Ninh&t=&z=13&ie=UTF8&iwloc=&output=embed";
+          const found = cards.value.find(c => c.pinNumber === pinNum);
+          if (found) {
+            activePinItem.value = {
+              title: found.title,
+              price: found.price,
+              location: found.location,
+              image: found.image
+            };
+            const queryLocation = encodeURIComponent(found.location + ', Tây Ninh, Việt Nam');
+            mapEmbedUrl.value = 'https://maps.google.com/maps?q=' + queryLocation + '&amp;t=&amp;z=13&amp;ie=UTF8&amp;iwloc=&amp;output=embed';
+            showToast('Đang xem vị trí: ' + found.title + ' (' + found.location + ')', 'info');
           }
-          showToast('Google Maps đã chuyển đến: ' + activePinItem.value.location, 'info');
         };
 
         const selectQuickListItem = (item) => {
           selectPin(item.number);
         };
 
-                const filteredCards = computed(() => {
-          let list = [...cards.value];
+        // Lọc thẻ theo Danh mục, Khu vực huyện thị, Tìm kiếm
+        const filteredCards = computed(() => {
+          let list = cards.value;
+
           if (activeCategory.value === 'bookmark') {
             list = list.filter(c => bookmarks.value.includes(c.id));
           } else if (activeCategory.value !== 'all') {
             list = list.filter(c => c.category === activeCategory.value);
           }
+
           if (activeDistrict.value !== 'all') {
-            list = list.filter(c => c.district === activeDistrict.value || (c.location && c.location.toLowerCase().includes(activeDistrict.value)));
+            list = list.filter(c => c.district === activeDistrict.value || (c.location &amp;&amp; c.location.toLowerCase().includes(activeDistrict.value.toLowerCase())));
           }
-          if (searchKeyword.value.trim()) {
-            const kw = searchKeyword.value.toLowerCase();
-            list = list.filter(c => c.title.toLowerCase().includes(kw) || c.subtitle.toLowerCase().includes(kw));
+
+          if (searchKeyword.value.trim() !== '') {
+            const kw = searchKeyword.value.toLowerCase().trim();
+            list = list.filter(c => 
+              (c.title &amp;&amp; c.title.toLowerCase().includes(kw)) || 
+              (c.subtitle &amp;&amp; c.subtitle.toLowerCase().includes(kw)) ||
+              (c.location &amp;&amp; c.location.toLowerCase().includes(kw)) ||
+              (c.description &amp;&amp; c.description.toLowerCase().includes(kw))
+            );
           }
+
           if (sortAsc.value) {
-            list.reverse();
+            list = [...list].reverse();
           }
+
           return list.slice(0, displayLimit.value);
         });
 
         const totalFilteredCount = computed(() => {
-          let list = [...cards.value];
+          let list = cards.value;
           if (activeCategory.value === 'bookmark') {
             list = list.filter(c => bookmarks.value.includes(c.id));
           } else if (activeCategory.value !== 'all') {
             list = list.filter(c => c.category === activeCategory.value);
           }
           if (activeDistrict.value !== 'all') {
-            list = list.filter(c => c.district === activeDistrict.value || (c.location && c.location.toLowerCase().includes(activeDistrict.value)));
+            list = list.filter(c => c.district === activeDistrict.value || (c.location &amp;&amp; c.location.toLowerCase().includes(activeDistrict.value.toLowerCase())));
           }
-          if (searchKeyword.value.trim()) {
-            const kw = searchKeyword.value.toLowerCase();
-            list = list.filter(c => c.title.toLowerCase().includes(kw) || c.subtitle.toLowerCase().includes(kw));
+          if (searchKeyword.value.trim() !== '') {
+            const kw = searchKeyword.value.toLowerCase().trim();
+            list = list.filter(c => 
+              (c.title &amp;&amp; c.title.toLowerCase().includes(kw)) || 
+              (c.subtitle &amp;&amp; c.subtitle.toLowerCase().includes(kw)) ||
+              (c.location &amp;&amp; c.location.toLowerCase().includes(kw)) ||
+              (c.description &amp;&amp; c.description.toLowerCase().includes(kw))
+            );
           }
           return list.length;
         });
 
-        const hasMoreCards = computed(() => displayLimit.value < totalFilteredCount.value);
-        const remainingCardsCount = computed(() => Math.max(0, totalFilteredCount.value - displayLimit.value));
+        const hasMoreCards = computed(() => {
+          return displayLimit.value &lt; totalFilteredCount.value;
+        });
+
+        const remainingCardsCount = computed(() => {
+          const diff = totalFilteredCount.value - displayLimit.value;
+          return diff &gt; 0 ? diff : 0;
+        });
 
         const loadMore = () => {
           displayLimit.value += 12;
-          showToast('Đang tải thêm tin đăng...', 'info');
+          showToast('Đang hiển thị thêm 12 tin đăng tiếp theo...', 'info');
         };
 
         const setCategory = (cat) => {
           activeCategory.value = cat;
+          activeTab.value = 'feed';
+          displayLimit.value = 12;
+          showToast('Đã lọc theo: ' + cat, 'info');
         };
 
         const filterBookmarks = () => {
           activeCategory.value = 'bookmark';
-          showToast(`Đang hiển thị ${bookmarks.value.length} mục đã lưu`, 'info');
+          activeTab.value = 'feed';
+          displayLimit.value = 12;
+          showToast('Đang hiển thị các tin đã lưu của bạn (' + bookmarks.value.length + ' tin)', 'info');
         };
 
         const isBookmarked = (id) => bookmarks.value.includes(id);
 
         const toggleBookmark = (card) => {
-          const idx = bookmarks.value.indexOf(card.id);
-          if (idx >= 0) {
-            bookmarks.value.splice(idx, 1);
-            showToast(`Đã bỏ lưu: ${card.title}`, 'info');
+          const index = bookmarks.value.indexOf(card.id);
+          if (index &gt; -1) {
+            bookmarks.value.splice(index, 1);
+            showToast('Đã bỏ lưu tin: ' + card.title, 'info');
           } else {
             bookmarks.value.push(card.id);
-            showToast(`Đã lưu bài: ${card.title}`, 'success');
+            showToast('Đã lưu tin vào bộ sưu tập cá nhân!', 'success');
           }
           localStorage.setItem('tnhub_bookmarks', JSON.stringify(bookmarks.value));
         };
 
         const toggleSort = () => {
           sortAsc.value = !sortAsc.value;
-          showToast('Đã sắp xếp lại danh sách tin đăng', 'info');
+          showToast('Đã đổi thứ tự hiển thị tin đăng', 'info');
         };
 
         const zoomMap = () => {
-          mapEmbedUrl.value = "https://maps.google.com/maps?q=" + encodeURIComponent(activePinItem.value.location + " Tây Ninh") + "&t=&z=15&ie=UTF8&iwloc=&output=embed";
-          showToast('Google Maps đã phóng to cận cảnh ' + activePinItem.value.location, 'info');
+          showToast('Đang mở rộng tầm quan sát bản đồ Tây Ninh', 'info');
         };
 
-        watch(activeDistrict, (newDist) => {
-          if (newDist === 'trangbang') {
-            mapEmbedUrl.value = "https://maps.google.com/maps?q=Tr%E1%BA%A3ng+B%C3%A0ng+T%C3%A2y+Ninh&t=&z=12&ie=UTF8&iwloc=&output=embed";
-          } else if (newDist === 'hoathanh') {
-            mapEmbedUrl.value = "https://maps.google.com/maps?q=H%C3%B2a+Th%C3%A0nh+T%C3%A2y+Ninh&t=&z=13&ie=UTF8&iwloc=&output=embed";
-          } else if (newDist === 'godau') {
-            mapEmbedUrl.value = "https://maps.google.com/maps?q=G%C3%B2+D%E1%BA%A7u+T%C3%A2y+Ninh&t=&z=12&ie=UTF8&iwloc=&output=embed";
-          } else if (newDist === 'duongminhchau') {
-            mapEmbedUrl.value = "https://maps.google.com/maps?q=D%C6%B0%C6%A1ng+Minh+Ch%C3%A2u+T%C3%A2y+Ninh&t=&z=12&ie=UTF8&iwloc=&output=embed";
-          } else if (newDist === 'tanchau') {
-            mapEmbedUrl.value = "https://maps.google.com/maps?q=T%C3%A2n+Ch%C3%A2u+T%C3%A2y+Ninh&t=&z=11&ie=UTF8&iwloc=&output=embed";
-          } else if (newDist === 'tanbien') {
-            mapEmbedUrl.value = "https://maps.google.com/maps?q=T%C3%A2n+Bi%C3%AAn+T%C3%A2y+Ninh&t=&z=11&ie=UTF8&iwloc=&output=embed";
-          } else if (newDist === 'bencau') {
-            mapEmbedUrl.value = "https://maps.google.com/maps?q=B%E1%BA%BFn+C%E1%BA%A7u+T%C3%A2y+Ninh&t=&z=12&ie=UTF8&iwloc=&output=embed";
-          } else if (newDist === 'tptayninh') {
-            mapEmbedUrl.value = "https://maps.google.com/maps?q=Th%C3%A0nh+ph%E1%BB%91+T%C3%A2y+Ninh&t=&z=13&ie=UTF8&iwloc=&output=embed";
-          } else {
-            mapEmbedUrl.value = "https://maps.google.com/maps?q=T%C3%A2y+Ninh,+Vi%E1%BB%87t+Nam&t=&z=11&ie=UTF8&iwloc=&output=embed";
-          }
-        });
-
-        const onSearchKey = (e) => {
-          if (e.key === 'Enter') {
-            showToast(`Đang tìm kiếm: "${searchKeyword.value}"`, 'info');
-          }
+        const onSearchKey = () => {
+          displayLimit.value = 12;
         };
 
         // Form handlers
-        const applyForm = ref({ fullName: 'Phạm Thanh Quang', phone: '090xxxxxxx', email: 'ptquang0968@gmail.com', note: '', fileBase64: null });
-        const contactForm = ref({ name: 'Phạm Thanh Quang', phone: '090xxxxxxx', message: '' });
+        const applyForm = ref({ fullName: '', phone: '', email: '', note: '', fileBase64: null });
+        const contactForm = ref({ name: '', phone: '', message: '' });
         const postForm = ref({
           title: '',
           category: 'tuyendung',
@@ -4390,7 +4855,7 @@
           subprice: '',
           badge: 'Tuyển gấp',
           description: '',
-          contactName: 'Phạm Thanh Quang',
+          contactName: '',
           contactPhone: '0908.123.456',
           imageBase64: null,
           previewUrl: ''
@@ -4424,91 +4889,91 @@
 
         const getCardDescription = (card) => {
           if (!card) return '';
-          if (card.description && card.description.trim()) {
+          if (card.description &amp;&amp; card.description.trim()) {
             return card.description;
           }
           if (card.category === 'tuyendung') {
-            return `THÔNG TIN TUYỂN DỤNG CHI TIẾT:\n` +
-              `• Vị trí: ${card.title}\n` +
-              `• Đơn vị tuyển dụng: ${card.subtitle || 'Doanh nghiệp tại Tây Ninh'}\n` +
-              `• Mức thu nhập: ${card.price} (${card.subprice || 'Hoa hồng + Phụ cấp'})\n` +
-              `• Khu vực làm việc: ${card.location || 'Tây Ninh'}\n\n` +
-              `MÔ TẢ CÔNG VIỆC:\n` +
-              `- Phụ trách các công việc chuyên môn theo sự phân công của quản lý bộ phận.\n` +
-              `- Phối hợp làm việc cùng đội ngũ nhằm đạt mục tiêu kinh doanh và chất lượng công việc.\n\n` +
-              `YÊU CẦU ỨNG VIÊN:\n` +
-              `- Nhanh nhẹn, trung thực, có tinh thần trách nhiệm cao trong công việc.\n` +
-              `- Ưu tiên ứng viên cư trú tại Tây Ninh hoặc các khu vực lân cận.\n\n` +
-              `QUYỀN LỢI ĐƯỢC HƯỞNG:\n` +
-              `- Lương thưởng minh bạch, đóng BHXH, BHYT đầy đủ theo quy định của pháp luật.\n` +
-              `- Nghỉ lễ tết, thưởng tháng 13 và du lịch hàng năm cùng công ty.`;
+            return THÔNG TIN TUYỂN DỤNG CHI TIẾT:\n +
+              • Vị trí:  + card.title + \n +
+              • Đơn vị tuyển dụng:  + (card.subtitle || 'Doanh nghiệp tại Tây Ninh') + \n +
+              • Mức thu nhập:  + card.price +  ( + (card.subprice || 'Hoa hồng + Phụ cấp') + )\n +
+              • Khu vực làm việc:  + (card.location || 'Tây Ninh') + \n\n +
+              MÔ TẢ CÔNG VIỆC:\n +
+              - Phụ trách các công việc chuyên môn theo sự phân công của quản lý bộ phận.\n +
+              - Phối hợp làm việc cùng đội ngũ nhằm đạt mục tiêu kinh doanh và chất lượng công việc.\n\n +
+              YÊU CẦU ỨNG VIÊN:\n +
+              - Nhanh nhẹn, trung thực, có tinh thần trách nhiệm cao trong công việc.\n +
+              - Ưu tiên ứng viên cư trú tại Tây Ninh hoặc các khu vực lân cận.\n\n +
+              QUYỀN LỢI ĐƯỢC HƯỞNG:\n +
+              - Lương thưởng minh bạch, đóng BHXH, BHYT đầy đủ theo quy định của pháp luật.\n +
+              - Nghỉ lễ tết, thưởng tháng 13 và du lịch hàng năm cùng công ty.;
           } else if (card.category === 'batdongsan') {
-            return `THÔNG TIN BẤT ĐỘNG SẢN CHI TIẾT:\n` +
-              `• Tiêu đề: ${card.title}\n` +
-              `• Vị trí: ${card.subtitle || card.location}\n` +
-              `• Giá bán: ${card.price} (${card.subprice || 'Sổ hồng riêng'})\n` +
-              `• Khu vực: ${card.location || 'Tây Ninh'}\n\n` +
-              `THÔNG TIN QUY HOẠCH & TIỀM NĂNG:\n` +
-              `- Pháp lý chuẩn, sổ hồng riêng chính chủ, công chứng sang tên ngay trong ngày.\n` +
-              `- Đường trước nhà thông thoáng, ô tô ra vào thoải mái, gần khu dân cư đông đúc.\n` +
-              `- Bán kính 1km đầy đủ tiện ích: chợ, trường học, trạm y tế, ủy ban nhân dân.\n` +
-              `- Phù hợp xây nhà định cư lâu dài hoặc đầu tư sinh lời bền vững. Hỗ trợ vay ngân hàng 70%.`;
+            return THÔNG TIN BẤT ĐỘNG SẢN CHI TIẾT:\n +
+              • Tiêu đề:  + card.title + \n +
+              • Vị trí:  + (card.subtitle || card.location) + \n +
+              • Giá bán:  + card.price +  ( + (card.subprice || 'Sổ hồng riêng') + )\n +
+              • Khu vực:  + (card.location || 'Tây Ninh') + \n\n +
+              THÔNG TIN QUY HOẠCH &amp; TIỀM NĂNG:\n +
+              - Pháp lý chuẩn, sổ hồng riêng chính chủ, công chứng sang tên ngay trong ngày.\n +
+              - Đường trước nhà thông thoáng, ô tô ra vào thoải mái, gần khu dân cư đông đúc.\n +
+              - Bán kính 1km đầy đủ tiện ích: chợ, trường học, trạm y tế, ủy ban nhân dân.\n +
+              - Phù hợp xây nhà định cư lâu dài hoặc đầu tư sinh lời bền vững. Hỗ trợ vay ngân hàng 70%.;
           } else if (card.category === 'raovat') {
-            return `THÔNG TIN SẢN PHẨM RAO VẶT CHI TIẾT:\n` +
-              `• Sản phẩm: ${card.title}\n` +
-              `• Nguồn gốc / Đơn vị: ${card.subtitle || 'Tây Ninh'}\n` +
-              `• Giá bán: ${card.price} (${card.subprice || 'Có thương lượng'})\n` +
-              `• Khu vực: ${card.location || 'Tây Ninh'}\n\n` +
-              `MÔ TẢ TÌNH TRẠNG:\n` +
-              `- Hàng cá nhân sử dụng kỹ, còn rất mới và hoạt động trơn tru 100%.\n` +
-              `- Ngoại hình đẹp, đầy đủ phụ kiện đi kèm theo máy/xe.\n` +
-              `- Mua bán trực tiếp tại nhà riêng để kiểm tra thoải mái, bao test 7 ngày cho người mua yên tâm.`;
+            return THÔNG TIN SẢN PHẨM RAO VẶT CHI TIẾT:\n +
+              • Sản phẩm:  + card.title + \n +
+              • Nguồn gốc / Đơn vị:  + (card.subtitle || 'Tây Ninh') + \n +
+              • Giá bán:  + card.price +  ( + (card.subprice || 'Có thương lượng') + )\n +
+              • Khu vực:  + (card.location || 'Tây Ninh') + \n\n +
+              MÔ TẢ TÌNH TRẠNG:\n +
+              - Hàng cá nhân sử dụng kỹ, còn rất mới và hoạt động trơn tru 100%.\n +
+              - Ngoại hình đẹp, đầy đủ phụ kiện đi kèm theo máy/xe.\n +
+              - Mua bán trực tiếp tại nhà riêng để kiểm tra thoải mái, bao test 7 ngày cho người mua yên tâm.;
           } else if (card.category === 'suachua') {
-            return `THÔNG TIN DỊCH VỤ SỬA CHỮA TẬN NƠI:\n` +
-              `• Hạng mục: ${card.title}\n` +
-              `• Cơ sở phục vụ: ${card.subtitle || 'Dịch vụ Tây Ninh 24/7'}\n` +
-              `• Chi phí: ${card.price} (${card.subprice || 'Khảo sát tận nơi miễn phí'})\n` +
-              `• Khu vực phục vụ: ${card.location || 'Toàn tỉnh Tây Ninh'}\n\n` +
-              `CAM KẾT DỊCH VỤ:\n` +
-              `- Đội ngũ kỹ thuật viên lành nghề, nhiều năm kinh nghiệm, phục vụ chu đáo.\n` +
-              `- Có mặt tận nơi sau 15 - 30 phút liên hệ, phục vụ tất cả các ngày trong tuần.\n` +
-              `- Báo giá rõ ràng trước khi sửa chữa, linh kiện thay thế chính hãng có tem bảo hành.`;
+            return THÔNG TIN DỊCH VỤ SỬA CHỮA TẬN NƠI:\n +
+              • Hạng mục:  + card.title + \n +
+              • Cơ sở phục vụ:  + (card.subtitle || 'Dịch vụ Tây Ninh 24/7') + \n +
+              • Chi phí:  + card.price +  ( + (card.subprice || 'Khảo sát tận nơi miễn phí') + )\n +
+              • Khu vực phục vụ:  + (card.location || 'Toàn tỉnh Tây Ninh') + \n\n +
+              CAM KẾT DỊCH VỤ:\n +
+              - Đội ngũ kỹ thuật viên lành nghề, nhiều năm kinh nghiệm, phục vụ chu đáo.\n +
+              - Có mặt tận nơi sau 15 - 30 phút liên hệ, phục vụ tất cả các ngày trong tuần.\n +
+              - Báo giá rõ ràng trước khi sửa chữa, linh kiện thay thế chính hãng có tem bảo hành.;
           } else {
-            return `THÔNG TIN ẨM THỰC & KHÁCH SẠN:\n` +
-              `• Địa điểm: ${card.title}\n` +
-              `• Đơn vị: ${card.subtitle || 'Ẩm thực Tây Ninh'}\n` +
-              `• Mức giá: ${card.price} (${card.subprice || 'Món ngon mỗi ngày'})\n` +
-              `• Địa chỉ: ${card.location || 'Tây Ninh'}\n\n` +
-              `GIỚI THIỆU KHÔNG GIAN:\n` +
-              `- Thực đơn phong phú các món ăn đặc sản Tây Ninh chế biến đậm đà, tươi ngon.\n` +
-              `- Không gian thoáng mát, sạch sẽ, bãi đỗ xe ô tô và xe máy rộng rãi, an ninh.\n` +
-              `- Nhận phục vụ tiệc họp mặt gia đình, sinh nhật, liên hoan theo yêu cầu.`;
+            return THÔNG TIN ẨM THỰC &amp; KHÁCH SẠN:\n +
+              • Địa điểm:  + card.title + \n +
+              • Đơn vị:  + (card.subtitle || 'Ẩm thực Tây Ninh') + \n +
+              • Mức giá:  + card.price +  ( + (card.subprice || 'Món ngon mỗi ngày') + )\n +
+              • Địa chỉ:  + (card.location || 'Tây Ninh') + \n\n +
+              GIỚI THIỆU KHÔNG GIAN:\n +
+              - Thực đơn phong phú các món ăn đặc sản Tây Ninh chế biến đậm đà, tươi ngon.\n +
+              - Không gian thoáng mát, sạch sẽ, bãi đỗ xe ô tô và xe máy rộng rãi, an ninh.\n +
+              - Nhận phục vụ tiệc họp mặt gia đình, sinh nhật, liên hoan theo yêu cầu.;
           }
         };
 
         const fillTemplateDescription = () => {
           const cat = postForm.value.category;
           if (cat === 'tuyendung') {
-            postForm.value.description = `MÔ TẢ CÔNG VIỆC:\n- Thực hiện công tác tư vấn, bán hàng hoặc vận hành theo phân công.\n- Chăm sóc khách hàng và phối hợp tốt với đội nhóm.\n\nYÊU CẦU:\n- Độ tuổi từ 18 - 45, chăm chỉ, thật thà, có tinh thần trách nhiệm.\n- Ưu tiên ứng viên tại địa phương Tây Ninh.\n\nQUYỀN LỢI:\n- Lương cơ bản + thưởng năng suất + phụ cấp.\n- Hưởng đầy đủ chế độ bảo hiểm theo quy định pháp luật.`;
+            postForm.value.description = "MÔ TẢ CÔNG VIỆC:\n- Thực hiện công tác tư vấn, bán hàng hoặc vận hành theo phân công.\n- Chăm sóc khách hàng và phối hợp tốt với đội nhóm.\n\nYÊU CẦU:\n- Độ tuổi từ 18 - 45, chăm chỉ, thật thà, có tinh thần trách nhiệm.\n- Ưu tiên ứng viên tại địa phương Tây Ninh.\n\nQUYỀN LỢI:\n- Lương cơ bản + thưởng năng suất + phụ cấp.\n- Hưởng đầy đủ chế độ bảo hiểm theo quy định pháp luật.";
           } else if (cat === 'batdongsan') {
-            postForm.value.description = `THÔNG TIN CHI TIẾT BẤT ĐỘNG SẢN:\n- Diện tích: 100m² - 200m² (thổ cư 100%).\n- Pháp lý: Sổ hồng riêng chính chủ, sẵn sàng công chứng sang tên ngay.\n- Tiện ích: Đường ô tô vào tận nơi, gần chợ, trường học, dân cư đông đúc.\n- Thích hợp xây dựng nhà ở định cư hoặc đầu tư thanh khoản cao.`;
+            postForm.value.description = "THÔNG TIN CHI TIẾT BẤT ĐỘNG SẢN:\n- Diện tích: 100m² - 200m² (thổ cư 100%).\n- Pháp lý: Sổ hồng riêng chính chủ, sẵn sàng công chứng sang tên ngay.\n- Tiện ích: Đường ô tô vào tận nơi, gần chợ, trường học, dân cư đông đúc.\n- Thích hợp xây dựng nhà ở định cư hoặc đầu tư thanh khoản cao.";
           } else if (cat === 'raovat') {
-            postForm.value.description = `CHI TIẾT MẶT HÀNG:\n- Tình trạng: Máy đẹp 98-99%, nguyên zin chưa qua sửa chữa.\n- Phụ kiện: Đầy đủ phụ kiện theo máy, dùng rất ổn định.\n- Xem và kiểm tra trực tiếp tại Tây Ninh, có bớt lộc cho khách nhanh nhẹn.`;
+            postForm.value.description = "CHI TIẾT MẶT HÀNG:\n- Tình trạng: Máy đẹp 98-99%, nguyên zin chưa qua sửa chữa.\n- Phụ kiện: Đầy đủ phụ kiện theo máy, dùng rất ổn định.\n- Xem và kiểm tra trực tiếp tại Tây Ninh, có bớt lộc cho khách nhanh nhẹn.";
           } else if (cat === 'suachua') {
-            postForm.value.description = `CHI TIẾT DỊCH VỤ SỬA CHỮA:\n- Nhận bảo trì, lắp đặt và sửa chữa tận nhà nhanh chóng.\n- Thợ tay nghề cao, kiểm tra và báo giá công khai trước khi làm.\n- Có mặt sau 20 phút gọi trên khắp địa bàn Tây Ninh, bảo hành dài hạn.`;
+            postForm.value.description = "CHI TIẾT DỊCH VỤ SỬA CHỮA:\n- Nhận bảo trì, lắp đặt và sửa chữa tận nhà nhanh chóng.\n- Thợ tay nghề cao, kiểm tra và báo giá công khai trước khi làm.\n- Có mặt sau 20 phút gọi trên khắp địa bàn Tây Ninh, bảo hành dài hạn.";
           } else {
-            postForm.value.description = `GIỚI THIỆU ẨM THỰC / DỊCH VỤ:\n- Phục vụ các món ăn đặc sản Tây Ninh tươi ngon, chuẩn vị.\n- Không gian rộng rãi, thoáng mát, view đẹp, phục vụ tận tình.\n- Đặt bàn trước để nhận thêm nhiều ưu đãi hấp dẫn.`;
+            postForm.value.description = "GIỚI THIỆU ẨM THỰC / DỊCH VỤ:\n- Phục vụ các món ăn đặc sản Tây Ninh tươi ngon, chuẩn vị.\n- Không gian rộng rãi, thoáng mát, view đẹp, phục vụ tận tình.\n- Đặt bàn trước để nhận thêm nhiều ưu đãi hấp dẫn.";
           }
           showToast('Đã chèn mẫu mô tả gợi ý chuẩn theo chuyên mục!', 'info');
         };
 
         const selectPresetImage = () => {
           const presets = {
-            'tuyendung': 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80',
-            'batdongsan': 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80',
-            'raovat': 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=800&q=80',
-            'suachua': 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=800&q=80',
-            'amthuc': 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80'
+            'tuyendung': 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&amp;fit=crop&amp;w=800&amp;q=80',
+            'batdongsan': 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&amp;fit=crop&amp;w=800&amp;q=80',
+            'raovat': 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&amp;fit=crop&amp;w=800&amp;q=80',
+            'suachua': 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&amp;fit=crop&amp;w=800&amp;q=80',
+            'amthuc': 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&amp;fit=crop&amp;w=800&amp;q=80'
           };
           postForm.value.previewUrl = presets[postForm.value.category] || presets['tuyendung'];
           showToast('Đã chọn ảnh minh họa sắc nét chuẩn theo chuyên mục!', 'success');
@@ -4546,7 +5011,7 @@
         };
 
         const openCallModal = (card) => {
-          showPopup('Gọi Điện Nhanh', `Gọi trực tiếp cho ${card.title} qua Hotline/Zalo: ${card.phone || '0908.123.456'}`, 'info');
+          showPopup('Gọi Điện Nhanh', 'Gọi trực tiếp cho ' + card.title + ' qua Hotline/Zalo: ' + (card.phone || '0908.123.456'), 'info');
         };
 
         const openDetailModal = (card) => {
@@ -4554,7 +5019,27 @@
           showDetailModal.value = true;
         };
 
+        // YÊU CẦU GOOGLE LOGIN TRƯỚC KHI ĐĂNG BÀI
         const openPostModal = () => {
+          if (!currentUser.value || !currentUser.value.uid) {
+            showPopup(
+              'Yêu Cầu Đăng Nhập Google',
+              'Để đăng tin lên TN Hub, vui lòng đăng nhập bằng tài khoản Google nhằm xác minh danh tính và đảm bảo an toàn cho cộng đồng Tây Ninh.',
+              'warning',
+              'Đăng nhập Google ngay',
+              async () => {
+                const ok = await loginGoogle();
+                if (ok &amp;&amp; currentUser.value &amp;&amp; currentUser.value.uid) {
+                  postForm.value.contactName = currentUser.value.displayName || '';
+                  showPostModal.value = true;
+                }
+              },
+              true,
+              'Để sau'
+            );
+            return;
+          }
+          postForm.value.contactName = currentUser.value.displayName || '';
           showPostModal.value = true;
         };
 
@@ -4581,7 +5066,7 @@
         const submitApplication = async () => {
           submittingApply.value = true;
           try {
-            if (GAS_WEB_APP_URL && !GAS_WEB_APP_URL.includes('Dummy')) {
+            if (GAS_WEB_APP_URL &amp;&amp; !GAS_WEB_APP_URL.includes('Dummy')) {
               await fetch(GAS_WEB_APP_URL, {
                 method: 'POST',
                 mode: 'no-cors',
@@ -4597,7 +5082,7 @@
                 })
               });
             }
-            showPopup('Ứng Tuyển Thành Công!', `Hồ sơ cho vị trí "${selectedItem.value.title}" đã được gửi tới nhà tuyển dụng.`, 'success');
+            showPopup('Ứng Tuyển Thành Công!', 'Hồ sơ cho vị trí "' + selectedItem.value.title + '" đã được gửi tới nhà tuyển dụng.', 'success');
             showApplyModal.value = false;
           } catch (e) {
             showToast('Lỗi khi gửi hồ sơ: ' + e.message, 'error');
@@ -4607,7 +5092,7 @@
         };
 
         const submitContactInquiry = async () => {
-          if (GAS_WEB_APP_URL && !GAS_WEB_APP_URL.includes('Dummy')) {
+          if (GAS_WEB_APP_URL &amp;&amp; !GAS_WEB_APP_URL.includes('Dummy')) {
             fetch(GAS_WEB_APP_URL, {
               method: 'POST',
               mode: 'no-cors',
@@ -4621,7 +5106,7 @@
               })
             });
           }
-          showPopup('Đã Gửi Liên Hệ!', `Yêu cầu liên hệ về "${selectedItem.value.title}" đã được ghi nhận. Chủ tin đăng sẽ sớm gọi lại.`, 'success');
+          showPopup('Đã Gửi Liên Hệ!', 'Yêu cầu liên hệ về "' + selectedItem.value.title + '" đã được ghi nhận. Chủ tin đăng sẽ sớm gọi lại.', 'success');
           showContactModal.value = false;
         };
 
@@ -4630,7 +5115,7 @@
           const newCard = {
             id: 'tn_' + Date.now(),
             badge: postForm.value.badge || 'Mới đăng',
-            image: postForm.value.imageBase64 || postForm.value.previewUrl || 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80',
+            image: postForm.value.imageBase64 || postForm.value.previewUrl || 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&amp;fit=crop&amp;w=800&amp;q=80',
             title: postForm.value.title,
             subtitle: (postForm.value.address ? postForm.value.address + ' - ' : '') + locName,
             price: postForm.value.price || 'Thỏa thuận',
@@ -4640,9 +5125,9 @@
             location: locName,
             district: postForm.value.district,
             description: postForm.value.description,
-            authorName: postForm.value.contactName || 'Phạm Thanh Quang',
+            authorName: postForm.value.contactName || (currentUser.value ? currentUser.value.displayName : 'Phạm Thanh Quang'),
             phone: postForm.value.contactPhone || '0908.123.456',
-            authorEmail: 'ptquang0968@gmail.com',
+            authorEmail: currentUser.value ? currentUser.value.email : 'ptquang0968@gmail.com',
             createdAt: new Date().toISOString()
           };
 
@@ -4650,7 +5135,7 @@
 
           if (db) {
             try {
-              addDoc(collection(db, 'listings'), newCard).catch(e => console.warn('Sync post to firestore notice:', e));
+              addDoc(collection(db, 'listings'), newCard).catch(e =&gt; console.warn('Sync post to firestore notice:', e));
             } catch (e) {
               console.warn('Firestore addDoc:', e);
             }
@@ -4669,7 +5154,7 @@
             subprice: '',
             badge: 'Tuyển gấp',
             description: '',
-            contactName: 'Phạm Thanh Quang',
+            contactName: currentUser.value ? currentUser.value.displayName : '',
             contactPhone: '0908.123.456',
             imageBase64: null,
             previewUrl: ''
@@ -4682,18 +5167,42 @@
             const provider = new GoogleAuthProvider();
             provider.setCustomParameters({ prompt: 'select_account' });
             const res = await signInWithPopup(auth, provider);
-            currentUser.value = res.user;
-            showToast('Chào mừng ' + (res.user.displayName || '') + '!', 'success');
+            currentUser.value = {
+              uid: res.user.uid,
+              displayName: res.user.displayName,
+              email: res.user.email,
+              photoURL: res.user.photoURL
+            };
+            showToast('Chào mừng ' + (res.user.displayName || '') + '! Đã đăng nhập Google.', 'success');
+            return true;
           } catch (err) {
             console.warn('Login Auth info:', err.message);
             showToast('Đang ở phiên làm việc của ptquang0968@gmail.com', 'info');
+            return false;
+          }
+        };
+
+        const logoutGoogle = async () => {
+          try {
+            if (auth) await signOut(auth);
+            currentUser.value = null;
+            showToast('Đã đăng xuất Google thành công.', 'info');
+          } catch (e) {
+            console.warn('Signout err:', e);
           }
         };
 
         onMounted(() => {
           if (auth) {
             onAuthStateChanged(auth, (user) => {
-              if (user) currentUser.value = user;
+              if (user) {
+                currentUser.value = {
+                  uid: user.uid,
+                  displayName: user.displayName,
+                  email: user.email,
+                  photoURL: user.photoURL
+                };
+              }
             });
           }
 
@@ -4710,13 +5219,41 @@
                   liveList.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
                   cards.value = liveList;
                   isFirebaseConnected.value = true;
-                  console.log('Đã đồng bộ realtime từ Cloud Firestore');
+                  console.log('Đã đồng bộ realtime từ Cloud Firestore listings');
                 }
               }, (err) => {
                 console.warn('Firestore snapshot error:', err);
               });
             } catch (err) {
               console.warn('Firestore setup error:', err);
+            }
+
+            // LẮNG NGHE REALTIME COLLECTION 'messages' VÀ PHÁT NOTIFICATION
+            try {
+              const messagesRef = collection(db, 'messages');
+              let initialMessagesDone = false;
+              onSnapshot(messagesRef, (snapshot) => {
+                const liveMsgs = [];
+                snapshot.forEach(d => liveMsgs.push({ id: d.id, ...d.data() }));
+                liveMsgs.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+                if (liveMsgs.length &gt; 0) {
+                  communityMessages.value = liveMsgs;
+                }
+
+                if (initialMessagesDone) {
+                  snapshot.docChanges().forEach(change => {
+                    if (change.type === 'added') {
+                      const data = change.doc.data();
+                      unreadMessageCount.value++;
+                      playNotificationSound();
+                      showToast('[Tin nhắn mới] ' + (data.senderName || 'Cộng đồng') + ': "' + (data.text ? data.text.substring(0, 45) : '') + '..."', 'success', 'Tin Nhắn Realtime');
+                    }
+                  });
+                }
+                initialMessagesDone = true;
+              }, (err) => console.warn('Messages snapshot error:', err));
+            } catch (err) {
+              console.warn('Messages setup error:', err);
             }
           }
         });
@@ -4752,6 +5289,18 @@
           mapQuickList,
           activePinItem,
           mapEmbedUrl,
+          tayNinhVideos,
+          activePlayingVideo,
+          showVideoPlayerModal,
+          playVideo,
+          showChatDrawer,
+          chatMessageInput,
+          unreadMessageCount,
+          communityMessages,
+          openChatDrawer,
+          sendCommunityMessage,
+          playNotificationSound,
+          formatTime,
           applyForm,
           contactForm,
           postForm,
@@ -4785,7 +5334,8 @@
           submitApplication,
           submitContactInquiry,
           submitNewPost,
-          loginGoogle
+          loginGoogle,
+          logoutGoogle
         };
       }
     }).mount('#app');
