@@ -134,7 +134,7 @@
   <div id='app' v-cloak='true' class='w-full h-full flex-1 bg-white border border-[#E0DDD8] shadow-2xl overflow-hidden flex box-border'>
     
     <!-- 1. MENU ĐIỀU HƯỚNG TN HUB (ORACLE REDWOOD STYLE) -->
-    <aside class='w-60 xl:w-64 bg-white border-r border-[#E0DDD8] p-4 xl:p-5 flex flex-col justify-between shrink-0 overflow-y-auto custom-scroll hidden md:flex'>
+    <aside class='w-72 xl:w-80 bg-white border-r border-[#E0DDD8] p-5 flex flex-col justify-between shrink-0 overflow-y-auto custom-scroll hidden md:flex'>
       <div class='space-y-6'>
         <!-- Oracle-Style Logo Header -->
         <div>
@@ -168,19 +168,19 @@
           </button>
           <!-- Video YouTube Tây Ninh Menu Item -->
           <button v-on:click='activeTab = "video"' v-bind:class='activeTab === "video" ? "bg-[#F1EFED] text-[#C74634] font-bold border-l-2 border-[#C74634]" : "text-slate-700 hover:bg-[#F1EFED]"' class='w-full flex items-center justify-between px-3 py-2 transition text-xs'>
-            <div class='flex items-center gap-3'>
-              <i class='fa-brands fa-youtube text-red-600 text-xs'></i>
-              <span>{{ t('videoTN') }}</span>
+            <div class='flex items-center gap-3 min-w-0'>
+              <i class='fa-brands fa-youtube text-red-600 text-xs shrink-0'></i>
+              <span class='whitespace-nowrap font-medium'>{{ t('videoTN') }}</span>
             </div>
-            <span class='text-[9px] bg-red-100 text-red-700 px-1.5 py-0.5 font-bold uppercase'>YouTube</span>
+            <span class='text-[9px] bg-red-100 text-red-700 px-2 py-0.5 font-bold uppercase shrink-0 ml-2'>YouTube</span>
           </button>
           <!-- Xổ Số Kiến Thiết Menu Item -->
           <button v-on:click='activeTab = "xoso"' v-bind:class='activeTab === "xoso" ? "bg-[#F1EFED] text-[#C74634] font-bold border-l-2 border-[#C74634]" : "text-slate-700 hover:bg-[#F1EFED]"' class='w-full flex items-center justify-between px-3 py-2 transition text-xs'>
-            <div class='flex items-center gap-3'>
-              <i class='fa-solid fa-ticket text-amber-600 text-xs'></i>
-              <span>{{ t('lottery') }}</span>
+            <div class='flex items-center gap-3 min-w-0'>
+              <i class='fa-solid fa-ticket text-amber-600 text-xs shrink-0'></i>
+              <span class='whitespace-nowrap font-medium'>{{ t('lottery') }}</span>
             </div>
-            <span class='text-[9px] bg-amber-100 text-amber-800 px-1.5 py-0.5 font-bold uppercase'>Tây Ninh &amp; 3 Miền</span>
+            <span class='text-[9px] bg-amber-100 text-amber-800 px-2 py-0.5 font-bold uppercase shrink-0 whitespace-nowrap ml-2'>{{ t('lotterySubtitle') }}</span>
           </button>
           <button v-on:click='activeCategory = "all"; activeTab = "feed"' class='w-full flex items-center gap-3 px-3 py-2 text-slate-700 hover:bg-[#F1EFED] transition'>
             <i class='fa-solid fa-bars text-slate-400 text-xs'></i>
@@ -249,14 +249,14 @@
             </div>
           </div>
           <!-- Menu thao tác cá nhân nhanh -->
-          <div class='grid grid-cols-2 gap-1.5 pt-1 border-t border-[#E0DDD8] text-[11px] font-semibold'>
-            <button v-on:click='setCategory("myposts")' class='px-2 py-1 bg-white hover:bg-[#FAF9F8] border border-[#E0DDD8] text-slate-800 flex items-center justify-center gap-1 transition'>
-              <i class='fa-solid fa-list-check text-[#C74634] text-[10px]'></i>
-              <span>{{ t('myPosts') }} ({{ myPostsCount }})</span>
+          <div class='grid grid-cols-2 gap-2 pt-1.5 border-t border-[#E0DDD8] text-[11px] font-semibold'>
+            <button v-on:click='setCategory("myposts")' class='px-2.5 py-1.5 bg-white hover:bg-[#FAF9F8] border border-[#E0DDD8] text-slate-800 flex items-center justify-center gap-1.5 transition whitespace-nowrap shadow-xs'>
+              <i class='fa-solid fa-list-check text-[#C74634] text-xs shrink-0'></i>
+              <span class='truncate'>{{ t('myPosts') }} ({{ myPostsCount }})</span>
             </button>
-            <button v-on:click='showFriendsModal = true' class='px-2 py-1 bg-white hover:bg-[#FAF9F8] border border-[#E0DDD8] text-slate-800 flex items-center justify-center gap-1 transition'>
-              <i class='fa-solid fa-user-group text-blue-600 text-[10px]'></i>
-              <span>{{ t('friends') }} ({{ friendsList.length }})</span>
+            <button v-on:click='showFriendsModal = true' class='px-2.5 py-1.5 bg-white hover:bg-[#FAF9F8] border border-[#E0DDD8] text-slate-800 flex items-center justify-center gap-1.5 transition whitespace-nowrap shadow-xs'>
+              <i class='fa-solid fa-user-group text-blue-600 text-xs shrink-0'></i>
+              <span class='truncate'>{{ t('friends') }} ({{ friendsList.length }})</span>
             </button>
           </div>
           <div class='flex items-center justify-between pt-1'>
