@@ -138,9 +138,16 @@
       <div class='space-y-6'>
         <!-- Oracle-Style Logo Header -->
         <div>
-          <div class='flex items-center gap-2'>
-            <span class='bg-[#C74634] text-white font-black px-2.5 py-1 text-sm tracking-wider select-none'>TNHub</span>
-            <span class='text-xs font-black text-[#161513] tracking-tight uppercase'>TÂY NINH</span>
+          <div class='flex items-center justify-between gap-2'>
+            <div class='flex items-center gap-2'>
+              <span class='bg-[#C74634] text-white font-black px-2.5 py-1 text-sm tracking-wider select-none'>TNHub</span>
+              <span class='text-xs font-black text-[#161513] tracking-tight uppercase'>TÂY NINH</span>
+            </div>
+            <!-- Mini Lang Pill -->
+            <div class='inline-flex items-center p-0.5 bg-[#FAF9F8] border border-[#E0DDD8] text-[9px] font-bold'>
+              <button type='button' v-on:click='switchLang("vi")' v-bind:class='currentLang === "vi" ? "bg-[#C74634] text-white" : "text-slate-500"' class='px-1.5 py-0.5 transition'>VI</button>
+              <button type='button' v-on:click='switchLang("en")' v-bind:class='currentLang === "en" ? "bg-[#C74634] text-white" : "text-slate-500"' class='px-1.5 py-0.5 transition'>EN</button>
+            </div>
           </div>
           <span class='text-[10px] text-[#655F58] font-bold uppercase tracking-wider block mt-1.5'>CỔNG THÔNG TIN SỐ</span>
         </div>
@@ -149,13 +156,13 @@
         <nav class='space-y-1 text-sm font-medium'>
           <a href='/' class='flex items-center gap-3 px-3 py-2 bg-[#F1EFED] text-[#161513] font-bold border-l-2 border-[#C74634]'>
             <i class='fa-solid fa-house text-[#C74634] text-xs'></i>
-            <span>Trang chủ</span>
+            <span>{{ t('home') }}</span>
           </a>
           <!-- Realtime Messages Button -->
           <button v-on:click='openChatDrawer' class='w-full flex items-center justify-between px-3 py-2 text-slate-700 hover:bg-[#F1EFED] transition'>
             <div class='flex items-center gap-3'>
               <i class='fa-regular fa-comment-dots text-slate-500 text-xs'></i>
-              <span>Tin nhắn</span>
+              <span>{{ t('messages') }}</span>
             </div>
             <span v-if='unreadMessageCount > 0' class='bg-[#C74634] text-white text-[10px] font-bold px-1.5 py-0.2'>{{ unreadMessageCount }}</span>
           </button>
@@ -163,7 +170,7 @@
           <button v-on:click='activeTab = "video"' v-bind:class='activeTab === "video" ? "bg-[#F1EFED] text-[#C74634] font-bold border-l-2 border-[#C74634]" : "text-slate-700 hover:bg-[#F1EFED]"' class='w-full flex items-center justify-between px-3 py-2 transition text-xs'>
             <div class='flex items-center gap-3'>
               <i class='fa-brands fa-youtube text-red-600 text-xs'></i>
-              <span>Video Tây Ninh</span>
+              <span>{{ t('videoTN') }}</span>
             </div>
             <span class='text-[9px] bg-red-100 text-red-700 px-1.5 py-0.5 font-bold uppercase'>YouTube</span>
           </button>
@@ -171,54 +178,54 @@
           <button v-on:click='activeTab = "xoso"' v-bind:class='activeTab === "xoso" ? "bg-[#F1EFED] text-[#C74634] font-bold border-l-2 border-[#C74634]" : "text-slate-700 hover:bg-[#F1EFED]"' class='w-full flex items-center justify-between px-3 py-2 transition text-xs'>
             <div class='flex items-center gap-3'>
               <i class='fa-solid fa-ticket text-amber-600 text-xs'></i>
-              <span>Xổ số kiến thiết</span>
+              <span>{{ t('lottery') }}</span>
             </div>
             <span class='text-[9px] bg-amber-100 text-amber-800 px-1.5 py-0.5 font-bold uppercase'>Tây Ninh &amp; 3 Miền</span>
           </button>
           <button v-on:click='activeCategory = "all"; activeTab = "feed"' class='w-full flex items-center gap-3 px-3 py-2 text-slate-700 hover:bg-[#F1EFED] transition'>
             <i class='fa-solid fa-bars text-slate-400 text-xs'></i>
-            <span>Danh mục tin</span>
+            <span>{{ t('categories') }}</span>
           </button>
         </nav>
 
         <!-- Khám phá Tây Ninh -->
         <div>
-          <h4 class='text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2 px-3'>Khám phá Tây Ninh</h4>
+          <h4 class='text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2 px-3'>{{ t('exploreTN') }}</h4>
           <ul class='space-y-1 text-sm font-medium'>
             <li>
               <button v-on:click='setCategory("all"); activeTab = "feed"' v-bind:class='activeCategory === "all" &amp;&amp; activeTab === "feed" ? "bg-[#F1EFED] text-[#161513] font-bold border-l-2 border-[#C74634]" : "text-slate-600 hover:bg-slate-50"' class='w-full flex items-center gap-3 px-3 py-2 transition'>
                 <i class='fa-solid fa-border-all text-xs text-slate-400'></i>
-                <span>Tất cả tin</span>
+                <span>{{ t('allPosts') }}</span>
               </button>
             </li>
             <li>
               <button v-on:click='setCategory("tuyendung"); activeTab = "feed"' v-bind:class='activeCategory === "tuyendung" ? "bg-[#F1EFED] text-[#161513] font-bold border-l-2 border-[#C74634]" : "text-slate-600 hover:bg-slate-50"' class='w-full flex items-center gap-3 px-3 py-2 transition'>
                 <i class='fa-solid fa-briefcase text-xs text-blue-600'></i>
-                <span>Tuyển dụng</span>
+                <span>{{ t('jobs') }}</span>
               </button>
             </li>
             <li>
               <button v-on:click='setCategory("batdongsan"); activeTab = "feed"' v-bind:class='activeCategory === "batdongsan" ? "bg-[#F1EFED] text-[#161513] font-bold border-l-2 border-[#C74634]" : "text-slate-600 hover:bg-slate-50"' class='w-full flex items-center gap-3 px-3 py-2 transition'>
                 <i class='fa-solid fa-house text-xs text-emerald-600'></i>
-                <span>Bất động sản</span>
+                <span>{{ t('realEstate') }}</span>
               </button>
             </li>
             <li>
               <button v-on:click='setCategory("amthuc"); activeTab = "feed"' v-bind:class='activeCategory === "amthuc" ? "bg-[#F1EFED] text-[#161513] font-bold border-l-2 border-[#C74634]" : "text-slate-600 hover:bg-slate-50"' class='w-full flex items-center gap-3 px-3 py-2 transition'>
                 <i class='fa-solid fa-utensils text-xs text-amber-600'></i>
-                <span>Ẩm thực &amp; Khách sạn</span>
+                <span>{{ t('foodHotel') }}</span>
               </button>
             </li>
             <li>
               <button v-on:click='setCategory("raovat"); activeTab = "feed"' v-bind:class='activeCategory === "raovat" ? "bg-[#F1EFED] text-[#161513] font-bold border-l-2 border-[#C74634]" : "text-slate-600 hover:bg-slate-50"' class='w-full flex items-center gap-3 px-3 py-2 transition'>
                 <i class='fa-solid fa-cart-shopping text-xs text-indigo-600'></i>
-                <span>Rao vặt</span>
+                <span>{{ t('classifieds') }}</span>
               </button>
             </li>
             <li>
               <button v-on:click='setCategory("suachua"); activeTab = "feed"' v-bind:class='activeCategory === "suachua" ? "bg-[#F1EFED] text-[#161513] font-bold border-l-2 border-[#C74634]" : "text-slate-600 hover:bg-slate-50"' class='w-full flex items-center gap-3 px-3 py-2 transition'>
                 <i class='fa-solid fa-wrench text-xs text-rose-600'></i>
-                <span>Dịch vụ sửa chữa</span>
+                <span>{{ t('services') }}</span>
               </button>
             </li>
           </ul>
@@ -237,7 +244,7 @@
               </p>
               <p class='text-[10px] text-[#C74634] font-semibold flex items-center gap-1'>
                 <i class='fa-regular fa-id-badge'></i>
-                <span>Xem hồ sơ</span>
+                <span>{{ t('viewProfile') }}</span>
               </p>
             </div>
           </div>
@@ -245,16 +252,16 @@
           <div class='grid grid-cols-2 gap-1.5 pt-1 border-t border-[#E0DDD8] text-[11px] font-semibold'>
             <button v-on:click='setCategory("myposts")' class='px-2 py-1 bg-white hover:bg-[#FAF9F8] border border-[#E0DDD8] text-slate-800 flex items-center justify-center gap-1 transition'>
               <i class='fa-solid fa-list-check text-[#C74634] text-[10px]'></i>
-              <span>Bài của tôi ({{ myPostsCount }})</span>
+              <span>{{ t('myPosts') }} ({{ myPostsCount }})</span>
             </button>
             <button v-on:click='showFriendsModal = true' class='px-2 py-1 bg-white hover:bg-[#FAF9F8] border border-[#E0DDD8] text-slate-800 flex items-center justify-center gap-1 transition'>
               <i class='fa-solid fa-user-group text-blue-600 text-[10px]'></i>
-              <span>Bạn bè ({{ friendsList.length }})</span>
+              <span>{{ t('friends') }} ({{ friendsList.length }})</span>
             </button>
           </div>
           <div class='flex items-center justify-between pt-1'>
             <button v-on:click='openProfileModal' class='text-[10px] text-slate-600 hover:text-[#C74634] font-semibold'>
-              <i class='fa-solid fa-gear text-[9px]'></i> Cài đặt trang cá nhân
+              <i class='fa-solid fa-gear text-[9px]'></i> {{ t('profileSettings') }}
             </button>
             <button v-on:click='logoutGoogle' class='text-[10px] text-rose-600 hover:underline font-semibold'>
               Đăng xuất
@@ -266,13 +273,13 @@
           <p class='text-[10px] text-slate-500 mb-2'>Đăng nhập để đăng tin lên Cổng thông tin TN Hub.</p>
           <button v-on:click='loginGoogle' class='w-full py-1.5 px-2 bg-white border border-[#E0DDD8] text-slate-800 font-bold hover:bg-slate-100 flex items-center justify-center gap-1.5 shadow-sm transition mb-2'>
             <i class='fa-brands fa-google text-red-600 text-xs'></i>
-            <span>Đăng nhập Google</span>
+            <span>{{ t('loginGoogle') }}</span>
           </button>
         </div>
 
         <button v-on:click='openPostModal' class='w-full py-2 px-3 bg-[#C74634] hover:bg-[#B13C2C] text-white font-bold shadow-sm transition flex items-center justify-center gap-1.5'>
           <i class='fa-solid fa-pen-to-square'></i>
-          <span>Đăng tin mới</span>
+          <span>{{ t('postNew') }}</span>
         </button>
       </div>
     </aside>
@@ -280,13 +287,30 @@
     <main class='flex-1 min-w-0 overflow-y-auto custom-scroll p-6 lg:p-8 space-y-6'>
       
       <!-- Top Bar: Search, Realtime Bell, Google Account (Oracle Style) -->
-      <div class='flex items-center justify-between gap-4'>
+      <div class='flex items-center justify-between gap-3 sm:gap-4'>
         <div class='relative flex-1 max-w-md'>
           <i class='fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-xs'></i>
-          <input type='text' v-model='searchKeyword' v-on:keyup='onSearchKey' placeholder='Tìm việc làm, nhà đất, dịch vụ Tây Ninh...' class='w-full pl-9 pr-4 py-2 text-xs bg-white border border-[#E0DDD8] focus:border-[#C74634] outline-none shadow-sm' />
+          <input type='text' v-model='searchKeyword' v-on:keyup='onSearchKey' v-bind:placeholder='t("searchPlaceholder")' class='w-full pl-9 pr-4 py-2 text-xs bg-white border border-[#E0DDD8] focus:border-[#C74634] outline-none shadow-sm' />
         </div>
 
-        <div class='flex items-center gap-2.5'>
+        <div class='flex items-center gap-2 sm:gap-2.5'>
+          <!-- Language Switcher VI / EN -->
+          <div class='inline-flex items-center p-0.5 bg-white border border-[#E0DDD8] shadow-sm text-xs font-bold shrink-0'>
+            <button type='button' 
+                    v-on:click='switchLang("vi")' 
+                    v-bind:class='currentLang === "vi" ? "bg-[#C74634] text-white shadow-xs" : "text-slate-600 hover:text-slate-900"' 
+                    class='px-2 py-1 transition flex items-center gap-1' title='Tiếng Việt'>
+              <span class='text-xs'>🇻🇳</span>
+              <span class='text-[10px] uppercase font-black'>VI</span>
+            </button>
+            <button type='button' 
+                    v-on:click='switchLang("en")' 
+                    v-bind:class='currentLang === "en" ? "bg-[#C74634] text-white shadow-xs" : "text-slate-600 hover:text-slate-900"' 
+                    class='px-2 py-1 transition flex items-center gap-1' title='English'>
+              <span class='text-xs'>🇬🇧</span>
+              <span class='text-[10px] uppercase font-black'>EN</span>
+            </button>
+          </div>
           <!-- Realtime Bell Notification with Unread Count -->
           <button v-on:click='openChatDrawer' class='relative px-3 py-1.5 bg-white border border-[#E0DDD8] flex items-center gap-1.5 text-xs text-slate-700 hover:bg-[#F1EFED] shadow-sm transition' title='Mở tin nhắn &amp; thông báo'>
             <i class='fa-regular fa-bell text-xs text-[#C74634]'></i>
@@ -313,7 +337,7 @@
           </div>
           <button v-else='true' v-on:click='loginGoogle' class='inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-[#C74634] hover:bg-[#B13C2C] text-xs font-bold text-white shadow-sm transition'>
             <i class='fa-brands fa-google text-xs'></i>
-            <span>Đăng nhập Google</span>
+            <span>{{ t('loginGoogle') }}</span>
           </button>
         </div>
       </div>
@@ -348,7 +372,7 @@
         </button>
         <button v-on:click='activeTab = "xoso"' v-bind:class='activeTab === "xoso" ? "text-[#C74634] border-b-2 border-[#C74634] pb-2 -mb-2.5 font-black" : "text-slate-500 hover:text-slate-900 pb-2 transition"' class='flex items-center gap-2 shrink-0'>
           <i class='fa-solid fa-ticket text-amber-600 text-sm'></i>
-          <span>Xổ số kiến thiết</span>
+          <span>{{ t('lottery') }}</span>
           <span class='bg-amber-100 text-amber-800 text-[9px] px-1.5 py-0.2 font-black'>TRỰC TIẾP</span>
         </button>
       </div>
@@ -358,27 +382,27 @@
         <!-- Category Filter Pills (Oracle Redwood Style) -->
         <div class='flex items-center gap-2 overflow-x-auto pb-1 custom-scroll text-xs font-semibold'>
           <button v-on:click='setCategory("all")' v-bind:class='activeCategory === "all" ? "bg-[#C74634] text-white font-bold" : "bg-white text-slate-700 hover:bg-slate-100 border border-[#E0DDD8]"' class='px-4 py-1.5 whitespace-nowrap transition'>
-            Tất cả
+            {{ t('all') }}
           </button>
           <!-- Nút lọc bài của chính tôi -->
           <button v-if='currentUser' v-on:click='setCategory("myposts")' v-bind:class='activeCategory === "myposts" ? "bg-[#C74634] text-white font-bold" : "bg-amber-50 text-amber-900 hover:bg-amber-100 border border-amber-300"' class='px-3.5 py-1.5 whitespace-nowrap transition flex items-center gap-1.5'>
             <i class='fa-solid fa-user-pen text-xs'></i>
-            <span>Bài của tôi ({{ myPostsCount }})</span>
+            <span>{{ t('myPosts') }} ({{ myPostsCount }})</span>
           </button>
           <button v-on:click='setCategory("tuyendung")' v-bind:class='activeCategory === "tuyendung" ? "bg-[#C74634] text-white font-bold" : "bg-white text-slate-700 hover:bg-slate-100 border border-[#E0DDD8]"' class='px-4 py-1.5 whitespace-nowrap transition'>
-            Tuyển dụng
+            {{ t('jobs') }}
           </button>
           <button v-on:click='setCategory("batdongsan")' v-bind:class='activeCategory === "batdongsan" ? "bg-[#C74634] text-white font-bold" : "bg-white text-slate-700 hover:bg-slate-100 border border-[#E0DDD8]"' class='px-4 py-1.5 whitespace-nowrap transition'>
-            Bất động sản
+            {{ t('realEstate') }}
           </button>
           <button v-on:click='setCategory("raovat")' v-bind:class='activeCategory === "raovat" ? "bg-[#C74634] text-white font-bold" : "bg-white text-slate-700 hover:bg-slate-100 border border-[#E0DDD8]"' class='px-4 py-1.5 whitespace-nowrap transition'>
-            Mua bán
+            {{ t('buySell') }}
           </button>
           <button v-on:click='setCategory("suachua")' v-bind:class='activeCategory === "suachua" ? "bg-[#C74634] text-white font-bold" : "bg-white text-slate-700 hover:bg-slate-100 border border-[#E0DDD8]"' class='px-4 py-1.5 whitespace-nowrap transition'>
-            Dịch vụ
+            {{ t('service') }}
           </button>
           <button v-on:click='setCategory("amthuc")' v-bind:class='activeCategory === "amthuc" ? "bg-[#C74634] text-white font-bold" : "bg-white text-slate-700 hover:bg-slate-100 border border-[#E0DDD8]"' class='px-4 py-1.5 whitespace-nowrap transition'>
-            Khách sạn
+            {{ t('hotel') }}
           </button>
         </div>
 
@@ -388,7 +412,7 @@
             <!-- Khu vực dropdown linh hoạt -->
             <div class='relative'>
               <select v-model='activeDistrict' class='px-3 py-1.5 bg-white border border-[#E0DDD8] text-slate-700 font-medium text-xs hover:bg-slate-50 shadow-sm outline-none cursor-pointer'>
-                <option value='all'>Khu vực: Toàn tỉnh Tây Ninh</option>
+                <option value='all'>{{ t('allDistricts') }}</option>
                 <option value='tptayninh'>TP. Tây Ninh</option>
                 <option value='trangbang'>Trảng Bàng</option>
                 <option value='hoathanh'>Hòa Thành</option>
@@ -402,19 +426,19 @@
 
             <!-- Khoảng giá -->
             <button v-on:click='showToast("Lọc khoảng giá linh hoạt", "info")' class='flex items-center gap-2 px-3 py-1.5 bg-white border border-[#E0DDD8] text-slate-700 font-medium hover:bg-slate-50 shadow-sm'>
-              <span>Khoảng giá</span>
+              <span>{{ t('priceRange') }}</span>
               <i class='fa-solid fa-chevron-down text-[10px] text-slate-400'></i>
             </button>
 
             <!-- Ngành nghề -->
             <button v-on:click='showToast("Lọc theo tất cả ngành nghề Tây Ninh", "info")' class='flex items-center gap-2 px-3 py-1.5 bg-white border border-[#E0DDD8] text-slate-700 font-medium hover:bg-slate-50 shadow-sm'>
-              <span>Ngành nghề</span>
+              <span>{{ t('industries') }}</span>
               <i class='fa-solid fa-chevron-down text-[10px] text-slate-400'></i>
             </button>
 
             <!-- Sắp xếp -->
             <button v-on:click='toggleSort' class='flex items-center gap-2 px-3 py-1.5 bg-white border border-[#E0DDD8] text-slate-700 font-medium hover:bg-slate-50 shadow-sm'>
-              <span>Sắp xếp</span>
+              <span>{{ t('sort') }}</span>
               <i class='fa-solid fa-chevron-down text-[10px] text-slate-400'></i>
             </button>
           </div>
@@ -423,11 +447,11 @@
           <div class='flex items-center gap-1 bg-white p-1 border border-[#E0DDD8] shadow-sm'>
             <button v-on:click='viewMode = "grid"' v-bind:class='viewMode === "grid" ? "bg-[#161513] text-white font-bold" : "text-slate-500 hover:text-slate-800"' class='px-3 py-1 text-xs flex items-center gap-1.5 transition'>
               <i class='fa-solid fa-table-cells-large text-[11px]'></i>
-              <span>Lưới</span>
+              <span>{{ t('grid') }}</span>
             </button>
             <button v-on:click='viewMode = "map"' v-bind:class='viewMode === "map" ? "bg-[#161513] text-white font-bold" : "text-slate-500 hover:text-slate-800"' class='px-3 py-1 text-xs flex items-center gap-1.5 transition'>
               <i class='fa-solid fa-map-location-dot text-[11px]'></i>
-              <span>Bản đồ</span>
+              <span>{{ t('map') }}</span>
             </button>
             <button v-on:click='viewMode = "list"' v-bind:class='viewMode === "list" ? "bg-[#161513] text-white font-bold" : "text-slate-500 hover:text-slate-800"' class='px-3 py-1 text-xs flex items-center gap-1.5 transition'>
               <i class='fa-solid fa-list text-[11px]'></i>
@@ -1090,7 +1114,7 @@
           <div class='flex items-center justify-between mb-2'>
             <h4 class='text-xs font-bold text-[#161513] uppercase flex items-center gap-1.5'>
               <i class='fa-brands fa-youtube text-red-600'></i>
-              <span>Video Tây Ninh</span>
+              <span>{{ t('videoTN') }}</span>
             </h4>
             <button v-on:click='activeTab = "video"' class='text-[10px] text-[#C74634] font-bold hover:underline'>Xem tất cả</button>
           </div>
@@ -2348,6 +2372,163 @@
 
     createApp({
       setup() {
+        // ==========================================
+        // ĐA NGÔN NGỮ (i18n: VIETNAMESE & ENGLISH)
+        // ==========================================
+        const currentLang = ref(localStorage.getItem('tnhub_lang') || 'vi');
+
+        const i18n = {
+          vi: {
+            home: 'Trang chủ',
+            messages: 'Tin nhắn',
+            videoTN: 'Video Tây Ninh',
+            lottery: 'Xổ số kiến thiết',
+            lotterySubtitle: 'Tây Ninh & 3 Miền',
+            categories: 'Danh mục tin',
+            exploreTN: 'Khám phá Tây Ninh',
+            allPosts: 'Tất cả tin',
+            jobs: 'Tuyển dụng',
+            realEstate: 'Bất động sản',
+            foodHotel: 'Ẩm thực & Khách sạn',
+            classifieds: 'Rao vặt',
+            services: 'Dịch vụ sửa chữa',
+            postNew: 'Đăng tin mới',
+            loginGoogle: 'Đăng nhập Google',
+            logout: 'Đăng xuất',
+            account: 'Tài khoản',
+            viewProfile: 'Xem hồ sơ',
+            profileSettings: 'Cài đặt trang cá nhân',
+            myPosts: 'Bài của tôi',
+            friends: 'Bạn bè',
+            searchPlaceholder: 'Tìm việc làm, nhà đất, dịch vụ Tây Ninh...',
+            allDistricts: 'Khu vực: Toàn tỉnh Tây Ninh',
+            priceRange: 'Khoảng giá',
+            industries: 'Ngành nghề',
+            sort: 'Sắp xếp',
+            grid: 'Lưới',
+            map: 'Bản đồ',
+            all: 'Tất cả',
+            hotel: 'Khách sạn',
+            service: 'Dịch vụ',
+            buySell: 'Mua bán',
+            yourPost: 'Bài của bạn',
+            newBadge: 'Tin mới',
+            justNow: 'Vừa xong',
+            likes: 'lượt thích',
+            comments: 'bình luận',
+            views: 'lượt xem',
+            like: 'Thích',
+            liked: 'Đã thích',
+            comment: 'Bình luận',
+            share: 'Chia sẻ',
+            apply: 'Ứng tuyển',
+            callNow: 'Gọi ngay',
+            details: 'Chi tiết',
+            chat: 'Chat',
+            addFriend: 'Kết bạn',
+            alreadyFriend: 'Bạn bè',
+            deletePost: 'Xóa',
+            deleteMyPost: 'Xóa tin',
+            quickSharePlaceholder: 'ơi, bạn muốn chia sẻ tin tức hay cơ hội gì tại Tây Ninh?',
+            quickShareGuest: 'Bắt đầu bài viết hoặc chia sẻ cơ hội, việc làm, nhà đất tại Tây Ninh...',
+            loadMore: 'Xem thêm tin đăng',
+            noMore: 'Đã hiển thị hết tin đăng',
+            profileTitle: 'Hồ sơ cá nhân',
+            changeCover: 'Đổi ảnh bìa Tây Ninh',
+            changeAvatar: 'Đổi ảnh',
+            saveProfile: 'Lưu hồ sơ',
+            close: 'Đóng',
+            friendsTitle: 'Bạn bè & Kết nối Tây Ninh',
+            privateChatTitle: 'Cuộc trò chuyện riêng tư',
+            typeMessage: 'Nhập tin nhắn riêng...',
+            send: 'Gửi',
+            onlineTN: 'Trực tuyến Tây Ninh'
+          },
+          en: {
+            home: 'Home',
+            messages: 'Messages',
+            videoTN: 'Tay Ninh Videos',
+            lottery: 'Lottery Results',
+            lotterySubtitle: 'Tay Ninh & Nationwide',
+            categories: 'Categories',
+            exploreTN: 'Explore Tay Ninh',
+            allPosts: 'All Listings',
+            jobs: 'Jobs & Careers',
+            realEstate: 'Real Estate',
+            foodHotel: 'Food & Hotels',
+            classifieds: 'Marketplace',
+            services: 'Services & Repair',
+            postNew: 'Post New Listing',
+            loginGoogle: 'Sign in with Google',
+            logout: 'Sign out',
+            account: 'Account',
+            viewProfile: 'View Profile',
+            profileSettings: 'Profile Settings',
+            myPosts: 'My Posts',
+            friends: 'Friends',
+            searchPlaceholder: 'Search jobs, properties, services in Tay Ninh...',
+            allDistricts: 'Region: All Tay Ninh',
+            priceRange: 'Price Range',
+            industries: 'Industries',
+            sort: 'Sort',
+            grid: 'Grid',
+            map: 'Map',
+            all: 'All',
+            hotel: 'Hotels',
+            service: 'Services',
+            buySell: 'Marketplace',
+            yourPost: 'Your Post',
+            newBadge: 'New',
+            justNow: 'Just now',
+            likes: 'likes',
+            comments: 'comments',
+            views: 'views',
+            like: 'Like',
+            liked: 'Liked',
+            comment: 'Comment',
+            share: 'Share',
+            apply: 'Apply Now',
+            callNow: 'Call Now',
+            details: 'Details',
+            chat: 'Chat',
+            addFriend: 'Connect',
+            alreadyFriend: 'Connected',
+            deletePost: 'Delete',
+            deleteMyPost: 'Delete Post',
+            quickSharePlaceholder: ', share news, job opportunities, or properties in Tay Ninh...',
+            quickShareGuest: 'Post a listing or share job opportunities and real estate in Tay Ninh...',
+            loadMore: 'Load more listings',
+            noMore: 'All listings loaded',
+            profileTitle: 'User Profile',
+            changeCover: 'Change Cover Photo',
+            changeAvatar: 'Change',
+            saveProfile: 'Save Profile',
+            close: 'Close',
+            friendsTitle: 'Tay Ninh Friends & Connections',
+            privateChatTitle: 'Private Chat',
+            typeMessage: 'Type a private message...',
+            send: 'Send',
+            onlineTN: 'Tay Ninh Online'
+          }
+        };
+
+        const t = (key) => {
+          const lang = currentLang.value || 'vi';
+          if (i18n[lang] && i18n[lang][key]) {
+            return i18n[lang][key];
+          }
+          if (i18n.vi[key]) return i18n.vi[key];
+          return key;
+        };
+
+        const switchLang = (lang) => {
+          currentLang.value = lang;
+          try {
+            localStorage.setItem('tnhub_lang', lang);
+          } catch(e) {}
+          showToast(lang === 'vi' ? 'Đã chuyển sang Tiếng Việt' : 'Switched to English', 'success');
+        };
+
         const activeTab = ref('feed');
         const activeCategory = ref('all');
         const viewMode = ref('grid');
@@ -4650,7 +4831,10 @@
           removeFriend,
           openPrivateChat,
           sendPrivateMessage,
-          closePrivateChat
+          closePrivateChat,
+          currentLang,
+          switchLang,
+          t
         };
       }
     }).mount('#app');
