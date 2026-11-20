@@ -125,5 +125,13 @@ service cloud.firestore {
       // Chỉ Quản trị viên mới được quyền chỉnh sửa hoặc xóa tin nhắn
       allow update, delete: if isAdmin();
     }
+
+    // 10. Collection 'private_chats' (Tin nhắn riêng tư 1-1 realtime giữa các thành viên)
+    match /private_chats/{chatId} {
+      allow read, write: if true;
+      match /messages/{msgId} {
+        allow read, write: if true;
+      }
+    }
   }
 }
