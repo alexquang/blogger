@@ -1102,12 +1102,18 @@
 
         <!-- Numbered Quick List Below Map -->
         <ol class='space-y-1.5 text-xs'>
-          <li v-for='item in mapQuickList' v-bind:key='item.id' v-on:click='selectQuickListItem(item)' class='flex items-start justify-between cursor-pointer p-1.5 hover:bg-[#F1EFED] transition border-b border-slate-100'>
-            <div class='flex items-start gap-2'>
-              <span class='font-black text-[#C74634]'>{{ item.number }}.</span>
-              <div>
-                <p class='font-bold text-slate-800 line-clamp-1'>{{ item.title }}</p>
-                <span class='text-[10px] text-slate-400'>{{ item.location }}</span>
+          <li v-for='item in mapQuickList' v-bind:key='item.id' 
+              v-on:click='selectQuickListItem(item)' 
+              v-bind:class='activePinItem.id === item.id ? "bg-[#FAF9F8] border-l-2 border-[#C74634] pl-2 font-bold" : "border-b border-slate-100"' 
+              class='flex items-start justify-between cursor-pointer p-1.5 hover:bg-[#F1EFED] transition'>
+            <div class='flex items-start gap-2 min-w-0'>
+              <span class='font-black text-[#C74634] shrink-0'>{{ item.number }}.</span>
+              <div class='min-w-0 flex-1'>
+                <p v-bind:class='activePinItem.id === item.id ? "text-[#C74634] font-bold" : "text-slate-800 font-semibold"' class='truncate'>{{ item.title }}</p>
+                <span class='text-[10px] text-slate-400 truncate flex items-center gap-1'>
+                  <i class='fa-solid fa-location-dot text-[9px] text-[#C74634]'></i>
+                  <span>{{ item.location }}</span>
+                </span>
               </div>
             </div>
           </li>
@@ -3030,14 +3036,20 @@
             id: c.id,
             number: idx + 1,
             title: c.title,
-            location: c.location || 'Tây Ninh'
+            location: c.location || 'TP. Tây Ninh'
           }));
         });
 
+        const selectedPinItem = ref(null);
+
         const activePinItem = computed(() => {
+          if (selectedPinItem.value) {
+            return selectedPinItem.value;
+          }
           if (cards.value.length > 0) {
             const first = cards.value[0];
             return {
+              id: first.id,
               title: first.title,
               price: first.price,
               location: first.location || 'TP. Tây Ninh',
@@ -3045,14 +3057,15 @@
             };
           }
           return {
+            id: 'default',
             title: 'Tin đăng Tây Ninh',
             price: 'Thương lượng',
-            location: 'Tây Ninh',
+            location: 'TP. Tây Ninh',
             image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=120&h=120&q=80'
           };
         });
 
-        const mapEmbedUrl = ref("https://maps.google.com/maps?q=T%C3%A2y+Ninh,+Vi%E1%BB%87t+Nam&t=&z=11&ie=UTF8&iwloc=&output=embed");
+        const mapEmbedUrl = ref("https://maps.google.com/maps?q=TP.+T%C3%A2y+Ninh,+T%C3%A2y+Ninh,+Vi%E1%BB%87t+Nam&t=&z=13&ie=UTF8&iwloc=&output=embed");
 
         // YOUTUBE VIDEOS TỈNH TÂY NINH (100% TÂY NINH)
         const tayNinhVideos = ref([
@@ -3411,23 +3424,36 @@
           showToast('Đã gửi tin nhắn lên cộng đồng Tây Ninh!', 'success');
         };
 
-        const selectPin = (pinNum) => {
-          const found = cards.value.find(c => c.pinNumber === pinNum);
+        const selectPin = (target) => {
+          let found = null;
+          if (target && typeof target === 'object') {
+            found = cards.value.find(c => c.id === target.id) || target;
+          } else if (typeof target === 'number') {
+            const idx = target - 1;
+            if (idx >= 0 && idx < cards.value.length) {
+              found = cards.value[idx];
+            }
+          } else if (typeof target === 'string') {
+            found = cards.value.find(c => c.id === target);
+          }
+
           if (found) {
-            activePinItem.value = {
+            const loc = found.location || 'TP. Tây Ninh';
+            selectedPinItem.value = {
+              id: found.id,
               title: found.title,
               price: found.price,
-              location: found.location,
-              image: found.image
+              location: loc,
+              image: found.image || 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=120&h=120&q=80'
             };
-            const queryLocation = encodeURIComponent(found.location + ', Tây Ninh, Việt Nam');
-            mapEmbedUrl.value = 'https://maps.google.com/maps?q=' + queryLocation + '&t=&z=13&ie=UTF8&iwloc=&output=embed';
-            showToast('Đang xem vị trí: ' + found.title + ' (' + found.location + ')', 'info');
+            const queryLocation = encodeURIComponent(loc + ', Tây Ninh, Việt Nam');
+            mapEmbedUrl.value = 'https://maps.google.com/maps?q=' + queryLocation + '&t=&z=14&ie=UTF8&iwloc=&output=embed';
+            showToast('Đang xem vị trí: ' + found.title + ' (' + loc + ')', 'info');
           }
         };
 
         const selectQuickListItem = (item) => {
-          selectPin(item.number);
+          selectPin(item);
         };
 
         // Lọc thẻ theo Danh mục, Khu vực huyện thị, Tìm kiếm
