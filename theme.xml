@@ -489,11 +489,16 @@
             <div class='p-3.5 pb-2.5 flex items-center justify-between border-b border-[#E0DDD8]/60'>
               <div class='flex items-center gap-2.5'>
                 <img v-bind:src='card.authorAvatar || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&amp;fit=crop&amp;w=80&amp;q=80"' 
-                     class='w-9 h-9 object-cover border border-[#E0DDD8]' />
+                     v-on:click.stop='openUserProfile(card)' 
+                     class='w-9 h-9 object-cover border border-[#E0DDD8] cursor-pointer hover:opacity-90 transition' 
+                     title='Xem hồ sơ của người này' />
                 <div>
                   <div class='flex items-center gap-1.5'>
-                    <h4 class='font-bold text-xs text-[#161513] hover:text-[#C74634] transition cursor-pointer' v-on:click='openDetailModal(card)'>
-                      {{ card.authorName || 'Thành viên Tây Ninh' }}
+                    <h4 class='font-bold text-xs text-[#161513] hover:text-[#C74634] transition cursor-pointer flex items-center gap-1' 
+                        v-on:click.stop='openUserProfile(card)' 
+                        title='Bấm để xem trang cá nhân / hồ sơ người dùng'>
+                      <span>{{ card.authorName || 'Thành viên Tây Ninh' }}</span>
+                      <i class='fa-regular fa-id-badge text-[10px] text-slate-400'></i>
                     </h4>
                     <span v-if='isMyPost(card)' class='px-1.5 py-0.5 text-[9px] font-bold bg-amber-100 text-amber-800 border border-amber-300'>
                       Bài của bạn
@@ -1990,22 +1995,23 @@
 
 
 
-    <!-- 10. MODAL HỒ SƠ CÁ NHÂN & ĐỔI AVATAR / BACKGROUND (USER PROFILE MODAL) -->
+    <!-- 10. MODAL HỒ SƠ THÀNH VIÊN & CÀI ĐẶT RIÊNG TƯ (USER PROFILE MODAL) -->
     <div v-if='showProfileModal' v-cloak='true' style='display: none;' v-bind:style='showProfileModal ? "display: flex !important;" : "display: none !important;"' class='fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-3 sm:p-5 overflow-y-auto'>
       <div class='bg-white rounded-none border border-[#E0DDD8] max-w-xl w-full max-h-[90vh] overflow-hidden flex flex-col shadow-2xl relative my-auto text-xs'>
+        
         <!-- Profile Header with Background Cover -->
         <div class='relative h-36 sm:h-44 w-full bg-slate-200 overflow-hidden shrink-0'>
-          <img v-bind:src='userProfile.coverURL || "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&amp;fit=crop&amp;w=1200&amp;q=80"' 
+          <img v-bind:src='(isViewingMyOwnProfile ? userProfile.coverURL : viewingUserProfile.coverURL) || "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&amp;fit=crop&amp;w=1200&amp;q=80"' 
                class='w-full h-full object-cover' />
-          <div class='absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent'></div>
+          <div class='absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent'></div>
           
           <!-- Nút đóng -->
           <button type='button' v-on:click='showProfileModal = false' class='absolute top-3 right-3 w-7 h-7 rounded-full bg-black/60 hover:bg-black text-white flex items-center justify-center transition shadow'>
             <i class='fa-solid fa-xmark text-xs'></i>
           </button>
 
-          <!-- Nút đổi ảnh bìa -->
-          <div class='absolute top-3 left-3 flex items-center gap-1.5'>
+          <!-- Nút đổi ảnh bìa (Chỉ hiện khi xem Profile của chính mình) -->
+          <div v-if='isViewingMyOwnProfile' class='absolute top-3 left-3 flex items-center gap-1.5'>
             <button type='button' v-on:click='showCoverPresets = !showCoverPresets' class='px-2.5 py-1 bg-black/60 hover:bg-black text-white font-bold text-[11px] backdrop-blur-sm transition flex items-center gap-1 shadow'>
               <i class='fa-solid fa-camera'></i>
               <span>Đổi ảnh bìa Tây Ninh</span>
@@ -2014,26 +2020,35 @@
 
           <!-- Avatar đặt đè lên Cover -->
           <div class='absolute bottom-3 left-4 flex items-end gap-3'>
-            <div class='relative w-16 h-16 sm:w-20 sm:h-20 border-2 border-white bg-white overflow-hidden shadow-md group'>
-              <img v-bind:src='userProfile.photoURL || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&amp;fit=crop&amp;w=200&amp;q=80"' 
+            <div class='relative w-16 h-16 sm:w-20 sm:h-20 border-2 border-white bg-white overflow-hidden shadow-md group shrink-0'>
+              <img v-bind:src='(isViewingMyOwnProfile ? userProfile.photoURL : viewingUserProfile.photoURL) || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&amp;fit=crop&amp;w=200&amp;q=80"' 
                    class='w-full h-full object-cover' />
-              <button type='button' v-on:click='showAvatarPresets = !showAvatarPresets' class='absolute inset-0 bg-black/50 text-white flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition text-[10px] font-bold'>
+              <!-- Nút đổi avatar chỉ khi là chính mình -->
+              <button v-if='isViewingMyOwnProfile' type='button' v-on:click='showAvatarPresets = !showAvatarPresets' class='absolute inset-0 bg-black/50 text-white flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition text-[10px] font-bold'>
                 <i class='fa-solid fa-camera mb-0.5'></i>
                 <span>Đổi ảnh</span>
               </button>
             </div>
-            <div class='text-white drop-shadow-md mb-1'>
-              <h2 class='font-black text-sm sm:text-base flex items-center gap-2'>
-                <span>{{ userProfile.displayName || 'Thành viên Tây Ninh' }}</span>
-                <span v-if='isAdmin' class='px-1.5 py-0.2 bg-[#C74634] text-white text-[9px] font-black uppercase tracking-wider'>Admin</span>
+            <div class='text-white drop-shadow-md mb-1 min-w-0 flex-1'>
+              <h2 class='font-black text-sm sm:text-base flex items-center gap-2 truncate'>
+                <span>{{ isViewingMyOwnProfile ? (userProfile.displayName || 'Tài khoản của bạn') : viewingUserProfile.displayName }}</span>
+                <span v-if='isViewingMyOwnProfile &amp;&amp; isAdmin' class='px-1.5 py-0.2 bg-[#C74634] text-white text-[9px] font-black uppercase tracking-wider shrink-0'>Admin</span>
+                <span v-else-if='!isViewingMyOwnProfile' v-bind:class='viewingUserProfile.privacyMode === "private" ? "bg-rose-600" : "bg-emerald-600"' class='px-1.5 py-0.2 text-white text-[9px] font-bold uppercase tracking-wider shrink-0'>
+                  {{ viewingUserProfile.privacyMode === 'private' ? '🔒 Riêng tư' : '🌐 Công khai' }}
+                </span>
               </h2>
-              <p class='text-[11px] text-white/90'>{{ userProfile.email }}</p>
+              <p class='text-[11px] text-white/90 truncate' v-if='isViewingMyOwnProfile || viewingUserProfile.privacyMode !== "private"'>
+                {{ isViewingMyOwnProfile ? userProfile.email : viewingUserProfile.email }}
+              </p>
+              <p class='text-[11px] text-white/80' v-else='true'>
+                🔒 Thông tin liên hệ đã ẩn riêng tư
+              </p>
             </div>
           </div>
         </div>
 
-        <!-- Cover Presets Picker Popover -->
-        <div v-if='showCoverPresets' class='p-3 bg-[#FAF9F8] border-b border-[#E0DDD8]'>
+        <!-- Cover Presets Picker Popover (Chính mình) -->
+        <div v-if='isViewingMyOwnProfile &amp;&amp; showCoverPresets' class='p-3 bg-[#FAF9F8] border-b border-[#E0DDD8]'>
           <div class='flex items-center justify-between mb-2'>
             <h4 class='font-bold text-[11px] text-[#161513] uppercase tracking-wider flex items-center gap-1.5'>
               <i class='fa-solid fa-image text-[#C74634]'></i>
@@ -2057,8 +2072,8 @@
           </div>
         </div>
 
-        <!-- Avatar Presets Picker Popover -->
-        <div v-if='showAvatarPresets' class='p-3 bg-[#FAF9F8] border-b border-[#E0DDD8]'>
+        <!-- Avatar Presets Picker Popover (Chính mình) -->
+        <div v-if='isViewingMyOwnProfile &amp;&amp; showAvatarPresets' class='p-3 bg-[#FAF9F8] border-b border-[#E0DDD8]'>
           <div class='flex items-center justify-between mb-2'>
             <h4 class='font-bold text-[11px] text-[#161513] uppercase tracking-wider flex items-center gap-1.5'>
               <i class='fa-solid fa-user-circle text-[#C74634]'></i>
@@ -2080,8 +2095,10 @@
           </div>
         </div>
 
-        <!-- Profile Scrollable Body -->
-        <div class='flex-1 overflow-y-auto p-4 space-y-4'>
+        <!-- ======================================================== -->
+        <!-- TRƯỜNG HỢP 1: KHI XEM VÀ CHỈNH SỬA PROFILE CỦA CHÍNH MÌNH -->
+        <!-- ======================================================== -->
+        <div v-if='isViewingMyOwnProfile' class='flex-1 overflow-y-auto p-4 space-y-4'>
           <!-- Profile Stats Row -->
           <div class='grid grid-cols-3 gap-2 bg-[#FAF9F8] p-3 border border-[#E0DDD8] text-center'>
             <div>
@@ -2095,6 +2112,37 @@
             <div>
               <span class='block font-black text-sm text-emerald-600'>Đã xác thực</span>
               <span class='text-[10px] text-slate-500 uppercase tracking-wider font-bold'>Tài khoản Google</span>
+            </div>
+          </div>
+
+          <!-- Cài đặt quyền riêng tư (Public / Private) -->
+          <div class='p-3 bg-[#FAF9F8] border border-[#E0DDD8] space-y-2'>
+            <div class='flex items-center justify-between gap-2'>
+              <div>
+                <h4 class='font-bold text-xs text-[#161513] flex items-center gap-1.5'>
+                  <i class='fa-solid fa-shield-halved text-[#C74634]'></i>
+                  <span>Quyền riêng tư hồ sơ cá nhân</span>
+                </h4>
+                <p class='text-[10px] text-slate-500'>
+                  {{ userProfile.privacyMode === 'private' ? 'Đang ẩn số điện thoại, Zalo và email khỏi người lạ.' : 'Đang công khai thông tin liên hệ để người dân và đối tác dễ liên lạc.' }}
+                </p>
+              </div>
+              <div class='inline-flex items-center p-0.5 bg-white border border-[#E0DDD8] shrink-0 font-bold'>
+                <button type='button' 
+                        v-on:click='userProfile.privacyMode = "public"' 
+                        v-bind:class='userProfile.privacyMode !== "private" ? "bg-emerald-600 text-white" : "text-slate-600 hover:text-slate-900"' 
+                        class='px-2.5 py-1 text-[11px] transition flex items-center gap-1'>
+                  <i class='fa-solid fa-globe text-[10px]'></i>
+                  <span>Công khai</span>
+                </button>
+                <button type='button' 
+                        v-on:click='userProfile.privacyMode = "private"' 
+                        v-bind:class='userProfile.privacyMode === "private" ? "bg-rose-600 text-white" : "text-slate-600 hover:text-slate-900"' 
+                        class='px-2.5 py-1 text-[11px] transition flex items-center gap-1'>
+                  <i class='fa-solid fa-lock text-[10px]'></i>
+                  <span>Riêng tư</span>
+                </button>
+              </div>
             </div>
           </div>
 
@@ -2133,17 +2181,109 @@
           </div>
         </div>
 
+        <!-- ======================================================== -->
+        <!-- TRƯỜNG HỢP 2: KHI XEM PROFILE CỦA NGƯỜI KHÁC             -->
+        <!-- ======================================================== -->
+        <div v-else='true' class='flex-1 overflow-y-auto p-4 space-y-4'>
+          <!-- Cảnh báo khi người dùng bật chế độ riêng tư -->
+          <div v-if='viewingUserProfile.privacyMode === "private"' class='p-3 bg-rose-50 border border-rose-200 text-rose-900 flex items-start gap-2.5'>
+            <i class='fa-solid fa-lock text-rose-600 text-base mt-0.5 shrink-0'></i>
+            <div>
+              <h5 class='font-bold text-xs'>Tài khoản Riêng tư (Private Mode)</h5>
+              <p class='text-[11px] text-rose-800 leading-relaxed mt-0.5'>
+                Thành viên này đã bật chế độ bảo mật riêng tư. Số điện thoại, email và thông tin liên hệ được ẩn để bảo vệ quyền riêng tư cá nhân.
+              </p>
+            </div>
+          </div>
+
+          <!-- Thông tin công khai / chi tiết -->
+          <div class='bg-[#FAF9F8] p-3.5 border border-[#E0DDD8] space-y-2.5'>
+            <div class='grid grid-cols-1 sm:grid-cols-2 gap-3'>
+              <div>
+                <span class='block text-[10px] font-bold text-slate-400 uppercase tracking-wider'>Khu vực sinh sống</span>
+                <span class='font-semibold text-slate-800 text-xs flex items-center gap-1 mt-0.5'>
+                  <i class='fa-solid fa-location-dot text-[#C74634] text-[10px]'></i>
+                  <span>{{ viewingUserProfile.location || 'Tây Ninh' }}</span>
+                </span>
+              </div>
+              <div>
+                <span class='block text-[10px] font-bold text-slate-400 uppercase tracking-wider'>Số điện thoại / Zalo</span>
+                <span v-if='viewingUserProfile.privacyMode === "private"' class='text-slate-400 italic text-xs flex items-center gap-1 mt-0.5'>
+                  <i class='fa-solid fa-lock text-[10px]'></i>
+                  <span>Đã ẩn (Riêng tư)</span>
+                </span>
+                <span v-else-if='viewingUserProfile.phone' class='font-bold text-[#C74634] text-xs flex items-center gap-1 mt-0.5'>
+                  <i class='fa-solid fa-phone text-[10px]'></i>
+                  <a v-bind:href='"tel:" + viewingUserProfile.phone' class='hover:underline'>{{ viewingUserProfile.phone }}</a>
+                </span>
+                <span v-else='true' class='text-slate-400 text-xs'>Chưa cập nhật</span>
+              </div>
+            </div>
+
+            <div class='pt-2 border-t border-[#E0DDD8]'>
+              <span class='block text-[10px] font-bold text-slate-400 uppercase tracking-wider'>Giới thiệu bản thân</span>
+              <p class='text-slate-700 text-xs leading-relaxed mt-1'>
+                {{ viewingUserProfile.bio || 'Thành viên cộng đồng Tây Ninh TNHub.' }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Nút tương tác nhanh với người này -->
+          <div class='flex items-center gap-2'>
+            <button type='button' 
+                    v-if='currentUser'
+                    v-on:click='openPrivateChat(viewingUserProfile.rawTarget); showProfileModal = false;' 
+                    class='flex-1 py-2 bg-[#C74634] hover:bg-[#B13C2C] text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition'>
+              <i class='fa-regular fa-comment-dots'></i>
+              <span>Nhắn tin riêng 1-1</span>
+            </button>
+            <button type='button' 
+                    v-if='currentUser'
+                    v-on:click='toggleFriend(viewingUserProfile.rawTarget)' 
+                    v-bind:class='isFriend(viewingUserProfile.email) ? "bg-red-50 text-[#C74634] border-red-200" : "bg-white text-slate-700 border-[#E0DDD8] hover:bg-slate-50"' 
+                    class='px-4 py-2 border font-bold text-xs flex items-center justify-center gap-1.5 transition'>
+              <i v-bind:class='isFriend(viewingUserProfile.email) ? "fa-solid fa-user-check text-[#C74634]" : "fa-solid fa-user-plus text-slate-400"'></i>
+              <span>{{ isFriend(viewingUserProfile.email) ? 'Đã là bạn bè' : 'Kết bạn' }}</span>
+            </button>
+          </div>
+
+          <!-- Danh sách bài đăng của thành viên này tại Tây Ninh -->
+          <div class='pt-2'>
+            <h4 class='font-bold text-xs text-[#161513] mb-2 flex items-center justify-between'>
+              <span>Bài viết của thành viên ({{ viewingUserProfile.postsCount }})</span>
+            </h4>
+            <div v-if='viewingUserProfile.postsCount === 0' class='text-center py-6 text-slate-400 bg-[#FAF9F8] border border-[#E0DDD8]'>
+              Chưa có bài viết nào được đăng.
+            </div>
+            <div v-else='true' class='space-y-2 max-h-48 overflow-y-auto'>
+              <div v-for='p in viewingUserProfile.posts' v-bind:key='p.id' 
+                   v-on:click='openDetailModal(p); showProfileModal = false;' 
+                   class='p-2 bg-white border border-[#E0DDD8] hover:border-[#C74634] cursor-pointer flex items-center gap-2.5 transition'>
+                <img v-bind:src='p.image' class='w-10 h-10 object-cover shrink-0' />
+                <div class='min-w-0 flex-1'>
+                  <h5 class='font-bold text-xs text-slate-900 truncate'>{{ p.title }}</h5>
+                  <p class='text-[10px] text-[#C74634] font-semibold'>{{ p.price }} • {{ p.location || 'Tây Ninh' }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Dialog Footer -->
         <div class='p-3.5 border-t border-[#E0DDD8] bg-[#FAF9F8] flex items-center justify-between'>
-          <button type='button' v-on:click='setCategory("myposts"); showProfileModal = false;' class='text-slate-600 hover:text-[#C74634] font-bold text-xs flex items-center gap-1.5'>
+          <button v-if='isViewingMyOwnProfile' type='button' v-on:click='setCategory("myposts"); showProfileModal = false;' class='text-slate-600 hover:text-[#C74634] font-bold text-xs flex items-center gap-1.5'>
             <i class='fa-solid fa-list-check'></i>
             <span>Xem các bài đăng của tôi ({{ myPostsCount }})</span>
           </button>
+          <div v-else='true' class='text-[11px] text-slate-400'>
+            <span>Cộng đồng Tây Ninh TNHub</span>
+          </div>
+
           <div class='flex items-center gap-2'>
             <button type='button' v-on:click='showProfileModal = false' class='px-4 py-2 bg-white border border-[#E0DDD8] hover:bg-slate-100 text-slate-700 font-bold text-xs transition'>
               Đóng
             </button>
-            <button type='button' v-on:click='saveUserProfile' v-bind:disabled='isSavingProfile' class='px-4 py-2 bg-[#C74634] hover:bg-[#B13C2C] text-white font-bold text-xs shadow-sm transition flex items-center gap-1.5'>
+            <button v-if='isViewingMyOwnProfile' type='button' v-on:click='saveUserProfile' v-bind:disabled='isSavingProfile' class='px-4 py-2 bg-[#C74634] hover:bg-[#B13C2C] text-white font-bold text-xs shadow-sm transition flex items-center gap-1.5'>
               <i v-if='isSavingProfile' class='fa-solid fa-circle-notch fa-spin'></i>
               <i v-else='true' class='fa-solid fa-floppy-disk'></i>
               <span>{{ isSavingProfile ? 'Đang lưu...' : 'Lưu hồ sơ' }}</span>
@@ -2334,6 +2474,7 @@
       limit, 
       onSnapshot, 
       doc, 
+      getDoc, 
       setDoc, 
       serverTimestamp 
     } from 'https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js';
@@ -2542,11 +2683,13 @@
         const activeCommentCard = ref(null);
         const commentModalInput = ref('');
 
-        // PROFILE & BACKGROUND COVER & AVATAR STATE
+        // PROFILE & BACKGROUND COVER & AVATAR & PRIVACY STATE
         const showProfileModal = ref(false);
         const showCoverPresets = ref(false);
         const showAvatarPresets = ref(false);
         const isSavingProfile = ref(false);
+        const isViewingMyOwnProfile = ref(true);
+
         const userProfile = ref({
           displayName: '',
           email: '',
@@ -2554,7 +2697,23 @@
           coverURL: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80',
           bio: 'Thành viên năng động trên Cổng thông tin & Mạng xã hội Tây Ninh TNHub.',
           phone: '',
-          location: 'TP. Tây Ninh'
+          location: 'TP. Tây Ninh',
+          privacyMode: 'public' // 'public' | 'private'
+        });
+
+        // THÔNG TIN PROFILE CỦA NGƯỜI ĐANG ĐƯỢC XEM (KHI XEM NGƯỜI KHÁC)
+        const viewingUserProfile = ref({
+          displayName: '',
+          email: '',
+          photoURL: '',
+          coverURL: '',
+          bio: '',
+          phone: '',
+          location: 'Tây Ninh',
+          privacyMode: 'public',
+          postsCount: 0,
+          posts: [],
+          rawTarget: null
         });
 
         // BỘ PRESET ẢNH PHONG CẢNH TÂY NINH CHẤT LƯỢNG CAO
@@ -4333,6 +4492,7 @@
             loginGoogle();
             return;
           }
+          isViewingMyOwnProfile.value = true;
           userProfile.value.displayName = currentUser.value.displayName || '';
           userProfile.value.email = currentUser.value.email || '';
           userProfile.value.photoURL = currentUser.value.photoURL || '';
@@ -4345,6 +4505,67 @@
               userProfile.value = { ...userProfile.value, ...parsed };
             }
           } catch (e) {}
+
+          showProfileModal.value = true;
+        };
+
+        const openUserProfile = async (target) => {
+          if (!target) return;
+
+          const targetEmail = target.authorEmail || target.email || '';
+          const targetId = target.userId || target.authorId || target.uid || '';
+          const isMe = currentUser.value && (
+            (targetEmail && currentUser.value.email && targetEmail === currentUser.value.email) ||
+            (targetId && currentUser.value.uid && targetId === currentUser.value.uid)
+          );
+
+          if (isMe) {
+            openProfileModal();
+            return;
+          }
+
+          // XEM PROFILE CỦA NGƯỜI KHÁC
+          isViewingMyOwnProfile.value = false;
+          const name = target.authorName || target.displayName || target.name || 'Thành viên Tây Ninh';
+          const avatar = target.authorAvatar || target.photoURL || target.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80';
+          const location = target.location || 'Tây Ninh';
+
+          // Danh sách bài đăng của người này
+          const theirPosts = cards.value.filter(c => (targetEmail && c.authorEmail === targetEmail) || (targetId && c.userId === targetId));
+
+          viewingUserProfile.value = {
+            displayName: name,
+            email: targetEmail || 'Chưa cập nhật',
+            photoURL: avatar,
+            coverURL: target.coverURL || 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80',
+            bio: target.bio || 'Thành viên cộng đồng Tây Ninh TNHub.',
+            phone: target.phone || '',
+            location: location,
+            privacyMode: target.privacyMode || 'public',
+            postsCount: theirPosts.length,
+            posts: theirPosts,
+            rawTarget: target
+          };
+
+          // Tải thông tin mới nhất từ Firestore users/{uid} nếu có
+          if (db && targetId) {
+            try {
+              const userDocRef = doc(db, 'users', targetId);
+              const userSnap = await getDoc(userDocRef);
+              if (userSnap.exists()) {
+                const udata = userSnap.data();
+                if (udata.displayName) viewingUserProfile.value.displayName = udata.displayName;
+                if (udata.photoURL) viewingUserProfile.value.photoURL = udata.photoURL;
+                if (udata.coverURL) viewingUserProfile.value.coverURL = udata.coverURL;
+                if (udata.bio) viewingUserProfile.value.bio = udata.bio;
+                if (udata.phone) viewingUserProfile.value.phone = udata.phone;
+                if (udata.location) viewingUserProfile.value.location = udata.location;
+                if (udata.privacyMode) viewingUserProfile.value.privacyMode = udata.privacyMode;
+              }
+            } catch(err) {
+              console.warn('Lỗi đọc profile từ Firestore:', err);
+            }
+          }
 
           showProfileModal.value = true;
         };
@@ -4372,6 +4593,7 @@
                   bio: userProfile.value.bio,
                   phone: userProfile.value.phone,
                   location: userProfile.value.location,
+                  privacyMode: userProfile.value.privacyMode || 'public',
                   updatedAt: new Date().toISOString()
                 }, { merge: true });
               } catch (err) {
@@ -4379,7 +4601,7 @@
               }
             }
 
-            showToast('Đã lưu hồ sơ cá nhân và ảnh đại diện thành công!', 'success');
+            showToast('Đã lưu hồ sơ cá nhân và cài đặt quyền riêng tư thành công!', 'success');
             showProfileModal.value = false;
           } catch (e) {
             console.error('Lỗi khi lưu profile:', e);
@@ -4825,7 +5047,10 @@
           isMyPost,
           confirmDeleteMyPost,
           openProfileModal,
+          openUserProfile,
           saveUserProfile,
+          isViewingMyOwnProfile,
+          viewingUserProfile,
           isFriend,
           toggleFriend,
           removeFriend,
