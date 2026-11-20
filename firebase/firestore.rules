@@ -133,5 +133,10 @@ service cloud.firestore {
         allow read, write: if true;
       }
     }
+
+    // 11. Collection 'notifications' (Thông báo thời gian thực realtime)
+    match /notifications/{notifId} {
+      allow read, write: if true;
+    }
   }
 }

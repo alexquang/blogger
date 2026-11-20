@@ -310,10 +310,111 @@
         </div>
 
         <div class='flex items-center gap-2 sm:gap-2.5'>
-          <!-- Realtime Bell Notification with Unread Count -->
-          <button v-on:click='openChatDrawer' class='relative px-3 py-1.5 bg-white border border-[#E0DDD8] flex items-center gap-1.5 text-xs text-slate-700 hover:bg-[#F1EFED] shadow-sm transition' title='Mở tin nhắn &amp; thông báo'>
-            <i class='fa-regular fa-bell text-xs text-[#C74634]'></i>
-            <span class='font-semibold hidden sm:inline'>Tin nhắn</span>
+          <!-- Realtime Notifications Bell & Dropdown (Oracle Redwood) -->
+          <div class='relative'>
+            <button type='button' 
+                    v-on:click='toggleNotificationDropdown' 
+                    class='relative px-3 py-1.5 bg-white border border-[#E0DDD8] flex items-center gap-1.5 text-xs text-slate-700 hover:bg-[#F1EFED] shadow-sm transition' 
+                    title='Trung tâm thông báo thời gian thực'>
+              <i class='fa-regular fa-bell text-xs' v-bind:class='unreadNotificationCount > 0 ? "text-[#C74634] animate-bounce" : "text-slate-500"'></i>
+              <span class='font-semibold hidden sm:inline'>Thông báo</span>
+              <span v-if='unreadNotificationCount > 0' class='bg-[#C74634] text-white text-[10px] font-bold px-1.5 py-0.2'>{{ unreadNotificationCount }}</span>
+            </button>
+
+            <!-- Dropdown Menu Trung Tâm Thông Báo Realtime -->
+            <div v-if='showNotificationDropdown' 
+                 v-cloak='true'
+                 class='absolute right-0 top-full mt-2 w-80 sm:w-96 bg-white border border-[#E0DDD8] shadow-2xl z-50 overflow-hidden text-xs flex flex-col'>
+              <!-- Notification Header -->
+              <div class='px-3.5 py-2.5 bg-[#161513] text-white flex items-center justify-between border-b-2 border-[#C74634]'>
+                <div class='flex items-center gap-2'>
+                  <i class='fa-solid fa-bell text-[#C74634]'></i>
+                  <span class='font-bold uppercase tracking-wide text-xs'>Thông Báo Realtime</span>
+                  <span v-if='unreadNotificationCount > 0' class='bg-[#C74634] text-white text-[9px] font-bold px-1.5 py-0.2'>{{ unreadNotificationCount }} mới</span>
+                </div>
+                <div class='flex items-center gap-2'>
+                  <button v-if='unreadNotificationCount > 0' 
+                          type='button' 
+                          v-on:click='markAllNotificationsAsRead' 
+                          class='text-[10px] text-slate-300 hover:text-white underline transition'>
+                    Đã đọc tất cả
+                  </button>
+                  <button type='button' 
+                          v-on:click='showNotificationDropdown = false' 
+                          class='text-slate-400 hover:text-white transition w-5 h-5 flex items-center justify-center'>
+                    <i class='fa-solid fa-xmark text-xs'></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Notification List Body -->
+              <div class='max-h-80 overflow-y-auto divide-y divide-[#E0DDD8] bg-[#FAF9F8]'>
+                <div v-if='notifications.length === 0' class='p-8 text-center text-slate-400 space-y-2'>
+                  <i class='fa-regular fa-bell-slash text-2xl text-slate-300'></i>
+                  <p class='text-xs font-semibold'>Chưa có thông báo nào.</p>
+                  <p class='text-[10px] text-slate-400'>Khi có ai nhắn tin riêng hoặc tương tác, thông báo sẽ hiển thị ngay tại đây.</p>
+                </div>
+
+                <div v-for='notif in notifications' 
+                     v-bind:key='notif.id' 
+                     v-on:click='handleNotificationClick(notif)' 
+                     v-bind:class='notif.read ? "bg-white hover:bg-[#F1EFED]" : "bg-red-50/60 hover:bg-red-50 border-l-2 border-[#C74634]"' 
+                     class='p-3 flex items-start gap-3 cursor-pointer transition relative group'>
+                  <!-- Sender Avatar with Type Icon -->
+                  <div class='relative shrink-0'>
+                    <img v-bind:src='notif.senderAvatar || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&amp;fit=crop&amp;w=80&amp;q=80"' 
+                         class='w-9 h-9 object-cover border border-[#E0DDD8]' />
+                    <span v-if='notif.type === "private_chat"' 
+                          class='absolute -bottom-1 -right-1 w-4 h-4 bg-[#C74634] text-white rounded-full flex items-center justify-center text-[8px]'>
+                      <i class='fa-solid fa-comment-dots'></i>
+                    </span>
+                    <span v-else-if='notif.type === "comment"' 
+                          class='absolute -bottom-1 -right-1 w-4 h-4 bg-blue-600 text-white rounded-full flex items-center justify-center text-[8px]'>
+                      <i class='fa-solid fa-comments'></i>
+                    </span>
+                    <span v-else='true' 
+                          class='absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-600 text-white rounded-full flex items-center justify-center text-[8px]'>
+                      <i class='fa-solid fa-bell'></i>
+                    </span>
+                  </div>
+
+                  <!-- Notification Content -->
+                  <div class='flex-1 min-w-0'>
+                    <div class='flex items-center justify-between gap-1 mb-0.5'>
+                      <h5 class='font-bold text-xs text-[#161513] truncate'>{{ notif.senderName || 'Thành viên Tây Ninh' }}</h5>
+                      <span class='text-[10px] text-slate-400 shrink-0'>{{ formatTime(notif.createdAt) }}</span>
+                    </div>
+                    <p class='text-xs text-slate-700 line-clamp-2 leading-relaxed'>{{ notif.content }}</p>
+                    <div class='mt-1 flex items-center justify-between text-[10px]'>
+                      <span class='text-[#C74634] font-medium'>
+                        <span v-if='notif.type === "private_chat"'>Nhấn để trả lời ngay →</span>
+                        <span v-else-if='notif.type === "comment"'>Xem bài viết →</span>
+                        <span v-else='true'>Xem chi tiết →</span>
+                      </span>
+                      <button type='button' 
+                              v-on:click.stop='clearNotification(notif.id)' 
+                              class='text-slate-400 hover:text-rose-600 p-0.5 opacity-0 group-hover:opacity-100 transition' 
+                              title='Xóa thông báo này'>
+                        <i class='fa-solid fa-trash-can'></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Notification Footer -->
+              <div class='p-2 bg-white border-t border-[#E0DDD8] text-center'>
+                <button type='button' v-on:click='showNotificationDropdown = false' class='text-[11px] text-slate-500 hover:text-[#161513] font-semibold'>
+                  Đóng thông báo
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Nút Phòng Chat Cộng Đồng -->
+          <button v-on:click='openChatDrawer' class='relative px-3 py-1.5 bg-white border border-[#E0DDD8] flex items-center gap-1.5 text-xs text-slate-700 hover:bg-[#F1EFED] shadow-sm transition' title='Phòng Chat Cộng Đồng Tây Ninh'>
+            <i class='fa-regular fa-comments text-xs text-[#C74634]'></i>
+            <span class='font-semibold hidden sm:inline'>Phòng Chat</span>
             <span v-if='unreadMessageCount > 0' class='bg-[#C74634] text-white text-[10px] font-bold px-1.5 py-0.2'>{{ unreadMessageCount }}</span>
           </button>
 
@@ -2763,6 +2864,8 @@
       collection, 
       addDoc, 
       deleteDoc,
+      updateDoc,
+      where,
       query, 
       orderBy, 
       limit, 
@@ -3767,6 +3870,104 @@
           unreadMessageCount.value = 0;
         };
 
+        // HỆ THỐNG REALTIME NOTIFICATIONS (THÔNG BÁO THỜI GIAN THỰC)
+        const notifications = ref([]);
+        const unreadNotificationCount = ref(0);
+        const showNotificationDropdown = ref(false);
+        let notifUnsubscribe = null;
+
+        const toggleNotificationDropdown = () => {
+          showNotificationDropdown.value = !showNotificationDropdown.value;
+        };
+
+        const markAllNotificationsAsRead = async () => {
+          unreadNotificationCount.value = 0;
+          notifications.value.forEach(n => { n.read = true; });
+          if (db && currentUser.value) {
+            try {
+              for (const n of notifications.value) {
+                if (n.id && !n.id.startsWith('temp_')) {
+                  await updateDoc(doc(db, 'notifications', n.id), { read: true });
+                }
+              }
+            } catch (e) {
+              console.warn('Lỗi markAllNotificationsAsRead:', e);
+            }
+          }
+        };
+
+        const handleNotificationClick = async (notif) => {
+          if (!notif) return;
+          notif.read = true;
+          unreadNotificationCount.value = notifications.value.filter(n => !n.read).length;
+          showNotificationDropdown.value = false;
+
+          if (db && notif.id && !notif.id.startsWith('temp_')) {
+            try {
+              await updateDoc(doc(db, 'notifications', notif.id), { read: true });
+            } catch(e) {}
+          }
+
+          if (notif.type === 'private_chat') {
+            openPrivateChat({
+              email: notif.senderEmail,
+              name: notif.senderName,
+              avatar: notif.senderAvatar
+            });
+          } else if (notif.type === 'comment' && notif.targetPostId) {
+            openDetailModal({ id: notif.targetPostId });
+          }
+        };
+
+        const clearNotification = async (notifId) => {
+          notifications.value = notifications.value.filter(n => n.id !== notifId);
+          unreadNotificationCount.value = notifications.value.filter(n => !n.read).length;
+          if (db && notifId) {
+            try {
+              await deleteDoc(doc(db, 'notifications', notifId));
+            } catch(e) {}
+          }
+        };
+
+        const listenRealtimeNotifications = (email) => {
+          if (!db || !email) return;
+          if (notifUnsubscribe) {
+            notifUnsubscribe();
+            notifUnsubscribe = null;
+          }
+          try {
+            const cleanEmail = email.toLowerCase().trim();
+            const notifsRef = collection(db, 'notifications');
+            const q = query(notifsRef, where('receiverEmail', '==', cleanEmail), limit(50));
+            let initialNotifsDone = false;
+            notifUnsubscribe = onSnapshot(q, (snapshot) => {
+              const list = [];
+              snapshot.forEach(d => {
+                list.push({ id: d.id, ...d.data() });
+              });
+              list.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+              notifications.value = list;
+              unreadNotificationCount.value = list.filter(n => !n.read).length;
+
+              if (initialNotifsDone) {
+                snapshot.docChanges().forEach(change => {
+                  if (change.type === 'added') {
+                    const d = change.doc.data();
+                    playNotificationSound();
+                    const icon = d.type === 'private_chat' ? '💬 ' : (d.type === 'comment' ? '📝 ' : '🔔 ');
+                    showToast(icon + (d.title || 'Thông báo mới') + ': ' + (d.content ? d.content.substring(0, 50) : ''), 'info', d.senderName || 'TNHub Tây Ninh');
+                  }
+                });
+              }
+              initialNotifsDone = true;
+            }, (err) => {
+              console.warn('Notifications snapshot warning:', err);
+            });
+          } catch (e) {
+            console.warn('Setup notifications warning:', e);
+          }
+        };
+
         const playNotificationSound = () => {
           try {
             const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -4534,6 +4735,24 @@
             try {
               setDoc(doc(db, 'listings', card.id), { commentsJson: JSON.stringify(card.comments) }, { merge: true })
                 .catch(e => console.warn('Sync comment error:', e));
+
+              // Realtime Notification cho tác giả bài đăng nếu người bình luận là người khác
+              const targetEmail = (card.authorEmail || '').toLowerCase().trim();
+              const myEmail = (currentUser.value && currentUser.value.email ? currentUser.value.email : '').toLowerCase().trim();
+              if (targetEmail && targetEmail !== myEmail) {
+                addDoc(collection(db, 'notifications'), {
+                  type: 'comment',
+                  title: 'Bình luận mới về bài viết của bạn',
+                  content: author + ' vừa bình luận: "' + (text.length > 50 ? text.substring(0, 50) + '...' : text) + '"',
+                  senderName: author,
+                  senderEmail: myEmail,
+                  senderAvatar: avatar,
+                  receiverEmail: targetEmail,
+                  targetPostId: card.id,
+                  read: false,
+                  createdAt: new Date().toISOString()
+                }).catch(() => {});
+              }
             } catch (e) {
               console.warn('Sync comment:', e);
             }
@@ -5366,11 +5585,26 @@
           showToast('Đã xóa khỏi danh sách bạn bè.', 'info');
         };
 
-        // CHAT PRIVATE 1-1 FUNCTIONS
-        const getChatId = (uid1, uid2) => {
-          const clean1 = (uid1 || '').replace(/[^a-zA-Z0-9]/g, '_');
-          const clean2 = (uid2 || '').replace(/[^a-zA-Z0-9]/g, '_');
-          return [clean1, clean2].sort().join('_chat_');
+        // CHUẨN HÓA ĐỊNH DANH NGƯỜI DÙNG CHO CHAT 1-1 REALTIME
+        const getUserChatKey = (obj) => {
+          if (!obj) return '';
+          if (typeof obj === 'string') {
+            const s = obj.trim().toLowerCase();
+            return s;
+          }
+          const email = obj.email || obj.authorEmail || obj.senderEmail || obj.receiverEmail || '';
+          if (email && email.includes('@')) {
+            return email.trim().toLowerCase();
+          }
+          const uid = obj.uid || obj.userId || obj.authorId || obj.senderId || obj.receiverId || obj.id || '';
+          return uid.toString().trim().toLowerCase();
+        };
+
+        const getChatId = (userA, userB) => {
+          const k1 = getUserChatKey(userA).replace(/[^a-zA-Z0-9]/g, '_');
+          const k2 = getUserChatKey(userB).replace(/[^a-zA-Z0-9]/g, '_');
+          if (!k1 || !k2) return 'general_chat';
+          return [k1, k2].sort().join('___chat___');
         };
 
         const openPrivateChat = (target) => {
@@ -5378,11 +5612,19 @@
             loginGoogle();
             return;
           }
+          if (!target) return;
 
-          const partnerName = target.name || target.authorName || 'Thành viên Tây Ninh';
-          const partnerEmail = target.email || target.authorEmail || (target.id ? ('user_' + target.id) : 'unknown');
-          const partnerAvatar = target.avatar || target.authorAvatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&q=80';
-          const partnerId = target.userId || target.uid || partnerEmail;
+          // Hỗ trợ mọi loại target: card bài đăng, friend, user profile, notification
+          const partnerEmail = (target.email || target.authorEmail || target.senderEmail || (target.rawTarget ? target.rawTarget.authorEmail : '') || '').toLowerCase().trim();
+          const partnerName = target.name || target.displayName || target.authorName || target.senderName || 'Thành viên Tây Ninh';
+          const partnerAvatar = target.avatar || target.photoURL || target.authorAvatar || target.senderAvatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&q=80';
+          const partnerId = partnerEmail || target.userId || target.uid || (target.id ? ('user_' + target.id) : 'partner');
+
+          const myEmail = (currentUser.value.email || '').toLowerCase().trim();
+          if (myEmail && partnerEmail && myEmail === partnerEmail) {
+            showToast('Đây là bài viết hoặc tài khoản của chính bạn. Không thể tự chat với mình!', 'info');
+            return;
+          }
 
           activeChatPartner.value = {
             id: partnerId,
@@ -5391,12 +5633,12 @@
             avatar: partnerAvatar
           };
 
-          const myId = currentUser.value.uid || currentUser.value.email;
-          const chatId = getChatId(myId, partnerId);
+          const chatId = getChatId(currentUser.value, activeChatPartner.value);
 
           privateMessages.value = [];
           showPrivateChat.value = true;
           if (showFriendsModal.value) showFriendsModal.value = false;
+          if (showNotificationDropdown.value) showNotificationDropdown.value = false;
 
           // Hủy listener cũ nếu có
           if (privateChatUnsubscribe) {
@@ -5408,15 +5650,17 @@
           if (db) {
             try {
               const msgsRef = collection(db, 'private_chats', chatId, 'messages');
-              const q = query(msgsRef, orderBy('createdAt', 'asc'), limit(50));
+              const q = query(msgsRef, orderBy('createdAt', 'asc'), limit(100));
               privateChatUnsubscribe = onSnapshot(q, (snapshot) => {
                 const list = [];
                 snapshot.forEach(d => {
                   const data = d.data();
+                  const isMe = (myEmail && data.senderEmail && data.senderEmail.toLowerCase() === myEmail) ||
+                               (currentUser.value.uid && data.senderId === currentUser.value.uid);
                   list.push({
                     id: d.id,
                     ...data,
-                    isMe: data.senderEmail === currentUser.value.email || data.senderId === currentUser.value.uid
+                    isMe: isMe
                   });
                 });
                 privateMessages.value = list;
@@ -5425,7 +5669,7 @@
                 setTimeout(() => {
                   const box = document.getElementById('privateChatBox');
                   if (box) box.scrollTop = box.scrollHeight;
-                }, 100);
+                }, 80);
               }, (err) => {
                 console.warn('Private chat snapshot warning:', err);
               });
@@ -5439,16 +5683,18 @@
           const text = privateMessageInput.value.trim();
           if (!text || !activeChatPartner.value || !currentUser.value) return;
 
-          const myId = currentUser.value.uid || currentUser.value.email;
-          const partnerId = activeChatPartner.value.id;
-          const chatId = getChatId(myId, partnerId);
+          const myEmail = (currentUser.value.email || '').toLowerCase().trim();
+          const partnerEmail = (activeChatPartner.value.email || '').toLowerCase().trim();
+          const chatId = getChatId(currentUser.value, activeChatPartner.value);
 
           const newMsg = {
-            senderId: myId,
+            chatId: chatId,
+            senderId: currentUser.value.uid || '',
             senderName: currentUser.value.displayName || 'Thành viên Tây Ninh',
-            senderEmail: currentUser.value.email,
+            senderEmail: myEmail,
             senderAvatar: currentUser.value.photoURL || '',
-            receiverId: partnerId,
+            receiverId: activeChatPartner.value.id,
+            receiverEmail: partnerEmail,
             receiverName: activeChatPartner.value.name,
             text: text,
             createdAt: new Date().toISOString()
@@ -5471,9 +5717,27 @@
 
           if (db) {
             try {
+              // 1. Lưu vào collection tin nhắn riêng
               await addDoc(collection(db, 'private_chats', chatId, 'messages'), newMsg);
+
+              // 2. Tạo realtime notification cho receiver
+              if (partnerEmail && partnerEmail !== myEmail) {
+                await addDoc(collection(db, 'notifications'), {
+                  type: 'private_chat',
+                  title: 'Tin nhắn từ ' + (currentUser.value.displayName || 'Thành viên'),
+                  content: text,
+                  senderName: currentUser.value.displayName || 'Thành viên Tây Ninh',
+                  senderEmail: myEmail,
+                  senderAvatar: currentUser.value.photoURL || '',
+                  receiverEmail: partnerEmail,
+                  chatId: chatId,
+                  read: false,
+                  createdAt: new Date().toISOString()
+                });
+              }
             } catch (e) {
               console.warn('Lỗi gửi private message:', e);
+              showToast('Lỗi gửi tin nhắn: ' + (e.message || 'Vui lòng thử lại'), 'error');
             }
           }
         };
@@ -5500,8 +5764,16 @@
                   email: user.email,
                   photoURL: user.photoURL
                 };
+                // Kích hoạt lắng nghe Realtime Notifications cho người dùng này
+                listenRealtimeNotifications(user.email);
               } else {
                 currentUser.value = null;
+                if (notifUnsubscribe) {
+                  notifUnsubscribe();
+                  notifUnsubscribe = null;
+                }
+                notifications.value = [];
+                unreadNotificationCount.value = 0;
               }
             });
           }
@@ -5777,6 +6049,13 @@
           openPrivateChat,
           sendPrivateMessage,
           closePrivateChat,
+          notifications,
+          unreadNotificationCount,
+          showNotificationDropdown,
+          toggleNotificationDropdown,
+          markAllNotificationsAsRead,
+          handleNotificationClick,
+          clearNotification,
           currentLang,
           switchLang,
           t
