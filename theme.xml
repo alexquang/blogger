@@ -5354,8 +5354,7 @@
           }
 
           // Trích xuất tiêu đề (câu đầu tiên)
-          const firstLine = text.split('
-')[0].replace(/[*#]/g, '').trim();
+          const firstLine = text.split(/\r?\n/)[0].replace(/[*#]/g, '').trim();
           const title = firstLine.length > 80 ? firstLine.substring(0, 80) + '...' : firstLine;
 
           parsedSocialCard.value = {
