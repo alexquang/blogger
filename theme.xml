@@ -635,30 +635,55 @@
       <!-- 3B. YOUTUBE VIDEO SECTION (CHỈ LẤY VIDEO TỈNH TÂY NINH) -->
       <div v-else-if='activeTab === "video"' class='space-y-5'>
         <!-- Banner Note -->
-        <div class='bg-white p-4 border border-[#E0DDD8] flex flex-col sm:flex-row sm:items-center justify-between gap-3'>
+        <div class='bg-white p-4 border border-[#E0DDD8] flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm'>
           <div>
             <div class='flex items-center gap-2'>
-              <span class='bg-[#C74634] text-white text-[10px] font-black px-2 py-0.5 uppercase'>CHÍNH THỨC</span>
+              <span class='bg-[#C74634] text-white text-[10px] font-black px-2 py-0.5 uppercase'>100% TỈNH TÂY NINH</span>
               <h2 class='text-base font-black text-[#161513] uppercase flex items-center gap-2'>
                 <i class='fa-brands fa-youtube text-red-600'></i>
-                <span>VIDEO YOUTUBE KHÁM PHÁ TỈNH TÂY NINH</span>
+                <span>VIDEO YOUTUBE VỀ TỈNH TÂY NINH</span>
               </h2>
             </div>
             <p class='text-xs text-[#655F58] mt-1'>
-              Tổng hợp 100% video chất lượng cao từ YouTube về danh lam, văn hoá, tâm linh và ẩm thực tỉnh Tây Ninh. Không lấy ngoài tỉnh.
+              Tổng hợp chọn lọc 100% video chất lượng cao từ Đài PT-TH Tây Ninh (TTV11) và các kênh khám phá danh lam thắng cảnh, văn hoá, tâm linh và ẩm thực tỉnh Tây Ninh. Chỉ phát nội dung thuộc tỉnh Tây Ninh.
             </p>
           </div>
-          <button v-on:click='activeTab = "feed"' class='px-4 py-2 bg-[#161513] hover:bg-black text-white text-xs font-bold transition shrink-0'>
-            Quay lại tin đăng
+          <div class='flex items-center gap-2 shrink-0'>
+            <button type='button' v-on:click='fetchTayNinhVideos' v-bind:disabled='isFetchingVideos' class='px-3.5 py-2 bg-[#FAF9F8] border border-[#E0DDD8] text-slate-800 text-xs font-bold hover:bg-[#F1EFED] transition flex items-center gap-1.5 shadow-sm'>
+              <i class='fa-solid fa-rotate text-xs text-[#C74634]' v-bind:class='{"fa-spin": isFetchingVideos}'></i>
+              <span>{{ isFetchingVideos ? 'Đang cập nhật...' : 'Cập nhật video mới' }}</span>
+            </button>
+            <button type='button' v-on:click='activeTab = "feed"' class='px-3.5 py-2 bg-[#161513] hover:bg-black text-white text-xs font-bold transition'>
+              Quay lại tin đăng
+            </button>
+          </div>
+        </div>
+
+        <!-- Category Filter Pills for Video -->
+        <div class='flex items-center gap-2 overflow-x-auto pb-1 custom-scroll text-xs font-semibold'>
+          <button type='button' v-on:click='videoCategory = "all"' v-bind:class='videoCategory === "all" ? "bg-[#C74634] text-white font-bold" : "bg-white text-slate-700 hover:bg-slate-100 border border-[#E0DDD8]"' class='px-4 py-1.5 whitespace-nowrap transition shadow-sm'>
+            Tất cả ({{ tayNinhVideos.length }})
+          </button>
+          <button type='button' v-on:click='videoCategory = "dulich"' v-bind:class='videoCategory === "dulich" ? "bg-[#C74634] text-white font-bold" : "bg-white text-slate-700 hover:bg-slate-100 border border-[#E0DDD8]"' class='px-4 py-1.5 whitespace-nowrap transition shadow-sm'>
+            ⛰️ Núi Bà Đen &amp; Du lịch
+          </button>
+          <button type='button' v-on:click='videoCategory = "vanhoa"' v-bind:class='videoCategory === "vanhoa" ? "bg-[#C74634] text-white font-bold" : "bg-white text-slate-700 hover:bg-slate-100 border border-[#E0DDD8]"' class='px-4 py-1.5 whitespace-nowrap transition shadow-sm'>
+            🕊️ Tòa Thánh &amp; Tâm linh
+          </button>
+          <button type='button' v-on:click='videoCategory = "amthuc"' v-bind:class='videoCategory === "amthuc" ? "bg-[#C74634] text-white font-bold" : "bg-white text-slate-700 hover:bg-slate-100 border border-[#E0DDD8]"' class='px-4 py-1.5 whitespace-nowrap transition shadow-sm'>
+            🍜 Ẩm thực &amp; Đặc sản
+          </button>
+          <button type='button' v-on:click='videoCategory = "thoisu"' v-bind:class='videoCategory === "thoisu" ? "bg-[#C74634] text-white font-bold" : "bg-white text-slate-700 hover:bg-slate-100 border border-[#E0DDD8]"' class='px-4 py-1.5 whitespace-nowrap transition shadow-sm'>
+            📺 Thời sự Tây Ninh (TTV11)
           </button>
         </div>
 
         <!-- Video Cards Grid -->
         <div class='grid grid-cols-1 md:grid-cols-2 gap-5'>
-          <article v-for='video in tayNinhVideos' v-bind:key='video.id' v-on:click='playVideo(video)' class='bg-white border border-[#E0DDD8] overflow-hidden hover:shadow-lg transition cursor-pointer flex flex-col justify-between group'>
+          <article v-for='video in filteredTayNinhVideos' v-bind:key='video.id' v-on:click='playVideo(video)' class='bg-white border border-[#E0DDD8] overflow-hidden hover:shadow-lg transition cursor-pointer flex flex-col justify-between group'>
             <!-- Thumbnail Image Container -->
             <div class='relative h-52 w-full bg-black overflow-hidden'>
-              <img v-bind:src='video.thumbnail' v-bind:alt='video.title' class='w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-300' />
+              <img v-bind:src='video.thumbnail' v-bind:alt='video.title' v-on:error='handleImgError' class='w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-300' />
               <!-- Play Button Center Overlay -->
               <div class='absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/5 transition'>
                 <div class='w-14 h-14 bg-[#C74634] group-hover:bg-[#B13C2C] text-white flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform'>
@@ -1144,9 +1169,15 @@
               <span>{{ activePlayingVideo.views }}</span>
             </div>
           </div>
-          <button v-on:click='showVideoPlayerModal = false' class='px-4 py-2 bg-[#161513] hover:bg-black text-white text-xs font-bold transition shrink-0'>
-            Đóng video
-          </button>
+          <div class='flex items-center gap-2 shrink-0'>
+            <a v-bind:href='"https://www.youtube.com/watch?v=" + activePlayingVideo.youtubeId' target='_blank' class='px-3.5 py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm'>
+              <i class='fa-brands fa-youtube'></i>
+              <span>Xem trên YouTube</span>
+            </a>
+            <button type='button' v-on:click='showVideoPlayerModal = false' class='px-4 py-2 bg-[#161513] hover:bg-black text-white text-xs font-bold transition shrink-0'>
+              Đóng video
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -2322,8 +2353,193 @@
             category: 'Lịch sử & Nguồn cội',
             thumbnail: 'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=800&q=80',
             embedUrl: 'https://www.youtube.com/embed/oX9V5vI9q2g'
+          },
+          {
+            id: 'v7',
+            youtubeId: '_PNS1R9NvyU',
+            title: 'Dấu Ấn Thời Gian: Chiến Thắng Tua Hai Đồng Khởi Tây Ninh',
+            channel: 'Đài PT-TH Tây Ninh (TTV11)',
+            duration: '16:30',
+            views: 'TTV11',
+            location: 'Huyện Châu Thành',
+            category: 'Lịch sử & Nguồn cội',
+            thumbnail: 'https://i.ytimg.com/vi/_PNS1R9NvyU/hqdefault.jpg',
+            embedUrl: 'https://www.youtube.com/embed/_PNS1R9NvyU'
+          },
+          {
+            id: 'v8',
+            youtubeId: 'KjzH3yJXhTw',
+            title: 'Di Tích Lịch Sử Kháng Chiến Vùng Đất Tây Ninh Kiên Cường',
+            channel: 'Truyền Hình Tây Ninh Official',
+            duration: '18:45',
+            views: 'TTV11',
+            location: 'Tỉnh Tây Ninh',
+            category: 'Lịch sử & Nguồn cội',
+            thumbnail: 'https://i.ytimg.com/vi/KjzH3yJXhTw/hqdefault.jpg',
+            embedUrl: 'https://www.youtube.com/embed/KjzH3yJXhTw'
+          },
+          {
+            id: 'v9',
+            youtubeId: 'h9NEi2Bd9ig',
+            title: 'Trưng Bày Chuyên Đề: Nhạc Cụ Truyền Thống Các Dân Tộc Tỉnh Tây Ninh',
+            channel: 'Đài PT-TH Tây Ninh (TTV11)',
+            duration: '10:15',
+            views: 'TTV11',
+            location: 'TP. Tây Ninh',
+            category: 'Văn hóa & Di sản',
+            thumbnail: 'https://i.ytimg.com/vi/h9NEi2Bd9ig/hqdefault.jpg',
+            embedUrl: 'https://www.youtube.com/embed/h9NEi2Bd9ig'
+          },
+          {
+            id: 'v10',
+            youtubeId: 'MqFbcbc1iow',
+            title: 'Tuổi Trẻ Tây Ninh Chung Tay Bảo Tồn Nghệ Thuật Đờn Ca Tài Tử',
+            channel: 'Truyền Hình Tây Ninh Official',
+            duration: '12:20',
+            views: 'TTV11',
+            location: 'TX. Hòa Thành',
+            category: 'Văn hóa & Di sản',
+            thumbnail: 'https://i.ytimg.com/vi/MqFbcbc1iow/hqdefault.jpg',
+            embedUrl: 'https://www.youtube.com/embed/MqFbcbc1iow'
           }
         ]);
+
+        const videoCategory = ref('all');
+        const isFetchingVideos = ref(false);
+
+        // BỘ LỌC NGHIÊM NGẶT 100% TÂY NINH (LOẠI BỎ TẤT CẢ NGOÀI TỈNH)
+        const isTayNinhOnly = (title, desc = '') => {
+          const text = (title + ' ' + desc).toLowerCase();
+          const tnKeywords = [
+            'tây ninh', 'tay ninh', 'núi bà đen', 'nui ba den', 'bà đen', 'ba den',
+            'toà thánh', 'tòa thánh', 'toa thanh', 'cao đài', 'cao dai',
+            'hồ dầu tiếng', 'ho dau tieng', 'ma thiên lãnh', 'ma thien lanh',
+            'trảng bàng', 'trang bang', 'gò dầu', 'go dau', 'bến cầu', 'ben cau',
+            'tân biên', 'tan bien', 'tân châu', 'tan chau', 'châu thành',
+            'hòa thành', 'hoa thanh', 'dương minh châu', 'duong minh chau',
+            'bánh tráng phơi sương', 'bò tơ', 'muối tôm', 'chùa gò kén',
+            'lò gò', 'xa mát', 'tua hai', 'trung ương cục', 'ttv11'
+          ];
+          
+          const hasTn = tnKeywords.some(kw => text.includes(kw));
+          if (!hasTn) return false;
+
+          // Loại trừ tỉnh khác nếu không nhắc đến Tây Ninh
+          const otherProvinces = [
+            'long an', 'bình dương', 'đồng nai', 'tiền giang', 'bến tre',
+            'vĩnh long', 'cần thơ', 'hà nội', 'đà nẵng', 'bình thuận',
+            'khánh hòa', 'bình phước'
+          ];
+          const hasOther = otherProvinces.some(p => text.includes(p));
+          if (hasOther && !text.includes('tây ninh') && !text.includes('tay ninh')) {
+            return false;
+          }
+          return true;
+        };
+
+        const detectTayNinhLocation = (title) => {
+          const t = title.toLowerCase();
+          if (t.includes('núi bà đen') || t.includes('ma thiên lãnh')) return 'TP. Tây Ninh';
+          if (t.includes('tòa thánh') || t.includes('hòa thành')) return 'TX. Hòa Thành';
+          if (t.includes('trảng bàng')) return 'TX. Trảng Bàng';
+          if (t.includes('dầu tiếng') || t.includes('dương minh châu')) return 'H. Dương Minh Châu';
+          if (t.includes('tân biên') || t.includes('trung ương cục') || t.includes('lò gò')) return 'Huyện Tân Biên';
+          if (t.includes('tân châu')) return 'Huyện Tân Châu';
+          if (t.includes('gò dầu')) return 'Huyện Gò Dầu';
+          if (t.includes('bến cầu') || t.includes('mộc bài')) return 'Huyện Bến Cầu';
+          if (t.includes('châu thành') || t.includes('tua hai')) return 'Huyện Châu Thành';
+          return 'Tỉnh Tây Ninh';
+        };
+
+        const detectTayNinhCategory = (title) => {
+          const t = title.toLowerCase();
+          if (t.includes('núi bà đen') || t.includes('cáp treo') || t.includes('du lịch')) return 'Du lịch & Khám phá';
+          if (t.includes('tòa thánh') || t.includes('cao đài') || t.includes('chùa')) return 'Văn hóa & Tâm linh';
+          if (t.includes('ẩm thực') || t.includes('bánh tráng') || t.includes('bò tơ') || t.includes('muối tôm')) return 'Ẩm thực đặc sản';
+          if (t.includes('lịch sử') || t.includes('di tích') || t.includes('trung ương cục') || t.includes('tua hai')) return 'Lịch sử & Nguồn cội';
+          return 'Thời sự Tây Ninh';
+        };
+
+        const fetchTayNinhVideos = async () => {
+          isFetchingVideos.value = true;
+          showToast('Đang cập nhật video YouTube nói về tỉnh Tây Ninh...', 'info');
+
+          // 2 kênh YouTube chính thức của Đài PT-TH Tây Ninh (TTV11 / Báo Tây Ninh)
+          const channels = [
+            { id: 'UCLXwTlUcQi4LGH5sq_fyMAg', name: 'Đài PT-TH Tây Ninh (TTV11)' },
+            { id: 'UCjSFBpBDZB8-XWcwXIH20FQ', name: 'Truyền Hình Tây Ninh Official' }
+          ];
+
+          let addedCount = 0;
+          for (const ch of channels) {
+            try {
+              const feedUrl = 'https://www.youtube.com/feeds/videos.xml?channel_id=' + ch.id;
+              const proxyUrl = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(feedUrl);
+              const res = await fetch(proxyUrl);
+              const data = await res.json();
+              if (data && data.status === 'ok' && Array.isArray(data.items)) {
+                data.items.forEach(item => {
+                  const title = item.title || '';
+                  const desc = item.description || '';
+                  const link = item.link || '';
+                  
+                  // Chỉ lấy video thực sự nói về tỉnh Tây Ninh
+                  if (isTayNinhOnly(title, desc)) {
+                    const match = link.match(/(?:v=|shorts\/|embed\/)([\w-]{11})/);
+                    const yId = match ? match[1] : '';
+                    if (yId && !tayNinhVideos.value.some(v => v.youtubeId === yId)) {
+                      tayNinhVideos.value.unshift({
+                        id: 'yt_' + yId,
+                        youtubeId: yId,
+                        title: title,
+                        channel: ch.name,
+                        duration: 'Mới cập nhật',
+                        views: 'YouTube',
+                        location: detectTayNinhLocation(title),
+                        category: detectTayNinhCategory(title),
+                        thumbnail: item.thumbnail || ('https://i.ytimg.com/vi/' + yId + '/hqdefault.jpg'),
+                        embedUrl: 'https://www.youtube.com/embed/' + yId
+                      });
+                      addedCount++;
+                    }
+                  }
+                });
+              }
+            } catch (err) {
+              console.warn('Lỗi tải video kênh ' + ch.name + ':', err);
+            }
+          }
+
+          isFetchingVideos.value = false;
+          if (addedCount > 0) {
+            showToast('Đã lấy thêm ' + addedCount + ' video mới về tỉnh Tây Ninh!', 'success');
+          } else {
+            showToast('Đã lọc và cập nhật toàn bộ video về tỉnh Tây Ninh!', 'success');
+          }
+        };
+
+        const filteredTayNinhVideos = computed(() => {
+          if (!videoCategory.value || videoCategory.value === 'all') {
+            return tayNinhVideos.value;
+          }
+          return tayNinhVideos.value.filter(v => {
+            const cat = (v.category || '').toLowerCase();
+            const tit = (v.title || '').toLowerCase();
+            if (videoCategory.value === 'dulich') {
+              return cat.includes('du lịch') || tit.includes('bà đen') || tit.includes('núi') || tit.includes('dầu tiếng');
+            }
+            if (videoCategory.value === 'vanhoa') {
+              return cat.includes('văn hóa') || cat.includes('tâm linh') || tit.includes('tòa thánh') || tit.includes('cao đài');
+            }
+            if (videoCategory.value === 'amthuc') {
+              return cat.includes('ẩm thực') || tit.includes('bánh tráng') || tit.includes('bò tơ') || tit.includes('muối tôm');
+            }
+            if (videoCategory.value === 'thoisu') {
+              return cat.includes('thời sự') || v.channel.includes('TTV11') || v.channel.includes('Tây Ninh');
+            }
+            return true;
+          });
+        });
 
         const activePlayingVideo = ref(null);
         const showVideoPlayerModal = ref(false);
@@ -3593,6 +3809,8 @@
 
           // Tự động tải kết quả xổ số kiến thiết mới nhất
           fetchLotteryData();
+          // Tự động cập nhật danh sách video nói về tỉnh Tây Ninh
+          fetchTayNinhVideos();
         });
 
         return {
@@ -3628,6 +3846,10 @@
           activePinItem,
           mapEmbedUrl,
           tayNinhVideos,
+          videoCategory,
+          isFetchingVideos,
+          filteredTayNinhVideos,
+          fetchTayNinhVideos,
           activePlayingVideo,
           showVideoPlayerModal,
           playVideo,
