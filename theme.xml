@@ -636,8 +636,8 @@
             <!-- 6. Inline LinkedIn-style Comments & Nested Replies -->
             <div v-if='card.showComments' class='p-3.5 bg-[#F1EFED] border-t border-[#E0DDD8] space-y-3'>
               <!-- Comment Input Box -->
-              <div class='flex items-start gap-2'>
-                <img v-bind:src='(currentUser &amp;&amp; currentUser.photoURL) || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&amp;fit=crop&amp;w=80&amp;q=80"' 
+              <div v-if='currentUser &amp;&amp; currentUser.uid' class='flex items-start gap-2'>
+                <img v-bind:src='currentUser.photoURL || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&amp;fit=crop&amp;w=80&amp;q=80"' 
                      class='w-7 h-7 object-cover border border-[#E0DDD8] shrink-0 mt-0.5' />
                 <div class='flex-1 flex gap-1.5'>
                   <input type='text' v-model='card.newCommentText' 
@@ -650,6 +650,16 @@
                     Đăng
                   </button>
                 </div>
+              </div>
+              <div v-else='true' class='p-2 bg-white border border-[#E0DDD8] flex items-center justify-between text-xs'>
+                <span class='text-slate-500 text-[11px] flex items-center gap-1.5'>
+                  <i class='fa-solid fa-lock text-slate-400'></i>
+                  <span>Đăng nhập Google để bình luận bài này</span>
+                </span>
+                <button type='button' v-on:click='loginGoogle' class='px-2.5 py-1 bg-[#C74634] text-white font-bold text-[11px] flex items-center gap-1 transition'>
+                  <i class='fa-brands fa-google text-[10px]'></i>
+                  <span>Đăng nhập</span>
+                </button>
               </div>
 
               <!-- Comments List -->
@@ -1210,10 +1220,20 @@
 
         <!-- Chat Input Footer -->
         <div class='p-3.5 bg-white border-t border-[#E0DDD8]'>
-          <div class='flex gap-2'>
+          <div v-if='currentUser &amp;&amp; currentUser.uid' class='flex gap-2'>
             <input type='text' v-model='chatMessageInput' v-on:keyup.enter='sendCommunityMessage' placeholder='Nhập tin nhắn / thông báo gửi toàn cộng đồng...' class='flex-1 px-3 py-2 text-xs bg-[#F1EFED] border border-[#E0DDD8] outline-none focus:border-[#C74634]' />
             <button v-on:click='sendCommunityMessage' class='px-4 py-2 bg-[#C74634] hover:bg-[#B13C2C] text-white font-bold text-xs shadow-sm transition'>
               Gửi tin
+            </button>
+          </div>
+          <div v-else='true' class='py-2 px-3 bg-[#FAF9F8] border border-[#E0DDD8] flex items-center justify-between gap-2'>
+            <span class='text-slate-600 text-xs flex items-center gap-1.5'>
+              <i class='fa-solid fa-lock text-slate-400'></i>
+              <span>Đăng nhập để gửi tin nhắn lên cộng đồng</span>
+            </span>
+            <button type='button' v-on:click='loginGoogle' class='px-3 py-1.5 bg-[#C74634] text-white font-bold text-xs shadow-sm transition flex items-center gap-1'>
+              <i class='fa-brands fa-google text-xs'></i>
+              <span>Đăng nhập</span>
             </button>
           </div>
           <p class='text-[10px] text-slate-400 mt-2 flex items-center gap-1'>
@@ -1797,8 +1817,8 @@
 
         <!-- Dialog Sticky Footer: New Comment Input -->
         <div class='p-3 bg-white border-t border-[#E0DDD8] sticky bottom-0 z-10'>
-          <div class='flex items-center gap-2'>
-            <img v-bind:src='(currentUser &amp;&amp; currentUser.photoURL) || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&amp;fit=crop&amp;w=80&amp;q=80"' 
+          <div v-if='currentUser &amp;&amp; currentUser.uid' class='flex items-center gap-2'>
+            <img v-bind:src='currentUser.photoURL || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&amp;fit=crop&amp;w=80&amp;q=80"' 
                  v-on:error='handleImgError'
                  class='w-8 h-8 object-cover border border-[#E0DDD8] shrink-0' />
             <div class='flex-1 flex gap-1.5'>
@@ -1813,6 +1833,16 @@
                 <span>Gửi</span>
               </button>
             </div>
+          </div>
+          <div v-else='true' class='py-2 px-3 bg-[#FAF9F8] border border-[#E0DDD8] flex items-center justify-between gap-3'>
+            <span class='text-slate-600 text-xs flex items-center gap-1.5'>
+              <i class='fa-solid fa-lock text-slate-400'></i>
+              <span>Vui lòng đăng nhập Google để tham gia bình luận</span>
+            </span>
+            <button type='button' v-on:click='loginGoogle' class='px-3 py-1.5 bg-[#C74634] hover:bg-[#B13C2C] text-white font-bold text-xs shadow-sm transition flex items-center gap-1.5 shrink-0'>
+              <i class='fa-brands fa-google'></i>
+              <span>Đăng nhập Google</span>
+            </button>
           </div>
         </div>
       </div>
@@ -3363,6 +3393,11 @@
         };
 
         const sendCommunityMessage = async () => {
+          if (!currentUser.value || !currentUser.value.uid) {
+            showToast('Vui lòng đăng nhập Google để gửi tin nhắn cộng đồng.', 'warning');
+            loginGoogle();
+            return;
+          }
           const text = chatMessageInput.value.trim();
           if (!text) return;
 
@@ -3498,6 +3533,11 @@
         const isBookmarked = (id) => bookmarks.value.includes(id);
 
         const toggleBookmark = (card) => {
+          if (!currentUser.value || !currentUser.value.uid) {
+            showToast('Vui lòng đăng nhập Google để lưu bài viết.', 'warning');
+            loginGoogle();
+            return;
+          }
           const index = bookmarks.value.indexOf(card.id);
           if (index > -1) {
             bookmarks.value.splice(index, 1);
@@ -3687,11 +3727,21 @@
         };
 
         const openApplyModal = (card) => {
+          if (!currentUser.value || !currentUser.value.uid) {
+            showToast('Vui lòng đăng nhập Google để ứng tuyển việc làm.', 'warning');
+            loginGoogle();
+            return;
+          }
           selectedItem.value = card;
           showApplyModal.value = true;
         };
 
         const openContactModal = (card) => {
+          if (!currentUser.value || !currentUser.value.uid) {
+            showToast('Vui lòng đăng nhập Google để gửi liên hệ.', 'warning');
+            loginGoogle();
+            return;
+          }
           selectedItem.value = card;
           showContactModal.value = true;
         };
@@ -3718,6 +3768,11 @@
 
         const toggleLike = (card) => {
           if (!card) return;
+          if (!currentUser.value || !currentUser.value.uid) {
+            showToast('Vui lòng đăng nhập Google để thích bài viết này.', 'warning');
+            loginGoogle();
+            return;
+          }
           if (card.likedByMe) {
             card.likedByMe = false;
             card.likesCount = Math.max(0, (card.likesCount || 1) - 1);
@@ -3768,6 +3823,11 @@
         };
 
         const submitDialogComment = () => {
+          if (!currentUser.value || !currentUser.value.uid) {
+            showToast('Vui lòng đăng nhập Google để gửi bình luận.', 'warning');
+            loginGoogle();
+            return;
+          }
           if (!activeCommentCard.value || !commentModalInput.value || !commentModalInput.value.trim()) return;
           const text = commentModalInput.value.trim();
           const author = (currentUser.value && currentUser.value.displayName) || 'Thành viên Tây Ninh';
@@ -4011,6 +4071,11 @@
         };
 
         const postCardComment = (card) => {
+          if (!currentUser.value || !currentUser.value.uid) {
+            showToast('Vui lòng đăng nhập Google để bình luận bài viết.', 'warning');
+            loginGoogle();
+            return;
+          }
           if (!card || !card.newCommentText || !card.newCommentText.trim()) return;
           const text = card.newCommentText.trim();
           const author = (currentUser.value && currentUser.value.displayName) || 'Thành viên Tây Ninh';
@@ -4056,6 +4121,11 @@
         };
 
         const likeComment = (comment, card) => {
+          if (!currentUser.value || !currentUser.value.uid) {
+            showToast('Vui lòng đăng nhập Google để thích bình luận.', 'warning');
+            loginGoogle();
+            return;
+          }
           if (!comment || typeof comment !== 'object') return;
           comment.likes = (comment.likes || 0) + 1;
           showToast('Đã thích bình luận!', 'info');
@@ -4081,6 +4151,11 @@
         };
 
         const postCommentReply = (comment, card) => {
+          if (!currentUser.value || !currentUser.value.uid) {
+            showToast('Vui lòng đăng nhập Google để phản hồi bình luận.', 'warning');
+            loginGoogle();
+            return;
+          }
           if (!comment || !comment.newReplyText || !comment.newReplyText.trim()) return;
           const text = comment.newReplyText.trim();
           const author = (currentUser.value && currentUser.value.displayName) || 'Thành viên Tây Ninh';
