@@ -143,10 +143,16 @@
               <span class='bg-[#C74634] text-white font-black px-2.5 py-1 text-sm tracking-wider select-none'>TNHub</span>
               <span class='text-xs font-black text-[#161513] tracking-tight uppercase'>TÂY NINH</span>
             </div>
-            <!-- Mini Lang Pill -->
-            <div class='inline-flex items-center p-0.5 bg-[#FAF9F8] border border-[#E0DDD8] text-[9px] font-bold'>
-              <button type='button' v-on:click='switchLang("vi")' v-bind:class='currentLang === "vi" ? "bg-[#C74634] text-white" : "text-slate-500"' class='px-1.5 py-0.5 transition'>VI</button>
-              <button type='button' v-on:click='switchLang("en")' v-bind:class='currentLang === "en" ? "bg-[#C74634] text-white" : "text-slate-500"' class='px-1.5 py-0.5 transition'>EN</button>
+            <!-- Language Switcher in Left Sidebar -->
+            <div class='inline-flex items-center p-0.5 bg-white border border-[#E0DDD8] text-[10px] font-bold shadow-xs shrink-0'>
+              <button type='button' v-on:click='switchLang("vi")' v-bind:class='currentLang === "vi" ? "bg-[#C74634] text-white shadow-xs" : "text-slate-600 hover:text-slate-900"' class='px-2 py-0.5 transition flex items-center gap-1' title='Tiếng Việt'>
+                <span class='text-[10px]'>🇻🇳</span>
+                <span>VI</span>
+              </button>
+              <button type='button' v-on:click='switchLang("en")' v-bind:class='currentLang === "en" ? "bg-[#C74634] text-white shadow-xs" : "text-slate-600 hover:text-slate-900"' class='px-2 py-0.5 transition flex items-center gap-1' title='English'>
+                <span class='text-[10px]'>🇬🇧</span>
+                <span>EN</span>
+              </button>
             </div>
           </div>
           <span class='text-[10px] text-[#655F58] font-bold uppercase tracking-wider block mt-1.5'>CỔNG THÔNG TIN SỐ</span>
@@ -294,23 +300,6 @@
         </div>
 
         <div class='flex items-center gap-2 sm:gap-2.5'>
-          <!-- Language Switcher VI / EN -->
-          <div class='inline-flex items-center p-0.5 bg-white border border-[#E0DDD8] shadow-sm text-xs font-bold shrink-0'>
-            <button type='button' 
-                    v-on:click='switchLang("vi")' 
-                    v-bind:class='currentLang === "vi" ? "bg-[#C74634] text-white shadow-xs" : "text-slate-600 hover:text-slate-900"' 
-                    class='px-2 py-1 transition flex items-center gap-1' title='Tiếng Việt'>
-              <span class='text-xs'>🇻🇳</span>
-              <span class='text-[10px] uppercase font-black'>VI</span>
-            </button>
-            <button type='button' 
-                    v-on:click='switchLang("en")' 
-                    v-bind:class='currentLang === "en" ? "bg-[#C74634] text-white shadow-xs" : "text-slate-600 hover:text-slate-900"' 
-                    class='px-2 py-1 transition flex items-center gap-1' title='English'>
-              <span class='text-xs'>🇬🇧</span>
-              <span class='text-[10px] uppercase font-black'>EN</span>
-            </button>
-          </div>
           <!-- Realtime Bell Notification with Unread Count -->
           <button v-on:click='openChatDrawer' class='relative px-3 py-1.5 bg-white border border-[#E0DDD8] flex items-center gap-1.5 text-xs text-slate-700 hover:bg-[#F1EFED] shadow-sm transition' title='Mở tin nhắn &amp; thông báo'>
             <i class='fa-regular fa-bell text-xs text-[#C74634]'></i>
