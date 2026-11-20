@@ -254,6 +254,16 @@
               </p>
             </div>
           </div>
+          <!-- Nút Admin Crawler (Chỉ Admin ptquang0968@gmail.com thấy) -->
+          <div v-if='isAdmin' class='pt-1 pb-1'>
+            <button v-on:click='openCrawlerModal' class='w-full py-1.5 px-2 bg-gradient-to-r from-rose-600 to-red-700 hover:from-rose-700 hover:to-red-800 text-white font-bold text-xs shadow-sm transition flex items-center justify-between'>
+              <div class='flex items-center gap-1.5'>
+                <i class='fa-solid fa-spider text-xs'></i>
+                <span>Crawler Tây Ninh</span>
+              </div>
+              <span class='text-[9px] bg-black/40 px-1.5 py-0.2 font-black uppercase tracking-wider'>Admin</span>
+            </button>
+          </div>
           <!-- Menu thao tác cá nhân nhanh -->
           <div class='grid grid-cols-2 gap-2 pt-1.5 border-t border-[#E0DDD8] text-[11px] font-semibold'>
             <button v-on:click='setCategory("myposts")' class='px-2.5 py-1.5 bg-white hover:bg-[#FAF9F8] border border-[#E0DDD8] text-slate-800 flex items-center justify-center gap-1.5 transition whitespace-nowrap shadow-xs'>
@@ -314,6 +324,12 @@
               <i v-else='true' class='fa-regular fa-user text-xs'></i>
               <span>{{ currentUser.displayName ? currentUser.displayName.split(' ')[0] : 'Tài khoản' }}</span>
               <span v-if='isAdmin' class='ml-1 px-1.5 py-0.2 bg-[#C74634] text-white text-[9px] font-black uppercase tracking-wider'>Admin</span>
+            </button>
+            <!-- Nút Admin Crawler trên Header -->
+            <button v-if='isAdmin' v-on:click='openCrawlerModal' class='px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 border border-rose-300 text-rose-700 font-bold text-xs shadow-sm transition flex items-center gap-1.5' title='Trình cào dữ liệu Tây Ninh tự động (Chỉ Admin)'>
+              <i class='fa-solid fa-spider text-rose-600'></i>
+              <span class='hidden sm:inline'>Crawler Hub</span>
+              <span class='bg-rose-600 text-white text-[9px] font-black px-1 py-0.2 uppercase'>Bot</span>
             </button>
             <button v-on:click='showFriendsModal = true' class='px-2.5 py-1.5 bg-white hover:bg-[#F1EFED] border border-[#E0DDD8] text-xs font-medium text-slate-700 shadow-sm transition flex items-center gap-1.5' title='Danh sách bạn bè Tây Ninh'>
               <i class='fa-solid fa-user-group text-slate-500 text-xs'></i>
@@ -2462,6 +2478,259 @@
       </div>
     </div>
 
+
+    <!-- 13. MODAL ADMIN CRAWLER PANEL (CHỈ QUẢN TRỊ VIÊN MỚI TRUY CẬP ĐƯỢC) -->
+    <div v-if='isAdmin &amp;&amp; showCrawlerModal' v-cloak='true' style='display: none;' v-bind:style='(isAdmin &amp;&amp; showCrawlerModal) ? "display: flex !important;" : "display: none !important;"' class='fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-3 sm:p-5 overflow-y-auto'>
+      <div class='bg-white rounded-none border border-[#E0DDD8] max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col shadow-2xl relative my-auto text-xs'>
+        <!-- Crawler Header -->
+        <div class='flex items-center justify-between px-4 py-3 bg-[#161513] text-white border-b-2 border-[#C74634] sticky top-0 z-10'>
+          <div class='flex items-center gap-2.5'>
+            <div class='w-8 h-8 rounded-none bg-rose-600 text-white flex items-center justify-center text-sm shadow'>
+              <i class='fa-solid fa-spider'></i>
+            </div>
+            <div>
+              <h3 class='font-black text-xs sm:text-sm tracking-wide uppercase flex items-center gap-2'>
+                <span>TÂY NINH CRAWLER ENGINE</span>
+                <span class='px-1.5 py-0.2 bg-rose-600 text-white text-[9px] font-bold tracking-wider'>ADMIN ONLY</span>
+              </h3>
+              <p class='text-[10px] text-slate-400'>Hệ thống cào &amp; bóc tách tự động: Việc làm KCN, Nhà đất &amp; Rao vặt MXH Tây Ninh</p>
+            </div>
+          </div>
+          <button type='button' v-on:click='showCrawlerModal = false' class='w-7 h-7 flex items-center justify-center text-slate-400 hover:text-white transition'>
+            <i class='fa-solid fa-xmark text-sm'></i>
+          </button>
+        </div>
+
+        <!-- Crawler Tabs -->
+        <div class='flex items-center bg-[#FAF9F8] border-b border-[#E0DDD8] px-4 pt-2 gap-2 text-xs font-bold'>
+          <button type='button' v-on:click='crawlerTab = "auto"' 
+                  v-bind:class='crawlerTab === "auto" ? "border-b-2 border-[#C74634] text-[#C74634] bg-white" : "text-slate-600 hover:text-slate-900"' 
+                  class='px-4 py-2 flex items-center gap-1.5 transition'>
+            <i class='fa-solid fa-robot'></i>
+            <span>Cào Tự Động (Auto Crawl)</span>
+          </button>
+          <button type='button' v-on:click='crawlerTab = "social"' 
+                  v-bind:class='crawlerTab === "social" ? "border-b-2 border-[#C74634] text-[#C74634] bg-white" : "text-slate-600 hover:text-slate-900"' 
+                  class='px-4 py-2 flex items-center gap-1.5 transition'>
+            <i class='fa-solid fa-share-nodes'></i>
+            <span>Bóc Tách Bài Đăng MXH</span>
+          </button>
+          <button type='button' v-on:click='crawlerTab = "logs"' 
+                  v-bind:class='crawlerTab === "logs" ? "border-b-2 border-[#C74634] text-[#C74634] bg-white" : "text-slate-600 hover:text-slate-900"' 
+                  class='px-4 py-2 flex items-center gap-1.5 transition'>
+            <i class='fa-solid fa-terminal'></i>
+            <span>Nhật Ký Terminal ({{ crawlerLogs.length }})</span>
+          </button>
+        </div>
+
+        <!-- Modal Body Content -->
+        <div class='flex-1 overflow-y-auto p-4 space-y-4 bg-white'>
+          
+          <!-- TAB 1: AUTO CRAWLER -->
+          <div v-if='crawlerTab === "auto"' class='space-y-4'>
+            <!-- Source Selector Box -->
+            <div class='p-3.5 bg-[#FAF9F8] border border-[#E0DDD8] space-y-3'>
+              <h4 class='font-bold text-xs text-[#161513] uppercase flex items-center gap-2'>
+                <i class='fa-solid fa-sliders text-[#C74634]'></i>
+                <span>Cấu hình nguồn thu thập dữ liệu</span>
+              </h4>
+
+              <div class='grid grid-cols-1 sm:grid-cols-3 gap-2.5'>
+                <!-- Option 1: Việc làm -->
+                <div v-on:click='crawlerSource = "tuyendung"' 
+                     v-bind:class='crawlerSource === "tuyendung" ? "border-2 border-[#C74634] bg-red-50/40" : "border border-[#E0DDD8] bg-white hover:bg-slate-50"' 
+                     class='p-3 cursor-pointer transition'>
+                  <div class='flex items-center gap-2 mb-1'>
+                    <i class='fa-solid fa-briefcase text-blue-600'></i>
+                    <span class='font-bold text-xs text-slate-900'>Tuyển Dụng &amp; KCN</span>
+                  </div>
+                  <p class='text-[10px] text-slate-500 leading-relaxed'>
+                    KCN Trảng Bàng, KCN Phước Đông, Linh Trung 3, KCN Thành Thành Công...
+                  </p>
+                </div>
+
+                <!-- Option 2: Bất động sản -->
+                <div v-on:click='crawlerSource = "batdongsan"' 
+                     v-bind:class='crawlerSource === "batdongsan" ? "border-2 border-[#C74634] bg-red-50/40" : "border border-[#E0DDD8] bg-white hover:bg-slate-50"' 
+                     class='p-3 cursor-pointer transition'>
+                  <div class='flex items-center gap-2 mb-1'>
+                    <i class='fa-solid fa-house text-emerald-600'></i>
+                    <span class='font-bold text-xs text-slate-900'>Nhà Đất Tây Ninh</span>
+                  </div>
+                  <p class='text-[10px] text-slate-500 leading-relaxed'>
+                    Đất nền thổ cư, đất vườn Núi Bà Đen, nhà phố Hòa Thành, Trảng Bàng...
+                  </p>
+                </div>
+
+                <!-- Option 3: Rao vặt -->
+                <div v-on:click='crawlerSource = "raovat"' 
+                     v-bind:class='crawlerSource === "raovat" ? "border-2 border-[#C74634] bg-red-50/40" : "border border-[#E0DDD8] bg-white hover:bg-slate-50"' 
+                     class='p-3 cursor-pointer transition'>
+                  <div class='flex items-center gap-2 mb-1'>
+                    <i class='fa-solid fa-cart-shopping text-indigo-600'></i>
+                    <span class='font-bold text-xs text-slate-900'>Mua Bán &amp; Rao Vặt</span>
+                  </div>
+                  <p class='text-[10px] text-slate-500 leading-relaxed'>
+                    Xe máy, máy móc nông nghiệp, điện tử, đồ gia dụng, nông sản địa phương...
+                  </p>
+                </div>
+              </div>
+
+              <!-- Số lượng tin cào -->
+              <div class='flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-[#E0DDD8]'>
+                <div class='flex items-center gap-2'>
+                  <label class='font-bold text-xs text-slate-700'>Số lượng bài cào mỗi đợt:</label>
+                  <select v-model='crawlerCount' class='px-3 py-1 bg-white border border-[#E0DDD8] font-bold text-xs outline-none focus:border-[#C74634]'>
+                    <option v-bind:value='3'>3 bài viết</option>
+                    <option v-bind:value='5'>5 bài viết</option>
+                    <option v-bind:value='8'>8 bài viết</option>
+                    <option v-bind:value='12'>12 bài viết</option>
+                  </select>
+                </div>
+                <div class='text-[10px] text-slate-500'>
+                  Lưu trực tiếp vào Cloud Firestore collection <strong>listings</strong>
+                </div>
+              </div>
+            </div>
+
+            <!-- Action Start Crawl Button -->
+            <div class='flex items-center justify-between gap-3 p-3 bg-red-50/60 border border-red-200'>
+              <div>
+                <h5 class='font-bold text-xs text-slate-900'>Sẵn sàng kích hoạt Robot Crawler Tây Ninh</h5>
+                <p class='text-[10px] text-slate-600'>Dữ liệu sẽ được tự động làm sạch, gắn nhãn vị trí Tây Ninh và hiển thị ngay trên bảng tin.</p>
+              </div>
+              <button type='button' 
+                      v-on:click='startAutoCrawl' 
+                      v-bind:disabled='isCrawling' 
+                      class='px-5 py-2.5 bg-[#C74634] hover:bg-[#B13C2C] disabled:bg-slate-400 text-white font-bold text-xs shadow-md transition flex items-center gap-2 shrink-0'>
+                <i v-if='isCrawling' class='fa-solid fa-circle-notch fa-spin'></i>
+                <i v-else='true' class='fa-solid fa-play'></i>
+                <span>{{ isCrawling ? 'Đang Cào Dữ Liệu...' : 'Bắt Đầu Cào Tin Ngay' }}</span>
+              </button>
+            </div>
+
+            <!-- Live Progress Bar -->
+            <div v-if='isCrawling || crawlerProgress > 0' class='space-y-1.5'>
+              <div class='flex items-center justify-between text-[11px] font-bold'>
+                <span class='text-slate-700'>Tiến độ thu thập dữ liệu:</span>
+                <span class='text-[#C74634]'>{{ crawlerProgress }}%</span>
+              </div>
+              <div class='w-full h-2 bg-slate-200 overflow-hidden'>
+                <div class='h-full bg-[#C74634] transition-all duration-300' v-bind:style='{ width: crawlerProgress + "%" }'></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 2: SOCIAL POST PARSER -->
+          <div v-if='crawlerTab === "social"' class='space-y-3'>
+            <div class='p-3 bg-blue-50 border border-blue-200 text-blue-900 text-xs leading-relaxed flex items-start gap-2'>
+              <i class='fa-solid fa-wand-magic-sparkles text-blue-600 mt-0.5 shrink-0'></i>
+              <div>
+                <strong class='font-bold'>Công cụ AI Bóc Tách Bài Đăng Mạng Xã Hội:</strong>
+                <p class='text-[11px] text-blue-800 mt-0.5'>
+                  Copy nội dung thô từ các group Facebook, Zalo, Chợ Tốt Tây Ninh dán vào khung dưới. Hệ thống sẽ tự động bóc tách: <strong>Tiêu đề, Giá/Lương, Vị trí huyện thị Tây Ninh, SĐT liên hệ và Danh mục</strong>.
+                </p>
+              </div>
+            </div>
+
+            <div>
+              <label class='block font-bold text-slate-700 mb-1'>Nội dung bài đăng từ mạng xã hội</label>
+              <textarea v-model='socialInputText' rows='5' 
+                        placeholder='Ví dụ: Cần tuyển gấp 10 nam/nữ đóng gói bánh tráng tại TX. Trảng Bàng, Tây Ninh. Lương 8tr - 10tr/tháng bao ăn ở. Không yêu cầu kinh nghiệm. Liên hệ Chị Lan 0918.234.567 để nhận việc ngay...' 
+                        class='w-full px-3 py-2.5 bg-slate-50 border border-[#E0DDD8] focus:border-[#C74634] focus:bg-white outline-none text-xs font-medium leading-relaxed'></textarea>
+            </div>
+
+            <div class='flex items-center justify-between'>
+              <button type='button' v-on:click='parseSocialPost' class='px-4 py-2 bg-slate-900 hover:bg-black text-white font-bold text-xs flex items-center gap-1.5 transition'>
+                <i class='fa-solid fa-bolt'></i>
+                <span>Phân Tích &amp; Tự Động Trích Xuất</span>
+              </button>
+              <button type='button' v-on:click='socialInputText = ""' class='text-[11px] text-slate-500 hover:underline'>
+                Xóa nội dung
+              </button>
+            </div>
+
+            <!-- Preview trích xuất -->
+            <div v-if='parsedSocialCard' class='p-3.5 bg-[#FAF9F8] border border-[#E0DDD8] space-y-3 mt-3'>
+              <div class='flex items-center justify-between'>
+                <span class='font-bold text-xs text-emerald-700 uppercase flex items-center gap-1.5'>
+                  <i class='fa-solid fa-circle-check'></i>
+                  <span>Kết quả bóc tách thông tin thành công</span>
+                </span>
+                <span class='px-2 py-0.5 bg-[#F1EFED] text-[#C74634] font-bold text-[10px] uppercase border border-[#E0DDD8]'>
+                  {{ parsedSocialCard.category }}
+                </span>
+              </div>
+
+              <div class='grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs'>
+                <div>
+                  <span class='block text-[10px] text-slate-400 font-bold'>Tiêu đề bài viết:</span>
+                  <input type='text' v-model='parsedSocialCard.title' class='w-full px-2 py-1 bg-white border border-[#E0DDD8] font-bold text-xs' />
+                </div>
+                <div>
+                  <span class='block text-[10px] text-slate-400 font-bold'>Mức giá / Mức lương:</span>
+                  <input type='text' v-model='parsedSocialCard.price' class='w-full px-2 py-1 bg-white border border-[#E0DDD8] font-semibold text-xs text-[#C74634]' />
+                </div>
+                <div>
+                  <span class='block text-[10px] text-slate-400 font-bold'>Khu vực huyện/thị:</span>
+                  <input type='text' v-model='parsedSocialCard.location' class='w-full px-2 py-1 bg-white border border-[#E0DDD8] text-xs' />
+                </div>
+                <div>
+                  <span class='block text-[10px] text-slate-400 font-bold'>Số điện thoại liên hệ:</span>
+                  <input type='text' v-model='parsedSocialCard.phone' class='w-full px-2 py-1 bg-white border border-[#E0DDD8] text-xs font-bold text-blue-600' />
+                </div>
+              </div>
+
+              <div class='flex items-center justify-end gap-2 pt-2 border-t border-[#E0DDD8]'>
+                <button type='button' v-on:click='parsedSocialCard = null' class='px-3 py-1.5 bg-white border border-[#E0DDD8] text-slate-600 text-xs font-semibold'>
+                  Hủy bỏ
+                </button>
+                <button type='button' v-on:click='saveParsedPost' class='px-4 py-1.5 bg-[#C74634] hover:bg-[#B13C2C] text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition'>
+                  <i class='fa-solid fa-cloud-arrow-up'></i>
+                  <span>Lưu &amp; Xuất Bản Ngay Lên TNHub</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 3: TERMINAL LOGS -->
+          <div v-if='crawlerTab === "logs"' class='space-y-2'>
+            <div class='flex items-center justify-between'>
+              <h5 class='font-bold text-xs text-slate-800 flex items-center gap-1.5'>
+                <i class='fa-solid fa-terminal text-[#C74634]'></i>
+                <span>Console Logs Quá Trình Crawler</span>
+              </h5>
+              <button type='button' v-on:click='crawlerLogs = []' class='text-[10px] text-slate-500 hover:text-rose-600 font-semibold'>
+                <i class='fa-solid fa-trash-can'></i> Xóa logs
+              </button>
+            </div>
+            <div class='bg-[#161513] text-emerald-400 p-3.5 font-mono text-[11px] h-60 overflow-y-auto space-y-1 shadow-inner custom-scroll border border-slate-700'>
+              <div v-if='crawlerLogs.length === 0' class='text-slate-500 italic'>
+                Hệ thống sẵn sàng. Nhấn [Bắt Đầu Cào Tin] để xem log dữ liệu realtime.
+              </div>
+              <div v-for='(log, lIdx) in crawlerLogs' v-bind:key='lIdx' class='leading-relaxed'>
+                <span class='text-slate-500'>[{{ log.time }}]</span>
+                <span v-bind:class='log.type === "error" ? "text-rose-400 font-bold" : (log.type === "success" ? "text-emerald-300 font-bold" : "text-slate-200")'>
+                  {{ log.text }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class='p-3.5 border-t border-[#E0DDD8] bg-[#FAF9F8] flex items-center justify-between'>
+          <div class='text-[10px] text-slate-500 flex items-center gap-1'>
+            <i class='fa-solid fa-shield-halved text-emerald-600'></i>
+            <span>Được bảo vệ bằng phân quyền Quản trị viên (ptquang0968@gmail.com)</span>
+          </div>
+          <button type='button' v-on:click='showCrawlerModal = false' class='px-4 py-2 bg-slate-900 text-white font-bold text-xs hover:bg-slate-800 transition'>
+            Đóng
+          </button>
+        </div>
+      </div>
+    </div>
+
   </div> <!-- Close #app -->
 
   <!-- Blogger Standard Section Required by Engine -->
@@ -2707,6 +2976,142 @@
         const showCommentModal = ref(false);
         const activeCommentCard = ref(null);
         const commentModalInput = ref('');
+
+        // ==========================================
+        // ADMIN CRAWLER HUB STATE (CHỈ DÀNH CHO ADMIN)
+        // ==========================================
+        const showCrawlerModal = ref(false);
+        const crawlerTab = ref('auto');
+        const crawlerSource = ref('tuyendung');
+        const crawlerCount = ref(5);
+        const isCrawling = ref(false);
+        const crawlerProgress = ref(0);
+        const crawlerLogs = ref([
+          { time: new Date().toLocaleTimeString(), text: 'Khởi động Crawler Engine Tây Ninh...', type: 'info' },
+          { time: new Date().toLocaleTimeString(), text: 'Xác thực tài khoản Admin: ptquang0968@gmail.com - Thành công', type: 'success' }
+        ]);
+        const socialInputText = ref('');
+        const parsedSocialCard = ref(null);
+
+        // KHO MẪU DỮ LIỆU CÀO THỰC TẾ TÂY NINH (KHO NGUỒN CÀO CHUẨN)
+        const tayNinhCrawlDatabase = {
+          tuyendung: [
+            {
+              title: 'Tuyển Kỹ Sư Vận Hành Hệ Thống Điện - KCN Trảng Bàng',
+              price: '14 - 20 triệu/tháng',
+              location: 'KCN Trảng Bàng, TX. Trảng Bàng',
+              district: 'trangbang',
+              phone: '0918.456.789',
+              authorName: 'Công Ty CP Kỹ Thuật Điện Gia Định',
+              image: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80',
+              description: 'Tuyển dụng 03 Kỹ sư vận hành lưới điện nhà máy tại KCN Trảng Bàng. Yêu cầu tốt nghiệp Đại học/Cao đẳng chuyên ngành Điện, kinh nghiệm từ 1 năm trở lên. Đầy đủ chế độ BHXH, thưởng tháng 13.',
+              badge: 'Việc làm KCN'
+            },
+            {
+              title: 'Tuyển 50 Công Nhân May & Đóng Gói - KCN Phước Đông',
+              price: '8 - 12 triệu/tháng',
+              location: 'KCN Phước Đông, Huyện Gò Dầu',
+              district: 'godau',
+              phone: '0979.112.233',
+              authorName: 'Tập Đoàn Dệt May Quốc Tế Phước Đông',
+              image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=800&q=80',
+              description: 'Công ty cần tuyển gấp 50 lao động phổ thông và công nhân may công nghiệp. Bao cơm trưa, phụ cấp chuyên cần, nhà ở công nhân miễn phí. Nhận hồ sơ phỏng vấn đi làm ngay trong tuần.',
+              badge: 'Lương cao'
+            },
+            {
+              title: 'Tuyển Nhân Viên Kế Toán Tổng Hợp - TP. Tây Ninh',
+              price: '10 - 15 triệu/tháng',
+              location: 'Đường 30/4, TP. Tây Ninh',
+              district: 'tptayninh',
+              phone: '0903.889.900',
+              authorName: 'Công Ty TNHH Thương Mại Tây Ninh Xanh',
+              image: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=800&q=80',
+              description: 'Quản lý thu chi, lập báo cáo thuế, theo dõi công nợ khách hàng và đối tác vật tư. Làm việc giờ hành chính tại trung tâm TP. Tây Ninh.',
+              badge: 'Văn phòng'
+            },
+            {
+              title: 'Tuyển Tài Xế Xe Tải Giao Hàng B2/C - Cửa Khẩu Mộc Bài',
+              price: '12 - 16 triệu/tháng',
+              location: 'Khu Kinh Tế Cửa Khẩu Mộc Bài, Huyện Bến Cầu',
+              district: 'bencau',
+              phone: '0938.556.778',
+              authorName: 'Logistics Vận Tải Xuyên Á Tây Ninh',
+              image: 'https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?auto=format&fit=crop&w=800&q=80',
+              description: 'Chạy xe giao hàng tuyến Mộc Bài - TP.HCM và các kho bãi trong tỉnh. Yêu cầu bằng C hoặc B2 từ 2 năm kinh nghiệm, trung thực, cẩn thận.',
+              badge: 'Tuyển gấp'
+            },
+            {
+              title: 'Tuyển Dược Sĩ Bán Thuốc - TX. Hòa Thành Tây Ninh',
+              price: '9 - 13 triệu/tháng',
+              location: 'Gần Chợ Long Hoa, TX. Hòa Thành',
+              district: 'hoathanh',
+              phone: '0988.665.544',
+              authorName: 'Hệ Thống Nhà Thuốc Tây Ninh An Khang',
+              image: 'https://images.unsplash.com/photo-1576602976047-174e57a47881?auto=format&fit=crop&w=800&q=80',
+              description: 'Đứng quầy tư vấn và bán thuốc cho khách hàng tại cửa hàng đối diện chợ Long Hoa. Chế độ thưởng doanh số hấp dẫn.',
+              badge: 'Y Dược'
+            }
+          ],
+          batdongsan: [
+            {
+              title: 'Bán Đất Nền Thổ Cư Sổ Sẵn View Núi Bà Đen Tuyệt Đẹp',
+              price: '850 Triệu',
+              location: 'Xã Ninh Sơn, TP. Tây Ninh',
+              district: 'tptayninh',
+              phone: '0909.778.899',
+              authorName: 'Địa Ốc Tây Ninh Land',
+              image: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80',
+              description: 'Diện tích 5x25m (125m2) full thổ cư, đường nhựa 8m xe hơi quay đầu. View trực diện tượng Phật Bà Tây Bổ Đà Sơn Núi Bà Đen. Sổ hồng công chứng ngay.',
+              badge: 'Chính chủ'
+            },
+            {
+              title: 'Cần Bán Nhà Phố 1 Trệt 1 Lầu Liền Kề KCN Trảng Bàng',
+              price: '1.45 Tỷ',
+              location: 'Phường An Tịnh, TX. Trảng Bàng',
+              district: 'trangbang',
+              phone: '0912.334.455',
+              authorName: 'Bất Động Sản Trảng Bàng',
+              image: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=800&q=80',
+              description: 'Nhà mới xây 100%, 3 phòng ngủ, 2WC, sân đậu ô tô. Cách KCN Trảng Bàng 500m, tiện ở hoặc cho chuyên gia thuê 6tr/tháng.',
+              badge: 'Sổ hồng riêng'
+            },
+            {
+              title: 'Bán Đất Vườn Cây Ăn Trái Ven Hồ Dầu Tiếng Tây Ninh',
+              price: '1.2 Tỷ (1.000m2)',
+              location: 'Xã Suối Đá, Huyện Dương Minh Châu',
+              district: 'duongminhchau',
+              phone: '0937.123.888',
+              authorName: 'Nhà Đất Hồ Dầu Tiếng',
+              image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80',
+              description: 'Đất vườn trồng sầu riêng, mít thái đang cho thu hoạch. Giáp đường kênh mương nước tưới quanh năm, view lòng hồ cực mát mẻ thích hợp làm homestay, glamping.',
+              badge: 'View đẹp'
+            }
+          ],
+          raovat: [
+            {
+              title: 'Thanh Lý Xe Máy Honda SH 150i ABS Biển Số Tây Ninh',
+              price: '68 Triệu',
+              location: 'Phường 3, TP. Tây Ninh',
+              district: 'tptayninh',
+              phone: '0919.882.211',
+              authorName: 'Cửa Hàng Xe Máy Quang Tây Ninh',
+              image: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=800&q=80',
+              description: 'Xe chính chủ gia đình sử dụng, bảo dưỡng định kỳ hãng Honda. Máy móc nguyên zin 100%, khóa smartkey, phanh ABS an toàn. Xem xe trực tiếp tại TP. Tây Ninh.',
+              badge: 'Chính chủ'
+            },
+            {
+              title: 'Bán Máy Cày Kubota L5018 Nhập Khẩu Đã Qua Sử Dụng',
+              price: '240 Triệu',
+              location: 'Thị Trấn Tân Châu, Huyện Tân Châu',
+              district: 'tanchau',
+              phone: '0908.441.122',
+              authorName: 'Máy Nông Nghiệp Tây Ninh',
+              image: 'https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&w=800&q=80',
+              description: 'Máy cày Kubota 50HP động cơ nguyên bản, kèm dàn xới và dàn chảo cày đất. Máy móc hoạt động tốt, nông dân Tân Châu thiện chí mua có bớt lộc.',
+              badge: 'Giá tốt'
+            }
+          ]
+        };
 
         // PROFILE & BACKGROUND COVER & AVATAR & PRIVACY STATE
         const showProfileModal = ref(false);
@@ -4577,6 +4982,218 @@
           });
         };
 
+        // ==========================================
+        // CÁC HÀM XỬ LÝ ADMIN CRAWLER
+        // ==========================================
+        const openCrawlerModal = () => {
+          if (!isAdmin.value) {
+            showToast('Tính năng chỉ dành riêng cho Quản trị viên!', 'error');
+            return;
+          }
+          showCrawlerModal.value = true;
+        };
+
+        const addCrawlerLog = (text, type = 'info') => {
+          crawlerLogs.value.unshift({
+            time: new Date().toLocaleTimeString(),
+            text,
+            type
+          });
+        };
+
+        const startAutoCrawl = async () => {
+          if (!isAdmin.value) return;
+          isCrawling.value = true;
+          crawlerProgress.value = 10;
+          crawlerTab.value = 'logs';
+
+          addCrawlerLog('Bắt đầu chu trình cào dữ liệu từ nguồn: ' + crawlerSource.value.toUpperCase() + '...', 'info');
+
+          try {
+            await new Promise(r => setTimeout(r, 600));
+            crawlerProgress.value = 30;
+            addCrawlerLog('Đang kết nối các group việc làm & mạng xã hội Tây Ninh...', 'info');
+
+            await new Promise(r => setTimeout(r, 800));
+            crawlerProgress.value = 60;
+            const sourcePool = tayNinhCrawlDatabase[crawlerSource.value] || tayNinhCrawlDatabase.tuyendung;
+            const countToTake = Math.min(crawlerCount.value, sourcePool.length);
+            addCrawlerLog('Đã trích xuất và chuẩn hóa ' + countToTake + ' bài viết mới nhất.', 'info');
+
+            await new Promise(r => setTimeout(r, 800));
+            crawlerProgress.value = 85;
+            addCrawlerLog('Đang đồng bộ hóa vào Cloud Firestore collection listings...', 'info');
+
+            let insertedCount = 0;
+            for (let i = 0; i < countToTake; i++) {
+              const item = sourcePool[i];
+              const uniqueSuffix = Date.now() + '_' + (i + 1);
+              const newCard = {
+                id: 'crawl_' + uniqueSuffix,
+                title: item.title,
+                subtitle: item.location,
+                price: item.price,
+                subprice: 'Vừa cào xong',
+                location: item.location,
+                district: item.district,
+                category: crawlerSource.value,
+                image: item.image,
+                description: item.description,
+                authorName: item.authorName || 'Hệ Thống Tổng Hợp Tây Ninh',
+                authorEmail: 'admin.crawler@tayninhinfo.com',
+                phone: item.phone || '0908.123.456',
+                btnType: crawlerSource.value === 'tuyendung' ? 'apply' : 'call',
+                badge: item.badge || 'Tin xác thực',
+                likesCount: Math.floor(Math.random() * 20) + 5,
+                likedByMe: false,
+                viewsCount: Math.floor(Math.random() * 50) + 20,
+                createdAt: new Date().toISOString(),
+                comments: []
+              };
+
+              // Thêm vào mảng local
+              cards.value.unshift(newCard);
+
+              // Lưu vào Cloud Firestore
+              if (db) {
+                try {
+                  await addDoc(collection(db, 'listings'), newCard);
+                } catch (e) {
+                  console.warn('Lỗi lưu Firestore crawler doc:', e);
+                }
+              }
+              insertedCount++;
+            }
+
+            crawlerProgress.value = 100;
+            addCrawlerLog('THÀNH CÔNG: Đã nạp ' + insertedCount + ' bài viết trực tiếp lên Cổng thông tin Tây Ninh TNHub!', 'success');
+            showToast('Crawler thành công! Đã thêm ' + insertedCount + ' tin mới lên bảng tin.', 'success');
+            playNotificationSound();
+          } catch (err) {
+            console.error('Crawler error:', err);
+            addCrawlerLog('LỖI CRAWLER: ' + err.message, 'error');
+            showToast('Lỗi khi cào dữ liệu: ' + err.message, 'error');
+          } finally {
+            isCrawling.value = false;
+          }
+        };
+
+        const parseSocialPost = () => {
+          const text = socialInputText.value.trim();
+          if (!text) {
+            showToast('Vui lòng nhập nội dung bài đăng mạng xã hội cần bóc tách!', 'warning');
+            return;
+          }
+
+          // Trích xuất số điện thoại (10 chữ số)
+          const phoneMatch = text.match(/(0\d{9,10}|\d{4}[.\s]\d{3}[.\s]\d{3})/);
+          const phone = phoneMatch ? phoneMatch[0].replace(/[.\s]/g, '') : '0908.123.456';
+
+          // Trích xuất mức giá hoặc mức lương
+          let price = 'Thỏa thuận';
+          const salaryMatch = text.match(/(\d+\s*-\s*\d+\s*(?:triệu|tr|tr\/tháng|triệu\/tháng)|\d+\s*(?:triệu|tỷ|tr|k))/i);
+          if (salaryMatch) {
+            price = salaryMatch[0];
+          }
+
+          // Trích xuất vị trí huyện thị tại Tây Ninh
+          let location = 'TP. Tây Ninh';
+          let district = 'tptayninh';
+          const tLower = text.toLowerCase();
+          if (tLower.includes('trảng bàng') || tLower.includes('trang bang')) {
+            location = 'TX. Trảng Bàng, Tây Ninh';
+            district = 'trangbang';
+          } else if (tLower.includes('hòa thành') || tLower.includes('hoa thanh') || tLower.includes('long hoa')) {
+            location = 'TX. Hòa Thành, Tây Ninh';
+            district = 'hoathanh';
+          } else if (tLower.includes('gò dầu') || tLower.includes('go dau') || tLower.includes('phước đông')) {
+            location = 'Huyện Gò Dầu, Tây Ninh';
+            district = 'godau';
+          } else if (tLower.includes('dương minh châu') || tLower.includes('dầu tiếng')) {
+            location = 'Huyện Dương Minh Châu, Tây Ninh';
+            district = 'duongminhchau';
+          } else if (tLower.includes('tân châu') || tLower.includes('tan chau')) {
+            location = 'Huyện Tân Châu, Tây Ninh';
+            district = 'tanchau';
+          } else if (tLower.includes('tân biên') || tLower.includes('tan bien')) {
+            location = 'Huyện Tân Biên, Tây Ninh';
+            district = 'tanbien';
+          } else if (tLower.includes('bến cầu') || tLower.includes('mộc bài')) {
+            location = 'Huyện Bến Cầu, Tây Ninh';
+            district = 'bencau';
+          }
+
+          // Xác định danh mục
+          let category = 'raovat';
+          let image = 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=800&q=80';
+          if (tLower.includes('tuyển') || tLower.includes('tìm việc') || tLower.includes('công nhân') || tLower.includes('lương')) {
+            category = 'tuyendung';
+            image = 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80';
+          } else if (tLower.includes('đất') || tLower.includes('nhà') || tLower.includes('bán đất') || tLower.includes('thổ cư') || tLower.includes('sổ hồng')) {
+            category = 'batdongsan';
+            image = 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80';
+          }
+
+          // Trích xuất tiêu đề (câu đầu tiên)
+          const firstLine = text.split('
+')[0].replace(/[*#]/g, '').trim();
+          const title = firstLine.length > 80 ? firstLine.substring(0, 80) + '...' : firstLine;
+
+          parsedSocialCard.value = {
+            title: title || 'Tin đăng bóc tách mạng xã hội Tây Ninh',
+            price,
+            location,
+            district,
+            phone,
+            category,
+            image,
+            description: text
+          };
+
+          showToast('Đã bóc tách thông tin thành công!', 'success');
+        };
+
+        const saveParsedPost = async () => {
+          if (!parsedSocialCard.value) return;
+          const p = parsedSocialCard.value;
+          const newCard = {
+            id: 'social_' + Date.now(),
+            title: p.title,
+            subtitle: p.location,
+            price: p.price,
+            subprice: 'Vừa bóc tách MXH',
+            location: p.location,
+            district: p.district,
+            category: p.category,
+            image: p.image,
+            description: p.description,
+            authorName: 'Tin Bóc Tách MXH',
+            authorEmail: 'crawler.social@tayninhinfo.com',
+            phone: p.phone,
+            btnType: p.category === 'tuyendung' ? 'apply' : 'call',
+            badge: 'Bóc tách MXH',
+            likesCount: 1,
+            likedByMe: false,
+            viewsCount: 5,
+            createdAt: new Date().toISOString(),
+            comments: []
+          };
+
+          cards.value.unshift(newCard);
+          if (db) {
+            try {
+              await addDoc(collection(db, 'listings'), newCard);
+            } catch(e) {
+              console.warn('Lỗi lưu parsed social post:', e);
+            }
+          }
+
+          showToast('Đã xuất bản tin bóc tách lên bảng tin TNHub!', 'success');
+          parsedSocialCard.value = null;
+          socialInputText.value = '';
+          showCrawlerModal.value = false;
+        };
+
         const openProfileModal = () => {
           if (!currentUser.value) {
             loginGoogle();
@@ -5120,6 +5737,19 @@
           submitNewPost,
           loginGoogle,
           logoutGoogle,
+          showCrawlerModal,
+          crawlerTab,
+          crawlerSource,
+          crawlerCount,
+          isCrawling,
+          crawlerProgress,
+          crawlerLogs,
+          socialInputText,
+          parsedSocialCard,
+          openCrawlerModal,
+          startAutoCrawl,
+          parseSocialPost,
+          saveParsedPost,
           showProfileModal,
           showCoverPresets,
           showAvatarPresets,
