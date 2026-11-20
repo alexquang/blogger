@@ -4109,56 +4109,7 @@
           }
         };
 
-        onMounted(() => {
-          if (auth) {
-            onAuthStateChanged(auth, (user) => {
-              if (user) {
-                currentUser.value = {
-                  uid: user.uid,
-                  displayName: user.displayName,
-                  email: user.email,
-                  photoURL: user.photoURL
-                };
-              } else {
-                currentUser.value = null;
-              }
-            });
-          }
-
-          // LẮNG NGHE REALTIME COLLECTION 'listings' TỪ FIREBASE (100% CLOUD FIRESTORE)
-          if (db) {
-            try {
-              const listingsRef = collection(db, 'listings');
-              onSnapshot(listingsRef, (snapshot) => {
-                if (!snapshot.empty) {
-                  // Lưu giữ trạng thái UI hiện tại của từng thẻ (không tự ý đóng khung comment, giữ like, giữ text đang gõ)
-                  const stateMap = {};
-                  cards.value.forEach(c => {
-                    if (c && c.id) {
-                      stateMap[c.id] = {
-                        showComments: c.showComments,
-                        likedByMe: c.likedByMe,
-                        newCommentText: c.newCommentText
-                      };
-                    }
-                  });
-
-                  const liveList = [];
-                  snapshot.forEach((d) => {
-                    const rawData = { id: d.id, ...d.data() };
-                    const enriched = enrichListingWithFirebaseDoc(rawData);
-                    // Phục hồi trạng thái UI của thẻ
-                    if (stateMap[d.id]) {
-                      if (stateMap[d.id].showComments !== undefined) enriched.showComments = stateMap[d.id].showComments;
-                      if (stateMap[d.id].likedByMe !== undefined) enriched.likedByMe = stateMap[d.id].likedByMe;
-                      if (stateMap[d.id].newCommentText) enriched.newCommentText = stateMap[d.id].newCommentText;
-                    }
-                    liveList.push(enriched);
-                  });
-                  liveList.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
-                  cards.value = liveList;
-
-                  // ==========================================
+        // ==========================================
         // CÁC HÀM XỬ LÝ PROFILE, BÀI ĐĂNG CỦA TÔI, BẠN BÈ, CHAT PRIVATE
         // ==========================================
         const myPostsCount = computed(() => {
@@ -4428,6 +4379,57 @@
 
         // Khởi tạo tải bạn bè khi component mount
         loadFriends();
+
+        onMounted(() => {
+          if (auth) {
+            onAuthStateChanged(auth, (user) => {
+              if (user) {
+                currentUser.value = {
+                  uid: user.uid,
+                  displayName: user.displayName,
+                  email: user.email,
+                  photoURL: user.photoURL
+                };
+              } else {
+                currentUser.value = null;
+              }
+            });
+          }
+
+          // LẮNG NGHE REALTIME COLLECTION 'listings' TỪ FIREBASE (100% CLOUD FIRESTORE)
+          if (db) {
+            try {
+              const listingsRef = collection(db, 'listings');
+              onSnapshot(listingsRef, (snapshot) => {
+                if (!snapshot.empty) {
+                  // Lưu giữ trạng thái UI hiện tại của từng thẻ (không tự ý đóng khung comment, giữ like, giữ text đang gõ)
+                  const stateMap = {};
+                  cards.value.forEach(c => {
+                    if (c && c.id) {
+                      stateMap[c.id] = {
+                        showComments: c.showComments,
+                        likedByMe: c.likedByMe,
+                        newCommentText: c.newCommentText
+                      };
+                    }
+                  });
+
+                  const liveList = [];
+                  snapshot.forEach((d) => {
+                    const rawData = { id: d.id, ...d.data() };
+                    const enriched = enrichListingWithFirebaseDoc(rawData);
+                    // Phục hồi trạng thái UI của thẻ
+                    if (stateMap[d.id]) {
+                      if (stateMap[d.id].showComments !== undefined) enriched.showComments = stateMap[d.id].showComments;
+                      if (stateMap[d.id].likedByMe !== undefined) enriched.likedByMe = stateMap[d.id].likedByMe;
+                      if (stateMap[d.id].newCommentText) enriched.newCommentText = stateMap[d.id].newCommentText;
+                    }
+                    liveList.push(enriched);
+                  });
+                  liveList.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+                  cards.value = liveList;
+
+
 
         // ĐỒNG BỘ REALTIME VÀO MODAL CHI TIẾT NẾU ĐANG MỞ (Không làm tắt modal)
                   if (selectedDetailCard.value && selectedDetailCard.value.id) {
