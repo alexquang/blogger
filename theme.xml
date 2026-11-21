@@ -4,6 +4,20 @@
 <head>
   <meta charset='utf-8'/>
   <meta content='width=device-width, initial-scale=1.0' name='viewport'/>
+
+  <!-- Force Desktop/Responsive template on mobile - prevent Blogger ?m=1 redirect -->
+  <script>
+  //<![CDATA[
+  (function(){
+    if (window.location.search.indexOf('m=1') !== -1) {
+      var u = window.location.href.replace(/([?&])m=1(&|$)/, '$1').replace(/[?&]$/, '');
+      if (u !== window.location.href) {
+        window.location.replace(u);
+      }
+    }
+  })();
+  //]]>
+  </script>
   <title>TNHub - Cổng Thông Tin, Việc Làm &amp; Bất Động Sản Tây Ninh</title>
   <meta name='description' content='TNHub là cổng thông tin điện tử kết nối số toàn tỉnh Tây Ninh: Tuyển dụng việc làm, nhà đất bất động sản, rao vặt, dịch vụ thợ sửa chữa, ẩm thực và video khám phá Tây Ninh.'/>
   <meta name='keywords' content='Tây Ninh, TNHub, tayninhinfo, việc làm Tây Ninh, tuyển dụng Tây Ninh, bất động sản Tây Ninh, nhà đất Tây Ninh, du lịch Tây Ninh, núi Bà Đen, Trảng Bàng, Hòa Thành, Gò Dầu, ẩm thực Tây Ninh'/>
@@ -775,17 +789,17 @@
                      class='w-9 h-9 shrink-0 object-cover border border-[#E0DDD8] cursor-pointer hover:opacity-90 transition' 
                      title='Xem hồ sơ của người này' />
                 <div class='min-w-0 flex-1'>
-                  <div class='flex items-center gap-1.5 flex-wrap'>
-                    <h4 class='font-bold text-xs text-[#161513] hover:text-[#C74634] transition cursor-pointer truncate max-w-[120px] sm:max-w-[170px] md:max-w-[200px] xl:max-w-[230px] flex items-center gap-1' 
+                  <div class='flex items-center gap-1.5 min-w-0'>
+                    <h4 class='font-bold text-xs text-[#161513] hover:text-[#C74634] transition cursor-pointer min-w-0 flex items-center gap-1 shrink' 
                         v-on:click.stop='openUserProfile(card)' 
                         v-bind:title='card.authorName'>
-                      <span class='truncate'>{{ card.authorName || 'Thành viên Tây Ninh' }}</span>
+                      <span class='truncate block'>{{ card.authorName || 'Thành viên Tây Ninh' }}</span>
                       <i class='fa-regular fa-id-badge text-[10px] text-slate-400 shrink-0'></i>
                     </h4>
-                    <span v-if='isMyPost(card)' class='shrink-0 whitespace-nowrap px-1.5 py-0.2 text-[9px] font-bold bg-amber-100 text-amber-800 border border-amber-300'>
+                    <span v-if='isMyPost(card)' class='shrink-0 whitespace-nowrap px-1.5 py-0.5 text-[9px] font-bold bg-amber-100 text-amber-800 border border-amber-300 select-none'>
                       Bài của bạn
                     </span>
-                    <span v-else='true' class='shrink-0 whitespace-nowrap px-1.5 py-0.2 text-[9px] font-bold bg-[#F1EFED] text-[#C74634] border border-[#E0DDD8]'>
+                    <span v-else='true' class='shrink-0 whitespace-nowrap px-1.5 py-0.5 text-[9px] font-bold bg-[#F1EFED] text-[#C74634] border border-[#E0DDD8] select-none'>
                       {{ card.badge || 'Tin mới' }}
                     </span>
                   </div>
@@ -801,40 +815,38 @@
                 <button v-if='isAdmin' 
                         type='button' 
                         v-on:click.stop='confirmDeletePost(card)' 
-                        class='px-2 py-1 text-[11px] font-bold text-rose-600 hover:text-white bg-rose-50 hover:bg-rose-600 border border-rose-300 transition flex items-center gap-1 shrink-0 whitespace-nowrap shadow-xs' 
+                        class='h-7 w-7 text-rose-600 hover:text-white bg-rose-50 hover:bg-rose-600 border border-rose-300 transition flex items-center justify-center shrink-0 shadow-xs' 
                         title='Xóa bài đăng này (Admin)'>
                   <i class='fa-solid fa-trash-can text-[11px]'></i>
-                  <span class='hidden xl:inline whitespace-nowrap'>Xóa</span>
                 </button>
                 <!-- Nút Xóa bài của chính người đăng -->
                 <button v-else-if='isMyPost(card)' 
                         type='button' 
                         v-on:click.stop='confirmDeleteMyPost(card)' 
-                        class='px-2 py-1 text-[11px] font-bold text-rose-600 hover:text-white bg-rose-50 hover:bg-rose-600 border border-rose-200 transition flex items-center gap-1 shrink-0 whitespace-nowrap shadow-xs' 
+                        class='h-7 w-7 text-rose-600 hover:text-white bg-rose-50 hover:bg-rose-600 border border-rose-200 transition flex items-center justify-center shrink-0 shadow-xs' 
                         title='Xóa bài viết của bạn'>
                   <i class='fa-solid fa-trash-can text-[10px]'></i>
-                  <span class='hidden xl:inline whitespace-nowrap'>Xóa tin</span>
                 </button>
                 <!-- Nút Kết bạn nếu không phải bài của mình -->
                 <button v-if='currentUser &amp;&amp; !isMyPost(card)' 
                         type='button' 
                         v-on:click.stop='toggleFriend(card)' 
                         v-bind:class='isFriend(card.authorEmail) ? "text-[#C74634] bg-red-50 border-red-200" : "text-slate-600 hover:text-slate-900 bg-white hover:bg-slate-50 border-[#E0DDD8]"' 
-                        class='px-2 py-1 text-[11px] font-medium border transition flex items-center gap-1 shrink-0 whitespace-nowrap shadow-xs' 
+                        class='h-7 px-2 text-[11px] font-medium border transition flex items-center gap-1 shrink-0 whitespace-nowrap shadow-xs' 
                         v-bind:title='isFriend(card.authorEmail) ? "Đã là bạn bè (nhấn để hủy)" : "Kết bạn với tác giả"'>
                   <i v-bind:class='isFriend(card.authorEmail) ? "fa-solid fa-user-check text-[#C74634]" : "fa-solid fa-user-plus text-slate-400"'></i>
-                  <span class='hidden 2xl:inline whitespace-nowrap'>{{ isFriend(card.authorEmail) ? 'Bạn bè' : 'Kết bạn' }}</span>
+                  <span class='whitespace-nowrap'>{{ isFriend(card.authorEmail) ? 'Bạn bè' : 'Kết bạn' }}</span>
                 </button>
                 <!-- Nút Chat Private 1-1 -->
                 <button v-if='currentUser &amp;&amp; !isMyPost(card)' 
                         type='button' 
                         v-on:click.stop='openPrivateChat(card)' 
-                        class='px-2 py-1 text-[11px] font-semibold text-[#161513] hover:text-[#C74634] bg-slate-100 hover:bg-[#F1EFED] border border-[#E0DDD8] transition flex items-center gap-1 shrink-0 whitespace-nowrap shadow-xs' 
+                        class='h-7 px-2 text-[11px] font-semibold text-[#161513] hover:text-[#C74634] bg-slate-100 hover:bg-[#F1EFED] border border-[#E0DDD8] transition flex items-center gap-1 shrink-0 whitespace-nowrap shadow-xs' 
                         title='Nhắn tin riêng tư 1-1'>
                   <i class='fa-regular fa-comment-dots text-[#C74634] text-xs'></i>
-                  <span class='hidden 2xl:inline whitespace-nowrap'>Chat</span>
+                  <span class='whitespace-nowrap'>Chat</span>
                 </button>
-                <button v-on:click.stop='toggleBookmark(card)' v-bind:class='isBookmarked(card.id) ? "text-[#C74634]" : "text-slate-400 hover:text-slate-700"' class='p-1 transition shrink-0' title='Lưu bài viết'>
+                <button v-on:click.stop='toggleBookmark(card)' v-bind:class='isBookmarked(card.id) ? "text-[#C74634]" : "text-slate-400 hover:text-slate-700"' class='h-7 w-7 flex items-center justify-center transition shrink-0' title='Lưu bài viết'>
                   <i v-bind:class='isBookmarked(card.id) ? "fa-solid fa-bookmark" : "fa-regular fa-bookmark"' class='text-xs'></i>
                 </button>
               </div>
