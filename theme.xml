@@ -1140,16 +1140,16 @@
 
           <!-- Active Pin Card Overlay on Google Maps -->
           <div class='absolute bottom-2 left-2 right-2 bg-white/95 backdrop-blur-md p-2.5 shadow-lg border border-[#E0DDD8] flex items-center gap-2.5 transition'>
-            <img v-bind:src='activePinItem.image' class='w-10 h-10 object-cover border border-[#E0DDD8]' />
-            <div class='flex-1 min-w-0'>
-              <h5 class='font-bold text-[11px] text-[#161513] truncate'>{{ activePinItem.title }}</h5>
+            <img v-bind:src='activePinItem.image' v-on:error='handleImgError' class='w-10 h-10 object-cover border border-[#E0DDD8] shrink-0' />
+            <div class='flex-1 min-w-0 cursor-pointer' v-on:click='openDetailModal(activePinItem)'>
+              <h5 class='font-bold text-[11px] text-[#161513] truncate hover:text-[#C74634]'>{{ activePinItem.title }}</h5>
               <p class='text-[10px] text-[#C74634] font-bold'>{{ activePinItem.price }}</p>
               <p class='text-[9px] text-slate-500 truncate flex items-center gap-1'>
                 <i class='fa-solid fa-location-dot text-[#C74634] text-[8px]'></i>
                 <span>{{ activePinItem.location }}</span>
               </p>
             </div>
-            <a v-bind:href='"https://www.google.com/maps/search/?api=1&amp;query=" + encodeURIComponent(activePinItem.location + " Tây Ninh")' target='_blank' class='w-7 h-7 bg-[#C74634] text-white flex items-center justify-center hover:bg-[#B13C2C] transition' title='Mở trên Google Maps'>
+            <a v-bind:href='"https://www.google.com/maps/search/?api=1&amp;query=" + encodeURIComponent((activePinItem.location || "Tây Ninh") + " Tây Ninh")' target='_blank' class='w-7 h-7 bg-[#C74634] text-white flex items-center justify-center hover:bg-[#B13C2C] transition shrink-0' title='Mở trên Google Maps'>
               <i class='fa-solid fa-arrow-up-right-from-square text-[10px]'></i>
             </a>
           </div>
@@ -1157,12 +1157,14 @@
 
         <!-- Numbered Quick List Below Map -->
         <ol class='space-y-1.5 text-xs'>
-          <li v-for='item in mapQuickList' v-bind:key='item.id' v-on:click='selectQuickListItem(item)' class='flex items-start justify-between cursor-pointer p-1.5 hover:bg-[#F1EFED] transition border-b border-slate-100'>
+          <li v-for='item in mapQuickList' v-bind:key='item.id' v-on:click='selectQuickListItem(item)' 
+              v-bind:class='activePinItem.id === item.id ? "bg-[#F1EFED] border-[#C74634] shadow-xs" : "hover:bg-[#F1EFED] border-slate-100"'
+              class='flex items-start justify-between cursor-pointer p-1.5 transition border-b'>
             <div class='flex items-start gap-2'>
-              <span class='font-black text-[#C74634]'>{{ item.number }}.</span>
-              <div>
-                <p class='font-bold text-slate-800 line-clamp-1'>{{ item.title }}</p>
-                <span class='text-[10px] text-slate-400'>{{ item.location }}</span>
+              <span class='font-black' v-bind:class='activePinItem.id === item.id ? "text-[#C74634]" : "text-slate-400"'>{{ item.number }}.</span>
+              <div class='min-w-0 flex-1'>
+                <p class='font-bold line-clamp-1' v-bind:class='activePinItem.id === item.id ? "text-[#C74634]" : "text-slate-800"'>{{ item.title }}</p>
+                <span class='text-[10px] text-slate-500'>{{ item.location }}</span>
               </div>
             </div>
           </li>
@@ -2289,43 +2291,71 @@
         const sortAsc = ref(false);
         const isFirebaseConnected = ref(false);
 
-        // Danh sách ghim nhanh bản đồ (Lấy tự động từ 5 tin mới nhất Cloud Firestore)
+        // Danh sách ghim nhanh bản đồ (5 địa điểm độc lập, không trùng lặp từ tin đăng Tây Ninh)
         const mapQuickList = computed(() => {
-          return cards.value.slice(0, 5).map((c, idx) => ({
-            id: c.id,
-            number: idx + 1,
-            title: c.title,
-            location: c.location || 'Tây Ninh'
+          const result = [];
+          const seenTitles = new Set();
+          const seenLocations = new Set();
+
+          // Ưu tiên các tin có địa điểm huyện thị khác nhau
+          for (const c of cards.value) {
+            if (!c || !c.title) continue;
+            const titleKey = c.title.trim().toLowerCase();
+            const locKey = (c.location || 'Tây Ninh').trim().toLowerCase();
+
+            if (!seenTitles.has(titleKey) && !seenLocations.has(locKey)) {
+              seenTitles.add(titleKey);
+              seenLocations.add(locKey);
+              result.push({
+                id: c.id,
+                title: c.title,
+                location: c.location || 'Tây Ninh',
+                price: c.price,
+                image: c.image,
+                category: c.category,
+                badge: c.badge,
+                authorName: c.authorName
+              });
+              if (result.length >= 5) break;
+            }
+          }
+
+          // Nếu chưa đủ 5 tin, bổ sung các tin có tiêu đề khác nhau
+          if (result.length < 5) {
+            for (const c of cards.value) {
+              if (!c || !c.title) continue;
+              const titleKey = c.title.trim().toLowerCase();
+              if (!seenTitles.has(titleKey)) {
+                seenTitles.add(titleKey);
+                result.push({
+                  id: c.id,
+                  title: c.title,
+                  location: c.location || 'Tây Ninh',
+                  price: c.price,
+                  image: c.image,
+                  category: c.category,
+                  badge: c.badge,
+                  authorName: c.authorName
+                });
+                if (result.length >= 5) break;
+              }
+            }
+          }
+
+          return result.map((item, idx) => ({
+            ...item,
+            number: idx + 1
           }));
         });
 
-        const customActivePinItem = ref(null);
-        const activePinItem = computed({
-          get() {
-            if (customActivePinItem.value) return customActivePinItem.value;
-            if (cards.value.length > 0) {
-              const first = cards.value[0];
-              return {
-                id: first.id,
-                title: first.title,
-                price: first.price,
-                location: first.location || 'TP. Tây Ninh',
-                image: first.image,
-                category: first.category,
-                badge: first.badge
-              };
-            }
-            return {
-              id: 'default',
-              title: 'Tin đăng Tây Ninh',
-              price: 'Thương lượng',
-              location: 'Tây Ninh',
-              image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=120&h=120&q=80'
-            };
-          },
-          set(val) {
-            customActivePinItem.value = val;
-          }
+        const activePinItem = ref({
+          id: 'default',
+          title: 'Núi Bà Đen - Nóc Nhà Nam Bộ Tây Ninh',
+          price: 'Điểm đến tiêu biểu',
+          location: 'Thành phố Tây Ninh, Tây Ninh',
+          image: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80',
+          category: 'amthuc',
+          badge: 'Biểu tượng TN'
         });
 
         const mapEmbedUrl = ref("https://maps.google.com/maps?q=T%C3%A2y+Ninh,+Vi%E1%BB%87t+Nam&t=&z=11&ie=UTF8&iwloc=&output=embed");
@@ -2501,32 +2531,41 @@
           if (!card) return;
           activePinItem.value = {
             id: card.id,
-            title: card.title,
-            price: card.price,
+            title: card.title || 'Tin đăng Tây Ninh',
+            price: card.price || '',
             location: card.location || 'TP. Tây Ninh',
-            image: card.image,
-            category: card.category,
-            badge: card.badge,
-            authorName: card.authorName
+            image: card.image || 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=400&q=80',
+            category: card.category || 'all',
+            badge: card.badge || 'Tây Ninh',
+            authorName: card.authorName || 'Thành viên Tây Ninh'
           };
           const loc = (card.location || 'Tây Ninh') + ', Tây Ninh, Việt Nam';
           mapEmbedUrl.value = 'https://maps.google.com/maps?q=' + encodeURIComponent(loc) + '&t=&z=14&ie=UTF8&iwloc=&output=embed';
           showToast('Đang xem vị trí: ' + (card.title || card.location), 'info');
         };
 
-        const selectPin = (pinNum) => {
-          const found = cards.value.find(c => c.pinNumber === pinNum);
+        const selectPin = (target) => {
+          if (!target) return;
+          if (typeof target === 'object') {
+            selectCardForMap(target);
+            return;
+          }
+          const found = cards.value.find(c => c.id === target || c.pinNumber === target || c.title === target);
           if (found) {
             selectCardForMap(found);
           }
         };
 
         const selectQuickListItem = (item) => {
-          selectPin(item.number);
+          if (!item) return;
+          const target = cards.value.find(c => c.id === item.id) || 
+                         cards.value.find(c => c.title === item.title) || 
+                         item;
+          selectCardForMap(target);
         };
 
         watch(viewMode, (newMode) => {
-          if (newMode === 'map' && filteredCards.value.length > 0 && !customActivePinItem.value) {
+          if (newMode === 'map' && filteredCards.value.length > 0 && activePinItem.value.id === 'default') {
             selectCardForMap(filteredCards.value[0]);
           }
         });
@@ -3624,6 +3663,11 @@
                   });
                   liveList.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
                   cards.value = liveList;
+
+                  // Đồng bộ tin đầu tiên vào Bản đồ nếu chưa chọn tin nào
+                  if (liveList.length > 0 && activePinItem.value.id === 'default') {
+                    selectCardForMap(liveList[0]);
+                  }
 
                   // ĐỒNG BỘ REALTIME VÀO MODAL CHI TIẾT NẾU ĐANG MỞ (Không làm tắt modal)
                   if (selectedDetailCard.value && selectedDetailCard.value.id) {
