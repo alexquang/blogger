@@ -692,7 +692,7 @@
 
             <!-- 3. Post Card Media Image Container -->
             <div class='relative h-48 w-full overflow-hidden bg-slate-100 cursor-pointer mt-2' v-on:click='openDetailModal(card)'>
-              <img v-bind:src='card.image' v-bind:alt='card.title' v-on:error='handleImgError' class='w-full h-full object-cover hover:scale-105 transition-transform duration-300' />
+              <img v-bind:src='card.image || NO_IMAGE_PLACEHOLDER' v-bind:alt='card.title' v-on:error='handleImgError' class='w-full h-full object-cover hover:scale-105 transition-transform duration-300' />
               
               <!-- Badge giá nổi bật -->
               <span class='absolute bottom-3 left-3 px-2.5 py-1 text-xs font-black bg-[#161513] text-white shadow-sm flex items-center gap-1.5'>
@@ -1304,7 +1304,7 @@
 
           <!-- Active Pin Card Overlay on Google Maps -->
           <div class='absolute bottom-2 left-2 right-2 bg-white/95 backdrop-blur-md p-2.5 shadow-lg border border-[#E0DDD8] flex items-center gap-2.5 transition'>
-            <img v-bind:src='activePinItem.image' class='w-10 h-10 object-cover border border-[#E0DDD8]' />
+            <img v-bind:src='activePinItem.image || NO_IMAGE_PLACEHOLDER' v-on:error='handleImgError' class='w-10 h-10 object-cover border border-[#E0DDD8]' />
             <div class='flex-1 min-w-0'>
               <h5 class='font-bold text-[11px] text-[#161513] truncate'>{{ activePinItem.title }}</h5>
               <p class='text-[10px] text-[#C74634] font-bold'>{{ activePinItem.price }}</p>
@@ -1788,7 +1788,7 @@
         <div class='overflow-y-auto p-6 space-y-5 flex-1 text-slate-700 text-xs sm:text-sm leading-relaxed'>
           <!-- Hero Image -->
           <div class='relative h-60 sm:h-72 w-full rounded-none border border-[#E0DDD8] overflow-hidden bg-slate-100 shadow-inner group'>
-            <img v-bind:src='selectedDetailCard.image' v-bind:alt='selectedDetailCard.title' v-on:error='handleImgError' class='w-full h-full object-cover' />
+            <img v-bind:src='selectedDetailCard.image || NO_IMAGE_PLACEHOLDER' v-bind:alt='selectedDetailCard.title' v-on:error='handleImgError' class='w-full h-full object-cover' />
             <div class='absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent'></div>
             <div class='absolute bottom-3 left-4 right-4 text-white flex items-end justify-between'>
               <div>
@@ -2048,7 +2048,7 @@
         <div class='flex-1 overflow-y-auto p-4 space-y-3 bg-[#FAF9F8]'>
           <!-- Card Mini Summary Banner -->
           <div class='p-2.5 bg-white border border-[#E0DDD8] flex items-center gap-3'>
-            <img v-bind:src='activeCommentCard.image || "https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&amp;fit=crop&amp;w=200&amp;q=80"' 
+            <img v-bind:src='activeCommentCard.image || NO_IMAGE_PLACEHOLDER' 
                  v-on:error='handleImgError' 
                  class='w-12 h-12 object-cover border border-[#E0DDD8] shrink-0' />
             <div class='flex-1 min-w-0'>
@@ -3913,6 +3913,11 @@
           popup.value.show = false;
         };
 
+        // HẰNG SỐ PLACEHOLDER ẢNH & AVATAR CHUẨN TÂY NINH HUB (SVG Data URI Không phụ thuộc mạng ngoài)
+        const NO_IMAGE_PLACEHOLDER = "data:image/svg+xml;charset=utf-8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="800" height="450"><rect width="800" height="450" fill="#FAF9F8"/><rect x="20" y="20" width="760" height="410" fill="none" stroke="#E0DDD8" stroke-width="2" stroke-dasharray="6 6"/><g transform="translate(400, 200)" text-anchor="middle"><path d="M-36 -30 L-20 -30 L-14 -42 L14 -42 L20 -30 L36 -30 C42 -30 46 -26 46 -20 L46 26 C46 32 42 36 36 36 L-36 36 C-42 36 -46 32 -46 26 L-46 -20 C-46 -26 -42 -30 -36 -30 Z" fill="#E0DDD8"/><circle cx="0" cy="3" r="16" fill="#FAF9F8"/><circle cx="0" cy="3" r="10" fill="#C74634" opacity="0.6"/><text y="75" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="16" font-weight="800" fill="#655F58" letter-spacing="1">TÂY NINH HUB</text><text y="100" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="13" font-weight="600" fill="#A8A29E">CHƯA CÓ HÌNH ẢNH (NO IMAGE)</text><text y="122" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="11" fill="#C5C1BA">Hình ảnh bài viết đang được cập nhật</text></g><rect x="20" y="20" width="70" height="24" fill="#C74634"/><text x="55" y="36" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="10" font-weight="900" fill="#ffffff" text-anchor="middle">TNHub</text></svg>');
+
+        const NO_AVATAR_PLACEHOLDER = "data:image/svg+xml;charset=utf-8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100"><rect width="100" height="100" fill="#F1EFED"/><circle cx="50" cy="40" r="20" fill="#C5C1BA"/><path d="M20 90 A30 30 0 0 1 80 90 Z" fill="#C5C1BA"/></svg>');
+
         // 100% DỮ LIỆU ĐƯỢC LẤY TRỰC TIẾP TỪ CLOUD FIRESTORE (KHÔNG ĐỂ DATA TEST MẪU)
         const enrichListingWithFirebaseDoc = (item) => {
           let comments = [];
@@ -3988,11 +3993,11 @@
             };
           });
 
-          // Tự động làm sạch và thay thế link ảnh bị hỏng / 404 từ Unsplash
+          // Tự động làm sạch và thay thế link ảnh bị hỏng / 404 / thiếu ảnh bằng NO_IMAGE_PLACEHOLDER
           let validImage = item.image;
-          const badImageMarkers = ['1486006920555', 'undefined', 'null', 'example.com'];
-          if (!validImage || typeof validImage !== 'string' || badImageMarkers.some(m => validImage.indexOf(m) !== -1)) {
-            validImage = 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&amp;fit=crop&amp;w=800&amp;q=80';
+          const badImageMarkers = ['1486006920555', 'undefined', 'null', 'example.com', 'placeholder'];
+          if (!validImage || typeof validImage !== 'string' || !validImage.trim() || badImageMarkers.some(m => validImage.indexOf(m) !== -1)) {
+            validImage = NO_IMAGE_PLACEHOLDER;
           }
 
           return {
@@ -4046,7 +4051,7 @@
             title: 'Tin đăng Tây Ninh',
             price: 'Thương lượng',
             location: 'TP. Tây Ninh',
-            image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=120&h=120&q=80'
+            image: NO_IMAGE_PLACEHOLDER
           };
         });
 
@@ -5385,10 +5390,16 @@
           openPostModal();
         };
 
-        const fallbackImg = 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80';
+        const fallbackImg = NO_IMAGE_PLACEHOLDER;
         const handleImgError = (e) => {
-          if (e && e.target && e.target.src !== fallbackImg) {
-            e.target.src = fallbackImg;
+          if (!e || !e.target) return;
+          const target = e.target;
+          const isAvatar = (target.classList && target.classList.contains('rounded-full')) || 
+                           (target.className && (target.className.indexOf('w-7') !== -1 || target.className.indexOf('w-8') !== -1 || target.className.indexOf('w-9') !== -1 || target.className.indexOf('w-10') !== -1)) || 
+                           (target.width && target.width <= 80);
+          const replacement = isAvatar ? NO_AVATAR_PLACEHOLDER : NO_IMAGE_PLACEHOLDER;
+          if (target.src !== replacement) {
+            target.src = replacement;
           }
         };
 
@@ -6572,7 +6583,9 @@
           showMobileMenu,
           currentLang,
           switchLang,
-          t
+          t,
+          NO_IMAGE_PLACEHOLDER,
+          NO_AVATAR_PLACEHOLDER
         };
       }
     }).mount('#app');
