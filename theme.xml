@@ -164,7 +164,6 @@
           <div class='flex items-center justify-between gap-2'>
             <div class='flex items-center gap-2'>
               <span class='bg-[#C74634] text-white font-black px-2.5 py-1 text-sm tracking-wider select-none'>TNHub</span>
-              <span class='text-xs font-black text-[#161513] tracking-tight uppercase'>TÂY NINH</span>
             </div>
             <!-- Language Switcher in Left Sidebar (VI, EN, KO, ZH) -->
             <div class='inline-flex items-center p-0.5 bg-white border border-[#E0DDD8] text-[9px] font-bold shadow-xs shrink-0'>
@@ -186,7 +185,6 @@
               </button>
             </div>
           </div>
-          <span class='text-[10px] text-[#655F58] font-bold uppercase tracking-wider block mt-1.5'>CỔNG THÔNG TIN SỐ</span>
         </div>
 
         <!-- Top Menu Items -->
@@ -1984,7 +1982,6 @@
         <div class='flex items-center justify-between pb-3 border-b border-[#E0DDD8]'>
           <div class='flex items-center gap-2'>
             <span class='bg-[#C74634] text-white font-black px-2 py-0.5 text-xs select-none'>TNHub</span>
-            <span class='text-xs font-black text-[#161513] uppercase'>TÂY NINH</span>
           </div>
           <button type='button' v-on:click='showMobileMenu = false' class='w-7 h-7 flex items-center justify-center text-slate-500 hover:text-black'>
             <i class='fa-solid fa-xmark text-sm'></i>
