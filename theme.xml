@@ -561,8 +561,7 @@
         <div class='grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5'>
           
           <article v-for='card in filteredCards' v-bind:key='card.id' 
-                   v-bind:class='card.likedByMe ? "border-[#C74634] shadow-md ring-1 ring-[#C74634]/30" : "border-[#E0DDD8] shadow-sm hover:shadow-md"' 
-                   class='bg-white border transition flex flex-col justify-between relative'>
+                   class='bg-white border border-[#E0DDD8] shadow-sm hover:shadow-md transition flex flex-col justify-between relative'>
             
             <!-- 1. Post Author Header (LinkedIn Style) -->
             <div class='p-3 sm:p-3.5 pb-2.5 flex items-center justify-between border-b border-[#E0DDD8]/60 gap-2'>
@@ -657,9 +656,12 @@
             <!-- 5. LinkedIn Action Bar: Like, Comment, Share, Action Button -->
             <div class='px-1.5 sm:px-2 py-1.5 flex items-center justify-between bg-[#FAF9F8] border-b border-[#E0DDD8] gap-1'>
               <button type='button' v-on:click.prevent='toggleLike(card)' 
-                      v-bind:class='card.likedByMe ? "bg-[#C74634] text-white font-bold hover:bg-[#B13C2C] shadow-sm" : "text-slate-600 hover:text-slate-900 hover:bg-[#F1EFED]"' 
-                      class='flex-1 py-1.5 flex items-center justify-center gap-1 sm:gap-1.5 text-[11px] sm:text-xs transition'>
-                <i v-bind:class='card.likedByMe ? "fa-solid fa-thumbs-up text-white" : "fa-regular fa-thumbs-up"' class='text-xs sm:text-sm'></i>
+                      class='flex-1 py-1.5 flex items-center justify-center gap-1.5 text-[11px] sm:text-xs transition hover:bg-[#F1EFED]' 
+                      v-bind:class='card.likedByMe ? "text-[#C74634] font-bold" : "text-slate-600 hover:text-slate-900"'>
+                <span class='w-5 h-5 flex items-center justify-center text-[10px] transition shrink-0' 
+                      v-bind:class='card.likedByMe ? "bg-[#C74634] text-white shadow-sm" : "text-slate-500"'>
+                  <i v-bind:class='card.likedByMe ? "fa-solid fa-thumbs-up" : "fa-regular fa-thumbs-up"'></i>
+                </span>
                 <span>{{ card.likedByMe ? 'Đã thích' : 'Thích' }}</span>
               </button>
               <button type='button' v-on:click.prevent='toggleComments(card)' 
@@ -1357,9 +1359,12 @@
             <div class='p-3 bg-[#FAF9F8] border-b border-[#E0DDD8] flex items-center justify-between text-xs'>
               <div class='flex items-center gap-3'>
                 <button type='button' v-on:click.prevent='toggleLike(selectedDetailCard)' 
-                        v-bind:class='selectedDetailCard.likedByMe ? "bg-[#C74634] text-white font-bold border-[#C74634] shadow-sm hover:bg-[#B13C2C]" : "bg-white text-slate-700 hover:text-slate-900 border-[#E0DDD8] hover:bg-[#F1EFED]"' 
-                        class='px-3.5 py-1.5 border flex items-center gap-1.5 transition'>
-                  <i v-bind:class='selectedDetailCard.likedByMe ? "fa-solid fa-thumbs-up text-white" : "fa-regular fa-thumbs-up"' class='text-sm'></i>
+                        class='px-3.5 py-1.5 border border-[#E0DDD8] bg-white hover:bg-[#F1EFED] flex items-center gap-1.5 transition' 
+                        v-bind:class='selectedDetailCard.likedByMe ? "text-[#C74634] font-bold" : "text-slate-700 hover:text-slate-900"'>
+                  <span class='w-5 h-5 flex items-center justify-center text-[10px] transition shrink-0' 
+                        v-bind:class='selectedDetailCard.likedByMe ? "bg-[#C74634] text-white shadow-sm" : "text-slate-500"'>
+                    <i v-bind:class='selectedDetailCard.likedByMe ? "fa-solid fa-thumbs-up" : "fa-regular fa-thumbs-up"'></i>
+                  </span>
                   <span>{{ selectedDetailCard.likedByMe ? "Đã thích" : "Thích" }} ({{ selectedDetailCard.likesCount || 0 }})</span>
                 </button>
                 <span class='text-slate-400'>•</span>
