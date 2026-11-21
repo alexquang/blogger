@@ -418,6 +418,16 @@
             <span v-if='unreadMessageCount > 0' class='bg-[#C74634] text-white text-[10px] font-bold px-1.5 py-0.2'>{{ unreadMessageCount }}</span>
           </button>
 
+          <!-- Nút Xổ Số Kiến Thiết (Header Quick View) -->
+          <button type='button' 
+                  v-on:click='openLotteryModal' 
+                  class='relative px-3 py-1.5 bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-900 font-bold text-xs flex items-center gap-1.5 shadow-sm transition' 
+                  title='Xem trực tiếp kết quả Xổ Số Kiến Thiết Tây Ninh &amp; 3 Miền'>
+            <i class='fa-solid fa-ticket text-amber-600 text-xs'></i>
+            <span class='hidden sm:inline'>Xổ số kiến thiết</span>
+            <span class='bg-amber-600 text-white text-[9px] font-black px-1.5 py-0.2 uppercase'>Live</span>
+          </button>
+
           <!-- Button Google Login / Profile -->
           <div v-if='currentUser &amp;&amp; currentUser.uid' class='flex items-center gap-2'>
             <button v-on:click='openProfileModal' class='inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#F1EFED] hover:bg-[#E0DDD8] border border-[#E0DDD8] text-xs font-semibold text-slate-800 shadow-sm transition' title='Xem và chỉnh sửa hồ sơ trang cá nhân'>
@@ -1151,6 +1161,92 @@
           </div>
         </div>
 
+        <!-- BẢNG THỐNG KÊ ĐẦU - ĐUÔI LÔ TÔ 2 SỐ (HEAD & TAIL 0-9) -->
+        <div v-if='currentDisplayLottery' class='bg-white border border-[#E0DDD8] shadow-sm p-4 space-y-3'>
+          <div class='flex items-center justify-between border-b border-[#E0DDD8] pb-2'>
+            <h4 class='text-xs font-bold text-[#161513] uppercase flex items-center gap-2'>
+              <i class='fa-solid fa-list-ol text-[#C74634]'></i>
+              <span>BẢNG ĐẦU - ĐUÔI LÔ TÔ 2 SỐ (0 - 9)</span>
+            </h4>
+            <span class='text-[10px] text-slate-500 font-medium'>Thống kê 2 số cuối tất cả các giải kỳ này</span>
+          </div>
+
+          <div class='grid grid-cols-1 md:grid-cols-2 gap-4 text-xs'>
+            <!-- Cột Bảng ĐẦU -->
+            <div class='border border-[#E0DDD8] overflow-hidden'>
+              <div class='bg-[#161513] text-white px-3 py-1.5 font-bold uppercase tracking-wide flex items-center justify-between'>
+                <span class='flex items-center gap-1.5'>
+                  <i class='fa-solid fa-arrow-down-1-9 text-amber-400'></i>
+                  <span>BẢNG ĐẦU (0 - 9)</span>
+                </span>
+                <span class='text-[10px] text-slate-300'>2 Số Cuối</span>
+              </div>
+              <div class='divide-y divide-[#E0DDD8] bg-white'>
+                <div v-for='digit in [0,1,2,3,4,5,6,7,8,9]' v-bind:key='"h_" + digit' 
+                     class='flex items-center hover:bg-[#FAF9F8] transition'>
+                  <div class='w-16 py-1.5 px-3 bg-[#F1EFED] text-center font-black text-slate-800 border-r border-[#E0DDD8]'>
+                    Đầu {{ digit }}
+                  </div>
+                  <div class='flex-1 px-3 py-1.5 font-mono text-xs font-bold flex flex-wrap gap-1.5 text-[#C74634]'>
+                    <span v-if='lotteryHeadTail.heads[digit] &amp;&amp; lotteryHeadTail.heads[digit].length > 0' 
+                          v-for='(n, idx) in lotteryHeadTail.heads[digit]' v-bind:key='idx' 
+                          class='px-1.5 py-0.5 bg-red-50 border border-red-200'>
+                      {{ n }}
+                    </span>
+                    <span v-else='true' class='text-slate-300 font-normal italic text-[11px]'>-</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Cột Bảng ĐUÔI -->
+            <div class='border border-[#E0DDD8] overflow-hidden'>
+              <div class='bg-[#161513] text-white px-3 py-1.5 font-bold uppercase tracking-wide flex items-center justify-between'>
+                <span class='flex items-center gap-1.5'>
+                  <i class='fa-solid fa-arrow-up-9-1 text-emerald-400'></i>
+                  <span>BẢNG ĐUÔI (0 - 9)</span>
+                </span>
+                <span class='text-[10px] text-slate-300'>2 Số Cuối</span>
+              </div>
+              <div class='divide-y divide-[#E0DDD8] bg-white'>
+                <div v-for='digit in [0,1,2,3,4,5,6,7,8,9]' v-bind:key='"t_" + digit' 
+                     class='flex items-center hover:bg-[#FAF9F8] transition'>
+                  <div class='w-16 py-1.5 px-3 bg-[#F1EFED] text-center font-black text-slate-800 border-r border-[#E0DDD8]'>
+                    Đuôi {{ digit }}
+                  </div>
+                  <div class='flex-1 px-3 py-1.5 font-mono text-xs font-bold flex flex-wrap gap-1.5 text-slate-900'>
+                    <span v-if='lotteryHeadTail.tails[digit] &amp;&amp; lotteryHeadTail.tails[digit].length > 0' 
+                          v-for='(n, idx) in lotteryHeadTail.tails[digit]' v-bind:key='idx' 
+                          class='px-1.5 py-0.5 bg-slate-100 border border-slate-200'>
+                      {{ n }}
+                    </span>
+                    <span v-else='true' class='text-slate-300 font-normal italic text-[11px]'>-</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- LỊCH QUAY THƯỞNG XỔ SỐ MIỀN NAM & TÂY NINH TRONG TUẦN -->
+        <div class='bg-white border border-[#E0DDD8] shadow-sm p-4 space-y-3'>
+          <h4 class='text-xs font-bold text-[#161513] uppercase flex items-center gap-2 border-b border-[#E0DDD8] pb-2'>
+            <i class='fa-regular fa-calendar-check text-[#C74634]'></i>
+            <span>LỊCH QUAY THƯỞNG XỔ SỐ MIỀN NAM &amp; TÂY NINH (16H15 HÀNG NGÀY)</span>
+          </h4>
+          <div class='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 text-xs'>
+            <div v-for='sch in lotterySchedule' v-bind:key='sch.day' 
+                 v-bind:class='sch.highlight ? "bg-amber-50 border-2 border-amber-400 shadow-sm" : "bg-[#FAF9F8] border border-[#E0DDD8]"' 
+                 class='p-2.5 flex flex-col justify-between'>
+              <div class='flex items-center justify-between mb-1'>
+                <span class='font-bold text-xs' v-bind:class='sch.highlight ? "text-[#C74634]" : "text-slate-800"'>{{ sch.day }}</span>
+                <span v-if='sch.highlight' class='px-1.5 py-0.2 bg-[#C74634] text-white text-[9px] font-black uppercase'>Đài Tây Ninh</span>
+              </div>
+              <p class='text-[11px] text-slate-600 leading-snug'>{{ sch.stations }}</p>
+            </div>
+          </div>
+        </div>
+
         <!-- Lịch Sử Các Kỳ Quay Trước Đó -->
         <div v-if='currentLotteryList.length > 1' class='bg-white p-4 border border-[#E0DDD8] shadow-sm space-y-3'>
           <h4 class='text-xs font-bold text-[#161513] uppercase flex items-center gap-2 border-b border-[#E0DDD8] pb-2'>
@@ -1265,9 +1361,9 @@
               <i class='fa-solid fa-ticket text-amber-600'></i>
               <span>Xổ Số Tây Ninh</span>
             </h4>
-            <button v-on:click='activeTab = "xoso"' class='text-[10px] text-[#C74634] font-bold hover:underline'>Xem chi tiết</button>
+            <button v-on:click='openLotteryModal' class='text-[10px] text-[#C74634] font-bold hover:underline'>Xem chi tiết</button>
           </div>
-          <div v-on:click='activeTab = "xoso"' class='p-2.5 bg-[#FAF9F8] border border-[#E0DDD8] cursor-pointer hover:bg-[#F1EFED] transition'>
+          <div v-on:click='openLotteryModal' class='p-2.5 bg-[#FAF9F8] border border-[#E0DDD8] cursor-pointer hover:bg-[#F1EFED] transition'>
             <div class='flex items-center justify-between text-[11px] text-slate-500 mb-1'>
               <span class='font-bold text-slate-700'>Kỳ quay mới nhất</span>
               <span class='text-[10px] text-[#C74634] font-bold'>Giải Đặc Biệt</span>
@@ -2832,6 +2928,264 @@
       </div>
     </div>
 
+
+    <!-- 14. MODAL XEM XỔ SỐ KIẾN THIẾT TÂY NINH & 3 MIỀN (POPUP FULL DETAILS) -->
+    <div v-if='showLotteryModal' v-cloak='true' style='display: none;' v-bind:style='showLotteryModal ? "display: flex !important;" : "display: none !important;"' class='fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-3 sm:p-5 overflow-y-auto'>
+      <div class='bg-white rounded-none border border-[#E0DDD8] max-w-3xl w-full max-h-[92vh] overflow-hidden flex flex-col shadow-2xl relative my-auto text-xs'>
+        <!-- Modal Top Bar -->
+        <div class='flex items-center justify-between px-4 py-3 bg-[#161513] text-white border-b-2 border-[#C74634] sticky top-0 z-10'>
+          <div class='flex items-center gap-2.5'>
+            <div class='w-8 h-8 rounded-none bg-amber-500 text-white flex items-center justify-center text-sm shadow'>
+              <i class='fa-solid fa-ticket'></i>
+            </div>
+            <div>
+              <h3 class='font-black text-xs sm:text-sm tracking-wide uppercase flex items-center gap-2'>
+                <span>KẾT QUẢ XỔ SỐ KIẾN THIẾT TÂY NINH &amp; 3 MIỀN</span>
+                <span class='px-1.5 py-0.2 bg-amber-500 text-slate-900 text-[9px] font-black tracking-wider uppercase'>Trực Tiếp</span>
+              </h3>
+              <p class='text-[10px] text-slate-400'>Cập nhật nhanh nhất 16h15 hàng ngày • XSTN mở thưởng Thứ Năm hàng tuần</p>
+            </div>
+          </div>
+          <div class='flex items-center gap-1.5'>
+            <button type='button' v-on:click='fetchLotteryData' v-bind:disabled='isLotteryLoading' class='px-2.5 py-1.5 bg-white/10 hover:bg-white/20 text-white rounded-none text-xs font-semibold flex items-center gap-1 transition' title='Làm mới kết quả'>
+              <i class='fa-solid fa-rotate text-xs text-amber-400' v-bind:class='{"fa-spin": isLotteryLoading}'></i>
+              <span class='hidden sm:inline'>{{ isLotteryLoading ? 'Đang tải...' : 'Làm mới' }}</span>
+            </button>
+            <button type='button' v-on:click='showLotteryModal = false' class='w-8 h-8 flex items-center justify-center text-slate-400 hover:text-white transition'>
+              <i class='fa-solid fa-xmark text-base'></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Modal Content Scrollable Body -->
+        <div class='p-4 sm:p-5 overflow-y-auto space-y-4 bg-[#FAF9F8] custom-scroll flex-1'>
+          <!-- Chọn Khu Vực / Đài Xổ Số -->
+          <div class='flex items-center gap-2 overflow-x-auto pb-1 text-xs font-semibold'>
+            <button type='button' v-on:click='setLotteryRegion("xstn")' 
+                    v-bind:class='activeLotteryRegion === "xstn" ? "bg-[#C74634] text-white font-bold" : "bg-white text-slate-700 hover:bg-slate-100 border border-[#E0DDD8]"' 
+                    class='px-3.5 py-1.5 whitespace-nowrap transition flex items-center gap-1.5 shadow-sm'>
+              <i class='fa-solid fa-star text-amber-300 text-xs'></i>
+              <span>🌟 Xổ Số Tây Ninh (XSTN)</span>
+            </button>
+            <button type='button' v-on:click='setLotteryRegion("xsmn")' 
+                    v-bind:class='activeLotteryRegion === "xsmn" ? "bg-[#C74634] text-white font-bold" : "bg-white text-slate-700 hover:bg-slate-100 border border-[#E0DDD8]"' 
+                    class='px-3.5 py-1.5 whitespace-nowrap transition shadow-sm'>
+              Miền Nam (XSMN)
+            </button>
+            <button type='button' v-on:click='setLotteryRegion("xsmb")' 
+                    v-bind:class='activeLotteryRegion === "xsmb" ? "bg-[#C74634] text-white font-bold" : "bg-white text-slate-700 hover:bg-slate-100 border border-[#E0DDD8]"' 
+                    class='px-3.5 py-1.5 whitespace-nowrap transition shadow-sm'>
+              Miền Bắc (XSMB)
+            </button>
+            <button type='button' v-on:click='setLotteryRegion("xsmt")' 
+                    v-bind:class='activeLotteryRegion === "xsmt" ? "bg-[#C74634] text-white font-bold" : "bg-white text-slate-700 hover:bg-slate-100 border border-[#E0DDD8]"' 
+                    class='px-3.5 py-1.5 whitespace-nowrap transition shadow-sm'>
+              Miền Trung (XSMT)
+            </button>
+          </div>
+
+          <!-- Selector Đài Miền Nam / Miền Trung nếu có -->
+          <div v-if='currentLotteryList.length > 0 &amp;&amp; currentLotteryList[0].provinces &amp;&amp; currentLotteryList[0].provinces.length > 1' 
+               class='flex items-center gap-2 bg-white p-2 border border-[#E0DDD8] overflow-x-auto text-xs'>
+            <span class='text-slate-500 font-bold shrink-0 flex items-center gap-1'>
+              <i class='fa-solid fa-location-dot text-[#C74634]'></i>
+              <span>Chọn đài:</span>
+            </span>
+            <button type='button' v-for='(prov, pIdx) in currentLotteryList[0].provinces' v-bind:key='pIdx' 
+                    v-on:click='selectedProvinceIdx = pIdx' 
+                    v-bind:class='selectedProvinceIdx === pIdx ? "bg-[#161513] text-white font-bold" : "bg-[#F1EFED] text-slate-700 hover:bg-slate-200 border border-[#E0DDD8]"' 
+                    class='px-3 py-1 whitespace-nowrap transition'>
+              {{ prov.name }}
+            </button>
+          </div>
+
+          <!-- Bảng Kết Quả Xổ Số -->
+          <div v-if='currentDisplayLottery' class='bg-white border border-[#E0DDD8] shadow-sm overflow-hidden'>
+            <div class='bg-[#161513] text-white p-3 flex items-center justify-between border-b-2 border-[#C74634]'>
+              <div>
+                <span class='text-[10px] uppercase font-bold text-amber-400'>{{ getLotteryRegionName(activeLotteryRegion) }}</span>
+                <h4 class='text-xs sm:text-sm font-bold tracking-wide uppercase mt-0.5'>{{ currentDisplayLottery.title }}</h4>
+              </div>
+              <span class='px-2 py-0.5 bg-[#C74634] text-white text-[10px] font-bold'>{{ currentDisplayLottery.dateText || 'Hôm nay' }}</span>
+            </div>
+
+            <div class='divide-y divide-[#E0DDD8] text-xs'>
+              <!-- ĐẶC BIỆT -->
+              <div class='flex items-center bg-red-50/70 p-3 sm:p-4'>
+                <div class='w-24 sm:w-28 font-black text-[#C74634] uppercase tracking-wider text-xs sm:text-sm shrink-0 flex items-center gap-1'>
+                  <i class='fa-solid fa-crown text-amber-500'></i>
+                  <span>ĐẶC BIỆT</span>
+                </div>
+                <div class='flex-1 text-center font-mono font-black text-2xl sm:text-3xl text-[#C74634] tracking-widest'>
+                  {{ currentDisplayLottery.prizes.ĐB || 'Đang cập nhật' }}
+                </div>
+              </div>
+
+              <!-- Giải 1 -->
+              <div class='flex items-center p-2.5 bg-white'>
+                <div class='w-24 sm:w-28 font-bold text-slate-700 uppercase shrink-0'>Giải Nhất</div>
+                <div class='flex-1 text-center font-mono font-bold text-base text-slate-900 tracking-wider'>
+                  {{ currentDisplayLottery.prizes[1] || '-' }}
+                </div>
+              </div>
+
+              <!-- Giải 2 -->
+              <div class='flex items-center p-2.5 bg-[#FAF9F8]'>
+                <div class='w-24 sm:w-28 font-bold text-slate-700 uppercase shrink-0'>Giải Nhì</div>
+                <div class='flex-1 text-center font-mono font-bold text-sm text-slate-900 tracking-wider flex flex-wrap justify-center gap-3'>
+                  <span v-for='(n, idx) in splitPrize(currentDisplayLottery.prizes[2])' v-bind:key='idx'>{{ n }}</span>
+                </div>
+              </div>
+
+              <!-- Giải 3 -->
+              <div class='flex items-center p-2.5 bg-white'>
+                <div class='w-24 sm:w-28 font-bold text-slate-700 uppercase shrink-0'>Giải Ba</div>
+                <div class='flex-1 text-center font-mono font-semibold text-sm text-slate-900 tracking-wider flex flex-wrap justify-center gap-3 sm:gap-5'>
+                  <span v-for='(n, idx) in splitPrize(currentDisplayLottery.prizes[3])' v-bind:key='idx'>{{ n }}</span>
+                </div>
+              </div>
+
+              <!-- Giải 4 -->
+              <div class='flex items-center p-2.5 bg-[#FAF9F8]'>
+                <div class='w-24 sm:w-28 font-bold text-slate-700 uppercase shrink-0'>Giải Tư</div>
+                <div class='flex-1 text-center font-mono font-medium text-xs sm:text-sm text-slate-900 tracking-wider flex flex-wrap justify-center gap-2 sm:gap-3'>
+                  <span v-for='(n, idx) in splitPrize(currentDisplayLottery.prizes[4])' v-bind:key='idx'>{{ n }}</span>
+                </div>
+              </div>
+
+              <!-- Giải 5 -->
+              <div class='flex items-center p-2.5 bg-white'>
+                <div class='w-24 sm:w-28 font-bold text-slate-700 uppercase shrink-0'>Giải Năm</div>
+                <div class='flex-1 text-center font-mono font-bold text-sm text-slate-900 tracking-wider flex flex-wrap justify-center gap-2'>
+                  <span v-for='(n, idx) in splitPrize(currentDisplayLottery.prizes[5])' v-bind:key='idx'>{{ n }}</span>
+                </div>
+              </div>
+
+              <!-- Giải 6 -->
+              <div class='flex items-center p-2.5 bg-[#FAF9F8]'>
+                <div class='w-24 sm:w-28 font-bold text-slate-700 uppercase shrink-0'>Giải Sáu</div>
+                <div class='flex-1 text-center font-mono font-semibold text-xs text-slate-900 tracking-wider flex flex-wrap justify-center gap-2'>
+                  <span v-for='(n, idx) in splitPrize(currentDisplayLottery.prizes[6])' v-bind:key='idx'>{{ n }}</span>
+                </div>
+              </div>
+
+              <!-- Giải 7 -->
+              <div class='flex items-center p-2.5 bg-white'>
+                <div class='w-24 sm:w-28 font-bold text-slate-700 uppercase shrink-0'>Giải Bảy</div>
+                <div class='flex-1 text-center font-mono font-bold text-sm text-slate-900 tracking-wider flex flex-wrap justify-center gap-2'>
+                  <span v-for='(n, idx) in splitPrize(currentDisplayLottery.prizes[7])' v-bind:key='idx'>{{ n }}</span>
+                </div>
+              </div>
+
+              <!-- Giải 8 (Miền Nam & Miền Trung) -->
+              <div v-if='currentDisplayLottery.prizes[8]' class='flex items-center p-2.5 bg-amber-50/50'>
+                <div class='w-24 sm:w-28 font-bold text-amber-800 uppercase shrink-0 flex items-center gap-1'>
+                  <i class='fa-solid fa-award text-amber-600'></i>
+                  <span>Giải Tám</span>
+                </div>
+                <div class='flex-1 text-center font-mono font-black text-lg text-amber-700 tracking-widest'>
+                  {{ currentDisplayLottery.prizes[8] }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bảng Đầu - Đuôi Lô Tô 2 Số (Modal) -->
+          <div v-if='currentDisplayLottery' class='bg-white border border-[#E0DDD8] p-3 space-y-2'>
+            <div class='flex items-center justify-between border-b border-[#E0DDD8] pb-1.5'>
+              <h5 class='font-bold text-xs uppercase flex items-center gap-1.5 text-[#161513]'>
+                <i class='fa-solid fa-list-ol text-[#C74634]'></i>
+                <span>Bảng Đầu - Đuôi 2 Số Cuối</span>
+              </h5>
+              <span class='text-[10px] text-slate-500'>Đầu 0 → 9 &amp; Đuôi 0 → 9</span>
+            </div>
+
+            <div class='grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs'>
+              <!-- Bảng Đầu -->
+              <div class='border border-[#E0DDD8] overflow-hidden'>
+                <div class='bg-[#161513] text-white px-2.5 py-1 font-bold text-[11px] flex items-center justify-between'>
+                  <span>BẢNG ĐẦU</span>
+                  <span class='text-[10px] text-amber-400'>Số Đuôi</span>
+                </div>
+                <div class='divide-y divide-[#E0DDD8] bg-white'>
+                  <div v-for='digit in [0,1,2,3,4,5,6,7,8,9]' v-bind:key='"mh_" + digit' class='flex items-center'>
+                    <div class='w-12 py-1 px-2 bg-[#F1EFED] text-center font-black text-slate-800 border-r border-[#E0DDD8] text-xs'>
+                      {{ digit }}
+                    </div>
+                    <div class='flex-1 px-2 py-1 font-mono text-xs font-bold flex flex-wrap gap-1 text-[#C74634]'>
+                      <span v-if='lotteryHeadTail.heads[digit] &amp;&amp; lotteryHeadTail.heads[digit].length > 0' 
+                            v-for='(n, idx) in lotteryHeadTail.heads[digit]' v-bind:key='idx' 
+                            class='px-1 py-0.2 bg-red-50 border border-red-200 text-[11px]'>
+                        {{ n }}
+                      </span>
+                      <span v-else='true' class='text-slate-300 italic text-[10px]'>-</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Bảng Đuôi -->
+              <div class='border border-[#E0DDD8] overflow-hidden'>
+                <div class='bg-[#161513] text-white px-2.5 py-1 font-bold text-[11px] flex items-center justify-between'>
+                  <span>BẢNG ĐUÔI</span>
+                  <span class='text-[10px] text-emerald-400'>Số Đầu</span>
+                </div>
+                <div class='divide-y divide-[#E0DDD8] bg-white'>
+                  <div v-for='digit in [0,1,2,3,4,5,6,7,8,9]' v-bind:key='"mt_" + digit' class='flex items-center'>
+                    <div class='w-12 py-1 px-2 bg-[#F1EFED] text-center font-black text-slate-800 border-r border-[#E0DDD8] text-xs'>
+                      {{ digit }}
+                    </div>
+                    <div class='flex-1 px-2 py-1 font-mono text-xs font-bold flex flex-wrap gap-1 text-slate-900'>
+                      <span v-if='lotteryHeadTail.tails[digit] &amp;&amp; lotteryHeadTail.tails[digit].length > 0' 
+                            v-for='(n, idx) in lotteryHeadTail.tails[digit]' v-bind:key='idx' 
+                            class='px-1 py-0.2 bg-slate-100 border border-slate-200 text-[11px]'>
+                        {{ n }}
+                      </span>
+                      <span v-else='true' class='text-slate-300 italic text-[10px]'>-</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Công cụ dò vé số trong Modal -->
+          <div class='bg-white border border-[#E0DDD8] p-3 space-y-2'>
+            <h5 class='font-bold text-xs uppercase flex items-center gap-1.5 text-[#161513]'>
+              <i class='fa-solid fa-wand-magic-sparkles text-[#C74634]'></i>
+              <span>Dò Vé Số Trực Tuyến</span>
+            </h5>
+            <div class='flex gap-2'>
+              <input type='text' v-model='ticketNumberInput' 
+                     v-on:keyup.enter='checkTicketResult' 
+                     placeholder='Nhập số vé cần dò (Ví dụ: 092492)...' 
+                     maxlength='6' 
+                     class='flex-1 px-3 py-1.5 bg-[#F1EFED] border border-[#E0DDD8] text-xs font-mono font-bold tracking-widest outline-none focus:border-[#C74634]' />
+              <button type='button' v-on:click='checkTicketResult' class='px-4 py-1.5 bg-[#C74634] hover:bg-[#B13C2C] text-white text-xs font-bold transition flex items-center gap-1 shadow-sm'>
+                <i class='fa-solid fa-magnifying-glass'></i>
+                <span>Dò Vé</span>
+              </button>
+            </div>
+            <div v-if='ticketCheckResult' class='p-2.5 border text-xs' 
+                 v-bind:class='ticketCheckResult.isWin ? "bg-emerald-50 border-emerald-300 text-emerald-900" : "bg-amber-50 border-amber-300 text-amber-900"'>
+              <span class='font-bold'>{{ ticketCheckResult.title }}</span>: {{ ticketCheckResult.message }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class='p-3 border-t border-[#E0DDD8] bg-[#FAF9F8] flex items-center justify-between'>
+          <button type='button' v-on:click='activeTab = "xoso"; showLotteryModal = false;' class='text-xs font-bold text-[#C74634] hover:underline flex items-center gap-1'>
+            <i class='fa-solid fa-up-right-from-square'></i>
+            <span>Mở trang Xổ số đầy đủ</span>
+          </button>
+          <button type='button' v-on:click='showLotteryModal = false' class='px-4 py-1.5 bg-slate-900 text-white font-bold text-xs hover:bg-black transition'>
+            Đóng
+          </button>
+        </div>
+      </div>
+    </div>
+
   </div> <!-- Close #app -->
 
   <!-- Blogger Standard Section Required by Engine -->
@@ -3282,6 +3636,24 @@
         let privateChatUnsubscribe = null;
 
         // XỔ SỐ KIẾN THIẾT STATE
+        const showLotteryModal = ref(false);
+        const openLotteryModal = () => {
+          showLotteryModal.value = true;
+          if (!lotteryData.value.xstn || lotteryData.value.xstn.length === 0) {
+            fetchLotteryData();
+          }
+        };
+
+        const lotterySchedule = [
+          { day: 'Thứ Hai', stations: 'TP.HCM, Đồng Tháp, Cà Mau', highlight: false },
+          { day: 'Thứ Ba', stations: 'Bến Tre, Vũng Tàu, Bạc Liêu', highlight: false },
+          { day: 'Thứ Tư', stations: 'Đồng Nai, Cần Thơ, Sóc Trăng', highlight: false },
+          { day: 'Thứ Năm', stations: '🌟 TÂY NINH, An Giang, Bình Thuận', highlight: true },
+          { day: 'Thứ Sáu', stations: 'Vĩnh Long, Bình Dương, Trà Vinh', highlight: false },
+          { day: 'Thứ Bảy', stations: 'TP.HCM, Long An, Bình Phước, Hậu Giang', highlight: false },
+          { day: 'Chủ Nhật', stations: 'Tiền Giang, Kiên Giang, Đà Lạt', highlight: false }
+        ];
+
         const activeLotteryRegion = ref('xstn');
         const ticketCheckRegion = ref('xstn');
         const selectedProvinceIdx = ref(0);
@@ -4543,6 +4915,39 @@
           if (!str) return [];
           return String(str).split('-').map(s => s.trim()).filter(Boolean);
         };
+
+        const lotteryHeadTail = computed(() => {
+          const current = currentDisplayLottery.value;
+          if (!current || !current.prizes) return { heads: {}, tails: {} };
+          
+          const heads = { 0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: [], 9: [] };
+          const tails = { 0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: [], 9: [] };
+          
+          const allNumbers = [];
+          for (const [prizeKey, prizeVal] of Object.entries(current.prizes)) {
+            const list = splitPrize(prizeVal);
+            for (const num of list) {
+              const clean = String(num).replace(/[^0-9]/g, '');
+              if (clean.length >= 2) {
+                allNumbers.push(clean.slice(-2));
+              }
+            }
+          }
+          
+          allNumbers.forEach(l2 => {
+            const head = parseInt(l2[0]);
+            const tail = parseInt(l2[1]);
+            if (!isNaN(head)) heads[head].push(l2);
+            if (!isNaN(tail)) tails[tail].push(l2);
+          });
+          
+          for (let i = 0; i <= 9; i++) {
+            heads[i].sort();
+            tails[i].sort();
+          }
+          
+          return { heads, tails };
+        });
 
         const parsePrizesBlock = (text) => {
           const cleanText = text.replace(/7:\s*(\d{3,4})\s*8:\s*(\d{2})/g, '7: $1\n8: $2');
@@ -6055,6 +6460,10 @@
           markAllNotificationsAsRead,
           handleNotificationClick,
           clearNotification,
+          showLotteryModal,
+          openLotteryModal,
+          lotterySchedule,
+          lotteryHeadTail,
           currentLang,
           switchLang,
           t
