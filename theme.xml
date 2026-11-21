@@ -166,15 +166,23 @@
               <span class='bg-[#C74634] text-white font-black px-2.5 py-1 text-sm tracking-wider select-none'>TNHub</span>
               <span class='text-xs font-black text-[#161513] tracking-tight uppercase'>TÂY NINH</span>
             </div>
-            <!-- Language Switcher in Left Sidebar -->
-            <div class='inline-flex items-center p-0.5 bg-white border border-[#E0DDD8] text-[10px] font-bold shadow-xs shrink-0'>
-              <button type='button' v-on:click='switchLang("vi")' v-bind:class='currentLang === "vi" ? "bg-[#C74634] text-white shadow-xs" : "text-slate-600 hover:text-slate-900"' class='px-2 py-0.5 transition flex items-center gap-1' title='Tiếng Việt'>
-                <span class='text-[10px]'>🇻🇳</span>
+            <!-- Language Switcher in Left Sidebar (VI, EN, KO, ZH) -->
+            <div class='inline-flex items-center p-0.5 bg-white border border-[#E0DDD8] text-[9px] font-bold shadow-xs shrink-0'>
+              <button type='button' v-on:click='switchLang("vi")' v-bind:class='currentLang === "vi" ? "bg-[#C74634] text-white shadow-xs" : "text-slate-600 hover:text-slate-900"' class='px-1.5 py-0.5 transition flex items-center gap-0.5' title='Tiếng Việt'>
+                <span>🇻🇳</span>
                 <span>VI</span>
               </button>
-              <button type='button' v-on:click='switchLang("en")' v-bind:class='currentLang === "en" ? "bg-[#C74634] text-white shadow-xs" : "text-slate-600 hover:text-slate-900"' class='px-2 py-0.5 transition flex items-center gap-1' title='English'>
-                <span class='text-[10px]'>🇬🇧</span>
+              <button type='button' v-on:click='switchLang("en")' v-bind:class='currentLang === "en" ? "bg-[#C74634] text-white shadow-xs" : "text-slate-600 hover:text-slate-900"' class='px-1.5 py-0.5 transition flex items-center gap-0.5' title='English'>
+                <span>🇬🇧</span>
                 <span>EN</span>
+              </button>
+              <button type='button' v-on:click='switchLang("ko")' v-bind:class='currentLang === "ko" ? "bg-[#C74634] text-white shadow-xs" : "text-slate-600 hover:text-slate-900"' class='px-1.5 py-0.5 transition flex items-center gap-0.5' title='한국어 (Korean)'>
+                <span>🇰🇷</span>
+                <span>KO</span>
+              </button>
+              <button type='button' v-on:click='switchLang("zh")' v-bind:class='currentLang === "zh" ? "bg-[#C74634] text-white shadow-xs" : "text-slate-600 hover:text-slate-900"' class='px-1.5 py-0.5 transition flex items-center gap-0.5' title='中文 (Chinese)'>
+                <span>🇨🇳</span>
+                <span>ZH</span>
               </button>
             </div>
           </div>
@@ -346,7 +354,7 @@
                     class='relative px-3 py-1.5 bg-white border border-[#E0DDD8] flex items-center gap-1.5 text-xs text-slate-700 hover:bg-[#F1EFED] shadow-sm transition' 
                     title='Trung tâm thông báo thời gian thực'>
               <i class='fa-regular fa-bell text-xs' v-bind:class='unreadNotificationCount > 0 ? "text-[#C74634] animate-bounce" : "text-slate-500"'></i>
-              <span class='font-semibold hidden sm:inline'>Thông báo</span>
+              <span class='font-semibold hidden sm:inline'>{{ t('notifications') }}</span>
               <span v-if='unreadNotificationCount > 0' class='bg-[#C74634] text-white text-[10px] font-bold px-1.5 py-0.2'>{{ unreadNotificationCount }}</span>
             </button>
 
@@ -358,7 +366,7 @@
               <div class='px-3.5 py-2.5 bg-[#161513] text-white flex items-center justify-between border-b-2 border-[#C74634]'>
                 <div class='flex items-center gap-2'>
                   <i class='fa-solid fa-bell text-[#C74634]'></i>
-                  <span class='font-bold uppercase tracking-wide text-xs'>Thông Báo Realtime</span>
+                  <span class='font-bold uppercase tracking-wide text-xs'>{{ t('realtimeNotif') }}</span>
                   <span v-if='unreadNotificationCount > 0' class='bg-[#C74634] text-white text-[9px] font-bold px-1.5 py-0.2'>{{ unreadNotificationCount }} mới</span>
                 </div>
                 <div class='flex items-center gap-2'>
@@ -366,7 +374,7 @@
                           type='button' 
                           v-on:click='markAllNotificationsAsRead' 
                           class='text-[10px] text-slate-300 hover:text-white underline transition'>
-                    Đã đọc tất cả
+                    {{ t('markAllRead') }}
                   </button>
                   <button type='button' 
                           v-on:click='showNotificationDropdown = false' 
@@ -1983,15 +1991,21 @@
           </button>
         </div>
 
-        <!-- Language Switcher -->
+        <!-- Language Switcher in Mobile Drawer (VI, EN, KO, ZH) -->
         <div class='flex items-center justify-between p-2 bg-[#FAF9F8] border border-[#E0DDD8] text-xs'>
-          <span class='font-bold text-slate-600'>Ngôn ngữ:</span>
+          <span class='font-bold text-slate-600'>{{ currentLang === 'vi' ? 'Ngôn ngữ:' : currentLang === 'en' ? 'Language:' : currentLang === 'ko' ? '언어 선택:' : '选择语言:' }}</span>
           <div class='inline-flex items-center gap-1'>
-            <button type='button' v-on:click='switchLang("vi")' v-bind:class='currentLang === "vi" ? "bg-[#C74634] text-white font-bold" : "bg-white text-slate-700 border border-[#E0DDD8]"' class='px-2 py-0.5 text-[10px]'>
+            <button type='button' v-on:click='switchLang("vi")' v-bind:class='currentLang === "vi" ? "bg-[#C74634] text-white font-bold" : "bg-white text-slate-700 border border-[#E0DDD8]"' class='px-1.5 py-0.5 text-[10px]'>
               🇻🇳 VI
             </button>
-            <button type='button' v-on:click='switchLang("en")' v-bind:class='currentLang === "en" ? "bg-[#C74634] text-white font-bold" : "bg-white text-slate-700 border border-[#E0DDD8]"' class='px-2 py-0.5 text-[10px]'>
+            <button type='button' v-on:click='switchLang("en")' v-bind:class='currentLang === "en" ? "bg-[#C74634] text-white font-bold" : "bg-white text-slate-700 border border-[#E0DDD8]"' class='px-1.5 py-0.5 text-[10px]'>
               🇬🇧 EN
+            </button>
+            <button type='button' v-on:click='switchLang("ko")' v-bind:class='currentLang === "ko" ? "bg-[#C74634] text-white font-bold" : "bg-white text-slate-700 border border-[#E0DDD8]"' class='px-1.5 py-0.5 text-[10px]'>
+              🇰🇷 KO
+            </button>
+            <button type='button' v-on:click='switchLang("zh")' v-bind:class='currentLang === "zh" ? "bg-[#C74634] text-white font-bold" : "bg-white text-slate-700 border border-[#E0DDD8]"' class='px-1.5 py-0.5 text-[10px]'>
+              🇨🇳 ZH
             </button>
           </div>
         </div>
@@ -4140,7 +4154,7 @@
     createApp({
       setup() {
         // ==========================================
-        // ĐA NGÔN NGỮ (i18n: VIETNAMESE & ENGLISH)
+        // ĐA NGÔN NGỮ (i18n: VI, EN, KO, ZH)
         // ==========================================
         const currentLang = ref(localStorage.getItem('tnhub_lang') || 'vi');
 
@@ -4160,6 +4174,10 @@
             classifieds: 'Rao vặt',
             services: 'Dịch vụ sửa chữa',
             postNew: 'Đăng tin mới',
+            newPost: 'Đăng tin mới',
+            notifications: 'Thông báo',
+            markAllRead: 'Đã đọc tất cả',
+            realtimeNotif: 'Thông Báo Realtime',
             loginGoogle: 'Đăng nhập Google',
             logout: 'Đăng xuất',
             account: 'Tài khoản',
@@ -4226,6 +4244,10 @@
             classifieds: 'Marketplace',
             services: 'Services & Repair',
             postNew: 'Post New Listing',
+            newPost: 'Post New Listing',
+            notifications: 'Notifications',
+            markAllRead: 'Mark all as read',
+            realtimeNotif: 'Realtime Notifications',
             loginGoogle: 'Sign in with Google',
             logout: 'Sign out',
             account: 'Account',
@@ -4276,6 +4298,146 @@
             typeMessage: 'Type a private message...',
             send: 'Send',
             onlineTN: 'Tay Ninh Online'
+          },
+          ko: {
+            home: '홈',
+            messages: '메시지',
+            videoTN: '타이닌 영상',
+            lottery: '복권 추첨 결과',
+            lotterySubtitle: '타이닌 & 전국 3개 지역',
+            categories: '카테고리',
+            exploreTN: '타이닌 둘러보기',
+            allPosts: '전체 게시글',
+            jobs: '구인·구직',
+            realEstate: '부동산',
+            foodHotel: '맛집 & 호텔',
+            classifieds: '중고거래·장터',
+            services: '생활·수리 서비스',
+            postNew: '새 글 등록',
+            newPost: '새 글 등록',
+            notifications: '알림',
+            markAllRead: '모두 읽음',
+            realtimeNotif: '실시간 알림 센터',
+            loginGoogle: 'Google 계정 로그인',
+            logout: '로그아웃',
+            account: '내 계정',
+            viewProfile: '프로필 보기',
+            profileSettings: '프로필 설정',
+            myPosts: '내가 쓴 글',
+            friends: '친구 목록',
+            searchPlaceholder: '타이닌의 일자리, 부동산, 서비스 검색...',
+            allDistricts: '지역: 타이닌성 전역',
+            priceRange: '가격대',
+            industries: '직종·업종',
+            sort: '정렬',
+            grid: '그리드',
+            map: '지도',
+            all: '전체',
+            hotel: '호텔·숙박',
+            service: '서비스',
+            buySell: '중고거래',
+            yourPost: '내 게시물',
+            newBadge: '최신',
+            justNow: '방금 전',
+            likes: '명이 좋아함',
+            comments: '개의 댓글',
+            views: '회 조회',
+            like: '좋아요',
+            liked: '좋아요 완료',
+            comment: '댓글',
+            share: '공유',
+            apply: '지원하기',
+            callNow: '전화 문의',
+            details: '상세보기',
+            chat: '채팅',
+            addFriend: '친구 추가',
+            alreadyFriend: '친구',
+            deletePost: '삭제',
+            deleteMyPost: '게시글 삭제',
+            quickSharePlaceholder: '님, 타이닌의 새로운 소식이나 일자리, 부동산 정보를 공유해보세요!',
+            quickShareGuest: '타이닌 지역의 일자리, 부동산, 거래 정보를 등록해보세요...',
+            loadMore: '게시물 더보기',
+            noMore: '모든 게시물을 불러왔습니다',
+            profileTitle: '회원 프로필',
+            changeCover: '배경 사진 변경',
+            changeAvatar: '사진 변경',
+            saveProfile: '프로필 저장',
+            close: '닫기',
+            friendsTitle: '타이닌 친구 & 인맥 네트워크',
+            privateChatTitle: '1:1 비밀 대화',
+            typeMessage: '메시지를 입력하세요...',
+            send: '전송',
+            onlineTN: '타이닌 실시간 접속'
+          },
+          zh: {
+            home: '首页',
+            messages: '消息',
+            videoTN: '西宁精选视频',
+            lottery: '彩票开奖结果',
+            lotterySubtitle: '西宁与全国各省',
+            categories: '信息分类',
+            exploreTN: '探索西宁',
+            allPosts: '全部信息',
+            jobs: '招聘求职',
+            realEstate: '房产置业',
+            foodHotel: '美食与酒店',
+            classifieds: '跳蚤二手',
+            services: '便民维修服务',
+            postNew: '免费发布信息',
+            newPost: '发布新信息',
+            notifications: '消息通知',
+            markAllRead: '全部已读',
+            realtimeNotif: '实时通知中心',
+            loginGoogle: '使用 Google 登录',
+            logout: '退出登录',
+            account: '我的账户',
+            viewProfile: '查看主页',
+            profileSettings: '资料设置',
+            myPosts: '我发布的',
+            friends: '好友列表',
+            searchPlaceholder: '搜索西宁招聘、房产、便民服务...',
+            allDistricts: '区域：西宁省全域',
+            priceRange: '价格范围',
+            industries: '行业分类',
+            sort: '排序方式',
+            grid: '网格',
+            map: '地图',
+            all: '全部',
+            hotel: '酒店住宿',
+            service: '便民服务',
+            buySell: '买卖交易',
+            yourPost: '您的信息',
+            newBadge: '最新',
+            justNow: '刚刚',
+            likes: '人赞过',
+            comments: '条评论',
+            views: '次浏览',
+            like: '点赞',
+            liked: '已赞',
+            comment: '评论',
+            share: '分享',
+            apply: '立即应聘',
+            callNow: '电话咨询',
+            details: '查看详情',
+            chat: '在线沟通',
+            addFriend: '加为好友',
+            alreadyFriend: '已是好友',
+            deletePost: '删除',
+            deleteMyPost: '删除信息',
+            quickSharePlaceholder: '，想在西宁分享什么新闻、招聘或房产信息？',
+            quickShareGuest: '发布西宁当地的招聘求职、房屋租售与便民生活信息...',
+            loadMore: '加载更多信息',
+            noMore: '已显示全部信息',
+            profileTitle: '个人资料',
+            changeCover: '更换封面',
+            changeAvatar: '更换头像',
+            saveProfile: '保存资料',
+            close: '关闭',
+            friendsTitle: '西宁好友与人脉圈',
+            privateChatTitle: '私信对话',
+            typeMessage: '输入私信内容...',
+            send: '发送',
+            onlineTN: '西宁在线'
           }
         };
 
@@ -4293,7 +4455,14 @@
           try {
             localStorage.setItem('tnhub_lang', lang);
           } catch(e) {}
-          showToast(lang === 'vi' ? 'Đã chuyển sang Tiếng Việt' : 'Switched to English', 'success');
+          const toastMsgs = {
+            vi: 'Đã chuyển sang Tiếng Việt',
+            en: 'Switched to English',
+            ko: '한국어로 전환되었습니다',
+            zh: '已切换为中文'
+          };
+          showToast(toastMsgs[lang] || 'Language updated', 'success');
+        };
         };
 
         const activeTab = ref('feed');
