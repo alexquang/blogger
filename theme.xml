@@ -522,15 +522,15 @@
 
           <!-- View Mode Buttons -->
           <div class='flex items-center gap-1 bg-white p-1 border border-[#E0DDD8] shadow-sm'>
-            <button v-on:click='viewMode = "grid"' v-bind:class='viewMode === "grid" ? "bg-[#161513] text-white font-bold" : "text-slate-500 hover:text-slate-800"' class='px-3 py-1 text-xs flex items-center gap-1.5 transition'>
+            <button type='button' v-on:click='viewMode = "grid"' v-bind:class='viewMode === "grid" ? "bg-[#161513] text-white font-bold" : "text-slate-500 hover:text-slate-800"' class='px-3 py-1 text-xs flex items-center gap-1.5 transition'>
               <i class='fa-solid fa-table-cells-large text-[11px]'></i>
               <span>Lưới</span>
             </button>
-            <button v-on:click='viewMode = "map"' v-bind:class='viewMode === "map" ? "bg-[#161513] text-white font-bold" : "text-slate-500 hover:text-slate-800"' class='px-3 py-1 text-xs flex items-center gap-1.5 transition'>
+            <button type='button' v-on:click='viewMode = "map"' v-bind:class='viewMode === "map" ? "bg-[#161513] text-white font-bold" : "text-slate-500 hover:text-slate-800"' class='px-3 py-1 text-xs flex items-center gap-1.5 transition'>
               <i class='fa-solid fa-map-location-dot text-[11px]'></i>
               <span>Bản đồ</span>
             </button>
-            <button v-on:click='viewMode = "list"' v-bind:class='viewMode === "list" ? "bg-[#161513] text-white font-bold" : "text-slate-500 hover:text-slate-800"' class='px-3 py-1 text-xs flex items-center gap-1.5 transition'>
+            <button type='button' v-on:click='viewMode = "list"' v-bind:class='viewMode === "list" ? "bg-[#161513] text-white font-bold" : "text-slate-500 hover:text-slate-800"' class='px-3 py-1 text-xs flex items-center gap-1.5 transition'>
               <i class='fa-solid fa-list text-[11px]'></i>
               <span>Danh sách</span>
             </button>
@@ -557,8 +557,8 @@
           <p class='text-xs text-slate-500 mt-1'>Đồng bộ realtime 100% dữ liệu tin đăng Tây Ninh</p>
         </div>
 
-        <!-- MAIN CARD GRID: RESPONSIVE 1 OR 2 COLUMNS (LINKEDIN POST STYLE) -->
-        <div class='grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5'>
+        <!-- 1. MAIN CARD GRID: RESPONSIVE 1 OR 2 COLUMNS (LINKEDIN POST STYLE) -->
+        <div v-if='viewMode === "grid"' class='grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5'>
           
           <article v-for='card in filteredCards' v-bind:key='card.id' 
                    class='bg-white border border-[#E0DDD8] shadow-sm hover:shadow-md transition flex flex-col justify-between relative'>
@@ -762,6 +762,244 @@
 
           </article>
 
+        </div>
+
+        <!-- 2. LIST VIEW: COMPACT HORIZONTAL POST ROWS -->
+        <div v-else-if='viewMode === "list"' class='space-y-3 sm:space-y-3.5'>
+          <article v-for='card in filteredCards' v-bind:key='card.id'
+                   class='bg-white border border-[#E0DDD8] p-3 sm:p-4 shadow-sm hover:shadow-md transition flex flex-col md:flex-row gap-3 sm:gap-4 items-stretch md:items-center justify-between group'>
+            
+            <!-- Thumbnail on Left -->
+            <div class='relative w-full md:w-44 h-36 md:h-28 overflow-hidden bg-slate-100 border border-[#E0DDD8] shrink-0 cursor-pointer'
+                 v-on:click='openDetailModal(card)'>
+              <img v-bind:src='card.image' v-bind:alt='card.title' v-on:error='handleImgError'
+                   class='w-full h-full object-cover group-hover:scale-105 transition-transform duration-300' />
+              <span class='absolute top-2 left-2 px-1.5 py-0.5 text-[9px] font-bold bg-[#C74634] text-white shadow-sm'>
+                {{ card.badge || getCategoryLabel(card.category) }}
+              </span>
+              <span v-if='card.price' class='absolute bottom-2 right-2 px-1.5 py-0.5 text-[10px] font-bold bg-black/80 text-white'>
+                {{ card.price }}
+              </span>
+            </div>
+
+            <!-- Middle Information -->
+            <div class='flex-1 min-w-0 flex flex-col justify-between py-0.5 space-y-1.5'>
+              <!-- Author & Location meta -->
+              <div class='flex items-center justify-between text-xs text-slate-500 gap-2'>
+                <div class='flex items-center gap-2 min-w-0 flex-1'>
+                  <img v-bind:src='card.authorAvatar || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&amp;fit=crop&amp;w=80&amp;q=80"'
+                       class='w-5 h-5 object-cover border border-[#E0DDD8] shrink-0' />
+                  <span class='font-bold text-slate-800 truncate text-[11px]'>{{ card.authorName || 'Thành viên Tây Ninh' }}</span>
+                  <span class='text-slate-300'>•</span>
+                  <span class='text-[10px] text-slate-500 flex items-center gap-1 truncate'>
+                    <i class='fa-solid fa-location-dot text-[#C74634] text-[9px]'></i>
+                    {{ card.location || 'Tây Ninh' }}
+                  </span>
+                  <span v-if='card.likedByMe || isLiked(card)' class='px-1.5 py-0.2 text-[8px] font-bold bg-[#C74634] text-white shrink-0 ml-1'>
+                    Đã thích
+                  </span>
+                </div>
+                <div class='flex items-center gap-2 shrink-0'>
+                  <span class='text-[10px] text-slate-400'>{{ card.subprice || 'Vừa xong' }}</span>
+                  <button v-if='isAdmin' type='button' v-on:click.stop='confirmDeletePost(card)'
+                          class='px-1.5 py-0.5 text-[10px] font-bold text-rose-600 hover:text-white bg-rose-50 hover:bg-rose-600 border border-rose-300 transition' title='Xóa tin (Admin)'>
+                    <i class='fa-solid fa-trash-can text-[9px]'></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Post Title -->
+              <h3 v-on:click='openDetailModal(card)' 
+                  class='font-bold text-sm sm:text-base text-[#161513] hover:text-[#C74634] cursor-pointer line-clamp-1 sm:line-clamp-2 transition leading-snug'>
+                {{ card.title }}
+              </h3>
+
+              <!-- Snippet Description -->
+              <p class='text-xs text-slate-600 line-clamp-1'>
+                {{ card.description || 'Xem chi tiết tin đăng tại cộng đồng Tây Ninh TN通' }}
+              </p>
+
+              <!-- Price, category, tags & stats -->
+              <div class='flex flex-wrap items-center gap-2 pt-1 text-xs'>
+                <span class='text-[#C74634] font-black text-xs sm:text-sm'>{{ card.price }}</span>
+                <span class='px-2 py-0.5 text-[10px] font-semibold bg-[#F1EFED] text-slate-700 border border-[#E0DDD8]'>
+                  {{ getCategoryLabel(card.category) }}
+                </span>
+                <span v-if='card.district' class='px-2 py-0.5 text-[10px] text-slate-500 bg-white border border-[#E0DDD8]'>
+                  {{ getDistrictName(card.district) }}
+                </span>
+                <span class='text-[10px] text-slate-400 ml-auto flex items-center gap-2'>
+                  <span><i class='fa-regular fa-thumbs-up text-[9px]'></i> {{ card.likes || 0 }}</span>
+                  <span><i class='fa-regular fa-comment text-[9px]'></i> {{ (card.comments &amp;&amp; card.comments.length) || 0 }}</span>
+                  <span><i class='fa-regular fa-eye text-[9px]'></i> {{ card.views || 0 }}</span>
+                </span>
+              </div>
+            </div>
+
+            <!-- Right Action Panel -->
+            <div class='flex md:flex-col items-center justify-between md:justify-center gap-2 shrink-0 border-t md:border-t-0 md:border-l border-[#E0DDD8] pt-2 md:pt-0 md:pl-4 min-w-[130px]'>
+              <!-- CTA Button -->
+              <button v-if='card.category === "tuyendung"' type='button' v-on:click='openApplyModal(card)'
+                      class='w-full px-3 py-1.5 bg-[#C74634] hover:bg-[#B13C2C] text-white font-bold text-xs transition shadow-sm text-center'>
+                Ứng tuyển
+              </button>
+              <button v-else-if='card.category === "batdongsan" || card.category === "raovat"' type='button' v-on:click='openContactModal(card)'
+                      class='w-full px-3 py-1.5 bg-[#161513] hover:bg-black text-white font-bold text-xs transition shadow-sm text-center'>
+                Liên hệ
+              </button>
+              <button v-else='true' type='button' v-on:click='openDetailModal(card)'
+                      class='w-full px-3 py-1.5 bg-[#161513] hover:bg-black text-white font-bold text-xs transition shadow-sm text-center'>
+                Chi tiết
+              </button>
+
+              <!-- Quick Social Buttons -->
+              <div class='flex items-center gap-1.5 w-full justify-center'>
+                <!-- Nút Thích -->
+                <button type='button' v-on:click.stop='toggleLike(card)'
+                        class='p-1.5 hover:bg-[#F1EFED] transition flex items-center gap-1 text-xs' title='Thích'>
+                  <span v-bind:class='(card.likedByMe || isLiked(card)) ? "bg-[#C74634] text-white" : "text-slate-500 hover:text-slate-800"' class='w-6 h-6 flex items-center justify-center transition'>
+                    <i class='fa-solid fa-thumbs-up text-[10px]'></i>
+                  </span>
+                </button>
+                <!-- Nút Bình luận -->
+                <button type='button' v-on:click.stop='openDetailModal(card)'
+                        class='p-1.5 text-slate-500 hover:text-slate-800 hover:bg-[#F1EFED] transition text-xs' title='Bình luận'>
+                  <i class='fa-regular fa-comment'></i>
+                </button>
+                <!-- Nút Lưu -->
+                <button type='button' v-on:click.stop='toggleBookmark(card)'
+                        v-bind:class='isBookmarked(card.id) ? "text-[#C74634]" : "text-slate-500 hover:text-slate-800"'
+                        class='p-1.5 hover:bg-[#F1EFED] transition text-xs' title='Lưu tin'>
+                  <i v-bind:class='isBookmarked(card.id) ? "fa-solid fa-bookmark" : "fa-regular fa-bookmark"'></i>
+                </button>
+                <!-- Nút Ghim Bản Đồ -->
+                <button type='button' v-on:click.stop='viewMode = "map"; selectCardForMap(card)'
+                        class='p-1.5 text-slate-500 hover:text-[#C74634] hover:bg-[#F1EFED] transition text-xs' title='Xem trên Bản Đồ'>
+                  <i class='fa-solid fa-map-location-dot'></i>
+                </button>
+                <!-- Nút Chia sẻ -->
+                <button type='button' v-on:click.stop='shareCard(card)'
+                        class='p-1.5 text-slate-500 hover:text-slate-800 hover:bg-[#F1EFED] transition text-xs' title='Chia sẻ'>
+                  <i class='fa-solid fa-share-nodes'></i>
+                </button>
+              </div>
+            </div>
+
+          </article>
+        </div>
+
+        <!-- 3. MAP VIEW: IN-FEED INTERACTIVE MAP & PINNED CARDS -->
+        <div v-else-if='viewMode === "map"' class='space-y-4'>
+          <!-- Map Banner Container -->
+          <div class='bg-white border border-[#E0DDD8] p-3 sm:p-4 shadow-sm space-y-3'>
+            <div class='flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-[#E0DDD8]'>
+              <div>
+                <h3 class='font-bold text-sm sm:text-base text-[#161513] flex items-center gap-2'>
+                  <i class='fa-solid fa-map-location-dot text-[#C74634]'></i>
+                  <span>BẢN ĐỒ TỰ ĐỘNG TÂY NINH ({{ filteredCards.length }} TIN ĐĂNG)</span>
+                </h3>
+                <p class='text-xs text-slate-500 mt-0.5'>Bấm vào bất kỳ tin đăng nào bên dưới để định vị ngay vị trí trên bản đồ Tây Ninh.</p>
+              </div>
+              <a v-bind:href='"https://www.google.com/maps/search/?api=1&amp;query=" + encodeURIComponent((activePinItem.location || "Tây Ninh") + " Tây Ninh")' target='_blank' 
+                 class='px-3 py-1.5 bg-[#F1EFED] hover:bg-[#E0DDD8] border border-[#E0DDD8] text-slate-700 text-xs font-bold transition flex items-center gap-1.5 shrink-0 self-start sm:self-auto'>
+                <span>Mở Google Maps</span>
+                <i class='fa-solid fa-arrow-up-right-from-square text-[11px] text-[#C74634]'></i>
+              </a>
+            </div>
+
+            <!-- Google Maps Embed -->
+            <div class='bg-slate-100 overflow-hidden border border-[#E0DDD8] shadow-sm relative h-72 sm:h-96 w-full'>
+              <iframe 
+                v-bind:src='mapEmbedUrl' 
+                class='w-full h-full border-0' 
+                loading='lazy' 
+                referrerpolicy='no-referrer-when-downgrade'
+                title='Google Maps Tây Ninh Feed'>
+              </iframe>
+
+              <!-- Active Pin Card Floating Overlay -->
+              <div v-if='activePinItem &amp;&amp; activePinItem.title' 
+                   class='absolute bottom-3 left-3 right-3 sm:right-auto sm:max-w-md bg-white/95 backdrop-blur-md p-3 shadow-lg border border-[#E0DDD8] flex items-center gap-3 transition'>
+                <img v-bind:src='activePinItem.image' v-on:error='handleImgError' 
+                     class='w-12 h-12 object-cover border border-[#E0DDD8] shrink-0' />
+                <div class='flex-1 min-w-0'>
+                  <span class='text-[9px] font-bold text-[#C74634] uppercase tracking-wider block'>Đang ghim vị trí</span>
+                  <h5 class='font-bold text-xs text-[#161513] truncate'>{{ activePinItem.title }}</h5>
+                  <p class='text-[11px] text-[#C74634] font-bold'>{{ activePinItem.price }}</p>
+                  <p class='text-[10px] text-slate-500 truncate flex items-center gap-1'>
+                    <i class='fa-solid fa-location-dot text-[#C74634] text-[9px]'></i>
+                    <span>{{ activePinItem.location }}</span>
+                  </p>
+                </div>
+                <button type='button' v-on:click='openDetailModal(activePinItem)' 
+                        class='px-3 py-1.5 bg-[#C74634] text-white text-xs font-bold shrink-0 hover:bg-[#B13C2C] transition shadow-sm'>
+                  Chi tiết
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cards Grid in Map View -->
+          <div class='grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4'>
+            <article v-for='(card, idx) in filteredCards' v-bind:key='card.id'
+                     v-bind:class='(activePinItem &amp;&amp; activePinItem.id === card.id) ? "border-[#C74634] ring-2 ring-[#C74634]/20 bg-rose-50/20" : "border-[#E0DDD8] bg-white"'
+                     class='border p-3 shadow-sm hover:shadow-md transition flex flex-col justify-between'>
+              
+              <div class='flex items-start gap-3'>
+                <!-- Sequential Pin Number & Thumbnail -->
+                <div class='relative shrink-0 cursor-pointer' v-on:click='selectCardForMap(card)'>
+                  <img v-bind:src='card.image' v-bind:alt='card.title' v-on:error='handleImgError'
+                       class='w-20 h-20 sm:w-24 sm:h-24 object-cover border border-[#E0DDD8]' />
+                  <span class='absolute -top-1.5 -left-1.5 w-6 h-6 bg-[#C74634] text-white font-black text-xs flex items-center justify-center shadow'>
+                    {{ idx + 1 }}
+                  </span>
+                </div>
+
+                <!-- Card Details -->
+                <div class='flex-1 min-w-0 space-y-1'>
+                  <div class='flex items-center justify-between gap-1'>
+                    <span class='text-[9px] font-bold uppercase px-1.5 py-0.5 bg-[#F1EFED] text-[#C74634] border border-[#E0DDD8] truncate'>
+                      {{ getCategoryLabel(card.category) }}
+                    </span>
+                    <span class='text-[10px] text-slate-400 shrink-0'>{{ card.subprice || 'Vừa xong' }}</span>
+                  </div>
+                  <h4 v-on:click='selectCardForMap(card)' 
+                      class='font-bold text-xs sm:text-sm text-[#161513] hover:text-[#C74634] cursor-pointer line-clamp-2 leading-snug'>
+                    {{ card.title }}
+                  </h4>
+                  <p class='text-[11px] font-bold text-[#C74634]'>{{ card.price }}</p>
+                  <p class='text-[10px] text-slate-500 truncate flex items-center gap-1'>
+                    <i class='fa-solid fa-location-dot text-[#C74634] text-[9px]'></i>
+                    <span>{{ card.location || 'Tây Ninh' }}</span>
+                  </p>
+                </div>
+              </div>
+
+              <!-- Map Card Actions -->
+              <div class='flex items-center justify-between border-t border-[#E0DDD8]/70 pt-2.5 mt-2.5 text-xs'>
+                <button type='button' v-on:click='selectCardForMap(card)'
+                        v-bind:class='(activePinItem &amp;&amp; activePinItem.id === card.id) ? "bg-[#C74634] text-white font-bold" : "bg-[#F1EFED] hover:bg-[#E0DDD8] text-slate-700 font-semibold"'
+                        class='px-2.5 py-1 text-[11px] border border-[#E0DDD8] transition flex items-center gap-1.5'>
+                  <i class='fa-solid fa-location-crosshairs text-[10px]'></i>
+                  <span>{{ (activePinItem &amp;&amp; activePinItem.id === card.id) ? "Đang ghim vị trí" : "Ghim lên bản đồ" }}</span>
+                </button>
+
+                <div class='flex items-center gap-1.5'>
+                  <button type='button' v-on:click.stop='toggleLike(card)'
+                          class='p-1 text-xs' title='Thích'>
+                    <span v-bind:class='(card.likedByMe || isLiked(card)) ? "bg-[#C74634] text-white" : "text-slate-400 hover:text-slate-700"' class='w-5 h-5 flex items-center justify-center transition'>
+                      <i class='fa-solid fa-thumbs-up text-[9px]'></i>
+                    </span>
+                  </button>
+                  <button type='button' v-on:click='openDetailModal(card)' 
+                          class='px-2.5 py-1 bg-[#161513] hover:bg-black text-white text-[11px] font-bold transition'>
+                    Chi tiết
+                  </button>
+                </div>
+              </div>
+
+            </article>
+          </div>
         </div>
 
         <!-- Nút xem thêm / Phân trang tải dữ liệu 200 tin -->
@@ -1979,22 +2217,33 @@
           }));
         });
 
-        const activePinItem = computed(() => {
-          if (cards.value.length > 0) {
-            const first = cards.value[0];
+        const customActivePinItem = ref(null);
+        const activePinItem = computed({
+          get() {
+            if (customActivePinItem.value) return customActivePinItem.value;
+            if (cards.value.length > 0) {
+              const first = cards.value[0];
+              return {
+                id: first.id,
+                title: first.title,
+                price: first.price,
+                location: first.location || 'TP. Tây Ninh',
+                image: first.image,
+                category: first.category,
+                badge: first.badge
+              };
+            }
             return {
-              title: first.title,
-              price: first.price,
-              location: first.location || 'TP. Tây Ninh',
-              image: first.image
+              id: 'default',
+              title: 'Tin đăng Tây Ninh',
+              price: 'Thương lượng',
+              location: 'Tây Ninh',
+              image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=120&h=120&q=80'
             };
+          },
+          set(val) {
+            customActivePinItem.value = val;
           }
-          return {
-            title: 'Tin đăng Tây Ninh',
-            price: 'Thương lượng',
-            location: 'Tây Ninh',
-            image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=120&h=120&q=80'
-          };
         });
 
         const mapEmbedUrl = ref("https://maps.google.com/maps?q=T%C3%A2y+Ninh,+Vi%E1%BB%87t+Nam&t=&z=11&ie=UTF8&iwloc=&output=embed");
@@ -2166,24 +2415,39 @@
           showToast('Đã gửi tin nhắn lên cộng đồng Tây Ninh!', 'success');
         };
 
+        const selectCardForMap = (card) => {
+          if (!card) return;
+          activePinItem.value = {
+            id: card.id,
+            title: card.title,
+            price: card.price,
+            location: card.location || 'TP. Tây Ninh',
+            image: card.image,
+            category: card.category,
+            badge: card.badge,
+            authorName: card.authorName
+          };
+          const loc = (card.location || 'Tây Ninh') + ', Tây Ninh, Việt Nam';
+          mapEmbedUrl.value = 'https://maps.google.com/maps?q=' + encodeURIComponent(loc) + '&t=&z=14&ie=UTF8&iwloc=&output=embed';
+          showToast('Đang xem vị trí: ' + (card.title || card.location), 'info');
+        };
+
         const selectPin = (pinNum) => {
           const found = cards.value.find(c => c.pinNumber === pinNum);
           if (found) {
-            activePinItem.value = {
-              title: found.title,
-              price: found.price,
-              location: found.location,
-              image: found.image
-            };
-            const queryLocation = encodeURIComponent(found.location + ', Tây Ninh, Việt Nam');
-            mapEmbedUrl.value = 'https://maps.google.com/maps?q=' + queryLocation + '&t=&z=13&ie=UTF8&iwloc=&output=embed';
-            showToast('Đang xem vị trí: ' + found.title + ' (' + found.location + ')', 'info');
+            selectCardForMap(found);
           }
         };
 
         const selectQuickListItem = (item) => {
           selectPin(item.number);
         };
+
+        watch(viewMode, (newMode) => {
+          if (newMode === 'map' && filteredCards.value.length > 0 && !customActivePinItem.value) {
+            selectCardForMap(filteredCards.value[0]);
+          }
+        });
 
         // Lọc thẻ theo Danh mục, Khu vực huyện thị, Tìm kiếm
         const filteredCards = computed(() => {
@@ -3168,6 +3432,7 @@
           zoomMap,
           onSearchKey,
           selectPin,
+          selectCardForMap,
           selectQuickListItem,
           openApplyModal,
           openContactModal,
