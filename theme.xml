@@ -130,11 +130,11 @@
     }
   ]]></b:skin>
 </head>
-<body class='bg-[#F1EFED] text-[#161513] antialiased h-screen w-screen p-4 sm:p-5 overflow-hidden flex box-border'>
-  <div id='app' v-cloak='true' class='w-full h-full flex-1 bg-white border border-[#E0DDD8] shadow-2xl overflow-hidden flex box-border'>
+<body class='bg-[#F1EFED] text-[#161513] antialiased h-[100dvh] w-screen p-0 sm:p-2 md:p-3 lg:p-4 overflow-hidden flex box-border'>
+  <div id='app' v-cloak='true' class='w-full h-full flex-1 bg-white sm:border border-[#E0DDD8] sm:shadow-2xl overflow-hidden flex box-border'>
     
     <!-- 1. MENU ĐIỀU HƯỚNG TN HUB (ORACLE REDWOOD STYLE) -->
-    <aside class='w-72 xl:w-80 bg-white border-r border-[#E0DDD8] p-5 flex flex-col justify-between shrink-0 overflow-y-auto custom-scroll hidden md:flex'>
+    <aside class='w-64 xl:w-72 2xl:w-80 bg-white border-r border-[#E0DDD8] p-4 lg:p-5 flex flex-col justify-between shrink-0 overflow-y-auto custom-scroll hidden md:flex'>
       <div class='space-y-6'>
         <!-- Oracle-Style Logo Header -->
         <div>
@@ -300,16 +300,22 @@
       </div>
     </aside>
     <!-- 3. MAIN CENTER FEED (ORACLE REDWOOD STYLE) -->
-    <main class='flex-1 min-w-0 overflow-y-auto custom-scroll p-6 lg:p-8 space-y-6'>
+    <main class='flex-1 min-w-0 overflow-y-auto custom-scroll p-3 sm:p-5 lg:p-6 space-y-4 sm:space-y-6'>
       
       <!-- Top Bar: Search, Realtime Bell, Google Account (Oracle Style) -->
-      <div class='flex items-center justify-between gap-3 sm:gap-4'>
-        <div class='relative flex-1 max-w-md'>
-          <i class='fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-xs'></i>
-          <input type='text' v-model='searchKeyword' v-on:keyup='onSearchKey' v-bind:placeholder='t("searchPlaceholder")' class='w-full pl-9 pr-4 py-2 text-xs bg-white border border-[#E0DDD8] focus:border-[#C74634] outline-none shadow-sm' />
+      <div class='flex flex-wrap items-center justify-between gap-2 sm:gap-3'>
+        <div class='flex items-center gap-2 flex-1 min-w-[160px] sm:min-w-[220px] max-w-md'>
+          <!-- Hamburger Button for Mobile (< md) -->
+          <button type='button' v-on:click='showMobileMenu = true' class='md:hidden px-2.5 py-1.5 bg-white border border-[#E0DDD8] text-slate-700 hover:bg-[#F1EFED] shadow-sm transition' title='Menu điều hướng'>
+            <i class='fa-solid fa-bars text-sm'></i>
+          </button>
+          <div class='relative flex-1'>
+            <i class='fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs'></i>
+            <input type='text' v-model='searchKeyword' v-on:keyup='onSearchKey' v-bind:placeholder='t("searchPlaceholder")' class='w-full pl-8 pr-3 py-1.5 sm:py-2 text-xs bg-white border border-[#E0DDD8] focus:border-[#C74634] outline-none shadow-sm' />
+          </div>
         </div>
 
-        <div class='flex items-center gap-2 sm:gap-2.5'>
+        <div class='flex items-center gap-1.5 sm:gap-2 flex-wrap'>
           <!-- Realtime Notifications Bell & Dropdown (Oracle Redwood) -->
           <div class='relative'>
             <button type='button' 
@@ -597,79 +603,79 @@
         </div>
 
         <!-- MAIN CARD GRID: 2 COLUMNS (LINKEDIN POST STYLE) -->
-        <div class='grid grid-cols-1 md:grid-cols-2 gap-5'>
+        <div class='grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5 items-stretch'>
           
-          <article v-for='card in filteredCards' v-bind:key='card.id' class='bg-white border border-[#E0DDD8] shadow-sm hover:shadow-md transition flex flex-col justify-between'>
+          <article v-for='card in filteredCards' v-bind:key='card.id' class='bg-white border border-[#E0DDD8] shadow-sm hover:shadow-md transition flex flex-col justify-between h-full'>
             
-            <!-- 1. Post Author Header (LinkedIn Style) -->
-            <div class='p-3.5 pb-2.5 flex items-center justify-between border-b border-[#E0DDD8]/60'>
-              <div class='flex items-center gap-2.5'>
+            <!-- 1. Post Author Header (LinkedIn Style - Responsive Bulletproof) -->
+            <div class='p-3 sm:p-3.5 pb-2.5 flex items-center justify-between border-b border-[#E0DDD8]/60 gap-2 min-h-[58px]'>
+              <div class='flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1 pr-1'>
                 <img v-bind:src='card.authorAvatar || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&amp;fit=crop&amp;w=80&amp;q=80"' 
                      v-on:click.stop='openUserProfile(card)' 
-                     class='w-9 h-9 object-cover border border-[#E0DDD8] cursor-pointer hover:opacity-90 transition' 
+                     class='w-9 h-9 shrink-0 object-cover border border-[#E0DDD8] cursor-pointer hover:opacity-90 transition' 
                      title='Xem hồ sơ của người này' />
-                <div>
-                  <div class='flex items-center gap-1.5'>
-                    <h4 class='font-bold text-xs text-[#161513] hover:text-[#C74634] transition cursor-pointer flex items-center gap-1' 
+                <div class='min-w-0 flex-1'>
+                  <div class='flex items-center gap-1.5 flex-wrap'>
+                    <h4 class='font-bold text-xs text-[#161513] hover:text-[#C74634] transition cursor-pointer truncate max-w-[120px] sm:max-w-[170px] md:max-w-[200px] xl:max-w-[230px] flex items-center gap-1' 
                         v-on:click.stop='openUserProfile(card)' 
-                        title='Bấm để xem trang cá nhân / hồ sơ người dùng'>
-                      <span>{{ card.authorName || 'Thành viên Tây Ninh' }}</span>
-                      <i class='fa-regular fa-id-badge text-[10px] text-slate-400'></i>
+                        v-bind:title='card.authorName'>
+                      <span class='truncate'>{{ card.authorName || 'Thành viên Tây Ninh' }}</span>
+                      <i class='fa-regular fa-id-badge text-[10px] text-slate-400 shrink-0'></i>
                     </h4>
-                    <span v-if='isMyPost(card)' class='px-1.5 py-0.5 text-[9px] font-bold bg-amber-100 text-amber-800 border border-amber-300'>
+                    <span v-if='isMyPost(card)' class='shrink-0 whitespace-nowrap px-1.5 py-0.2 text-[9px] font-bold bg-amber-100 text-amber-800 border border-amber-300'>
                       Bài của bạn
                     </span>
-                    <span v-else='true' class='px-1.5 py-0.5 text-[9px] font-bold bg-[#F1EFED] text-[#C74634] border border-[#E0DDD8]'>
+                    <span v-else='true' class='shrink-0 whitespace-nowrap px-1.5 py-0.2 text-[9px] font-bold bg-[#F1EFED] text-[#C74634] border border-[#E0DDD8]'>
                       {{ card.badge || 'Tin mới' }}
                     </span>
                   </div>
-                  <p class='text-[10px] text-slate-400'>
+                  <p class='text-[10px] text-slate-400 truncate mt-0.5'>
                     <span>{{ card.location || 'Tây Ninh' }}</span> • 
-                    <span class='text-slate-400'>{{ card.subprice || 'Vừa xong' }}</span> • 
-                    <i class='fa-solid fa-earth-americas text-[9px] text-slate-400'></i>
+                    <span>{{ card.subprice || 'Vừa xong' }}</span> • 
+                    <i class='fa-solid fa-earth-americas text-[9px]'></i>
                   </p>
                 </div>
               </div>
-              <div class='flex items-center gap-1.5'>
+              <div class='flex items-center gap-1 shrink-0 whitespace-nowrap'>
                 <!-- Nút Xóa bài đăng dành cho Admin: ptquang0968@gmail.com -->
                 <button v-if='isAdmin' 
                         type='button' 
                         v-on:click.stop='confirmDeletePost(card)' 
-                        class='px-2.5 py-1 text-[11px] font-bold text-rose-600 hover:text-white bg-rose-50 hover:bg-rose-600 border border-rose-300 transition flex items-center gap-1 shadow-sm' 
+                        class='px-2 py-1 text-[11px] font-bold text-rose-600 hover:text-white bg-rose-50 hover:bg-rose-600 border border-rose-300 transition flex items-center gap-1 shrink-0 whitespace-nowrap shadow-xs' 
                         title='Xóa bài đăng này (Admin)'>
                   <i class='fa-solid fa-trash-can text-[11px]'></i>
-                  <span>Xóa</span>
+                  <span class='hidden xl:inline whitespace-nowrap'>Xóa</span>
                 </button>
                 <!-- Nút Xóa bài của chính người đăng -->
                 <button v-else-if='isMyPost(card)' 
                         type='button' 
                         v-on:click.stop='confirmDeleteMyPost(card)' 
-                        class='px-2 py-1 text-[11px] font-bold text-rose-600 hover:text-white bg-rose-50 hover:bg-rose-600 border border-rose-200 transition flex items-center gap-1 shadow-sm' 
+                        class='px-2 py-1 text-[11px] font-bold text-rose-600 hover:text-white bg-rose-50 hover:bg-rose-600 border border-rose-200 transition flex items-center gap-1 shrink-0 whitespace-nowrap shadow-xs' 
                         title='Xóa bài viết của bạn'>
                   <i class='fa-solid fa-trash-can text-[10px]'></i>
-                  <span>Xóa tin</span>
+                  <span class='hidden xl:inline whitespace-nowrap'>Xóa tin</span>
                 </button>
                 <!-- Nút Kết bạn nếu không phải bài của mình -->
                 <button v-if='currentUser &amp;&amp; !isMyPost(card)' 
                         type='button' 
                         v-on:click.stop='toggleFriend(card)' 
                         v-bind:class='isFriend(card.authorEmail) ? "text-[#C74634] bg-red-50 border-red-200" : "text-slate-600 hover:text-slate-900 bg-white hover:bg-slate-50 border-[#E0DDD8]"' 
-                        class='px-2 py-1 text-[11px] font-medium border transition flex items-center gap-1 shadow-sm' 
+                        class='px-2 py-1 text-[11px] font-medium border transition flex items-center gap-1 shrink-0 whitespace-nowrap shadow-xs' 
                         v-bind:title='isFriend(card.authorEmail) ? "Đã là bạn bè (nhấn để hủy)" : "Kết bạn với tác giả"'>
                   <i v-bind:class='isFriend(card.authorEmail) ? "fa-solid fa-user-check text-[#C74634]" : "fa-solid fa-user-plus text-slate-400"'></i>
-                  <span class='hidden sm:inline'>{{ isFriend(card.authorEmail) ? 'Bạn bè' : 'Kết bạn' }}</span>
+                  <span class='hidden 2xl:inline whitespace-nowrap'>{{ isFriend(card.authorEmail) ? 'Bạn bè' : 'Kết bạn' }}</span>
                 </button>
                 <!-- Nút Chat Private 1-1 -->
                 <button v-if='currentUser &amp;&amp; !isMyPost(card)' 
                         type='button' 
                         v-on:click.stop='openPrivateChat(card)' 
-                        class='px-2 py-1 text-[11px] font-semibold text-[#161513] hover:text-[#C74634] bg-slate-100 hover:bg-[#F1EFED] border border-[#E0DDD8] transition flex items-center gap-1 shadow-sm' 
+                        class='px-2 py-1 text-[11px] font-semibold text-[#161513] hover:text-[#C74634] bg-slate-100 hover:bg-[#F1EFED] border border-[#E0DDD8] transition flex items-center gap-1 shrink-0 whitespace-nowrap shadow-xs' 
                         title='Nhắn tin riêng tư 1-1'>
                   <i class='fa-regular fa-comment-dots text-[#C74634] text-xs'></i>
-                  <span class='hidden sm:inline'>Chat</span>
+                  <span class='hidden 2xl:inline whitespace-nowrap'>Chat</span>
                 </button>
-                <button v-on:click.stop='toggleBookmark(card)' v-bind:class='isBookmarked(card.id) ? "text-[#C74634]" : "text-slate-400 hover:text-slate-700"' class='p-1.5 transition'>
-                  <i v-bind:class='isBookmarked(card.id) ? "fa-solid fa-bookmark" : "fa-regular fa-bookmark"' class='text-sm'></i>
+                <button v-on:click.stop='toggleBookmark(card)' v-bind:class='isBookmarked(card.id) ? "text-[#C74634]" : "text-slate-400 hover:text-slate-700"' class='p-1 transition shrink-0' title='Lưu bài viết'>
+                  <i v-bind:class='isBookmarked(card.id) ? "fa-solid fa-bookmark" : "fa-regular fa-bookmark"' class='text-xs'></i>
                 </button>
               </div>
             </div>
@@ -1271,7 +1277,7 @@
 
     </main>
     <!-- 4. CỘT PHẢI: BẢN ĐỒ TÂY NINH (MAP WIDGET - NO ROUNDED BORDER) -->
-    <aside class='w-72 xl:w-80 2xl:w-[340px] bg-white border-l border-[#E0DDD8] p-5 space-y-5 overflow-y-auto custom-scroll shrink-0 flex flex-col justify-between'>
+    <aside class='hidden xl:flex w-72 xl:w-80 2xl:w-[340px] bg-white border-l border-[#E0DDD8] p-4 xl:p-5 space-y-5 overflow-y-auto custom-scroll shrink-0 flex-col justify-between'>
       <div class='space-y-4'>
         <!-- Header Bản đồ Tây Ninh -->
         <div class='flex items-center justify-between'>
@@ -1389,6 +1395,103 @@
         <i class='fa-solid fa-arrow-up-right-from-square text-xs text-[#C74634] transition'></i>
       </a>
     </aside>
+    <!-- 4.4 DRAWER MENU MOBILE (< md) -->
+    <div v-if='showMobileMenu' v-cloak='true' style='display: none;' v-bind:style='showMobileMenu ? "display: flex !important;" : "display: none !important;"' class='fixed inset-0 z-50 flex items-center justify-start bg-black/60 backdrop-blur-sm md:hidden'>
+      <div class='bg-white w-72 max-w-[85vw] h-full flex flex-col shadow-2xl border-r border-[#E0DDD8] overflow-y-auto p-4 space-y-5 custom-scroll'>
+        <!-- Header Mobile Drawer -->
+        <div class='flex items-center justify-between pb-3 border-b border-[#E0DDD8]'>
+          <div class='flex items-center gap-2'>
+            <span class='bg-[#C74634] text-white font-black px-2 py-0.5 text-xs select-none'>TNHub</span>
+            <span class='text-xs font-black text-[#161513] uppercase'>TÂY NINH</span>
+          </div>
+          <button type='button' v-on:click='showMobileMenu = false' class='w-7 h-7 flex items-center justify-center text-slate-500 hover:text-black'>
+            <i class='fa-solid fa-xmark text-sm'></i>
+          </button>
+        </div>
+
+        <!-- Language Switcher -->
+        <div class='flex items-center justify-between p-2 bg-[#FAF9F8] border border-[#E0DDD8] text-xs'>
+          <span class='font-bold text-slate-600'>Ngôn ngữ:</span>
+          <div class='inline-flex items-center gap-1'>
+            <button type='button' v-on:click='switchLang("vi")' v-bind:class='currentLang === "vi" ? "bg-[#C74634] text-white font-bold" : "bg-white text-slate-700 border border-[#E0DDD8]"' class='px-2 py-0.5 text-[10px]'>
+              🇻🇳 VI
+            </button>
+            <button type='button' v-on:click='switchLang("en")' v-bind:class='currentLang === "en" ? "bg-[#C74634] text-white font-bold" : "bg-white text-slate-700 border border-[#E0DDD8]"' class='px-2 py-0.5 text-[10px]'>
+              🇬🇧 EN
+            </button>
+          </div>
+        </div>
+
+        <!-- Nav Links -->
+        <nav class='space-y-1 text-xs font-semibold'>
+          <button v-on:click='activeTab = "feed"; showMobileMenu = false;' class='w-full flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-[#F1EFED] transition'>
+            <i class='fa-solid fa-house text-[#C74634]'></i>
+            <span>{{ t('home') }}</span>
+          </button>
+          <button v-on:click='openChatDrawer; showMobileMenu = false;' class='w-full flex items-center justify-between px-3 py-2.5 text-slate-700 hover:bg-[#F1EFED] transition'>
+            <div class='flex items-center gap-3'>
+              <i class='fa-regular fa-comment-dots text-slate-500'></i>
+              <span>{{ t('messages') }}</span>
+            </div>
+            <span v-if='unreadMessageCount > 0' class='bg-[#C74634] text-white text-[9px] font-bold px-1.5 py-0.2'>{{ unreadMessageCount }}</span>
+          </button>
+          <button v-on:click='activeTab = "video"; showMobileMenu = false;' class='w-full flex items-center justify-between px-3 py-2.5 text-slate-700 hover:bg-[#F1EFED] transition'>
+            <div class='flex items-center gap-3'>
+              <i class='fa-brands fa-youtube text-red-600'></i>
+              <span>{{ t('videoTN') }}</span>
+            </div>
+            <span class='text-[9px] bg-red-100 text-red-700 px-1.5 py-0.2 font-bold uppercase'>YouTube</span>
+          </button>
+          <button v-on:click='openLotteryModal; showMobileMenu = false;' class='w-full flex items-center justify-between px-3 py-2.5 text-slate-700 hover:bg-[#F1EFED] transition'>
+            <div class='flex items-center gap-3'>
+              <i class='fa-solid fa-ticket text-amber-600'></i>
+              <span>{{ t('lottery') }}</span>
+            </div>
+            <span class='text-[9px] bg-amber-100 text-amber-800 px-1.5 py-0.2 font-bold uppercase'>Live</span>
+          </button>
+        </nav>
+
+        <!-- Categories -->
+        <div class='pt-2 border-t border-[#E0DDD8]'>
+          <h5 class='text-[10px] font-bold uppercase text-slate-400 mb-2 px-1'>{{ t('exploreTN') }}</h5>
+          <div class='space-y-1 text-xs'>
+            <button v-on:click='setCategory("all"); showMobileMenu = false;' class='w-full flex items-center gap-2.5 px-2.5 py-2 hover:bg-[#F1EFED] text-slate-700'>
+              <i class='fa-solid fa-border-all text-slate-400'></i>
+              <span>{{ t('allPosts') }}</span>
+            </button>
+            <button v-on:click='setCategory("tuyendung"); showMobileMenu = false;' class='w-full flex items-center gap-2.5 px-2.5 py-2 hover:bg-[#F1EFED] text-slate-700'>
+              <i class='fa-solid fa-briefcase text-blue-500'></i>
+              <span>{{ t('jobs') }}</span>
+            </button>
+            <button v-on:click='setCategory("batdongsan"); showMobileMenu = false;' class='w-full flex items-center gap-2.5 px-2.5 py-2 hover:bg-[#F1EFED] text-slate-700'>
+              <i class='fa-solid fa-house-chimney text-emerald-600'></i>
+              <span>{{ t('realEstate') }}</span>
+            </button>
+            <button v-on:click='setCategory("amthuc"); showMobileMenu = false;' class='w-full flex items-center gap-2.5 px-2.5 py-2 hover:bg-[#F1EFED] text-slate-700'>
+              <i class='fa-solid fa-utensils text-amber-600'></i>
+              <span>{{ t('foodHotel') }}</span>
+            </button>
+            <button v-on:click='setCategory("raovat"); showMobileMenu = false;' class='w-full flex items-center gap-2.5 px-2.5 py-2 hover:bg-[#F1EFED] text-slate-700'>
+              <i class='fa-solid fa-cart-shopping text-indigo-500'></i>
+              <span>{{ t('classifieds') }}</span>
+            </button>
+            <button v-on:click='setCategory("suachua"); showMobileMenu = false;' class='w-full flex items-center gap-2.5 px-2.5 py-2 hover:bg-[#F1EFED] text-slate-700'>
+              <i class='fa-solid fa-wrench text-rose-500'></i>
+              <span>{{ t('services') }}</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Nút Đăng Tin -->
+        <div class='pt-2 border-t border-[#E0DDD8]'>
+          <button type='button' v-on:click='openPostModal; showMobileMenu = false;' class='w-full py-2.5 bg-[#C74634] text-white font-bold text-xs uppercase tracking-wide flex items-center justify-center gap-2 shadow-sm'>
+            <i class='fa-solid fa-pen-to-square'></i>
+            <span>{{ t('newPost') }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- 4.5 REALTIME CHAT & NOTIFICATION DRAWER (ORACLE REDWOOD ENTERPRISE STYLE) -->
     <div v-if='showChatDrawer' v-cloak='true' style='display: none;' v-bind:style='showChatDrawer ? "display: flex !important;" : "display: none !important;"' class='fixed inset-0 z-50 flex items-center justify-end bg-black/60 backdrop-blur-sm'>
       <div class='bg-white w-full max-w-md h-full flex flex-col shadow-2xl border-l border-[#E0DDD8]'>
@@ -3634,6 +3737,8 @@
         const privateMessages = ref([]);
         const privateMessageInput = ref('');
         let privateChatUnsubscribe = null;
+
+        const showMobileMenu = ref(false);
 
         // XỔ SỐ KIẾN THIẾT STATE
         const showLotteryModal = ref(false);
@@ -6464,6 +6569,7 @@
           openLotteryModal,
           lotterySchedule,
           lotteryHeadTail,
+          showMobileMenu,
           currentLang,
           switchLang,
           t
