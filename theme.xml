@@ -492,6 +492,11 @@
           <span>Video Tây Ninh ({{ tayNinhVideos.length }})</span>
           <span class='bg-red-100 text-red-700 text-[9px] px-1 py-0.2 font-black'>YOUTUBE</span>
         </button>
+        <button v-on:click='setCategory("amthuc"); activeTab = "feed"' v-bind:class='activeCategory === "amthuc" &amp;&amp; activeTab === "feed" ? "text-[#C74634] border-b-2 border-[#C74634] pb-2 -mb-2.5 font-black" : "text-slate-500 hover:text-slate-900 pb-2 transition"' class='flex items-center gap-2 shrink-0'>
+          <i class='fa-solid fa-utensils text-amber-600 text-sm'></i>
+          <span>{{ t('foodHotel') }}</span>
+          <span class='bg-amber-100 text-amber-800 text-[9px] px-1.5 py-0.2 font-black uppercase'>ĐẶC SẢN</span>
+        </button>
         <button v-on:click='activeTab = "xoso"' v-bind:class='activeTab === "xoso" ? "text-[#C74634] border-b-2 border-[#C74634] pb-2 -mb-2.5 font-black" : "text-slate-500 hover:text-slate-900 pb-2 transition"' class='flex items-center gap-2 shrink-0'>
           <i class='fa-solid fa-ticket text-amber-600 text-sm'></i>
           <span>{{ t('lottery') }}</span>
@@ -602,8 +607,155 @@
           <p class='text-xs text-slate-500 mt-1'>Đồng bộ realtime 100% dữ liệu tin đăng Tây Ninh</p>
         </div>
 
+        <!-- GIAO DIỆN SHOWCASE CHUYÊN BIỆT CHO ẨM THỰC & KHÁCH SẠN TÂY NINH -->
+        <div v-if='activeCategory === "amthuc"' class='space-y-6'>
+          <!-- Hero Magazine Banner -->
+          <div class='relative overflow-hidden bg-gradient-to-r from-[#7D1B10] via-[#C74634] to-[#A83222] text-white p-6 sm:p-8 border border-[#E0DDD8] shadow-md'>
+            <div class='relative z-10 max-w-2xl space-y-3'>
+              <div class='flex items-center gap-2'>
+                <span class='px-2.5 py-0.5 bg-amber-400 text-slate-950 font-black text-[10px] uppercase tracking-wider'>
+                  TÂY NINH CULINARY &amp; RESORTS
+                </span>
+                <span class='text-xs text-amber-200 font-semibold flex items-center gap-1'>
+                  <i class='fa-solid fa-star text-amber-300 text-[11px]'></i> 4.9/5 Điểm ẩm thực &amp; nghỉ dưỡng
+                </span>
+              </div>
+              <h2 class='text-xl sm:text-3xl font-black tracking-tight leading-tight uppercase'>
+                ẨM THỰC TRỨ DANH &amp; ĐIỂM NGHỈ DƯỠNG TÂY NINH
+              </h2>
+              <p class='text-xs sm:text-sm text-amber-50/90 leading-relaxed font-medium'>
+                Khám phá bò tơ Năm Sánh than hồng, bánh canh Trảng Bàng gia truyền, ẩm thực chay thanh tịnh Cao Đài cùng hệ thống khách sạn, resort, homestay view Núi Bà Đen tuyệt đẹp.
+              </p>
+              <div class='flex flex-wrap items-center gap-2 pt-1 text-xs'>
+                <button type='button' v-on:click='openPostModalWithCategory("amthuc")' class='px-4 py-2 bg-white text-[#C74634] font-black hover:bg-amber-50 shadow transition flex items-center gap-1.5'>
+                  <i class='fa-solid fa-plus'></i>
+                  <span>Đăng Quán Ăn / Khách Sạn Của Bạn</span>
+                </button>
+                <button type='button' v-on:click='viewMode = "map"' class='px-4 py-2 bg-black/30 hover:bg-black/50 text-white font-bold border border-white/30 backdrop-blur transition flex items-center gap-1.5'>
+                  <i class='fa-solid fa-map-location-dot'></i>
+                  <span>Xem Bản Đồ Ẩm Thực</span>
+                </button>
+              </div>
+            </div>
+            <!-- Background Watermark Icon -->
+            <div class='absolute -right-6 -bottom-6 text-white/10 text-9xl pointer-events-none select-none'>
+              <i class='fa-solid fa-utensils'></i>
+            </div>
+          </div>
+
+          <!-- Bộ Lọc Phân Loại Chuyên Biệt Ẩm Thực & Khách Sạn -->
+          <div class='flex items-center gap-2 overflow-x-auto pb-1 custom-scroll text-xs font-bold'>
+            <button type='button' v-on:click='amthucSubCategory = "all"' v-bind:class='amthucSubCategory === "all" ? "bg-[#161513] text-white" : "bg-white text-slate-700 hover:bg-[#F1EFED] border border-[#E0DDD8]"' class='px-3.5 py-1.5 whitespace-nowrap transition flex items-center gap-1.5'>
+              <i class='fa-solid fa-border-all text-[11px]'></i>
+              <span>Tất cả địa điểm</span>
+            </button>
+            <button type='button' v-on:click='amthucSubCategory = "quan_ngon"' v-bind:class='amthucSubCategory === "quan_ngon" ? "bg-[#C74634] text-white" : "bg-white text-slate-700 hover:bg-[#F1EFED] border border-[#E0DDD8]"' class='px-3.5 py-1.5 whitespace-nowrap transition flex items-center gap-1.5'>
+              <i class='fa-solid fa-fire-burner text-[11px] text-amber-500'></i>
+              <span>Quán ngon &amp; Đặc sản</span>
+            </button>
+            <button type='button' v-on:click='amthucSubCategory = "khach_san"' v-bind:class='amthucSubCategory === "khach_san" ? "bg-[#C74634] text-white" : "bg-white text-slate-700 hover:bg-[#F1EFED] border border-[#E0DDD8]"' class='px-3.5 py-1.5 whitespace-nowrap transition flex items-center gap-1.5'>
+              <i class='fa-solid fa-hotel text-[11px] text-blue-500'></i>
+              <span>Khách sạn &amp; Homestay</span>
+            </button>
+            <button type='button' v-on:click='amthucSubCategory = "cafe"' v-bind:class='amthucSubCategory === "cafe" ? "bg-[#C74634] text-white" : "bg-white text-slate-700 hover:bg-[#F1EFED] border border-[#E0DDD8]"' class='px-3.5 py-1.5 whitespace-nowrap transition flex items-center gap-1.5'>
+              <i class='fa-solid fa-mug-saucer text-[11px] text-amber-700'></i>
+              <span>Cà phê &amp; Check-in</span>
+            </button>
+            <button type='button' v-on:click='amthucSubCategory = "chay"' v-bind:class='amthucSubCategory === "chay" ? "bg-[#C74634] text-white" : "bg-white text-slate-700 hover:bg-[#F1EFED] border border-[#E0DDD8]"' class='px-3.5 py-1.5 whitespace-nowrap transition flex items-center gap-1.5'>
+              <i class='fa-solid fa-leaf text-[11px] text-emerald-600'></i>
+              <span>Ẩm thực Chay</span>
+            </button>
+          </div>
+
+          <!-- Grid Cards Ẩm Thực & Khách Sạn (Food & Hotel Showcase Grid) -->
+          <div class='grid grid-cols-1 md:grid-cols-2 gap-5 items-stretch'>
+            <article v-for='card in filteredCards' v-bind:key='card.id' class='bg-white border border-[#E0DDD8] hover:border-[#C74634] shadow-sm hover:shadow-xl transition flex flex-col justify-between group overflow-hidden'>
+              <div>
+                <!-- Ảnh đại diện 16:9 với badge chuyên nghiệp -->
+                <div class='relative h-56 sm:h-60 w-full overflow-hidden bg-slate-100 cursor-pointer' v-on:click='openFoodDetailPage(card)'>
+                  <img v-bind:src='card.image || NO_IMAGE_PLACEHOLDER' v-bind:alt='card.title' v-on:error='handleImgError' class='w-full h-full object-cover group-hover:scale-105 transition-transform duration-500' />
+                  
+                  <!-- Gradient bóng mờ chân ảnh -->
+                  <div class='absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent'></div>
+
+                  <!-- Badge Loại hình góc trên trái -->
+                  <span class='absolute top-3 left-3 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider bg-[#C74634] text-white shadow-md'>
+                    {{ card.badge || "Đặc sản Tây Ninh" }}
+                  </span>
+
+                  <!-- Đánh giá sao góc trên phải -->
+                  <div class='absolute top-3 right-3 px-2 py-0.5 bg-black/60 backdrop-blur-md text-amber-300 font-bold text-xs flex items-center gap-1 border border-white/20 shadow'>
+                    <i class='fa-solid fa-star text-amber-400 text-[10px]'></i>
+                    <span>{{ card.rating || "4.9" }}</span>
+                    <span class='text-[10px] text-white/80'>({{ card.reviewCount || "120" }})</span>
+                  </div>
+
+                  <!-- Thông tin giá & giờ mở cửa góc dưới ảnh -->
+                  <div class='absolute bottom-3 left-3 right-3 flex items-end justify-between text-white'>
+                    <div>
+                      <span class='text-[10px] uppercase font-bold text-amber-300 tracking-wider block'>{{ card.subprice || "Tây Ninh" }}</span>
+                      <span class='text-lg font-black text-white drop-shadow'>{{ card.price }}</span>
+                    </div>
+                    <span class='px-2.5 py-1 bg-white/20 hover:bg-white/30 backdrop-blur-md text-xs font-bold border border-white/30 transition flex items-center gap-1'>
+                      <i class='fa-regular fa-clock text-[10px]'></i>
+                      <span>{{ card.foodHours || "Mở cả ngày" }}</span>
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Thân thông tin quán / khách sạn -->
+                <div class='p-4 space-y-3'>
+                  <!-- Tên địa điểm -->
+                  <h3 class='text-base font-black text-[#161513] group-hover:text-[#C74634] transition line-clamp-1 cursor-pointer leading-snug' v-on:click='openFoodDetailPage(card)'>
+                    {{ card.title }}
+                  </h3>
+
+                  <!-- Địa chỉ -->
+                  <p class='text-xs text-slate-600 flex items-center gap-1.5 line-clamp-1'>
+                    <i class='fa-solid fa-location-dot text-[#C74634] shrink-0 text-xs'></i>
+                    <span>{{ card.subtitle || card.location || "Tây Ninh" }}</span>
+                  </p>
+
+                  <!-- Đoạn mô tả ngắn -->
+                  <p class='text-xs text-slate-500 line-clamp-2 leading-relaxed'>
+                    {{ card.description }}
+                  </p>
+
+                  <!-- Tags tiện ích nổi bật -->
+                  <div class='flex flex-wrap gap-1.5 pt-1'>
+                    <span class='px-2 py-0.5 bg-[#FAF9F8] border border-[#E0DDD8] text-[10px] font-semibold text-slate-600 flex items-center gap-1'>
+                      <i class='fa-solid fa-square-parking text-[#C74634] text-[9px]'></i> Có chỗ ô tô
+                    </span>
+                    <span class='px-2 py-0.5 bg-[#FAF9F8] border border-[#E0DDD8] text-[10px] font-semibold text-slate-600 flex items-center gap-1'>
+                      <i class='fa-solid fa-snowflake text-sky-600 text-[9px]'></i> Phòng lạnh VIP
+                    </span>
+                    <span class='px-2 py-0.5 bg-[#FAF9F8] border border-[#E0DDD8] text-[10px] font-semibold text-slate-600 flex items-center gap-1'>
+                      <i class='fa-solid fa-mountain text-emerald-600 text-[9px]'></i> View Núi Bà
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Footer Buttons: Khám phá trang riêng & Đặt chỗ -->
+              <div class='p-3.5 bg-[#FAF9F8] border-t border-[#E0DDD8] flex items-center justify-between gap-2'>
+                <button type='button' v-on:click='openFoodDetailPage(card)' class='flex-1 px-3 py-2 bg-[#C74634] hover:bg-[#B13C2C] text-white text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm'>
+                  <i class='fa-solid fa-up-right-from-square text-[11px]'></i>
+                  <span>Khám Phá Trang Riêng</span>
+                </button>
+                <button type='button' v-on:click='openFoodDetailPage(card); foodActiveTab = "menu";' class='px-3 py-2 bg-white hover:bg-slate-100 text-slate-800 border border-[#E0DDD8] text-xs font-bold transition flex items-center gap-1 shrink-0'>
+                  <i class='fa-solid fa-calendar-check text-[#C74634]'></i>
+                  <span>Đặt Chỗ</span>
+                </button>
+                <a v-bind:href='"tel:" + (card.phone || "0903889900")' class='w-8 h-8 bg-white hover:bg-[#F1EFED] text-[#C74634] border border-[#E0DDD8] flex items-center justify-center shrink-0 transition' title='Gọi điện hotline'>
+                  <i class='fa-solid fa-phone text-xs'></i>
+                </a>
+              </div>
+            </article>
+          </div>
+        </div>
+
         <!-- MAIN CARD GRID: 2 COLUMNS (LINKEDIN POST STYLE) -->
-        <div class='grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5 items-stretch'>
+        <div v-else='true' class='grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5 items-stretch'>
           
           <article v-for='card in filteredCards' v-bind:key='card.id' class='bg-white border border-[#E0DDD8] shadow-sm hover:shadow-md transition flex flex-col justify-between h-full'>
             
@@ -1274,6 +1426,408 @@
           </div>
         </div>
       </div> <!-- End 3C Xổ Số Section -->
+
+      <!-- 3D. TRANG CHI TIẾT RIÊNG CHO ẨM THỰC & KHÁCH SẠN (DEDICATED FULL-PAGE VIEW) -->
+      <div v-else-if='activeTab === "food_detail" &amp;&amp; selectedFoodCard' class='space-y-6 animate-fadeIn'>
+        
+        <!-- Top Navigation Bar & Breadcrumb -->
+        <div class='bg-white p-3 sm:p-4 border border-[#E0DDD8] flex flex-wrap items-center justify-between gap-3 shadow-sm'>
+          <div class='flex items-center gap-2 text-xs'>
+            <button type='button' v-on:click='closeFoodDetailPage' class='px-3 py-1.5 bg-[#FAF9F8] hover:bg-[#F1EFED] border border-[#E0DDD8] text-slate-800 font-bold transition flex items-center gap-1.5'>
+              <i class='fa-solid fa-arrow-left text-[#C74634]'></i>
+              <span>Quay lại Bảng tin Ẩm thực</span>
+            </button>
+            <span class='text-slate-300'>/</span>
+            <span class='text-slate-500 hidden sm:inline'>Ẩm thực &amp; Khách sạn Tây Ninh</span>
+            <span class='text-slate-300 hidden sm:inline'>/</span>
+            <span class='font-bold text-[#C74634] truncate max-w-[200px] sm:max-w-[320px]'>{{ selectedFoodCard.title }}</span>
+          </div>
+
+          <div class='flex items-center gap-2'>
+            <button type='button' v-on:click='shareCard(selectedFoodCard)' class='px-3 py-1.5 bg-white border border-[#E0DDD8] hover:bg-[#F1EFED] text-slate-700 text-xs font-semibold flex items-center gap-1.5 shadow-sm transition' title='Chia sẻ trang'>
+              <i class='fa-solid fa-share-nodes text-blue-600'></i>
+              <span class='hidden sm:inline'>Chia sẻ</span>
+            </button>
+            <button type='button' v-on:click='toggleBookmark(selectedFoodCard.id)' class='px-3 py-1.5 bg-white border border-[#E0DDD8] hover:bg-[#F1EFED] text-slate-700 text-xs font-semibold flex items-center gap-1.5 shadow-sm transition' title='Lưu địa điểm'>
+              <i class='fa-regular fa-bookmark text-amber-600'></i>
+              <span class='hidden sm:inline'>Lưu lại</span>
+            </button>
+            <a v-bind:href='"tel:" + (selectedFoodCard.phone || "0903889900")' class='px-3.5 py-1.5 bg-[#C74634] hover:bg-[#B13C2C] text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition'>
+              <i class='fa-solid fa-phone'></i>
+              <span>Hotline: {{ selectedFoodCard.phone || "0903.889.900" }}</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Hero Header Showcase: Ảnh bìa toàn cảnh & Tên địa điểm -->
+        <div class='relative h-72 sm:h-96 w-full border border-[#E0DDD8] overflow-hidden bg-black shadow-md group'>
+          <img v-bind:src='selectedFoodCard.image || NO_IMAGE_PLACEHOLDER' v-bind:alt='selectedFoodCard.title' v-on:error='handleImgError' class='w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-700' />
+          
+          <div class='absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/20'></div>
+
+          <!-- Huy hiệu góc trên -->
+          <div class='absolute top-4 left-4 right-4 flex items-center justify-between'>
+            <span class='px-3 py-1 bg-[#C74634] text-white text-xs font-black uppercase tracking-wider shadow-md'>
+              {{ selectedFoodCard.badge || "Đặc sản Tây Ninh" }}
+            </span>
+            <div class='px-3 py-1 bg-black/70 backdrop-blur-md text-amber-300 font-bold text-xs sm:text-sm flex items-center gap-1.5 border border-white/20 shadow'>
+              <i class='fa-solid fa-star text-amber-400'></i>
+              <span>{{ selectedFoodCard.rating || "4.9" }}/5.0</span>
+              <span class='text-white/80 text-xs'>({{ selectedFoodCard.reviewCount || "156" }} đánh giá)</span>
+            </div>
+          </div>
+
+          <!-- Tiêu đề lớn & Thông tin địa chỉ góc dưới -->
+          <div class='absolute bottom-5 left-4 right-4 sm:left-6 sm:right-6 text-white space-y-2'>
+            <div class='flex flex-wrap items-center gap-2'>
+              <span class='px-2 py-0.5 bg-amber-400 text-slate-950 font-black text-[10px] uppercase'>
+                {{ selectedFoodCard.foodType || "Ẩm thực &amp; Nghỉ dưỡng" }}
+              </span>
+              <span class='text-xs text-amber-200 font-medium flex items-center gap-1'>
+                <i class='fa-regular fa-clock'></i> {{ selectedFoodCard.foodHours || "Mở cửa: 08:00 - 22:30" }}
+              </span>
+            </div>
+
+            <h1 class='text-xl sm:text-3xl lg:text-4xl font-black text-white leading-tight drop-shadow-md'>
+              {{ selectedFoodCard.title }}
+            </h1>
+
+            <div class='flex flex-wrap items-center justify-between gap-3 pt-1 border-t border-white/20 text-xs sm:text-sm'>
+              <div class='flex items-center gap-2 text-slate-200'>
+                <i class='fa-solid fa-location-dot text-[#C74634] text-base'></i>
+                <span class='font-medium'>{{ selectedFoodCard.subtitle || selectedFoodCard.location || "Tỉnh Tây Ninh" }}</span>
+                <a v-bind:href='"https://www.google.com/maps/search/?api=1&amp;query=" + encodeURIComponent((selectedFoodCard.title || "") + " " + (selectedFoodCard.subtitle || "Tây Ninh"))' target='_blank' class='px-2 py-0.5 bg-white/20 hover:bg-white/30 text-white text-[11px] font-semibold border border-white/30 backdrop-blur ml-2'>
+                  <i class='fa-solid fa-diamond-turn-right text-[10px]'></i> Chỉ đường
+                </a>
+              </div>
+              <div class='text-right'>
+                <span class='text-xs text-amber-300 block font-medium'>Mức giá tham khảo:</span>
+                <span class='text-lg sm:text-2xl font-black text-amber-300'>{{ selectedFoodCard.price }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bố Cục 2 Cột Nội Dung: Cột Trái 8/12 (Chi tiết & Menu) - Cột Phải 4/12 (Đặt chỗ & Hotline) -->
+        <div class='grid grid-cols-1 lg:grid-cols-12 gap-6 items-start'>
+          
+          <!-- CỘT TRÁI (8/12): Tabs Thông Tin, Thực Đơn, Tiện Ích, Đánh Giá & Album Ảnh -->
+          <div class='lg:col-span-8 space-y-6'>
+            
+            <!-- Thanh Tab Chuyển Đổi Nội Dung -->
+            <div class='bg-white border border-[#E0DDD8] flex items-center overflow-x-auto custom-scroll text-xs font-bold uppercase shadow-sm'>
+              <button type='button' v-on:click='foodActiveTab = "intro"' v-bind:class='foodActiveTab === "intro" ? "border-b-2 border-[#C74634] text-[#C74634] bg-[#FAF9F8]" : "text-slate-600 hover:text-slate-900"' class='px-5 py-3 transition whitespace-nowrap flex items-center gap-2'>
+                <i class='fa-solid fa-book-open text-xs'></i>
+                <span>Giới thiệu &amp; Không gian</span>
+              </button>
+              <button type='button' v-on:click='foodActiveTab = "menu"' v-bind:class='foodActiveTab === "menu" ? "border-b-2 border-[#C74634] text-[#C74634] bg-[#FAF9F8]" : "text-slate-600 hover:text-slate-900"' class='px-5 py-3 transition whitespace-nowrap flex items-center gap-2'>
+                <i class='fa-solid fa-utensils text-xs text-amber-600'></i>
+                <span>Thực đơn &amp; Bảng giá phòng</span>
+              </button>
+              <button type='button' v-on:click='foodActiveTab = "amenities"' v-bind:class='foodActiveTab === "amenities" ? "border-b-2 border-[#C74634] text-[#C74634] bg-[#FAF9F8]" : "text-slate-600 hover:text-slate-900"' class='px-5 py-3 transition whitespace-nowrap flex items-center gap-2'>
+                <i class='fa-solid fa-bell-concierge text-xs text-blue-600'></i>
+                <span>Tiện ích &amp; Dịch vụ</span>
+              </button>
+              <button type='button' v-on:click='foodActiveTab = "reviews"' v-bind:class='foodActiveTab === "reviews" ? "border-b-2 border-[#C74634] text-[#C74634] bg-[#FAF9F8]" : "text-slate-600 hover:text-slate-900"' class='px-5 py-3 transition whitespace-nowrap flex items-center gap-2'>
+                <i class='fa-solid fa-comments text-xs text-emerald-600'></i>
+                <span>Đánh giá thực khách</span>
+              </button>
+            </div>
+
+            <!-- TAB 1: Giới thiệu & Không gian -->
+            <div v-if='foodActiveTab === "intro"' class='bg-white p-5 sm:p-6 border border-[#E0DDD8] shadow-sm space-y-5'>
+              <div>
+                <h3 class='text-sm sm:text-base font-black text-[#161513] uppercase flex items-center gap-2 border-b border-[#E0DDD8] pb-2 mb-3'>
+                  <i class='fa-solid fa-circle-info text-[#C74634]'></i>
+                  <span>Thông Tin Chi Tiết &amp; Không Gian Trải Nghiệm</span>
+                </h3>
+                <p class='text-xs sm:text-sm text-slate-700 leading-relaxed whitespace-pre-line'>
+                  {{ selectedFoodCard.description }}
+                </p>
+              </div>
+
+              <!-- Điểm nổi bật độc quyền -->
+              <div class='bg-[#FAF9F8] p-4 border-l-4 border-[#C74634] space-y-2'>
+                <h4 class='text-xs font-bold text-[#161513] uppercase flex items-center gap-1.5'>
+                  <i class='fa-solid fa-award text-[#C74634]'></i>
+                  <span>Điểm Đặc Sắc Thu Hút Du Khách</span>
+                </h4>
+                <ul class='text-xs text-slate-600 space-y-1.5 list-disc list-inside font-medium'>
+                  <li>Nguồn nguyên liệu tươi sống sạch 100%, nhập trực tiếp từ nông trại và lò mổ đạt chuẩn an toàn VSTP tại Tây Ninh.</li>
+                  <li>Hương vị bí truyền Nam Bộ, kết hợp rổ rau rừng Tây Ninh tươi non và bánh tráng phơi sương trứ danh.</li>
+                  <li>Không gian thoáng mát, cảnh quan xanh, bãi đỗ xe rộng rãi thuận tiện cho cả khách đoàn và gia đình.</li>
+                </ul>
+              </div>
+
+              <!-- Album hình ảnh thực tế (Gallery) -->
+              <div class='space-y-3 pt-2'>
+                <h4 class='text-xs font-bold text-[#161513] uppercase flex items-center gap-1.5'>
+                  <i class='fa-solid fa-images text-[#C74634]'></i>
+                  <span>Album Hình Ảnh Món Ăn &amp; Phòng Nghỉ Thực Tế</span>
+                </h4>
+                <div class='grid grid-cols-1 sm:grid-cols-3 gap-3'>
+                  <div v-for='(imgUrl, imgIdx) in (selectedFoodCard.gallery || [selectedFoodCard.image, selectedFoodCard.image, selectedFoodCard.image])' v-bind:key='imgIdx' class='h-40 overflow-hidden border border-[#E0DDD8] bg-slate-100 group cursor-pointer'>
+                    <img v-bind:src='imgUrl || NO_IMAGE_PLACEHOLDER' v-on:error='handleImgError' class='w-full h-full object-cover group-hover:scale-110 transition-transform duration-500' />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- TAB 2: Thực Đơn & Bảng Giá Dịch Vụ -->
+            <div v-else-if='foodActiveTab === "menu"' class='bg-white p-5 sm:p-6 border border-[#E0DDD8] shadow-sm space-y-4'>
+              <div class='flex items-center justify-between border-b border-[#E0DDD8] pb-2'>
+                <h3 class='text-sm sm:text-base font-black text-[#161513] uppercase flex items-center gap-2'>
+                  <i class='fa-solid fa-utensils text-[#C74634]'></i>
+                  <span>Thực Đơn Món Ngon / Các Hạng Phòng Nghỉ Nổi Bật</span>
+                </h3>
+                <span class='text-xs text-slate-500'>Giá niêm yết rõ ràng</span>
+              </div>
+
+              <!-- Danh sách món ăn / phòng -->
+              <div class='space-y-3'>
+                <div v-for='(item, mIdx) in (selectedFoodCard.menuItems || [
+                  { name: "Món ăn đặc sản / Phòng tiêu chuẩn", price: selectedFoodCard.price, desc: "Được chế biến tươi ngon trong ngày, phục vụ chu đáo." },
+                  { name: "Set ẩm thực trải nghiệm trọn vị Tây Ninh", price: "Thương lượng", desc: "Bao gồm các món truyền thống và tráng miệng đặc sản." }
+                ])' v-bind:key='mIdx' class='p-3.5 bg-[#FAF9F8] border border-[#E0DDD8] hover:border-[#C74634] transition flex flex-col sm:flex-row sm:items-center justify-between gap-3'>
+                  <div class='space-y-1 flex-1'>
+                    <div class='flex items-center gap-2'>
+                      <span class='w-5 h-5 bg-[#C74634] text-white rounded-full text-[10px] font-bold flex items-center justify-center shrink-0'>{{ mIdx + 1 }}</span>
+                      <h4 class='font-bold text-xs sm:text-sm text-[#161513]'>{{ item.name }}</h4>
+                    </div>
+                    <p class='text-xs text-slate-500 pl-7'>{{ item.desc }}</p>
+                  </div>
+                  <div class='flex items-center justify-between sm:justify-end gap-3 shrink-0 pl-7 sm:pl-0'>
+                    <span class='font-black text-sm text-[#C74634]'>{{ item.price }}</span>
+                    <button type='button' v-on:click='foodBookingForm.roomOrTableType = item.name; showToast("Đã chọn: " + item.name + ". Vui lòng hoàn tất form đặt chỗ!", "info");' class='px-3 py-1.5 bg-[#161513] hover:bg-black text-white text-xs font-bold transition flex items-center gap-1 shadow-sm'>
+                      <i class='fa-solid fa-check text-[10px] text-amber-400'></i>
+                      <span>Chọn mục này</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- TAB 3: Tiện Ích & Dịch Vụ -->
+            <div v-else-if='foodActiveTab === "amenities"' class='bg-white p-5 sm:p-6 border border-[#E0DDD8] shadow-sm space-y-4'>
+              <h3 class='text-sm sm:text-base font-black text-[#161513] uppercase flex items-center gap-2 border-b border-[#E0DDD8] pb-2'>
+                <i class='fa-solid fa-bell-concierge text-[#C74634]'></i>
+                <span>Hệ Thống Tiện Ích &amp; Tiêu Chuẩn Phục Vụ</span>
+              </h3>
+
+              <div class='grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs'>
+                <div v-for='(amen, aIdx) in (selectedFoodCard.amenitiesList || [
+                  "Bãi đỗ xe máy &amp; ô tô rộng rãi miễn phí",
+                  "Phòng máy lạnh VIP cho gia đình &amp; tiệc liên hoan",
+                  "WiFi tốc độ cao phủ sóng toàn khuôn viên",
+                  "Hỗ trợ thanh toán quẹt thẻ ATM, Visa &amp; VietQR",
+                  "Xuất hóa đơn đỏ VAT cho công ty &amp; đoàn khách",
+                  "Nhân viên phục vụ nhanh nhẹn, thân thiện Tây Ninh"
+                ])' v-bind:key='aIdx' class='p-3 bg-[#FAF9F8] border border-[#E0DDD8] flex items-center gap-3'>
+                  <div class='w-7 h-7 bg-white text-[#C74634] border border-[#E0DDD8] flex items-center justify-center font-bold text-xs shrink-0 shadow-sm'>
+                    <i class='fa-solid fa-check'></i>
+                  </div>
+                  <span class='font-semibold text-slate-800 leading-snug'>{{ amen }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- TAB 4: Đánh Giá & Bình Luận Của Thực Khách -->
+            <div v-else-if='foodActiveTab === "reviews"' class='bg-white p-5 sm:p-6 border border-[#E0DDD8] shadow-sm space-y-5'>
+              <div class='flex items-center justify-between border-b border-[#E0DDD8] pb-3'>
+                <div>
+                  <h3 class='text-sm sm:text-base font-black text-[#161513] uppercase flex items-center gap-2'>
+                    <i class='fa-solid fa-comments text-[#C74634]'></i>
+                    <span>Nhận Xét &amp; Cảm Nhận Thực Khách</span>
+                  </h3>
+                  <p class='text-xs text-slate-500 mt-0.5'>Đánh giá trực tiếp từ cộng đồng thành viên TNHub</p>
+                </div>
+                <div class='text-right'>
+                  <span class='text-2xl font-black text-[#C74634]'>{{ selectedFoodCard.rating || "4.9" }}</span>
+                  <span class='text-xs text-slate-400'>/5.0</span>
+                </div>
+              </div>
+
+              <!-- Form gửi bình luận nhanh -->
+              <div class='p-4 bg-[#FAF9F8] border border-[#E0DDD8] space-y-3'>
+                <span class='font-bold text-xs text-slate-800 block'>Để lại cảm nhận của bạn về quán:</span>
+                <div class='flex items-center gap-2'>
+                  <img v-bind:src='(currentUser &amp;&amp; currentUser.photoURL) || NO_AVATAR_PLACEHOLDER' class='w-8 h-8 object-cover border border-[#E0DDD8] shrink-0' />
+                  <input type='text' v-model='modalNewCommentText' v-on:keydown.enter='postDetailComment' placeholder='Chia sẻ nhận xét về món ăn, giá cả, thái độ phục vụ...' class='flex-1 px-3 py-2 bg-white border border-[#E0DDD8] text-xs outline-none focus:border-[#C74634]' />
+                  <button type='button' v-on:click='postDetailComment' class='px-4 py-2 bg-[#C74634] text-white text-xs font-bold hover:bg-[#B13C2C] transition'>
+                    Gửi Đánh Giá
+                  </button>
+                </div>
+              </div>
+
+              <!-- Danh sách bình luận -->
+              <div class='space-y-3 pt-1'>
+                <div v-for='cmt in (selectedFoodCard.comments || [])' v-bind:key='cmt.id' class='p-3 bg-white border border-[#E0DDD8] flex items-start gap-3 text-xs'>
+                  <img v-bind:src='cmt.authorAvatar || NO_AVATAR_PLACEHOLDER' v-on:error='handleImgError' class='w-8 h-8 object-cover border border-[#E0DDD8] shrink-0 mt-0.5' />
+                  <div class='flex-1 space-y-1'>
+                    <div class='flex items-center justify-between'>
+                      <span class='font-bold text-[#161513]'>{{ cmt.authorName }}</span>
+                      <span class='text-[10px] text-slate-400'>{{ cmt.timeAgo }}</span>
+                    </div>
+                    <p class='text-slate-700 leading-relaxed'>{{ cmt.text }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- CỘT PHẢI (4/12): Khối Đặt Bàn / Đặt Phòng Trực Tuyến & Hotline Nhanh -->
+          <div class='lg:col-span-4 space-y-5'>
+            
+            <!-- Hộp Đặt Bàn / Đặt Phòng Trực Tuyến (Online Booking Widget) -->
+            <div class='bg-white border-2 border-[#C74634] p-5 shadow-lg space-y-4 sticky top-4'>
+              <div class='border-b border-[#E0DDD8] pb-3'>
+                <div class='flex items-center justify-between'>
+                  <span class='px-2 py-0.5 bg-[#C74634] text-white text-[10px] font-black uppercase tracking-wider'>
+                    ĐẶT CHỖ NHANH
+                  </span>
+                  <span class='text-xs font-bold text-emerald-600 flex items-center gap-1'>
+                    <i class='fa-solid fa-circle text-[8px] animate-pulse'></i> Giữ chỗ tức thì
+                  </span>
+                </div>
+                <h3 class='text-base font-black text-[#161513] mt-2'>
+                  Đặt Bàn / Đặt Phòng Trực Tuyến
+                </h3>
+                <p class='text-xs text-slate-500'>Không cần đặt cọc, quán sẽ gọi lại xác nhận ngay trong 5 phút.</p>
+              </div>
+
+              <!-- Form Nhập Liệu Booking -->
+              <form v-on:submit.prevent='submitFoodBooking' class='space-y-3 text-xs'>
+                <!-- Chọn dịch vụ / Món -->
+                <div>
+                  <label class='block font-bold text-slate-700 mb-1'>Loại bàn / Hạng phòng:</label>
+                  <input type='text' v-model='foodBookingForm.roomOrTableType' class='w-full px-3 py-2 bg-[#FAF9F8] border border-[#E0DDD8] font-semibold text-xs text-[#C74634]' placeholder='Ví dụ: Bàn 4 người phòng lạnh / Phòng Deluxe' />
+                </div>
+
+                <!-- Ngày & Giờ đến -->
+                <div class='grid grid-cols-2 gap-2'>
+                  <div>
+                    <label class='block font-bold text-slate-700 mb-1'>Ngày đến:</label>
+                    <input type='date' v-model='foodBookingForm.date' class='w-full px-2.5 py-1.5 bg-[#FAF9F8] border border-[#E0DDD8] text-xs' required='true' />
+                  </div>
+                  <div>
+                    <label class='block font-bold text-slate-700 mb-1'>Giờ đến:</label>
+                    <input type='time' v-model='foodBookingForm.time' class='w-full px-2.5 py-1.5 bg-[#FAF9F8] border border-[#E0DDD8] text-xs' required='true' />
+                  </div>
+                </div>
+
+                <!-- Số lượng khách -->
+                <div>
+                  <label class='block font-bold text-slate-700 mb-1'>Số lượng người / khách:</label>
+                  <select v-model='foodBookingForm.guests' class='w-full px-3 py-1.5 bg-[#FAF9F8] border border-[#E0DDD8] text-xs'>
+                    <option v-bind:value='1'>1 người</option>
+                    <option v-bind:value='2'>2 người (Cặp đôi)</option>
+                    <option v-bind:value='4'>3 - 4 người (Gia đình)</option>
+                    <option v-bind:value='6'>5 - 8 người (Nhóm bạn)</option>
+                    <option v-bind:value='10'>10+ người (Khách đoàn / Tiệc)</option>
+                  </select>
+                </div>
+
+                <!-- Họ tên & Điện thoại -->
+                <div class='space-y-2'>
+                  <div>
+                    <label class='block font-bold text-slate-700 mb-1'>Họ và tên của bạn:</label>
+                    <input type='text' v-model='foodBookingForm.customerName' placeholder='Nhập tên người đặt' class='w-full px-3 py-2 bg-white border border-[#E0DDD8] text-xs' required='true' />
+                  </div>
+                  <div>
+                    <label class='block font-bold text-slate-700 mb-1'>Số điện thoại nhận tin xác nhận:</label>
+                    <input type='tel' v-model='foodBookingForm.phone' placeholder='Số di động / Zalo...' class='w-full px-3 py-2 bg-white border border-[#E0DDD8] text-xs font-bold text-blue-600' required='true' />
+                  </div>
+                </div>
+
+                <!-- Ghi chú thêm -->
+                <div>
+                  <label class='block font-bold text-slate-700 mb-1'>Yêu cầu đặc biệt (nếu có):</label>
+                  <input type='text' v-model='foodBookingForm.notes' placeholder='Gần cửa sổ, ghế trẻ em, bàn ngoài trời...' class='w-full px-3 py-1.5 bg-[#FAF9F8] border border-[#E0DDD8] text-xs' />
+                </div>
+
+                <!-- Nút Submit Form -->
+                <button type='submit' class='w-full py-2.5 bg-[#C74634] hover:bg-[#B13C2C] text-white font-black text-xs uppercase tracking-wider shadow-md transition flex items-center justify-center gap-2 mt-2'>
+                  <i class='fa-solid fa-calendar-check text-amber-300'></i>
+                  <span>Xác Nhận Đặt Bàn / Đặt Phòng</span>
+                </button>
+              </form>
+
+              <!-- Hộp Hotline & Zalo Nhanh -->
+              <div class='pt-3 border-t border-[#E0DDD8] space-y-2 text-xs'>
+                <span class='block font-bold text-slate-500 uppercase text-[10px]'>Liên hệ trực tiếp với chủ cơ sở:</span>
+                <div class='grid grid-cols-2 gap-2'>
+                  <a v-bind:href='"tel:" + (selectedFoodCard.phone || "0903889900")' class='py-2 px-3 bg-[#FAF9F8] hover:bg-[#F1EFED] border border-[#E0DDD8] font-bold text-slate-800 flex items-center justify-center gap-1.5 transition'>
+                    <i class='fa-solid fa-phone text-[#C74634]'></i>
+                    <span>Gọi Hotline</span>
+                  </a>
+                  <a v-bind:href='"https://zalo.me/" + (selectedFoodCard.phone ? selectedFoodCard.phone.replace(/[^0-9]/g, "") : "0903889900")' target='_blank' class='py-2 px-3 bg-blue-50 hover:bg-blue-100 border border-blue-200 font-bold text-blue-800 flex items-center justify-center gap-1.5 transition'>
+                    <i class='fa-solid fa-comment-dots text-blue-600'></i>
+                    <span>Nhắn Zalo</span>
+                  </a>
+                </div>
+                <!-- Chat trực tiếp trên TNHub -->
+                <button type='button' v-on:click='openPrivateChat(selectedFoodCard)' class='w-full py-2 bg-white hover:bg-slate-50 border border-[#E0DDD8] font-bold text-slate-700 flex items-center justify-center gap-1.5 transition'>
+                  <i class='fa-regular fa-message text-amber-600'></i>
+                  <span>Nhắn Tin Trực Tiếp Qua TNHub Chat</span>
+                </button>
+              </div>
+
+              <!-- Bản đồ vị trí thu nhỏ -->
+              <div class='pt-2 border-t border-[#E0DDD8] space-y-1.5'>
+                <span class='block font-bold text-slate-600 text-[11px] flex items-center gap-1'>
+                  <i class='fa-solid fa-map-pin text-[#C74634]'></i>
+                  <span>Vị trí trên bản đồ Tây Ninh:</span>
+                </span>
+                <div class='h-32 w-full border border-[#E0DDD8] overflow-hidden bg-slate-100'>
+                  <iframe 
+                    v-bind:src='"https://maps.google.com/maps?q=" + encodeURIComponent((selectedFoodCard.title || "") + " " + (selectedFoodCard.subtitle || "Tây Ninh")) + "&amp;t=&amp;z=14&amp;ie=UTF8&amp;iwloc=&amp;output=embed"' 
+                    class='w-full h-full border-0' 
+                    loading='lazy' 
+                    referrerpolicy='no-referrer-when-downgrade'>
+                  </iframe>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Khối Gợi Ý: Các Địa Điểm Ẩm Thực & Khách Sạn Nổi Bật Khác Tại Tây Ninh -->
+        <div class='bg-white p-5 border border-[#E0DDD8] shadow-sm space-y-4'>
+          <div class='flex items-center justify-between border-b border-[#E0DDD8] pb-2.5'>
+            <h4 class='text-xs sm:text-sm font-black text-[#161513] uppercase flex items-center gap-2'>
+              <i class='fa-solid fa-compass text-[#C74634]'></i>
+              <span>Khám Phá Thêm Các Quán Ngon &amp; Điểm Lưu Trú Khác Tại Tây Ninh</span>
+            </h4>
+            <button type='button' v-on:click='closeFoodDetailPage' class='text-xs font-bold text-[#C74634] hover:underline'>
+              Xem tất cả
+            </button>
+          </div>
+
+          <div class='grid grid-cols-1 sm:grid-cols-3 gap-4'>
+            <div v-for='rec in defaultFoodAndHotelList.filter(f => f.id !== selectedFoodCard.id).slice(0, 3)' v-bind:key='rec.id' 
+                 v-on:click='openFoodDetailPage(rec)'
+                 class='p-2.5 border border-[#E0DDD8] bg-[#FAF9F8] hover:bg-white hover:border-[#C74634] cursor-pointer transition flex flex-col justify-between group shadow-sm'>
+              <div class='relative h-32 w-full overflow-hidden mb-2'>
+                <img v-bind:src='rec.image || NO_IMAGE_PLACEHOLDER' v-on:error='handleImgError' class='w-full h-full object-cover group-hover:scale-105 transition-transform duration-300' />
+                <span class='absolute bottom-1.5 left-1.5 px-2 py-0.5 bg-black/80 text-white font-bold text-[10px]'>
+                  {{ rec.price }}
+                </span>
+              </div>
+              <div class='space-y-1'>
+                <h5 class='font-bold text-xs text-[#161513] group-hover:text-[#C74634] transition line-clamp-1'>{{ rec.title }}</h5>
+                <p class='text-[10px] text-slate-500 truncate flex items-center gap-1'>
+                  <i class='fa-solid fa-location-dot text-[#C74634]'></i>
+                  <span>{{ rec.subtitle || rec.location }}</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div> <!-- End 3D Food Detail Section -->
 
     </main>
     <!-- 4. CỘT PHẢI: BẢN ĐỒ TÂY NINH (MAP WIDGET - NO ROUNDED BORDER) -->
@@ -3289,6 +3843,72 @@
       </div>
     </div>
 
+    <!-- MODAL XÁC NHẬN ĐẶT BÀN / ĐẶT PHÒNG THÀNH CÔNG -->
+    <div v-if='showFoodBookingSuccessModal' v-cloak='true' style='display: none;' v-bind:style='showFoodBookingSuccessModal ? "display: flex !important;" : "display: none !important;"' class='fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto animate-fadeIn'>
+      <div class='bg-white border-2 border-[#C74634] max-w-md w-full shadow-2xl overflow-hidden'>
+        <!-- Header modal -->
+        <div class='bg-[#C74634] text-white p-4 flex items-center justify-between'>
+          <div class='flex items-center gap-2'>
+            <i class='fa-solid fa-circle-check text-xl text-amber-300'></i>
+            <h3 class='font-black text-sm uppercase'>ĐẶT CHỖ THÀNH CÔNG</h3>
+          </div>
+          <button type='button' v-on:click='showFoodBookingSuccessModal = false' class='w-7 h-7 flex items-center justify-center text-white/80 hover:text-white transition'>
+            <i class='fa-solid fa-xmark text-sm'></i>
+          </button>
+        </div>
+
+        <!-- Body modal -->
+        <div class='p-5 space-y-4 text-xs' v-if='latestBookingRef'>
+          <div class='text-center space-y-1 pb-3 border-b border-[#E0DDD8]'>
+            <span class='text-[10px] text-slate-400 font-bold uppercase tracking-wider'>Mã Đặt Chỗ Của Bạn</span>
+            <div class='text-2xl font-black font-mono text-[#C74634] bg-amber-50 py-1 px-3 inline-block border border-amber-200'>
+              #{{ latestBookingRef.code }}
+            </div>
+            <p class='text-slate-600 font-medium pt-1'>Yêu cầu đã được chuyển trực tiếp tới quản lý địa điểm!</p>
+          </div>
+
+          <div class='space-y-2 bg-[#FAF9F8] p-3.5 border border-[#E0DDD8]'>
+            <div class='flex justify-between'>
+              <span class='text-slate-500'>Địa điểm:</span>
+              <span class='font-bold text-[#161513] text-right truncate max-w-[200px]'>{{ latestBookingRef.targetTitle }}</span>
+            </div>
+            <div class='flex justify-between'>
+              <span class='text-slate-500'>Dịch vụ / Món:</span>
+              <span class='font-bold text-[#C74634]'>{{ latestBookingRef.roomOrTableType }}</span>
+            </div>
+            <div class='flex justify-between'>
+              <span class='text-slate-500'>Thời gian đến:</span>
+              <span class='font-bold text-slate-800'>{{ latestBookingRef.time }} - Ngày {{ latestBookingRef.date }}</span>
+            </div>
+            <div class='flex justify-between'>
+              <span class='text-slate-500'>Số lượng khách:</span>
+              <span class='font-bold text-slate-800'>{{ latestBookingRef.guests }} người</span>
+            </div>
+            <div class='flex justify-between'>
+              <span class='text-slate-500'>Người đặt:</span>
+              <span class='font-bold text-slate-800'>{{ latestBookingRef.customerName }} ({{ latestBookingRef.phone }})</span>
+            </div>
+          </div>
+
+          <p class='text-slate-500 text-[11px] leading-relaxed'>
+            Quản lý sẽ liên hệ số điện thoại của bạn để chuẩn bị bàn / phòng chu đáo nhất. Cần hỗ trợ khẩn cấp, vui lòng gọi hotline: 
+            <strong class='text-[#C74634]'>{{ latestBookingRef.targetPhone }}</strong>.
+          </p>
+        </div>
+
+        <!-- Footer modal -->
+        <div class='p-3.5 bg-[#FAF9F8] border-t border-[#E0DDD8] flex items-center justify-end gap-2'>
+          <a v-if='latestBookingRef' v-bind:href='"tel:" + latestBookingRef.targetPhone' class='px-4 py-2 bg-white border border-[#E0DDD8] text-slate-800 font-bold text-xs hover:bg-[#F1EFED] transition flex items-center gap-1.5'>
+            <i class='fa-solid fa-phone text-[#C74634]'></i>
+            <span>Gọi Ngay Hotline</span>
+          </a>
+          <button type='button' v-on:click='showFoodBookingSuccessModal = false' class='px-5 py-2 bg-[#C74634] hover:bg-[#B13C2C] text-white font-bold text-xs transition'>
+            Đã Hiểu
+          </button>
+        </div>
+      </div>
+    </div>
+
   </div> <!-- Close #app -->
 
   <!-- Blogger Standard Section Required by Engine -->
@@ -4012,7 +4632,252 @@
           };
         };
 
-        const cards = ref([]);
+        // KHO ĐỊA ĐIỂM ĐẶC SẢN ẨM THỰC & KHÁCH SẠN NGHỈ DƯỠNG TÂY NINH (100% CHUẨN TÂY NINH)
+        const defaultFoodAndHotelList = [
+          {
+            id: 'food_1',
+            category: 'amthuc',
+            subCategory: 'quan_ngon',
+            title: 'Bò Tơ Tây Ninh Năm Sánh 17 - Đặc Sản Than Hồng Trứ Danh',
+            subtitle: 'Quốc Lộ 22B, Hiệp Tân, TX. Hòa Thành, Tây Ninh',
+            location: 'TX. Hòa Thành, Tây Ninh',
+            district: 'hoathanh',
+            price: '150.000đ - 350.000đ/người',
+            subprice: 'Phục vụ: 08:30 - 22:30',
+            phone: '0933.123.456',
+            authorName: 'Bò Tơ Năm Sánh Tây Ninh',
+            authorEmail: 'namsanh.tayninh@tnhub.vn',
+            authorAvatar: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&amp;fit=crop&amp;w=120&amp;q=80',
+            image: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&amp;fit=crop&amp;w=800&amp;q=80',
+            rating: 4.9,
+            reviewCount: 156,
+            badge: 'Đặc sản trứ danh',
+            foodType: 'Nhà hàng Bò tơ Tây Ninh',
+            foodHours: '08:30 - 22:30',
+            foodAmenity: 'Bãi đỗ ô tô 45 chỗ, Phòng VIP máy lạnh, Free WiFi, Xuất VAT',
+            amenitiesList: ['Có bãi đỗ ô tô 45 chỗ', 'Phòng VIP máy lạnh', 'Khuôn viên sân vườn', 'WiFi miễn phí', 'Thanh toán quẹt thẻ & QR', 'Xuất hóa đơn VAT'],
+            menuItems: [
+              { name: 'Bò tơ nướng tảng than hoa', price: '220.000đ / phần', desc: 'Thịt bò tơ mềm ngọt tự nhiên, ướp sốt thảo mộc độc quyền nướng than vàng ươm.' },
+              { name: 'Bò tơ cuốn bánh tráng phơi sương rau rừng', price: '190.000đ / phần', desc: 'Đầy đủ rổ rau rừng Tây Ninh, mắm nêm đậm đà chuẩn gốc xứ Trảng.' },
+              { name: 'Lẩu đuôi bò hầm sâm thuốc bắc', price: '280.000đ / lẩu', desc: 'Nước dùng ninh xương ngọt thanh, đuôi bò giòn dai bổ dưỡng.' },
+              { name: 'Gu bò nướng y chấm muối ớt Tây Ninh', price: '210.000đ / phần', desc: 'Phần gu bò giòn béo sần sật, ăn kèm muối ớt đỏ cay nồng.' }
+            ],
+            gallery: [
+              'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&amp;fit=crop&amp;w=800&amp;q=80',
+              'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&amp;fit=crop&amp;w=800&amp;q=80',
+              'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&amp;fit=crop&amp;w=800&amp;q=80'
+            ],
+            description: 'Bò Tơ Năm Sánh 17 là điểm dừng chân ẩm thực hàng đầu của du khách khi về thăm Tây Ninh. Quán nổi tiếng với nguồn thịt bò tơ nóng tươi ngon trong ngày từ các trang trại địa phương. Thịt được nướng trên than hồng, thớ thịt ngọt mềm ăn kèm bánh tráng phơi sương Trảng Bàng và đĩa rau rừng hơn chục loại đặc trưng miền Đông Nam Bộ.',
+            likesCount: 88,
+            viewsCount: 1420,
+            likedByMe: false,
+            createdAt: '2026-03-20T10:00:00.000Z'
+          },
+          {
+            id: 'food_2',
+            category: 'amthuc',
+            subCategory: 'quan_ngon',
+            title: 'Bánh Canh Trảng Bàng Hoàng Ty - Gia Truyền Xứ Vượn Mây',
+            subtitle: 'Quốc Lộ 22, Phường An Tịnh, TX. Trảng Bàng, Tây Ninh',
+            location: 'TX. Trảng Bàng, Tây Ninh',
+            district: 'trangbang',
+            price: '45.000đ - 90.000đ/tô',
+            subprice: 'Phục vụ: 06:00 - 21:00',
+            phone: '0918.789.012',
+            authorName: 'Hoàng Ty Trảng Bàng',
+            authorEmail: 'hoangty.tayninh@tnhub.vn',
+            authorAvatar: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&amp;fit=crop&amp;w=120&amp;q=80',
+            image: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&amp;fit=crop&amp;w=800&amp;q=80',
+            rating: 4.8,
+            reviewCount: 230,
+            badge: 'Gia truyền Trảng Bàng',
+            foodType: 'Bánh canh & Bánh tráng phơi sương',
+            foodHours: '06:00 - 21:00',
+            foodAmenity: 'Bãi đỗ ô tô, Không gian rộng rãi, Mua đặc sản mang về',
+            amenitiesList: ['Bãi đỗ xe ô tô & đoàn khách', 'Không gian mở thoáng đãng', 'Quầy đặc sản bánh tráng, muối tôm làm quà', 'Phục vụ nhanh chóng'],
+            menuItems: [
+              { name: 'Bánh canh giò nạc Trảng Bàng', price: '55.000đ / tô', desc: 'Sợi bánh canh gạo Nàng Thơm mềm dẻo, giò nạc ngọt thịt.' },
+              { name: 'Bánh tráng phơi sương cuốn bắp giò heo luộc', price: '140.000đ / phần', desc: 'Mâm rau rừng tươi rói, nước mắm tỏi ớt chua ngọt hảo hạng.' },
+              { name: 'Bánh canh móng giò đặc biệt', price: '65.000đ / tô', desc: 'Móng giò hầm nhừ béo ngậy, nước lèo trong veo ngọt đậm đà.' }
+            ],
+            gallery: [
+              'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&amp;fit=crop&amp;w=800&amp;q=80',
+              'https://images.unsplash.com/photo-1617093727343-374698b1b08d?auto=format&amp;fit=crop&amp;w=800&amp;q=80'
+            ],
+            description: 'Bánh canh Trảng Bàng Hoàng Ty là biểu tượng ẩm thực truyền thống lâu đời của người dân Tây Ninh. Từng sợi bánh trắng muốt được làm từ gạo nàng thơm xay thủ công, kết hợp với nước dùng hầm xương tủy nhiều giờ ngọt thanh tao.',
+            likesCount: 112,
+            viewsCount: 2150,
+            likedByMe: false,
+            createdAt: '2026-03-20T09:30:00.000Z'
+          },
+          {
+            id: 'food_3',
+            category: 'amthuc',
+            subCategory: 'khach_san',
+            title: 'Khách Sạn 5 Sao Melia Vinpearl Tây Ninh - View Núi Bà Đen',
+            subtitle: 'Số 90 Lê Duẩn, Phường 3, TP. Tây Ninh',
+            location: 'TP. Tây Ninh, Tây Ninh',
+            district: 'tptayninh',
+            price: '1.250.000đ - 3.500.000đ/đêm',
+            subprice: 'Nhận phòng 14:00 - Trả phòng 12:00',
+            phone: '0276.3728.888',
+            authorName: 'Melia Vinpearl Tây Ninh',
+            authorEmail: 'melia.tayninh@tnhub.vn',
+            authorAvatar: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&amp;fit=crop&amp;w=120&amp;q=80',
+            image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&amp;fit=crop&amp;w=800&amp;q=80',
+            rating: 5.0,
+            reviewCount: 412,
+            badge: 'Khách sạn 5 sao',
+            foodType: 'Khách sạn 5 sao & Nhà hàng buffet cao cấp',
+            foodHours: 'Mở cửa 24/7',
+            foodAmenity: 'Hồ bơi vô cực, Spa & Gym, Buffet sáng cao cấp, Hầm để xe an ninh',
+            amenitiesList: ['Hồ bơi trong nhà bốn mùa', 'Vincharm Spa & Trung tâm Gym', 'Bữa sáng buffet Á - Âu miễn phí', 'Hầm đỗ ô tô an ninh 24/7', 'Trung tâm sự kiện & tiệc cưới', 'View toàn cảnh Núi Bà Đen'],
+            menuItems: [
+              { name: 'Phòng Deluxe King / Twin City View', price: '1.350.000đ / đêm', desc: 'Diện tích 35m2, bồn tắm nằm cao cấp, ban công ngắm phố.' },
+              { name: 'Phòng Premier Suite View Trực Diện Núi Bà Đen', price: '2.450.000đ / đêm', desc: 'Diện tích 52m2, phòng khách riêng, cửa sổ kính chạm sàn panorama.' },
+              { name: 'Set Buffet Tinh Hoa Ẩm Thực Tây Ninh & Quốc Tế', price: '450.000đ / người', desc: 'Hải sản, đặc sản Tây Ninh và các món Á Âu thượng hạng.' }
+            ],
+            gallery: [
+              'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&amp;fit=crop&amp;w=800&amp;q=80',
+              'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&amp;fit=crop&amp;w=800&amp;q=80',
+              'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&amp;fit=crop&amp;w=800&amp;q=80'
+            ],
+            description: 'Tọa lạc tại vị trí đắc địa nhất ngay trung tâm thành phố, Melia Vinpearl Tây Ninh là tòa nhà 21 tầng vươn cao kiêu hãnh. Khách sạn mang đến không gian nghỉ dưỡng đỉnh cao kết hợp khám phá tâm linh Núi Bà Đen và Tòa Thánh Cao Đài.',
+            likesCount: 195,
+            viewsCount: 3890,
+            likedByMe: false,
+            createdAt: '2026-03-20T09:00:00.000Z'
+          },
+          {
+            id: 'food_4',
+            category: 'amthuc',
+            subCategory: 'chay',
+            title: 'Quán Cơm Chay Tri Ân Long Hoa - Văn Hóa Ẩm Thực Chay Tây Ninh',
+            subtitle: 'Hùng Vương, Cửa Số 7 Chợ Long Hoa, TX. Hòa Thành',
+            location: 'TX. Hòa Thành, Tây Ninh',
+            district: 'hoathanh',
+            price: '25.000đ - 65.000đ/phần',
+            subprice: 'Phục vụ: 06:30 - 20:30',
+            phone: '0977.345.678',
+            authorName: 'Cơm Chay Tri Ân Long Hoa',
+            authorEmail: 'trian.chay@tnhub.vn',
+            authorAvatar: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&amp;fit=crop&amp;w=120&amp;q=80',
+            image: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&amp;fit=crop&amp;w=800&amp;q=80',
+            rating: 4.9,
+            reviewCount: 188,
+            badge: 'Ẩm thực Chay Cao Đài',
+            foodType: 'Quán ăn chay truyền thống & Nem bưởi',
+            foodHours: '06:30 - 20:30',
+            foodAmenity: 'Thực phẩm sạch 100% tự nhiên, Không bột ngọt, Nhận đặt mâm cỗ chay',
+            amenitiesList: ['100% nguyên liệu nấm & rau củ hữu cơ sạch', 'Không chất bảo quản', 'Đặc sản nem bưởi làm quà', 'Nhận nấu cỗ chay rằm & lễ hội Tòa Thánh'],
+            menuItems: [
+              { name: 'Cơm thập cẩm chay Tri Ân (12 món tự chọn)', price: '30.000đ / dĩa', desc: 'Đậm đà hương vị truyền thống, canh chua lá giang thanh mát.' },
+              { name: 'Lẩu nấm dưỡng sinh Tây Ninh', price: '160.000đ / lẩu', desc: 'Nấu từ nấm rơm Bến Cầu, nấm đông cô, hạt sen và củ quả tươi.' },
+              { name: 'Nem bưởi Tây Ninh gia truyền (10 đòn)', price: '50.000đ / xâu', desc: 'Nem bưởi chua ngọt cay the, giòn sần sật trứ danh Long Hoa.' }
+            ],
+            gallery: [
+              'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&amp;fit=crop&amp;w=800&amp;q=80',
+              'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&amp;fit=crop&amp;w=800&amp;q=80'
+            ],
+            description: 'Hòa Thành - Tây Ninh là cái nôi của ẩm thực chay Nam Bộ gắn liền với đạo Cao Đài. Quán Cơm Chay Tri Ân mang đến bữa ăn thanh tịnh, lành mạnh nhưng hương vị biến tấu phong phú, tinh tế từ vỏ bưởi, hoa chuối, nấm rơm tươi.',
+            likesCount: 94,
+            viewsCount: 1650,
+            likedByMe: false,
+            createdAt: '2026-03-20T08:30:00.000Z'
+          },
+          {
+            id: 'food_5',
+            category: 'amthuc',
+            subCategory: 'khach_san',
+            title: 'Mai Vinh Homestay & Glamping Chân Núi Bà Đen',
+            subtitle: 'Đường Bời Lời, Xã Ninh Sơn, TP. Tây Ninh (Cách Cáp Treo 800m)',
+            location: 'TP. Tây Ninh, Tây Ninh',
+            district: 'tptayninh',
+            price: '380.000đ - 850.000đ/đêm',
+            subprice: 'Check-in 14:00 - Tiệc BBQ tối',
+            phone: '0909.654.321',
+            authorName: 'Mai Vinh Homestay Núi Bà',
+            authorEmail: 'maivinh.homestay@tnhub.vn',
+            authorAvatar: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&amp;fit=crop&amp;w=120&amp;q=80',
+            image: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&amp;fit=crop&amp;w=800&amp;q=80',
+            rating: 4.8,
+            reviewCount: 95,
+            badge: 'Homestay View Núi Bà',
+            foodType: 'Homestay & Lều cắm trại Glamping nghỉ dưỡng',
+            foodHours: 'Mở cửa 24/7',
+            foodAmenity: 'Sân BBQ nướng thịt, View mây đỉnh núi, Thuê xe máy, Đốt lửa trại',
+            amenitiesList: ['View trực diện mây vờn Núi Bà Đen', 'Bếp BBQ sân vườn tự do nấu nướng', 'Cho thuê xe máy phượt Tây Ninh', 'Đốt lửa trại & acoustic ca hát', 'Khuôn viên xanh rợp bóng mát'],
+            menuItems: [
+              { name: 'Lều Glamping Bohemian cao cấp (2-3 khách)', price: '450.000đ / đêm', desc: 'Trang bị nệm êm, quạt lạnh, đèn chill, ngắm sao trời.' },
+              { name: 'Phòng Bungalow gỗ sân vườn (Gia đình)', price: '750.000đ / đêm', desc: 'WC khép kín, máy lạnh, ban công ngắm đỉnh núi Bà Đen.' },
+              { name: 'Combo tiệc nướng BBQ Tây Ninh trọn gói', price: '250.000đ / người', desc: 'Bò tơ nướng, gà thả vườn nướng ớt hiểm, bánh tráng nướng.' }
+            ],
+            gallery: [
+              'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&amp;fit=crop&amp;w=800&amp;q=80',
+              'https://images.unsplash.com/photo-1510312305653-8ed496efae75?auto=format&amp;fit=crop&amp;w=800&amp;q=80'
+            ],
+            description: 'Ẩn mình dưới chân núi Bà Đen huyền thoại, Mai Vinh Homestay mang đến trải nghiệm sống chậm an yên. Mỗi sớm mai thức dậy ngắm biển mây bao quanh đỉnh núi, chiều tà thưởng thức tiệc BBQ cùng bạn bè và người thân.',
+            likesCount: 145,
+            viewsCount: 2280,
+            likedByMe: false,
+            createdAt: '2026-03-20T08:00:00.000Z'
+          },
+          {
+            id: 'food_6',
+            category: 'amthuc',
+            subCategory: 'cafe',
+            title: 'Cà Phê Mây Đồi View Núi Bà Đen - Điểm Check-In Hot Nhất Tây Ninh',
+            subtitle: 'Chân Đèo Ma Thiên Lãnh, Xã Thạnh Tân, TP. Tây Ninh',
+            location: 'TP. Tây Ninh, Tây Ninh',
+            district: 'tptayninh',
+            price: '30.000đ - 65.000đ/món',
+            subprice: 'Phục vụ: 06:30 - 22:00',
+            phone: '0938.999.888',
+            authorName: 'Mây Đồi Coffee Tây Ninh',
+            authorEmail: 'maydoi.coffee@tnhub.vn',
+            authorAvatar: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&amp;fit=crop&amp;w=120&amp;q=80',
+            image: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&amp;fit=crop&amp;w=800&amp;q=80',
+            rating: 4.9,
+            reviewCount: 310,
+            badge: 'Check-in View Núi',
+            foodType: 'Quán Cà phê & Điểm ngắm hoàng hôn Núi Bà',
+            foodHours: '06:30 - 22:00',
+            foodAmenity: 'View panorama 360 độ, Góc sống ảo cực đẹp, Bãi đỗ xe ô tô, Nhạc acoustic',
+            amenitiesList: ['Tầm nhìn 360 độ ngắm trọn Núi Bà Đen', 'Hàng chục góc sống ảo phong cách Đà Lạt', 'Đêm nhạc Acoustic cuối tuần', 'Bãi đỗ ô tô rộng thênh thang', 'Menu đồ uống pha chế sáng tạo'],
+            menuItems: [
+              { name: 'Cà phê muối Tây Ninh thơm béo', price: '38.000đ / ly', desc: 'Cà phê Robusta đậm vị kết hợp lớp kem muối béo mặn độc đáo.' },
+              { name: 'Trà sen vàng long nhãn', price: '45.000đ / ly', desc: 'Thơm ngát hạt sen tươi Tây Ninh và long nhãn giòn ngọt.' },
+              { name: 'Sữa chua dẻo nếp cẩm hạt chia', price: '42.000đ / phần', desc: 'Thanh mát giải nhiệt sau chuyến leo núi Bà Đen.' }
+            ],
+            gallery: [
+              'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&amp;fit=crop&amp;w=800&amp;q=80',
+              'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&amp;fit=crop&amp;w=800&amp;q=80'
+            ],
+            description: 'Quán cà phê được thiết kế dạng thung lũng mở với các bậc thang gỗ thoai thoải hướng thẳng về ngọn Núi Bà Đen sừng sững. Nơi đây là điểm hẹn lý tưởng để ngắm bình minh bảng lảng sương mù hoặc thưởng ngoạn hoàng hôn nhuộm đỏ chân trời.',
+            likesCount: 220,
+            viewsCount: 4500,
+            likedByMe: false,
+            createdAt: '2026-03-20T07:30:00.000Z'
+          }
+        ];
+
+        // STATE DÀNH RIÊNG CHO TRANG ẨM THỰC & KHÁCH SẠN
+        const selectedFoodCard = ref(defaultFoodAndHotelList[0]);
+        const foodActiveTab = ref('intro');
+        const amthucSubCategory = ref('all');
+        const showFoodBookingSuccessModal = ref(false);
+        const latestBookingRef = ref(null);
+        const foodBookingForm = ref({
+          date: new Date().toISOString().substring(0, 10),
+          time: '18:00',
+          guests: 2,
+          customerName: '',
+          phone: '',
+          notes: '',
+          roomOrTableType: 'Tiêu chuẩn (Standard)'
+        });
+
+        const cards = ref([...defaultFoodAndHotelList]);
         const isDataLoading = ref(true);
         const displayLimit = ref(12);
         const activeDistrict = ref('all');
@@ -4558,6 +5423,20 @@
             list = list.filter(c => c.category === activeCategory.value);
           }
 
+          // Lọc chuyên sâu cho danh mục Ẩm thực & Khách sạn Tây Ninh
+          if (activeCategory.value === 'amthuc' && amthucSubCategory.value !== 'all') {
+            const sub = amthucSubCategory.value;
+            list = list.filter(c => {
+              if (c.subCategory === sub) return true;
+              const text = ((c.title || '') + ' ' + (c.foodType || '') + ' ' + (c.badge || '') + ' ' + (c.description || '')).toLowerCase();
+              if (sub === 'quan_ngon') return text.includes('quán') || text.includes('bò tơ') || text.includes('bánh canh') || text.includes('đặc sản') || text.includes('nhà hàng') || text.includes('bánh tráng');
+              if (sub === 'khach_san') return text.includes('khách sạn') || text.includes('hotel') || text.includes('homestay') || text.includes('glamping') || text.includes('nghỉ dưỡng') || text.includes('resort');
+              if (sub === 'cafe') return text.includes('cà phê') || text.includes('cafe') || text.includes('coffee') || text.includes('trà sữa') || text.includes('view');
+              if (sub === 'chay') return text.includes('chay') || text.includes('nem bưởi') || text.includes('nấm') || text.includes('long hoa');
+              return false;
+            });
+          }
+
           if (activeDistrict.value !== 'all') {
             list = list.filter(c => c.district === activeDistrict.value || (c.location && c.location.toLowerCase().includes(activeDistrict.value.toLowerCase())));
           }
@@ -4589,6 +5468,20 @@
             list = list.filter(c => (myEmail && c.authorEmail === myEmail) || (myUid && c.userId === myUid));
           } else if (activeCategory.value !== 'all') {
             list = list.filter(c => c.category === activeCategory.value);
+          }
+
+          // Lọc chuyên sâu cho danh mục Ẩm thực & Khách sạn Tây Ninh
+          if (activeCategory.value === 'amthuc' && amthucSubCategory.value !== 'all') {
+            const sub = amthucSubCategory.value;
+            list = list.filter(c => {
+              if (c.subCategory === sub) return true;
+              const text = ((c.title || '') + ' ' + (c.foodType || '') + ' ' + (c.badge || '') + ' ' + (c.description || '')).toLowerCase();
+              if (sub === 'quan_ngon') return text.includes('quán') || text.includes('bò tơ') || text.includes('bánh canh') || text.includes('đặc sản') || text.includes('nhà hàng') || text.includes('bánh tráng');
+              if (sub === 'khach_san') return text.includes('khách sạn') || text.includes('hotel') || text.includes('homestay') || text.includes('glamping') || text.includes('nghỉ dưỡng') || text.includes('resort');
+              if (sub === 'cafe') return text.includes('cà phê') || text.includes('cafe') || text.includes('coffee') || text.includes('trà sữa') || text.includes('view');
+              if (sub === 'chay') return text.includes('chay') || text.includes('nem bưởi') || text.includes('nấm') || text.includes('long hoa');
+              return false;
+            });
           }
           if (activeDistrict.value !== 'all') {
             list = list.filter(c => c.district === activeDistrict.value || (c.location && c.location.toLowerCase().includes(activeDistrict.value.toLowerCase())));
@@ -5403,10 +6296,66 @@
           }
         };
 
-        const openDetailModal = (card) => {
-          if (card) {
-            incrementView(card);
+        const openFoodDetailPage = (card) => {
+          if (!card) return;
+          incrementView(card);
+          selectedFoodCard.value = card;
+          foodActiveTab.value = 'intro';
+          activeTab.value = 'food_detail';
+          try {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          } catch(e) {}
+        };
+
+        const closeFoodDetailPage = () => {
+          activeTab.value = 'feed';
+          activeCategory.value = 'amthuc';
+          try {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          } catch(e) {}
+        };
+
+        const submitFoodBooking = () => {
+          if (!foodBookingForm.value.customerName.trim() || !foodBookingForm.value.phone.trim()) {
+            showToast('Vui lòng nhập Họ tên và Số điện thoại liên hệ!', 'error');
+            return;
           }
+          const bookingCode = 'TNBK' + Math.floor(100000 + Math.random() * 900000);
+          const targetCard = selectedFoodCard.value || {};
+          latestBookingRef.value = {
+            code: bookingCode,
+            targetTitle: targetCard.title || 'Địa điểm Tây Ninh',
+            targetPhone: targetCard.phone || '0903.889.900',
+            targetAddress: targetCard.subtitle || targetCard.location || 'Tây Ninh',
+            ...foodBookingForm.value
+          };
+
+          if (currentUser.value && currentUser.value.email) {
+            notifications.value.unshift({
+              id: 'notif_bk_' + Date.now(),
+              type: 'booking',
+              title: 'Đặt chỗ thành công #' + bookingCode,
+              content: 'Yêu cầu của bạn tại "' + (targetCard.title || 'Tây Ninh') + '" đã được xác nhận. Hotline: ' + (targetCard.phone || '0903.889.900'),
+              time: 'Vừa xong',
+              read: false,
+              senderAvatar: targetCard.image || NO_AVATAR_PLACEHOLDER
+            });
+            unreadNotificationCount.value++;
+            playNotificationSound();
+          }
+
+          showToast('Đặt chỗ thành công! Mã đơn: #' + bookingCode, 'success');
+          showFoodBookingSuccessModal.value = true;
+        };
+
+        const openDetailModal = (card) => {
+          if (!card) return;
+          // NẾU LÀ BÀI ẨM THỰC & KHÁCH SẠN -> MỞ NGAY TRANG RIÊNG CHUYÊN NGHIỆP!
+          if (card.category === 'amthuc') {
+            openFoodDetailPage(card);
+            return;
+          }
+          incrementView(card);
           selectedDetailCard.value = card;
           showDetailModal.value = true;
         };
@@ -6328,6 +7277,13 @@
                     }
                     liveList.push(enriched);
                   });
+                  // Đảm bảo kho đặc sản ẩm thực & khách sạn Tây Ninh luôn sẵn sàng hiển thị
+                  defaultFoodAndHotelList.forEach(item => {
+                    if (!liveList.some(c => c.id === item.id || c.title === item.title)) {
+                      liveList.push(item);
+                    }
+                  });
+
                   liveList.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
                   cards.value = liveList;
 
@@ -6585,7 +7541,17 @@
           switchLang,
           t,
           NO_IMAGE_PLACEHOLDER,
-          NO_AVATAR_PLACEHOLDER
+          NO_AVATAR_PLACEHOLDER,
+          selectedFoodCard,
+          foodActiveTab,
+          amthucSubCategory,
+          showFoodBookingSuccessModal,
+          latestBookingRef,
+          foodBookingForm,
+          defaultFoodAndHotelList,
+          openFoodDetailPage,
+          closeFoodDetailPage,
+          submitFoodBooking
         };
       }
     }).mount('#app');
