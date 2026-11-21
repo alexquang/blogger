@@ -140,7 +140,7 @@
   <div id='app' v-cloak='true' class='w-full h-full flex-1 bg-white border-0 md:border border-[#E0DDD8] md:shadow-2xl overflow-hidden flex box-border relative'>
     
     <!-- 1. MENU ĐIỀU HƯỚNG TN HUB (ORACLE REDWOOD STYLE) -->
-    <aside class='w-60 xl:w-64 bg-white border-r border-[#E0DDD8] p-4 xl:p-5 flex flex-col justify-between shrink-0 overflow-y-auto custom-scroll hidden md:flex'>
+    <aside class='w-72 xl:w-80 bg-white border-r border-[#E0DDD8] p-4 xl:p-5 flex flex-col justify-between shrink-0 overflow-y-auto custom-scroll hidden md:flex'>
       <div class='space-y-6'>
         <!-- Oracle-Style Logo Header -->
         <div>
@@ -226,12 +226,12 @@
       <!-- Bottom User Account Card (Google Auth State) -->
       <div class='bg-[#F1EFED] p-3.5 border border-[#E0DDD8] text-xs mt-6'>
         <div v-if='currentUser &amp;&amp; currentUser.uid' class='mb-2.5'>
-          <div class='flex items-center gap-2 mb-1.5'>
-            <img v-if='currentUser.photoURL' v-bind:src='currentUser.photoURL' class='w-7 h-7 object-cover border border-[#C74634]' />
+          <div class='flex items-center gap-2.5 mb-1.5'>
+            <img v-if='currentUser.photoURL' v-bind:src='currentUser.photoURL' class='w-8 h-8 object-cover border border-[#C74634] shrink-0' />
             <div class='min-w-0 flex-1'>
-              <p class='font-bold text-slate-900 truncate flex items-center gap-1.5'>
-                <span>{{ currentUser.displayName }}</span>
-                <span v-if='isAdmin' class='px-1.5 py-0.2 bg-[#C74634] text-white text-[9px] font-black uppercase tracking-wider'>Admin</span>
+              <p class='font-bold text-slate-900 flex items-center justify-between gap-1.5'>
+                <span class='truncate'>{{ currentUser.displayName }}</span>
+                <span v-if='isAdmin' class='px-1.5 py-0.5 bg-[#C74634] text-white text-[9px] font-black uppercase tracking-wider shrink-0'>Admin</span>
               </p>
               <p class='text-[10px] text-slate-500 truncate'>{{ currentUser.email }}</p>
             </div>
@@ -258,7 +258,7 @@
 
     <!-- 2. MOBILE NAVIGATION DRAWER (FOR MOBILE & TABLET < MD) -->
     <div v-if='showMobileMenu' v-cloak='true' style='display: none;' v-bind:style='showMobileMenu ? "display: flex !important;" : "display: none !important;"' class='fixed inset-0 z-50 flex md:hidden bg-black/60 backdrop-blur-sm'>
-      <div class='bg-white w-72 max-w-[85vw] h-full flex flex-col justify-between p-4 overflow-y-auto custom-scroll shadow-2xl border-r border-[#E0DDD8]'>
+      <div class='bg-white w-72 sm:w-80 max-w-[85vw] h-full flex flex-col justify-between p-4 overflow-y-auto custom-scroll shadow-2xl border-r border-[#E0DDD8]'>
         <div class='space-y-5'>
           <div class='flex items-center justify-between pb-3 border-b border-[#E0DDD8]'>
             <div>
@@ -349,12 +349,12 @@
         <!-- Bottom User Account Card in Mobile Drawer -->
         <div class='bg-[#F1EFED] p-3.5 border border-[#E0DDD8] text-xs mt-6'>
           <div v-if='currentUser &amp;&amp; currentUser.uid' class='mb-2.5'>
-            <div class='flex items-center gap-2 mb-1.5'>
-              <img v-if='currentUser.photoURL' v-bind:src='currentUser.photoURL' class='w-7 h-7 object-cover border border-[#C74634]' />
+            <div class='flex items-center gap-2.5 mb-1.5'>
+              <img v-if='currentUser.photoURL' v-bind:src='currentUser.photoURL' class='w-8 h-8 object-cover border border-[#C74634] shrink-0' />
               <div class='min-w-0 flex-1'>
-                <p class='font-bold text-slate-900 truncate flex items-center gap-1.5'>
-                  <span>{{ currentUser.displayName }}</span>
-                  <span v-if='isAdmin' class='px-1.5 py-0.2 bg-[#C74634] text-white text-[9px] font-black uppercase tracking-wider'>Admin</span>
+                <p class='font-bold text-slate-900 flex items-center justify-between gap-1.5'>
+                  <span class='truncate'>{{ currentUser.displayName }}</span>
+                  <span v-if='isAdmin' class='px-1.5 py-0.5 bg-[#C74634] text-white text-[9px] font-black uppercase tracking-wider shrink-0'>Admin</span>
                 </p>
                 <p class='text-[10px] text-slate-500 truncate'>{{ currentUser.email }}</p>
               </div>
