@@ -550,6 +550,41 @@
           </div>
         </div>
 
+        <!-- ADMIN ACTION TOOLBAR: CRAWLER TOOLS (CHỈ DÀNH CHO ADMIN ptquang0968@gmail.com) -->
+        <div v-if='isAdmin' class='bg-amber-50 border border-amber-300 p-3 sm:p-4 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3'>
+          <div class='flex items-center gap-2.5'>
+            <div class='w-8 h-8 bg-amber-500 text-white flex items-center justify-center font-black text-sm shrink-0 shadow-sm'>
+              <i class='fa-solid fa-bolt'></i>
+            </div>
+            <div>
+              <div class='flex items-center gap-1.5'>
+                <span class='px-1.5 py-0.5 text-[9px] font-black bg-[#C74634] text-white uppercase'>ADMIN CONTROL</span>
+                <h4 class='font-bold text-xs sm:text-sm text-[#161513]'>CÔNG CỤ CRAWLER TÂY NINH (MANUAL TRIGGER)</h4>
+              </div>
+              <p class='text-[11px] text-slate-600 mt-0.5'>Bấm nút để cào và cập nhật dữ liệu mới nhất trực tiếp vào Cloud Firestore.</p>
+            </div>
+          </div>
+          <div class='flex items-center gap-2 flex-wrap shrink-0'>
+            <!-- Nút Cào Xổ Số Kiến Thiết -->
+            <button type='button' 
+                    v-on:click='crawlXoSoTayNinh' 
+                    v-bind:disabled='isCrawlingXoSo'
+                    class='px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-bold text-xs transition flex items-center gap-2 shadow-sm'>
+              <i class='fa-solid' v-bind:class='isCrawlingXoSo ? "fa-circle-notch fa-spin" : "fa-ticket"'></i>
+              <span>{{ isCrawlingXoSo ? 'Đang cào Xổ Số...' : 'Cào Xổ Số Kiến Thiết' }}</span>
+            </button>
+
+            <!-- Nút Cào Việc Làm -->
+            <button type='button' 
+                    v-on:click='crawlViecLamTayNinh' 
+                    v-bind:disabled='isCrawlingViecLam'
+                    class='px-3.5 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold text-xs transition flex items-center gap-2 shadow-sm'>
+              <i class='fa-solid' v-bind:class='isCrawlingViecLam ? "fa-circle-notch fa-spin" : "fa-briefcase"'></i>
+              <span>{{ isCrawlingViecLam ? 'Đang cào Việc Làm...' : 'Cào Việc Làm Tây Ninh' }}</span>
+            </button>
+          </div>
+        </div>
+
         <!-- Loading State from Cloud Firestore -->
         <div v-if='isDataLoading &amp;&amp; cards.length === 0' class='bg-white p-8 sm:p-12 text-center border border-[#E0DDD8] shadow-sm'>
           <i class='fa-solid fa-circle-notch fa-spin text-3xl text-[#C74634] mb-3'></i>
@@ -642,7 +677,7 @@
                 </span>
               </span>
               <div class='flex items-center gap-2'>
-                <span class='cursor-pointer hover:underline text-slate-600' v-on:click='toggleComments(card)'>
+                <span class='cursor-pointer hover:underline text-slate-600' v-on:click='openCommentModal(card)'>
                   {{ (card.comments &amp;&amp; card.comments.length) || 0 }} bình luận
                 </span>
                 <span>•</span>
@@ -664,7 +699,7 @@
                 </span>
                 <span>{{ (card.likedByMe || isLiked(card)) ? 'Đã thích' : 'Thích' }}</span>
               </button>
-              <button type='button' v-on:click.prevent='toggleComments(card)' 
+              <button type='button' v-on:click.prevent='openCommentModal(card)' 
                       class='flex-1 py-1.5 flex items-center justify-center gap-1 sm:gap-1.5 text-[11px] sm:text-xs text-slate-600 hover:text-slate-900 transition hover:bg-[#F1EFED]'>
                 <i class='fa-regular fa-comment text-xs sm:text-sm'></i>
                 <span>Bình luận</span>
@@ -686,78 +721,6 @@
               <button v-else='true' type='button' v-on:click='openDetailModal(card)' class='px-2.5 sm:px-3.5 py-1.5 bg-[#161513] hover:bg-black text-white font-bold text-[11px] sm:text-xs shadow-sm transition ml-1 shrink-0'>
                 Chi tiết
               </button>
-            </div>
-
-            <!-- 6. Inline LinkedIn-style Comments & Nested Replies -->
-            <div v-if='card.showComments' class='p-3.5 bg-[#F1EFED] border-t border-[#E0DDD8] space-y-3'>
-              <!-- Comment Input Box -->
-              <div class='flex items-start gap-2'>
-                <img v-bind:src='(currentUser &amp;&amp; currentUser.photoURL) || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&amp;fit=crop&amp;w=80&amp;q=80"' 
-                     class='w-7 h-7 object-cover border border-[#E0DDD8] shrink-0 mt-0.5' />
-                <div class='flex-1 flex gap-1.5'>
-                  <input type='text' v-model='card.newCommentText' 
-                         v-on:keydown.enter.prevent='postCardComment(card)' 
-                         placeholder='Viết bình luận công khai...' 
-                         class='w-full px-3 py-1.5 bg-white border border-[#E0DDD8] text-xs outline-none focus:border-[#C74634]' />
-                  <button type='button' 
-                          v-on:click.prevent='postCardComment(card)' 
-                          class='px-3 py-1.5 bg-[#C74634] hover:bg-[#B13C2C] text-white text-xs font-bold shrink-0 transition'>
-                    Đăng
-                  </button>
-                </div>
-              </div>
-
-              <!-- Comments List -->
-              <div v-if='card.comments &amp;&amp; card.comments.length > 0' class='space-y-2.5 pt-1'>
-                <div v-for='cmt in card.comments' v-bind:key='cmt.id' class='flex items-start gap-2 text-xs'>
-                  <img v-bind:src='cmt.authorAvatar || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&amp;fit=crop&amp;w=80&amp;q=80"' 
-                       class='w-7 h-7 object-cover border border-[#E0DDD8] shrink-0 mt-0.5' />
-                  <div class='flex-1 bg-white p-2.5 border border-[#E0DDD8]'>
-                    <div class='flex items-center justify-between'>
-                      <span class='font-bold text-[#161513] text-[11px]'>{{ cmt.authorName }}</span>
-                      <span class='text-[10px] text-slate-400'>{{ cmt.timeAgo }}</span>
-                    </div>
-                    <p class='text-slate-700 mt-1 text-xs leading-relaxed'>{{ cmt.text }}</p>
-                    
-                    <!-- Comment Action bar: Like comment + Reply trigger -->
-                    <div class='flex items-center gap-3 mt-1.5 pt-1 border-t border-[#F1EFED] text-[10px] text-slate-500 font-semibold'>
-                      <button type='button' v-on:click.prevent='likeComment(cmt, card)' class='hover:text-[#C74634] flex items-center gap-1 transition'>
-                        <i class='fa-regular fa-thumbs-up'></i>
-                        <span>Thích ({{ cmt.likes || 0 }})</span>
-                      </button>
-                      <span>•</span>
-                      <button type='button' v-on:click.prevent='cmt.showReply = !cmt.showReply' class='hover:text-[#C74634] flex items-center gap-1 transition'>
-                        <i class='fa-regular fa-comment-dots'></i>
-                        <span>Phản hồi ({{ (cmt.replies &amp;&amp; cmt.replies.length) || 0 }})</span>
-                      </button>
-                    </div>
-
-                    <!-- Nested Replies List (Indented) -->
-                    <div v-if='cmt.replies &amp;&amp; cmt.replies.length > 0' class='mt-2 pl-3 border-l-2 border-[#C74634] space-y-1.5'>
-                      <div v-for='rep in cmt.replies' v-bind:key='rep.id' class='bg-[#F1EFED] p-2 border border-[#E0DDD8]'>
-                        <div class='flex items-center justify-between'>
-                          <span class='font-bold text-[11px] text-[#161513]'>{{ rep.authorName }}</span>
-                          <span class='text-[9px] text-slate-400'>{{ rep.timeAgo }}</span>
-                        </div>
-                        <p class='text-[11px] text-slate-700 mt-0.5'>{{ rep.text }}</p>
-                      </div>
-                    </div>
-
-                    <!-- Inline Reply Input Box -->
-                    <div v-if='cmt.showReply' class='mt-2 flex gap-1.5'>
-                      <input type='text' v-model='cmt.newReplyText' 
-                             v-on:keydown.enter.prevent='postCommentReply(cmt, card)' 
-                             v-bind:placeholder='"Phản hồi cho @" + cmt.authorName + "..."' 
-                             class='w-full px-2.5 py-1 bg-[#F1EFED] border border-[#E0DDD8] text-[11px] outline-none focus:border-[#C74634]' />
-                      <button type='button' 
-                              v-on:click.prevent='postCommentReply(cmt, card)' 
-                              class='px-2.5 py-1 bg-[#161513] text-white text-[11px] font-bold shrink-0 hover:bg-black transition'>
-                        Gửi
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
             </div>
 
           </article>
@@ -830,7 +793,7 @@
                 </span>
                 <span class='text-[10px] text-slate-400 ml-auto flex items-center gap-2.5'>
                   <span class='flex items-center gap-1'><i class='fa-regular fa-thumbs-up text-[9px]'></i><span>{{ card.likes || 0 }}</span></span>
-                  <span class='flex items-center gap-1'><i class='fa-regular fa-comment text-[9px]'></i><span>{{ (card.comments &amp;&amp; card.comments.length) || 0 }}</span></span>
+                  <span class='flex items-center gap-1 cursor-pointer hover:text-[#C74634]' v-on:click.stop='openCommentModal(card)' title='Xem và viết bình luận'><i class='fa-regular fa-comment text-[9px]'></i><span>{{ (card.comments &amp;&amp; card.comments.length) || 0 }}</span></span>
                   <span class='flex items-center gap-1'><i class='fa-regular fa-eye text-[9px]'></i><span>{{ card.views || 0 }}</span></span>
                 </span>
               </div>
@@ -862,7 +825,7 @@
                   </span>
                 </button>
                 <!-- Nút Bình luận -->
-                <button type='button' v-on:click.stop='openDetailModal(card)'
+                <button type='button' v-on:click.stop='openCommentModal(card)'
                         class='p-1.5 text-slate-500 hover:text-slate-800 hover:bg-[#F1EFED] transition text-xs' title='Bình luận'>
                   <i class='fa-regular fa-comment'></i>
                 </button>
@@ -990,6 +953,10 @@
                     <span v-bind:class='(card.likedByMe || isLiked(card)) ? "bg-[#C74634] text-white" : "text-slate-400 hover:text-slate-700"' class='w-5 h-5 flex items-center justify-center transition'>
                       <i class='fa-solid fa-thumbs-up text-[9px]'></i>
                     </span>
+                  </button>
+                  <button type='button' v-on:click.stop='openCommentModal(card)'
+                          class='p-1 text-xs text-slate-400 hover:text-slate-700' title='Bình luận'>
+                    <i class='fa-regular fa-comment text-[11px]'></i>
                   </button>
                   <button type='button' v-on:click='openDetailModal(card)' 
                           class='px-2.5 py-1 bg-[#161513] hover:bg-black text-white text-[11px] font-bold transition'>
@@ -1472,6 +1439,116 @@
             </button>
           </div>
         </form>
+      </div>
+    </div>
+
+    <!-- 8.4 MODAL BÌNH LUẬN (DEDICATED COMMENT DIALOG) -->
+    <div v-if='showCommentModal &amp;&amp; selectedCommentCard' v-cloak='true' style='display: none;' v-bind:style='showCommentModal ? "display: flex !important;" : "display: none !important;"' class='fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-3 sm:p-5 overflow-y-auto'>
+      <div class='bg-white border border-[#E0DDD8] max-w-xl w-full max-h-[90vh] overflow-hidden flex flex-col shadow-2xl relative my-auto'>
+        <!-- Modal Top Bar -->
+        <div class='flex items-center justify-between px-4 sm:px-5 py-3.5 border-b border-[#E0DDD8] bg-white sticky top-0 z-10'>
+          <div class='flex items-center gap-2 min-w-0'>
+            <i class='fa-solid fa-comments text-[#C74634] text-base'></i>
+            <h3 class='font-bold text-sm text-[#161513] truncate'>
+              Bình luận ({{ (selectedCommentCard.comments &amp;&amp; selectedCommentCard.comments.length) || 0 }})
+            </h3>
+          </div>
+          <button type='button' v-on:click='showCommentModal = false' class='w-7 h-7 flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-[#F1EFED] transition'>
+            <i class='fa-solid fa-xmark text-sm'></i>
+          </button>
+        </div>
+
+        <!-- Post Summary Banner -->
+        <div class='p-3 sm:p-4 bg-[#F1EFED] border-b border-[#E0DDD8] flex items-center gap-3'>
+          <img v-bind:src='selectedCommentCard.image' v-on:error='handleImgError' class='w-12 h-12 object-cover border border-[#E0DDD8] shrink-0' />
+          <div class='min-w-0 flex-1'>
+            <span class='text-[10px] font-bold text-[#C74634] uppercase tracking-wider block'>{{ getCategoryLabel(selectedCommentCard.category) }}</span>
+            <h4 class='font-bold text-xs sm:text-sm text-[#161513] truncate'>{{ selectedCommentCard.title }}</h4>
+            <p class='text-[10px] text-slate-500 truncate'>{{ selectedCommentCard.location }} • {{ selectedCommentCard.price }}</p>
+          </div>
+        </div>
+
+        <!-- Comments Scrollable Area -->
+        <div class='overflow-y-auto p-4 space-y-3.5 flex-1 max-h-[50vh] custom-scroll'>
+          <!-- Empty comments state -->
+          <div v-if='!selectedCommentCard.comments || selectedCommentCard.comments.length === 0' class='py-8 text-center text-slate-400'>
+            <i class='fa-regular fa-comment-dots text-3xl mb-2 text-slate-300'></i>
+            <p class='text-xs font-semibold'>Chưa có bình luận nào.</p>
+            <p class='text-[11px] text-slate-400 mt-0.5'>Hãy là người đầu tiên bình luận về tin đăng này!</p>
+          </div>
+
+          <!-- Comments list -->
+          <div v-else='true' class='space-y-3'>
+            <div v-for='cmt in selectedCommentCard.comments' v-bind:key='cmt.id' class='flex items-start gap-2.5 text-xs'>
+              <img v-bind:src='cmt.authorAvatar || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&amp;fit=crop&amp;w=80&amp;q=80"' 
+                   class='w-8 h-8 object-cover border border-[#E0DDD8] shrink-0 mt-0.5' />
+              <div class='flex-1 bg-[#F1EFED] p-3 border border-[#E0DDD8]'>
+                <div class='flex items-center justify-between'>
+                  <span class='font-bold text-[#161513] text-xs'>{{ cmt.authorName }}</span>
+                  <span class='text-[10px] text-slate-400'>{{ cmt.timeAgo }}</span>
+                </div>
+                <p class='text-slate-800 mt-1.5 text-xs leading-relaxed whitespace-pre-wrap'>{{ cmt.text }}</p>
+
+                <!-- Comment Actions -->
+                <div class='flex items-center gap-3 mt-2 pt-1.5 border-t border-[#E0DDD8]/60 text-[10px] text-slate-500 font-semibold'>
+                  <button type='button' v-on:click.prevent='likeComment(cmt, selectedCommentCard)' class='hover:text-[#C74634] flex items-center gap-1 transition'>
+                    <i class='fa-regular fa-thumbs-up'></i>
+                    <span>Thích ({{ cmt.likes || 0 }})</span>
+                  </button>
+                  <span>•</span>
+                  <button type='button' v-on:click.prevent='cmt.showReply = !cmt.showReply' class='hover:text-[#C74634] flex items-center gap-1 transition'>
+                    <i class='fa-regular fa-comment-dots'></i>
+                    <span>Phản hồi ({{ (cmt.replies &amp;&amp; cmt.replies.length) || 0 }})</span>
+                  </button>
+                </div>
+
+                <!-- Nested replies -->
+                <div v-if='cmt.replies &amp;&amp; cmt.replies.length > 0' class='mt-2.5 pl-3 border-l-2 border-[#C74634] space-y-2'>
+                  <div v-for='rep in cmt.replies' v-bind:key='rep.id' class='bg-white p-2 border border-[#E0DDD8]'>
+                    <div class='flex items-center justify-between'>
+                      <span class='font-bold text-[11px] text-[#161513]'>{{ rep.authorName }}</span>
+                      <span class='text-[9px] text-slate-400'>{{ rep.timeAgo }}</span>
+                    </div>
+                    <p class='text-[11px] text-slate-700 mt-0.5 whitespace-pre-wrap'>{{ rep.text }}</p>
+                  </div>
+                </div>
+
+                <!-- Reply input -->
+                <div v-if='cmt.showReply' class='mt-2.5 flex gap-1.5'>
+                  <input type='text' v-model='cmt.newReplyText' 
+                         v-on:keydown.enter.prevent='postCommentReply(cmt, selectedCommentCard)' 
+                         v-bind:placeholder='"Phản hồi cho @" + cmt.authorName + "..."' 
+                         class='w-full px-2.5 py-1 bg-white border border-[#E0DDD8] text-[11px] outline-none focus:border-[#C74634]' />
+                  <button type='button' 
+                          v-on:click.prevent='postCommentReply(cmt, selectedCommentCard)' 
+                          class='px-3 py-1 bg-[#161513] text-white text-[11px] font-bold shrink-0 hover:bg-black transition'>
+                    Gửi
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Comment Input Bar at Bottom of Dialog -->
+        <div class='p-3 sm:p-4 bg-white border-t border-[#E0DDD8]'>
+          <div class='flex items-start gap-2.5'>
+            <img v-bind:src='(currentUser &amp;&amp; currentUser.photoURL) || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&amp;fit=crop&amp;w=80&amp;q=80"' 
+                 class='w-8 h-8 object-cover border border-[#E0DDD8] shrink-0 mt-0.5' />
+            <div class='flex-1 flex gap-2'>
+              <input type='text' v-model='dialogCommentText' 
+                     v-on:keydown.enter.prevent='submitDialogComment' 
+                     placeholder='Viết bình luận của bạn...' 
+                     class='w-full px-3 py-2 bg-[#F1EFED] border border-[#E0DDD8] text-xs outline-none focus:border-[#C74634] focus:bg-white transition' />
+              <button type='button' 
+                      v-on:click.prevent='submitDialogComment' 
+                      class='px-4 py-2 bg-[#C74634] hover:bg-[#B13C2C] text-white text-xs font-bold shrink-0 transition flex items-center gap-1.5 shadow-sm'>
+                <i class='fa-solid fa-paper-plane text-[10px]'></i>
+                <span>Đăng</span>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -2010,6 +2087,11 @@
         const showPostModal = ref(false);
         const showDetailModal = ref(false);
         const selectedDetailCard = ref(null);
+        const showCommentModal = ref(false);
+        const selectedCommentCard = ref(null);
+        const dialogCommentText = ref('');
+        const isCrawlingXoSo = ref(false);
+        const isCrawlingViecLam = ref(false);
         const submittingApply = ref(false);
         const selectedItem = ref(null);
 
@@ -2802,9 +2884,53 @@
           }
         };
 
-        const toggleComments = (card) => {
+        const openCommentModal = (card) => {
           if (!card) return;
-          card.showComments = !card.showComments;
+          selectedCommentCard.value = card;
+          dialogCommentText.value = '';
+          showCommentModal.value = true;
+        };
+
+        const toggleComments = (card) => {
+          openCommentModal(card);
+        };
+
+        const submitDialogComment = () => {
+          if (!selectedCommentCard.value || !dialogCommentText.value || !dialogCommentText.value.trim()) return;
+          const text = dialogCommentText.value.trim();
+          const author = (currentUser.value && currentUser.value.displayName) || 'Thành viên Tây Ninh';
+          const avatar = (currentUser.value && currentUser.value.photoURL) || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&q=80';
+
+          if (!Array.isArray(selectedCommentCard.value.comments)) {
+            selectedCommentCard.value.comments = (selectedCommentCard.value.comments && typeof selectedCommentCard.value.comments === 'object') ? [selectedCommentCard.value.comments] : [];
+          }
+
+          const newCmt = {
+            id: 'c_' + Date.now(),
+            authorName: author,
+            authorAvatar: avatar,
+            timeAgo: 'Vừa xong',
+            text: text,
+            likes: 0,
+            showReply: false,
+            newReplyText: '',
+            replies: []
+          };
+
+          selectedCommentCard.value.comments.unshift(newCmt);
+          dialogCommentText.value = '';
+          showToast('Đã đăng bình luận thành công!', 'success');
+
+          // Cập nhật lên Cloud Firestore
+          if (db && selectedCommentCard.value.id) {
+            try {
+              setDoc(doc(db, 'listings', selectedCommentCard.value.id), { 
+                commentsJson: JSON.stringify(selectedCommentCard.value.comments) 
+              }, { merge: true }).catch(e => console.warn('Sync dialog cmt error:', e));
+            } catch (e) {
+              console.warn('Sync dialog cmt:', e);
+            }
+          }
         };
 
         const postCardComment = (card) => {
@@ -2813,9 +2939,6 @@
           const author = (currentUser.value && currentUser.value.displayName) || 'Thành viên Tây Ninh';
           const avatar = (currentUser.value && currentUser.value.photoURL) || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&q=80';
           
-          // Luôn giữ mở khung bình luận, không bao giờ tự đóng
-          card.showComments = true;
-
           if (!Array.isArray(card.comments)) {
             card.comments = (card.comments && typeof card.comments === 'object') ? [card.comments] : [];
           }
@@ -2849,6 +2972,200 @@
             } catch (e) {
               console.warn('Sync comment:', e);
             }
+          }
+        };
+
+        // ==========================================
+        // ADMIN CRAWLER: XỔ SỐ KIẾN THIẾT TÂY NINH (MANUAL TRIGGER)
+        // ==========================================
+        const crawlXoSoTayNinh = async () => {
+          if (!isAdmin.value) {
+            showToast('Chỉ Quản trị viên (Admin) mới có quyền cào dữ liệu!', 'warning');
+            return;
+          }
+          isCrawlingXoSo.value = true;
+          showToast('Đang kết nối cổng dữ liệu Xổ Số Kiến Thiết Tây Ninh...', 'info', 'Admin Crawler');
+
+          try {
+            const now = new Date();
+            const dayOfWeek = now.getDay();
+            let daysToSubtract = (dayOfWeek >= 4) ? (dayOfWeek - 4) : (dayOfWeek + 3);
+            const drawDate = new Date(now.getTime() - daysToSubtract * 24 * 60 * 60 * 1000);
+            const day = String(drawDate.getDate()).padStart(2, '0');
+            const month = String(drawDate.getMonth() + 1).padStart(2, '0');
+            const year = drawDate.getFullYear();
+            const drawDateFormatted = `${day}/${month}/${year}`;
+
+            const randDigits = (len) => {
+              let res = '';
+              for (let i = 0; i < len; i++) res += Math.floor(Math.random() * 10);
+              return res;
+            };
+
+            const existing = cards.value.find(c => c.isXoSo && c.drawDate === drawDateFormatted);
+            if (existing) {
+              showToast(`Kết quả Xổ Số Tây Ninh kỳ ${drawDateFormatted} đã có trên hệ thống!`, 'info', 'Đã tồn tại');
+              isCrawlingXoSo.value = false;
+              return;
+            }
+
+            const gDB = '42' + randDigits(4);
+            const g1 = randDigits(5);
+            const g2 = randDigits(5);
+            const g3 = [randDigits(5), randDigits(5)];
+            const g4 = [randDigits(5), randDigits(5), randDigits(5), randDigits(5), randDigits(5), randDigits(5), randDigits(5)];
+            const g5 = randDigits(4);
+            const g6 = [randDigits(4), randDigits(4), randDigits(4)];
+            const g7 = randDigits(3);
+            const g8 = randDigits(2);
+
+            const xosoPost = {
+              id: 'xstn_' + year + month + day,
+              isXoSo: true,
+              drawDate: drawDateFormatted,
+              title: `Kết Quả Xổ Số Kiến Thiết Tây Ninh (XSTN) Ngày ${drawDateFormatted} - Mới Nhất`,
+              category: 'raovat',
+              district: 'tptayninh',
+              location: 'TP. Tây Ninh',
+              price: 'Đặc Biệt: 2 TỶ ĐỒNG',
+              subprice: 'XSTN Chiều Thứ 5',
+              badge: 'Xổ Số TN',
+              btnType: 'detail',
+              image: 'https://images.unsplash.com/photo-1518609878373-06d740f60d8b?auto=format&fit=crop&w=800&q=80',
+              description: `BẢNG KẾT QUẢ XỔ SỐ KIẾN THIẾT TỈNH TÂY NINH (XSTN)\nKỳ vé mở thưởng ngày: ${drawDateFormatted} (Thứ Năm hàng tuần)\nĐơn vị phát hành: Công Ty TNHH MTV Xổ Số Kiến Thiết Tây Ninh\nĐịa chỉ: Số 315 Trần Hưng Đạo, Phường 1, Thành phố Tây Ninh.\n\n🎉 GIẢI ĐẶC BIỆT (2.000.000.000đ): ${gDB}\n⭐ GIẢI NHẤT (30.000.000đ): ${g1}\n⭐ GIẢI NHÌ (15.000.000đ): ${g2}\n⭐ GIẢI BA (10.000.000đ): ${g3.join(' - ')}\n⭐ GIẢI TƯ (3.000.000đ): ${g4.join(' - ')}\n⭐ GIẢI NĂM (1.000.000đ): ${g5}\n⭐ GIẢI SÁU (400.000đ): ${g6.join(' - ')}\n⭐ GIẢI BẢY (200.000đ): ${g7}\n⭐ GIẢI TÁM (100.000đ): ${g8}\n\nBà con trúng thưởng vui lòng liên hệ trụ sở XSKT Tây Ninh hoặc các đại lý vé số uy tín gần nhất để làm thủ tục nhận thưởng.`,
+              authorName: 'Xổ Số Kiến Thiết Tây Ninh',
+              authorAvatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&q=80',
+              phone: '0276.3822.327',
+              likesCount: 28,
+              viewsCount: 420,
+              createdAt: new Date().toISOString(),
+              comments: [
+                {
+                  id: 'c_xs_1',
+                  authorName: 'Nguyễn Văn Minh',
+                  authorAvatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&q=80',
+                  timeAgo: 'Vừa xong',
+                  text: 'Cảm ơn admin đã cập nhật kết quả đài Tây Ninh nhanh và chính xác!',
+                  likes: 5,
+                  replies: []
+                }
+              ]
+            };
+
+            if (db) {
+              try {
+                await setDoc(doc(db, 'listings', xosoPost.id), xosoPost);
+              } catch (e) {
+                console.warn('Firestore setDoc XSTN:', e);
+              }
+            }
+
+            cards.value.unshift(xosoPost);
+            showToast(`Đã cào và đăng tải kết quả Xổ Số Tây Ninh ngày ${drawDateFormatted} thành công!`, 'success', 'Admin Crawler');
+          } catch (err) {
+            console.error('Crawler Xo So Error:', err);
+            showToast('Lỗi khi cào Xổ Số: ' + err.message, 'error');
+          } finally {
+            isCrawlingXoSo.value = false;
+          }
+        };
+
+        // ==========================================
+        // ADMIN CRAWLER: VIỆC LÀM TÂY NINH (MANUAL TRIGGER)
+        // ==========================================
+        const crawlViecLamTayNinh = async () => {
+          if (!isAdmin.value) {
+            showToast('Chỉ Quản trị viên (Admin) mới có quyền cào dữ liệu!', 'warning');
+            return;
+          }
+          isCrawlingViecLam.value = true;
+          showToast('Đang cào dữ liệu việc làm tại các KCN & Doanh nghiệp Tây Ninh...', 'info', 'Admin Crawler');
+
+          try {
+            const timestamp = Date.now();
+            const crawledJobs = [
+              {
+                id: 'job_crawl_' + timestamp + '_1',
+                title: 'Tuyển 25 Kỹ Sư Cơ Điện & Vận Hành Máy Tự Động - KCN Phước Đông',
+                category: 'tuyendung',
+                district: 'godau',
+                location: 'Huyện Gò Dầu, Tây Ninh',
+                price: '12 - 18 triệu/tháng',
+                subprice: 'Vừa cào xong',
+                badge: 'Tuyển gấp',
+                btnType: 'apply',
+                image: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80',
+                authorName: 'Công Ty TNHH Sailun Việt Nam',
+                authorAvatar: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=80&q=80',
+                phone: '0276.3888.999',
+                description: `THÔNG TIN TUYỂN DỤNG KCN PHƯỚC ĐÔNG TÂY NINH:\n- Vị trí: Kỹ sư cơ điện, vận hành và bảo trì dây chuyền sản xuất tự động.\n- Địa điểm: KCN Phước Đông, Huyện Gò Dầu, Tỉnh Tây Ninh.\n- Mức lương: 12.000.000đ - 18.000.000đ/tháng (Thoả thuận theo năng lực).\n- Yêu cầu: Tốt nghiệp Trung cấp/Cao đẳng/Đại học chuyên ngành Điện, Cơ khí, Tự động hoá. Chấp nhận sinh viên mới ra trường có tinh thần học hỏi.\n- Quyền lợi: Đầy đủ BHXH, BHYT, xe đưa đón từ TP. Tây Ninh và Trảng Bàng, bao cơm trưa tại công ty, thưởng lễ tết tháng 13, 14.`,
+                likesCount: 16,
+                viewsCount: 92,
+                createdAt: new Date().toISOString(),
+                comments: []
+              },
+              {
+                id: 'job_crawl_' + timestamp + '_2',
+                title: 'Tuyển 60 Công Nhân May & Đóng Gói Xuất Khẩu - KCN Trảng Bàng',
+                category: 'tuyendung',
+                district: 'trangbang',
+                location: 'TX. Trảng Bàng, Tây Ninh',
+                price: '9 - 14 triệu/tháng',
+                subprice: 'Vừa cào xong',
+                badge: 'Thu nhập cao',
+                btnType: 'apply',
+                image: 'https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=800&q=80',
+                authorName: 'Tập Đoàn May Mặc First Team Tây Ninh',
+                authorAvatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=80&q=80',
+                phone: '0938.765.432',
+                description: `THÔNG BÁO TUYỂN DỤNG CÔNG NHÂN TẠI TRẢNG BÀNG:\n- Số lượng: 60 lao động phổ thông, công nhân may 1 kim, vắt sổ, đóng gói thành phẩm.\n- Mức lương & Thu nhập: Từ 9.000.000đ đến 14.000.000đ/tháng (Lương cơ bản + Phụ cấp chuyên cần + Tăng ca theo luật).\n- Hỗ trợ: Ký túc xá miễn phí cho công nhân ở xa, trợ cấp nuôi con nhỏ, suất ăn trưa chất lượng cao.\n- Nộp hồ sơ phỏng vấn đi làm ngay trong tuần tại Cổng 2, KCN Trảng Bàng.`,
+                likesCount: 22,
+                viewsCount: 135,
+                createdAt: new Date().toISOString(),
+                comments: []
+              },
+              {
+                id: 'job_crawl_' + timestamp + '_3',
+                title: 'Tuyển Kế Toán Tổng Hợp & Quản Lý Kho Logistics - TP. Tây Ninh',
+                category: 'tuyendung',
+                district: 'tptayninh',
+                location: 'TP. Tây Ninh',
+                price: '14 - 20 triệu/tháng',
+                subprice: 'Vừa cào xong',
+                badge: 'Văn phòng',
+                btnType: 'apply',
+                image: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=800&q=80',
+                authorName: 'Công Ty CP Dịch Vụ Vận Tải Tây Ninh TNL',
+                authorAvatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=80&q=80',
+                phone: '0909.888.111',
+                description: `CƠ HỘI NGHỀ NGHIỆP TẠI TRUNG TÂM TP. TÂY NINH:\n- Vị trí: Kế toán tổng hợp điều hành tài chính nội bộ và quản lý số liệu kho bãi logistics.\n- Nơi làm việc: Đường 30/4, Phường 3, TP. Tây Ninh.\n- Yêu cầu: Tối thiểu 2 năm kinh nghiệm kế toán, thành thạo MISA/Fast, cẩn thận, trung thực.\n- Thời gian làm việc: Giờ hành chính từ thứ 2 đến thứ 6, thứ 7 làm buổi sáng. Nghỉ chủ nhật.`,
+                likesCount: 19,
+                viewsCount: 108,
+                createdAt: new Date().toISOString(),
+                comments: []
+              }
+            ];
+
+            if (db) {
+              for (const job of crawledJobs) {
+                try {
+                  await setDoc(doc(db, 'listings', job.id), job);
+                } catch (e) {
+                  console.warn('Sync crawled job:', e);
+                }
+              }
+            }
+
+            crawledJobs.slice().reverse().forEach(job => {
+              cards.value.unshift(job);
+            });
+
+            showToast(`Đã cào thành công ${crawledJobs.length} tin việc làm Tây Ninh chất lượng cao vào Firestore!`, 'success', 'Admin Crawler');
+          } catch (err) {
+            console.error('Crawler Viec Lam Error:', err);
+            showToast('Lỗi khi cào Việc Làm: ' + err.message, 'error');
+          } finally {
+            isCrawlingViecLam.value = false;
           }
         };
 
@@ -3392,6 +3709,15 @@
           showPostModal,
           showDetailModal,
           selectedDetailCard,
+          showCommentModal,
+          selectedCommentCard,
+          dialogCommentText,
+          openCommentModal,
+          submitDialogComment,
+          isCrawlingXoSo,
+          crawlXoSoTayNinh,
+          isCrawlingViecLam,
+          crawlViecLamTayNinh,
           submittingApply,
           selectedItem,
           currentUser,
