@@ -4463,7 +4463,6 @@
           };
           showToast(toastMsgs[lang] || 'Language updated', 'success');
         };
-        };
 
         const activeTab = ref('feed');
         const activeCategory = ref('all');
