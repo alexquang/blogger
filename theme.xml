@@ -99,9 +99,10 @@
     }
     body {
       margin: 0;
-      padding: 16px;
+      padding: 0;
       box-sizing: border-box;
       height: 100vh;
+      height: 100dvh;
       width: 100vw;
       overflow: hidden;
       background-color: #F1EFED;
@@ -109,7 +110,12 @@
       color: #161513;
       display: flex;
     }
-    @media (min-width: 640px) {
+    @media (min-width: 768px) {
+      body {
+        padding: 16px;
+      }
+    }
+    @media (min-width: 1024px) {
       body {
         padding: 20px;
       }
@@ -130,8 +136,8 @@
     }
   ]]></b:skin>
 </head>
-<body class='bg-[#F1EFED] text-[#161513] antialiased h-screen w-screen p-4 sm:p-5 overflow-hidden flex box-border'>
-  <div id='app' v-cloak='true' class='w-full h-full flex-1 bg-white border border-[#E0DDD8] shadow-2xl overflow-hidden flex box-border'>
+<body class='bg-[#F1EFED] text-[#161513] antialiased h-screen h-[100dvh] w-screen p-0 md:p-4 lg:p-5 overflow-hidden flex box-border'>
+  <div id='app' v-cloak='true' class='w-full h-full flex-1 bg-white border-0 md:border border-[#E0DDD8] md:shadow-2xl overflow-hidden flex box-border relative'>
     
     <!-- 1. MENU ĐIỀU HƯỚNG TN HUB (ORACLE REDWOOD STYLE) -->
     <aside class='w-60 xl:w-64 bg-white border-r border-[#E0DDD8] p-4 xl:p-5 flex flex-col justify-between shrink-0 overflow-y-auto custom-scroll hidden md:flex'>
@@ -249,39 +255,172 @@
         </button>
       </div>
     </aside>
-    <!-- 3. MAIN CENTER FEED (ORACLE REDWOOD STYLE) -->
-    <main class='flex-1 min-w-0 overflow-y-auto custom-scroll p-6 lg:p-8 space-y-6'>
-      
-      <!-- Top Bar: Search, Realtime Bell, Google Account (Oracle Style) -->
-      <div class='flex items-center justify-between gap-4'>
-        <div class='relative flex-1 max-w-md'>
-          <i class='fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-xs'></i>
-          <input type='text' v-model='searchKeyword' v-on:keyup='onSearchKey' placeholder='Tìm việc làm, nhà đất, dịch vụ Tây Ninh...' class='w-full pl-9 pr-4 py-2 text-xs bg-white border border-[#E0DDD8] focus:border-[#C74634] outline-none shadow-sm' />
+
+    <!-- 2. MOBILE NAVIGATION DRAWER (FOR MOBILE & TABLET < MD) -->
+    <div v-if='showMobileMenu' v-cloak='true' style='display: none;' v-bind:style='showMobileMenu ? "display: flex !important;" : "display: none !important;"' class='fixed inset-0 z-50 flex md:hidden bg-black/60 backdrop-blur-sm'>
+      <div class='bg-white w-72 max-w-[85vw] h-full flex flex-col justify-between p-4 overflow-y-auto custom-scroll shadow-2xl border-r border-[#E0DDD8]'>
+        <div class='space-y-5'>
+          <div class='flex items-center justify-between pb-3 border-b border-[#E0DDD8]'>
+            <div>
+              <div class='flex items-center gap-2'>
+                <span class='bg-[#C74634] text-white font-black px-2.5 py-1 text-sm tracking-wider select-none'>TNHub</span>
+                <span class='text-xs font-black text-[#161513] tracking-tight uppercase'>TÂY NINH</span>
+              </div>
+              <span class='text-[10px] text-[#655F58] font-bold uppercase tracking-wider block mt-1'>CỔNG THÔNG TIN SỐ</span>
+            </div>
+            <button type='button' v-on:click='showMobileMenu = false' class='w-8 h-8 flex items-center justify-center hover:bg-slate-100 text-slate-500 transition'>
+              <i class='fa-solid fa-xmark text-base'></i>
+            </button>
+          </div>
+
+          <!-- Top Menu Items -->
+          <nav class='space-y-1 text-sm font-medium'>
+            <a href='/' v-on:click='showMobileMenu = false' class='flex items-center gap-3 px-3 py-2 bg-[#F1EFED] text-[#161513] font-bold border-l-2 border-[#C74634]'>
+              <i class='fa-solid fa-house text-[#C74634] text-xs'></i>
+              <span>Trang chủ</span>
+            </a>
+            <button type='button' v-on:click='openChatDrawer(); showMobileMenu = false' class='w-full flex items-center justify-between px-3 py-2 text-slate-700 hover:bg-[#F1EFED] transition'>
+              <div class='flex items-center gap-3'>
+                <i class='fa-regular fa-comment-dots text-slate-500 text-xs'></i>
+                <span>Tin nhắn</span>
+              </div>
+              <span v-if='unreadMessageCount > 0' class='bg-[#C74634] text-white text-[10px] font-bold px-1.5 py-0.2'>{{ unreadMessageCount }}</span>
+            </button>
+            <button type='button' v-on:click='activeTab = "video"; showMobileMenu = false' v-bind:class='activeTab === "video" ? "bg-[#F1EFED] text-[#C74634] font-bold border-l-2 border-[#C74634]" : "text-slate-700 hover:bg-[#F1EFED]"' class='w-full flex items-center justify-between px-3 py-2 transition text-xs'>
+              <div class='flex items-center gap-3'>
+                <i class='fa-brands fa-youtube text-red-600 text-xs'></i>
+                <span>Video Tây Ninh</span>
+              </div>
+              <span class='text-[9px] bg-red-100 text-red-700 px-1.5 py-0.5 font-bold uppercase'>YouTube</span>
+            </button>
+            <button type='button' v-on:click='activeTab = "map"; showMobileMenu = false' v-bind:class='activeTab === "map" ? "bg-[#F1EFED] text-[#C74634] font-bold border-l-2 border-[#C74634]" : "text-slate-700 hover:bg-[#F1EFED]"' class='w-full flex items-center justify-between px-3 py-2 transition text-xs'>
+              <div class='flex items-center gap-3'>
+                <i class='fa-solid fa-map-location-dot text-emerald-600 text-xs'></i>
+                <span>Bản đồ Tây Ninh</span>
+              </div>
+              <span class='text-[9px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 font-bold uppercase'>BẢN ĐỒ</span>
+            </button>
+          </nav>
+
+          <!-- Khám phá Tây Ninh -->
+          <div>
+            <h4 class='text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2 px-3'>Khám phá Tây Ninh</h4>
+            <ul class='space-y-1 text-sm font-medium'>
+              <li>
+                <button type='button' v-on:click='setCategory("all"); activeTab = "feed"; showMobileMenu = false' v-bind:class='activeCategory === "all" &amp;&amp; activeTab === "feed" ? "bg-[#F1EFED] text-[#161513] font-bold border-l-2 border-[#C74634]" : "text-slate-600 hover:bg-slate-50"' class='w-full flex items-center gap-3 px-3 py-2 transition'>
+                  <i class='fa-solid fa-border-all text-xs text-slate-400'></i>
+                  <span>Tất cả tin</span>
+                </button>
+              </li>
+              <li>
+                <button type='button' v-on:click='setCategory("tuyendung"); activeTab = "feed"; showMobileMenu = false' v-bind:class='activeCategory === "tuyendung" ? "bg-[#F1EFED] text-[#161513] font-bold border-l-2 border-[#C74634]" : "text-slate-600 hover:bg-slate-50"' class='w-full flex items-center gap-3 px-3 py-2 transition'>
+                  <i class='fa-solid fa-briefcase text-xs text-blue-600'></i>
+                  <span>Tuyển dụng</span>
+                </button>
+              </li>
+              <li>
+                <button type='button' v-on:click='setCategory("batdongsan"); activeTab = "feed"; showMobileMenu = false' v-bind:class='activeCategory === "batdongsan" ? "bg-[#F1EFED] text-[#161513] font-bold border-l-2 border-[#C74634]" : "text-slate-600 hover:bg-slate-50"' class='w-full flex items-center gap-3 px-3 py-2 transition'>
+                  <i class='fa-solid fa-house text-xs text-emerald-600'></i>
+                  <span>Bất động sản</span>
+                </button>
+              </li>
+              <li>
+                <button type='button' v-on:click='setCategory("amthuc"); activeTab = "feed"; showMobileMenu = false' v-bind:class='activeCategory === "amthuc" ? "bg-[#F1EFED] text-[#161513] font-bold border-l-2 border-[#C74634]" : "text-slate-600 hover:bg-slate-50"' class='w-full flex items-center gap-3 px-3 py-2 transition'>
+                  <i class='fa-solid fa-utensils text-xs text-amber-600'></i>
+                  <span>Ẩm thực &amp; Khách sạn</span>
+                </button>
+              </li>
+              <li>
+                <button type='button' v-on:click='setCategory("raovat"); activeTab = "feed"; showMobileMenu = false' v-bind:class='activeCategory === "raovat" ? "bg-[#F1EFED] text-[#161513] font-bold border-l-2 border-[#C74634]" : "text-slate-600 hover:bg-slate-50"' class='w-full flex items-center gap-3 px-3 py-2 transition'>
+                  <i class='fa-solid fa-cart-shopping text-xs text-indigo-600'></i>
+                  <span>Rao vặt</span>
+                </button>
+              </li>
+              <li>
+                <button type='button' v-on:click='setCategory("suachua"); activeTab = "feed"; showMobileMenu = false' v-bind:class='activeCategory === "suachua" ? "bg-[#F1EFED] text-[#161513] font-bold border-l-2 border-[#C74634]" : "text-slate-600 hover:bg-slate-50"' class='w-full flex items-center gap-3 px-3 py-2 transition'>
+                  <i class='fa-solid fa-wrench text-xs text-rose-600'></i>
+                  <span>Dịch vụ sửa chữa</span>
+                </button>
+              </li>
+            </ul>
+          </div>
         </div>
 
-        <div class='flex items-center gap-2.5'>
+        <!-- Bottom User Account Card in Mobile Drawer -->
+        <div class='bg-[#F1EFED] p-3.5 border border-[#E0DDD8] text-xs mt-6'>
+          <div v-if='currentUser &amp;&amp; currentUser.uid' class='mb-2.5'>
+            <div class='flex items-center gap-2 mb-1.5'>
+              <img v-if='currentUser.photoURL' v-bind:src='currentUser.photoURL' class='w-7 h-7 object-cover border border-[#C74634]' />
+              <div class='min-w-0 flex-1'>
+                <p class='font-bold text-slate-900 truncate flex items-center gap-1.5'>
+                  <span>{{ currentUser.displayName }}</span>
+                  <span v-if='isAdmin' class='px-1.5 py-0.2 bg-[#C74634] text-white text-[9px] font-black uppercase tracking-wider'>Admin</span>
+                </p>
+                <p class='text-[10px] text-slate-500 truncate'>{{ currentUser.email }}</p>
+              </div>
+            </div>
+            <button type='button' v-on:click='logoutGoogle(); showMobileMenu = false' class='text-[10px] text-rose-600 hover:underline font-semibold'>
+              Đăng xuất Google
+            </button>
+          </div>
+          <div v-else='true' class='mb-2.5'>
+            <h5 class='font-bold text-[#161513] mb-0.5'>Tài khoản Google</h5>
+            <p class='text-[10px] text-slate-500 mb-2'>Đăng nhập để đăng tin lên Cổng thông tin TN Hub.</p>
+            <button type='button' v-on:click='loginGoogle(); showMobileMenu = false' class='w-full py-1.5 px-2 bg-white border border-[#E0DDD8] text-slate-800 font-bold hover:bg-slate-100 flex items-center justify-center gap-1.5 shadow-sm transition mb-2'>
+              <i class='fa-brands fa-google text-red-600 text-xs'></i>
+              <span>Đăng nhập Google</span>
+            </button>
+          </div>
+
+          <button type='button' v-on:click='openPostModal(); showMobileMenu = false' class='w-full py-2 px-3 bg-[#C74634] hover:bg-[#B13C2C] text-white font-bold shadow-sm transition flex items-center justify-center gap-1.5'>
+            <i class='fa-solid fa-pen-to-square'></i>
+            <span>Đăng tin mới</span>
+          </button>
+        </div>
+      </div>
+      <!-- Drawer Backdrop click -->
+      <div class='flex-1 h-full' v-on:click='showMobileMenu = false'></div>
+    </div>
+
+    <!-- 3. MAIN CENTER FEED (ORACLE REDWOOD STYLE) -->
+    <main class='flex-1 min-w-0 overflow-y-auto custom-scroll p-3 sm:p-5 lg:p-8 space-y-5 sm:space-y-6'>
+      
+      <!-- Top Bar: Search, Realtime Bell, Google Account (Oracle Style) -->
+      <div class='flex items-center justify-between gap-2 sm:gap-4'>
+        <!-- Mobile Menu Toggle Button -->
+        <button type='button' v-on:click='showMobileMenu = true' class='md:hidden p-2 bg-white border border-[#E0DDD8] text-slate-700 hover:text-[#C74634] hover:bg-[#F1EFED] shadow-sm transition shrink-0' title='Mở menu điều hướng'>
+          <i class='fa-solid fa-bars text-sm'></i>
+        </button>
+
+        <div class='relative flex-1 max-w-md min-w-0'>
+          <i class='fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs'></i>
+          <input type='text' v-model='searchKeyword' v-on:keyup='onSearchKey' placeholder='Tìm việc làm, nhà đất, dịch vụ Tây Ninh...' class='w-full pl-8 sm:pl-9 pr-3 sm:pr-4 py-1.5 sm:py-2 text-xs bg-white border border-[#E0DDD8] focus:border-[#C74634] outline-none shadow-sm' />
+        </div>
+
+        <div class='flex items-center gap-1.5 sm:gap-2.5 shrink-0'>
           <!-- Realtime Bell Notification with Unread Count -->
-          <button v-on:click='openChatDrawer' class='relative px-3 py-1.5 bg-white border border-[#E0DDD8] flex items-center gap-1.5 text-xs text-slate-700 hover:bg-[#F1EFED] shadow-sm transition' title='Mở tin nhắn &amp; thông báo'>
+          <button type='button' v-on:click='openChatDrawer' class='relative px-2.5 sm:px-3 py-1.5 bg-white border border-[#E0DDD8] flex items-center gap-1.5 text-xs text-slate-700 hover:bg-[#F1EFED] shadow-sm transition' title='Mở tin nhắn &amp; thông báo'>
             <i class='fa-regular fa-bell text-xs text-[#C74634]'></i>
             <span class='font-semibold hidden sm:inline'>Tin nhắn</span>
             <span v-if='unreadMessageCount > 0' class='bg-[#C74634] text-white text-[10px] font-bold px-1.5 py-0.2'>{{ unreadMessageCount }}</span>
           </button>
 
           <!-- Button Google Login / Profile -->
-          <div v-if='currentUser &amp;&amp; currentUser.uid' class='flex items-center gap-2'>
-            <div class='inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#F1EFED] border border-[#E0DDD8] text-xs font-semibold text-slate-800 shadow-sm'>
-              <img v-if='currentUser.photoURL' v-bind:src='currentUser.photoURL' class='w-4 h-4 object-cover' />
-              <i v-else='true' class='fa-regular fa-user text-xs'></i>
-              <span>{{ currentUser.displayName ? currentUser.displayName.split(' ')[0] : 'Tài khoản' }}</span>
-              <span v-if='isAdmin' class='ml-1 px-1.5 py-0.2 bg-[#C74634] text-white text-[9px] font-black uppercase tracking-wider'>Admin</span>
+          <div v-if='currentUser &amp;&amp; currentUser.uid' class='flex items-center gap-1.5 sm:gap-2'>
+            <div class='inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 bg-[#F1EFED] border border-[#E0DDD8] text-xs font-semibold text-slate-800 shadow-sm max-w-[130px] sm:max-w-none truncate'>
+              <img v-if='currentUser.photoURL' v-bind:src='currentUser.photoURL' class='w-4 h-4 object-cover shrink-0' />
+              <i v-else='true' class='fa-regular fa-user text-xs shrink-0'></i>
+              <span class='truncate'>{{ currentUser.displayName ? currentUser.displayName.split(' ')[0] : 'Tài khoản' }}</span>
+              <span v-if='isAdmin' class='ml-1 px-1.5 py-0.2 bg-[#C74634] text-white text-[9px] font-black uppercase tracking-wider shrink-0'>Admin</span>
             </div>
-            <button v-on:click='logoutGoogle' class='px-2 py-1.5 bg-white border border-[#E0DDD8] text-slate-500 hover:text-rose-600 text-xs transition' title='Đăng xuất'>
+            <button type='button' v-on:click='logoutGoogle' class='px-2 py-1.5 bg-white border border-[#E0DDD8] text-slate-500 hover:text-rose-600 text-xs transition shrink-0' title='Đăng xuất'>
               <i class='fa-solid fa-arrow-right-from-bracket'></i>
             </button>
           </div>
-          <button v-else='true' v-on:click='loginGoogle' class='inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-[#C74634] hover:bg-[#B13C2C] text-xs font-bold text-white shadow-sm transition'>
+          <button v-else='true' type='button' v-on:click='loginGoogle' class='inline-flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 bg-[#C74634] hover:bg-[#B13C2C] text-xs font-bold text-white shadow-sm transition'>
             <i class='fa-brands fa-google text-xs'></i>
-            <span>Đăng nhập Google</span>
+            <span class='hidden sm:inline'>Đăng nhập Google</span>
+            <span class='sm:hidden'>Đăng nhập</span>
           </button>
         </div>
       </div>
@@ -289,11 +428,11 @@
       <!-- Main Title (UPPERCASE & ORACLE LOGO ACCENT) -->
       <div class='flex flex-wrap items-center justify-between gap-3'>
         <div>
-          <h1 class='text-2xl font-black text-[#161513] tracking-tight uppercase flex items-center gap-2.5'>
+          <h1 class='text-xl sm:text-2xl font-black text-[#161513] tracking-tight uppercase flex flex-wrap items-center gap-2'>
             <span>CỘNG ĐỒNG TÂY NINH</span>
             <span class='text-xs bg-[#C74634] text-white font-black px-2 py-0.5 tracking-wider uppercase select-none'>TNHub</span>
           </h1>
-          <p class='text-xs text-[#655F58] mt-1 flex items-center gap-2'>
+          <p class='text-xs text-[#655F58] mt-1 flex flex-wrap items-center gap-2'>
             <span>Nền tảng kết nối số việc làm, bất động sản, ẩm thực và video tỉnh Tây Ninh.</span>
             <span class='inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 border border-emerald-200'>
               <span class='w-1.5 h-1.5 bg-emerald-500 animate-pulse'></span>
@@ -303,16 +442,20 @@
         </div>
       </div>
 
-      <!-- Tab Switcher: Tin Đăng vs Video YouTube Tây Ninh -->
-      <div class='flex items-center gap-6 border-b border-[#E0DDD8] pt-1 pb-2.5 text-xs font-bold uppercase tracking-wide'>
-        <button v-on:click='activeTab = "feed"' v-bind:class='activeTab === "feed" ? "text-[#C74634] border-b-2 border-[#C74634] pb-2 -mb-2.5 font-black" : "text-slate-500 hover:text-slate-900 pb-2 transition"' class='flex items-center gap-2'>
+      <!-- Tab Switcher: Tin Đăng vs Video YouTube Tây Ninh vs Bản Đồ -->
+      <div class='flex items-center gap-4 sm:gap-6 border-b border-[#E0DDD8] pt-1 pb-2.5 text-xs font-bold uppercase tracking-wide overflow-x-auto custom-scroll whitespace-nowrap'>
+        <button type='button' v-on:click='activeTab = "feed"' v-bind:class='activeTab === "feed" ? "text-[#C74634] border-b-2 border-[#C74634] pb-2 -mb-2.5 font-black" : "text-slate-500 hover:text-slate-900 pb-2 transition"' class='flex items-center gap-2 shrink-0'>
           <i class='fa-solid fa-newspaper text-xs'></i>
           <span>Tất cả tin đăng ({{ totalFilteredCount }})</span>
         </button>
-        <button v-on:click='activeTab = "video"' v-bind:class='activeTab === "video" ? "text-[#C74634] border-b-2 border-[#C74634] pb-2 -mb-2.5 font-black" : "text-slate-500 hover:text-slate-900 pb-2 transition"' class='flex items-center gap-2'>
+        <button type='button' v-on:click='activeTab = "video"' v-bind:class='activeTab === "video" ? "text-[#C74634] border-b-2 border-[#C74634] pb-2 -mb-2.5 font-black" : "text-slate-500 hover:text-slate-900 pb-2 transition"' class='flex items-center gap-2 shrink-0'>
           <i class='fa-brands fa-youtube text-red-600 text-sm'></i>
           <span>Video Tây Ninh ({{ tayNinhVideos.length }})</span>
           <span class='bg-red-100 text-red-700 text-[9px] px-1 py-0.2 font-black'>YOUTUBE</span>
+        </button>
+        <button type='button' v-on:click='activeTab = "map"' v-bind:class='activeTab === "map" ? "text-[#C74634] border-b-2 border-[#C74634] pb-2 -mb-2.5 font-black" : "text-slate-500 hover:text-slate-900 pb-2 transition"' class='xl:hidden flex items-center gap-2 shrink-0'>
+          <i class='fa-solid fa-map-location-dot text-emerald-600 text-xs'></i>
+          <span>Bản đồ Tây Ninh</span>
         </button>
       </div>
 
@@ -395,75 +538,75 @@
         </div>
 
         <!-- LINKEDIN-STYLE QUICK SHARE / POST BOX -->
-        <div class='bg-white border border-[#E0DDD8] p-4 shadow-sm'>
-          <div class='flex items-center gap-3'>
+        <div class='bg-white border border-[#E0DDD8] p-3 sm:p-4 shadow-sm'>
+          <div class='flex items-center gap-2.5 sm:gap-3'>
             <img v-bind:src='(currentUser &amp;&amp; currentUser.photoURL) || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&amp;fit=crop&amp;w=80&amp;q=80"' 
-                 class='w-10 h-10 object-cover border border-[#E0DDD8] shrink-0' />
-            <button v-on:click='openPostModal' 
-                    class='flex-1 text-left px-4 py-2.5 bg-[#F1EFED] hover:bg-[#E0DDD8] border border-[#E0DDD8] text-slate-600 hover:text-slate-900 text-xs sm:text-sm font-medium transition flex items-center justify-between'>
-              <span>{{ currentUser ? (currentUser.displayName + ' ơi, bạn muốn chia sẻ tin tức hay cơ hội gì tại Tây Ninh?') : 'Bắt đầu bài viết hoặc chia sẻ cơ hội, việc làm, nhà đất tại Tây Ninh...' }}</span>
-              <i class='fa-regular fa-pen-to-square text-[#C74634]'></i>
+                 class='w-9 h-9 sm:w-10 sm:h-10 object-cover border border-[#E0DDD8] shrink-0' />
+            <button type='button' v-on:click='openPostModal' 
+                    class='flex-1 text-left px-3 sm:px-4 py-2 sm:py-2.5 bg-[#F1EFED] hover:bg-[#E0DDD8] border border-[#E0DDD8] text-slate-600 hover:text-slate-900 text-xs sm:text-sm font-medium transition flex items-center justify-between min-w-0'>
+              <span class='truncate'>{{ currentUser ? (currentUser.displayName + ' ơi, bạn muốn chia sẻ tin tức hay cơ hội gì tại Tây Ninh?') : 'Bắt đầu bài viết hoặc chia sẻ cơ hội, việc làm, nhà đất tại Tây Ninh...' }}</span>
+              <i class='fa-regular fa-pen-to-square text-[#C74634] shrink-0 ml-2'></i>
             </button>
           </div>
         </div>
 
         <!-- Loading State from Cloud Firestore -->
-        <div v-if='isDataLoading &amp;&amp; cards.length === 0' class='bg-white p-12 text-center border border-[#E0DDD8] shadow-sm'>
+        <div v-if='isDataLoading &amp;&amp; cards.length === 0' class='bg-white p-8 sm:p-12 text-center border border-[#E0DDD8] shadow-sm'>
           <i class='fa-solid fa-circle-notch fa-spin text-3xl text-[#C74634] mb-3'></i>
           <p class='font-bold text-sm text-[#161513]'>Đang nạp dữ liệu trực tiếp từ Cloud Firestore...</p>
           <p class='text-xs text-slate-500 mt-1'>Đồng bộ realtime 100% dữ liệu tin đăng Tây Ninh</p>
         </div>
 
-        <!-- MAIN CARD GRID: 2 COLUMNS (LINKEDIN POST STYLE) -->
-        <div class='grid grid-cols-1 md:grid-cols-2 gap-5'>
+        <!-- MAIN CARD GRID: RESPONSIVE 1 OR 2 COLUMNS (LINKEDIN POST STYLE) -->
+        <div class='grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5'>
           
           <article v-for='card in filteredCards' v-bind:key='card.id' 
                    v-bind:class='card.likedByMe ? "border-[#C74634] shadow-md ring-1 ring-[#C74634]/30" : "border-[#E0DDD8] shadow-sm hover:shadow-md"' 
                    class='bg-white border transition flex flex-col justify-between relative'>
             
             <!-- 1. Post Author Header (LinkedIn Style) -->
-            <div class='p-3.5 pb-2.5 flex items-center justify-between border-b border-[#E0DDD8]/60'>
-              <div class='flex items-center gap-2.5'>
+            <div class='p-3 sm:p-3.5 pb-2.5 flex items-center justify-between border-b border-[#E0DDD8]/60 gap-2'>
+              <div class='flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1'>
                 <img v-bind:src='card.authorAvatar || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&amp;fit=crop&amp;w=80&amp;q=80"' 
-                     class='w-9 h-9 object-cover border border-[#E0DDD8]' />
-                <div>
-                  <div class='flex items-center gap-1.5'>
-                    <h4 class='font-bold text-xs text-[#161513] hover:text-[#C74634] transition cursor-pointer' v-on:click='openDetailModal(card)'>
+                     class='w-8 h-8 sm:w-9 sm:h-9 object-cover border border-[#E0DDD8] shrink-0' />
+                <div class='min-w-0 flex-1'>
+                  <div class='flex flex-wrap items-center gap-1 sm:gap-1.5'>
+                    <h4 class='font-bold text-xs text-[#161513] hover:text-[#C74634] transition cursor-pointer truncate max-w-[140px] sm:max-w-[200px]' v-on:click='openDetailModal(card)'>
                       {{ card.authorName || 'Thành viên Tây Ninh' }}
                     </h4>
-                    <span class='px-1.5 py-0.5 text-[9px] font-bold bg-[#F1EFED] text-[#C74634] border border-[#E0DDD8]'>
+                    <span class='px-1.5 py-0.5 text-[9px] font-bold bg-[#F1EFED] text-[#C74634] border border-[#E0DDD8] shrink-0'>
                       {{ card.badge || 'Tin mới' }}
                     </span>
-                    <span v-if='card.likedByMe' class='px-1.5 py-0.5 text-[9px] font-bold bg-[#C74634] text-white flex items-center gap-1 shadow-sm' title='Bạn đã thích tin này'>
+                    <span v-if='card.likedByMe' class='px-1.5 py-0.5 text-[9px] font-bold bg-[#C74634] text-white flex items-center gap-1 shadow-sm shrink-0' title='Bạn đã thích tin này'>
                       <i class='fa-solid fa-thumbs-up text-[8px]'></i>
                       <span>Đã thích</span>
                     </span>
                   </div>
-                  <p class='text-[10px] text-slate-400'>
+                  <p class='text-[10px] text-slate-400 truncate'>
                     <span>{{ card.location || 'Tây Ninh' }}</span> • 
                     <span class='text-slate-400'>{{ card.subprice || 'Vừa xong' }}</span> • 
                     <i class='fa-solid fa-earth-americas text-[9px] text-slate-400'></i>
                   </p>
                 </div>
               </div>
-              <div class='flex items-center gap-1.5'>
+              <div class='flex items-center gap-1 sm:gap-1.5 shrink-0'>
                 <!-- Nút Xóa bài đăng dành cho Admin: ptquang0968@gmail.com -->
                 <button v-if='isAdmin' 
                         type='button' 
                         v-on:click.stop='confirmDeletePost(card)' 
-                        class='px-2.5 py-1 text-[11px] font-bold text-rose-600 hover:text-white bg-rose-50 hover:bg-rose-600 border border-rose-300 transition flex items-center gap-1 shadow-sm' 
+                        class='px-2 sm:px-2.5 py-1 text-[11px] font-bold text-rose-600 hover:text-white bg-rose-50 hover:bg-rose-600 border border-rose-300 transition flex items-center gap-1 shadow-sm' 
                         title='Xóa bài đăng này (Admin)'>
                   <i class='fa-solid fa-trash-can text-[11px]'></i>
                   <span>Xóa</span>
                 </button>
-                <button v-on:click.stop='toggleBookmark(card)' v-bind:class='isBookmarked(card.id) ? "text-[#C74634]" : "text-slate-400 hover:text-slate-700"' class='p-1.5 transition'>
+                <button type='button' v-on:click.stop='toggleBookmark(card)' v-bind:class='isBookmarked(card.id) ? "text-[#C74634]" : "text-slate-400 hover:text-slate-700"' class='p-1.5 transition'>
                   <i v-bind:class='isBookmarked(card.id) ? "fa-solid fa-bookmark" : "fa-regular fa-bookmark"' class='text-sm'></i>
                 </button>
               </div>
             </div>
 
             <!-- 2. Post Title & Excerpt -->
-            <div class='px-3.5 pt-2 pb-1 cursor-pointer' v-on:click='openDetailModal(card)'>
+            <div class='px-3 sm:px-3.5 pt-2 pb-1 cursor-pointer' v-on:click='openDetailModal(card)'>
               <h3 class='font-bold text-sm text-[#161513] hover:text-[#C74634] transition line-clamp-1 mb-1'>
                 {{ card.title }}
               </h3>
@@ -473,7 +616,7 @@
             </div>
 
             <!-- 3. Post Card Media Image Container -->
-            <div class='relative h-48 w-full overflow-hidden bg-slate-100 cursor-pointer mt-2' v-on:click='openDetailModal(card)'>
+            <div class='relative h-44 sm:h-48 w-full overflow-hidden bg-slate-100 cursor-pointer mt-2' v-on:click='openDetailModal(card)'>
               <img v-bind:src='card.image' v-bind:alt='card.title' v-on:error='handleImgError' class='w-full h-full object-cover hover:scale-105 transition-transform duration-300' />
               
               <!-- Badge giá nổi bật -->
@@ -487,16 +630,16 @@
             </div>
 
             <!-- 4. LinkedIn Social Stats Row: Like count, Comment count, View count -->
-            <div class='px-3.5 py-2 flex items-center justify-between text-[11px] text-slate-500 border-b border-[#E0DDD8] bg-white'>
+            <div class='px-3 sm:px-3.5 py-2 flex flex-wrap items-center justify-between gap-1 text-[11px] text-slate-500 border-b border-[#E0DDD8] bg-white'>
               <span class='flex items-center gap-1.5 cursor-pointer transition' 
                     v-bind:class='card.likedByMe ? "text-[#C74634] font-bold" : "text-slate-500 hover:text-[#C74634]"' 
                     v-on:click='toggleLike(card)'>
-                <span class='w-4 h-4 rounded-full flex items-center justify-center text-[8px] transition'
+                <span class='w-4 h-4 rounded-full flex items-center justify-center text-[8px] transition shrink-0'
                       v-bind:class='card.likedByMe ? "bg-[#C74634] text-white shadow-sm ring-2 ring-[#C74634]/20" : "bg-[#C74634] text-white"'>
                   <i class='fa-solid fa-thumbs-up'></i>
                 </span>
                 <span class='font-medium' v-bind:class='card.likedByMe ? "text-[#C74634] font-bold" : "text-slate-700"'>
-                  {{ card.likesCount || 0 }} lượt thích {{ card.likedByMe ? '• Bạn đã thích' : '' }}
+                  {{ card.likesCount || 0 }} lượt thích {{ card.likedByMe ? '• Đã thích' : '' }}
                 </span>
               </span>
               <div class='flex items-center gap-2'>
@@ -506,38 +649,39 @@
                 <span>•</span>
                 <span class='flex items-center gap-1 text-slate-500 font-medium'>
                   <i class='fa-regular fa-eye text-[11px] text-slate-400'></i>
-                  <span>{{ card.viewsCount || 0 }} lượt xem</span>
+                  <span>{{ card.viewsCount || 0 }} xem</span>
                 </span>
               </div>
             </div>
 
             <!-- 5. LinkedIn Action Bar: Like, Comment, Share, Action Button -->
-            <div class='px-2 py-1.5 flex items-center justify-between bg-[#FAF9F8] border-b border-[#E0DDD8]'>
+            <div class='px-1.5 sm:px-2 py-1.5 flex items-center justify-between bg-[#FAF9F8] border-b border-[#E0DDD8] gap-1'>
               <button type='button' v-on:click.prevent='toggleLike(card)' 
                       v-bind:class='card.likedByMe ? "bg-[#C74634] text-white font-bold hover:bg-[#B13C2C] shadow-sm" : "text-slate-600 hover:text-slate-900 hover:bg-[#F1EFED]"' 
-                      class='flex-1 py-1.5 flex items-center justify-center gap-1.5 text-xs transition'>
-                <i v-bind:class='card.likedByMe ? "fa-solid fa-thumbs-up text-white" : "fa-regular fa-thumbs-up"' class='text-sm'></i>
+                      class='flex-1 py-1.5 flex items-center justify-center gap-1 sm:gap-1.5 text-[11px] sm:text-xs transition'>
+                <i v-bind:class='card.likedByMe ? "fa-solid fa-thumbs-up text-white" : "fa-regular fa-thumbs-up"' class='text-xs sm:text-sm'></i>
                 <span>{{ card.likedByMe ? 'Đã thích' : 'Thích' }}</span>
               </button>
               <button type='button' v-on:click.prevent='toggleComments(card)' 
-                      class='flex-1 py-1.5 flex items-center justify-center gap-1.5 text-xs text-slate-600 hover:text-slate-900 transition hover:bg-[#F1EFED]'>
-                <i class='fa-regular fa-comment text-sm'></i>
+                      class='flex-1 py-1.5 flex items-center justify-center gap-1 sm:gap-1.5 text-[11px] sm:text-xs text-slate-600 hover:text-slate-900 transition hover:bg-[#F1EFED]'>
+                <i class='fa-regular fa-comment text-xs sm:text-sm'></i>
                 <span>Bình luận</span>
               </button>
-              <button v-on:click='shareCard(card)' 
-                      class='flex-1 py-1.5 flex items-center justify-center gap-1.5 text-xs text-slate-600 hover:text-slate-900 transition hover:bg-[#F1EFED]'>
-                <i class='fa-solid fa-share text-sm'></i>
-                <span>Chia sẻ</span>
+              <button type='button' v-on:click='shareCard(card)' 
+                      class='flex-1 py-1.5 flex items-center justify-center gap-1 sm:gap-1.5 text-[11px] sm:text-xs text-slate-600 hover:text-slate-900 transition hover:bg-[#F1EFED]'>
+                <i class='fa-solid fa-share text-xs sm:text-sm'></i>
+                <span class='hidden xs:inline'>Chia sẻ</span>
+                <span class='xs:hidden'>Share</span>
               </button>
               
               <!-- Quick Action according to Category -->
-              <button v-if='card.btnType === "apply"' v-on:click='openApplyModal(card)' class='px-3.5 py-1.5 bg-[#C74634] hover:bg-[#B13C2C] text-white font-bold text-xs shadow-sm transition ml-1 shrink-0'>
+              <button v-if='card.btnType === "apply"' type='button' v-on:click='openApplyModal(card)' class='px-2.5 sm:px-3.5 py-1.5 bg-[#C74634] hover:bg-[#B13C2C] text-white font-bold text-[11px] sm:text-xs shadow-sm transition ml-1 shrink-0'>
                 Ứng tuyển
               </button>
-              <button v-else-if='card.btnType === "call"' v-on:click='openCallModal(card)' class='px-3.5 py-1.5 bg-[#161513] hover:bg-black text-white font-bold text-xs shadow-sm transition ml-1 shrink-0'>
+              <button v-else-if='card.btnType === "call"' type='button' v-on:click='openCallModal(card)' class='px-2.5 sm:px-3.5 py-1.5 bg-[#161513] hover:bg-black text-white font-bold text-[11px] sm:text-xs shadow-sm transition ml-1 shrink-0'>
                 Gọi ngay
               </button>
-              <button v-else='true' v-on:click='openDetailModal(card)' class='px-3.5 py-1.5 bg-[#161513] hover:bg-black text-white font-bold text-xs shadow-sm transition ml-1 shrink-0'>
+              <button v-else='true' type='button' v-on:click='openDetailModal(card)' class='px-2.5 sm:px-3.5 py-1.5 bg-[#161513] hover:bg-black text-white font-bold text-[11px] sm:text-xs shadow-sm transition ml-1 shrink-0'>
                 Chi tiết
               </button>
             </div>
@@ -652,7 +796,7 @@
         </div>
 
         <!-- Video Cards Grid -->
-        <div class='grid grid-cols-1 md:grid-cols-2 gap-5'>
+        <div class='grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5'>
           <article v-for='video in tayNinhVideos' v-bind:key='video.id' v-on:click='playVideo(video)' class='bg-white border border-[#E0DDD8] overflow-hidden hover:shadow-lg transition cursor-pointer flex flex-col justify-between group'>
             <!-- Thumbnail Image Container -->
             <div class='relative h-52 w-full bg-black overflow-hidden'>
@@ -694,9 +838,75 @@
         </div>
       </div> <!-- End 3B Video Section -->
 
+      <!-- 3C. MAP SECTION (FOR MOBILE & TABLET WHEN activeTab === 'map') -->
+      <div v-else-if='activeTab === "map"' class='space-y-5'>
+        <!-- Banner Header -->
+        <div class='bg-white p-4 border border-[#E0DDD8] flex flex-col sm:flex-row sm:items-center justify-between gap-3'>
+          <div>
+            <div class='flex items-center gap-2'>
+              <span class='bg-[#C74634] text-white text-[10px] font-black px-2 py-0.5 uppercase'>BẢN ĐỒ SỐ</span>
+              <h2 class='text-base font-black text-[#161513] uppercase flex items-center gap-2'>
+                <i class='fa-solid fa-map-location-dot text-[#C74634]'></i>
+                <span>BẢN ĐỒ TỈNH TÂY NINH &amp; ĐIỂM ĐẾN</span>
+              </h2>
+            </div>
+            <p class='text-xs text-[#655F58] mt-1'>
+              Khám phá các địa điểm, việc làm, bất động sản và dịch vụ nổi bật trên bản đồ tỉnh Tây Ninh.
+            </p>
+          </div>
+          <button type='button' v-on:click='activeTab = "feed"' class='px-4 py-2 bg-[#161513] hover:bg-black text-white text-xs font-bold transition shrink-0'>
+            Quay lại tin đăng
+          </button>
+        </div>
+
+        <!-- Google Maps Tây Ninh Full Width Container -->
+        <div class='bg-slate-100 overflow-hidden border border-[#E0DDD8] shadow-sm relative h-80 sm:h-96 w-full'>
+          <iframe 
+            v-bind:src='mapEmbedUrl' 
+            class='w-full h-full border-0' 
+            loading='lazy' 
+            referrerpolicy='no-referrer-when-downgrade'
+            title='Google Maps Tây Ninh'>
+          </iframe>
+
+          <!-- Active Pin Card Overlay on Google Maps -->
+          <div class='absolute bottom-3 left-3 right-3 sm:right-auto sm:max-w-md bg-white/95 backdrop-blur-md p-3 shadow-lg border border-[#E0DDD8] flex items-center gap-3 transition'>
+            <img v-bind:src='activePinItem.image' class='w-12 h-12 object-cover border border-[#E0DDD8] shrink-0' />
+            <div class='flex-1 min-w-0'>
+              <h5 class='font-bold text-xs text-[#161513] truncate'>{{ activePinItem.title }}</h5>
+              <p class='text-[11px] text-[#C74634] font-bold'>{{ activePinItem.price }}</p>
+              <p class='text-[10px] text-slate-500 truncate flex items-center gap-1'>
+                <i class='fa-solid fa-location-dot text-[#C74634] text-[9px]'></i>
+                <span>{{ activePinItem.location }}</span>
+              </p>
+            </div>
+            <a v-bind:href='"https://www.google.com/maps/search/?api=1&amp;query=" + encodeURIComponent(activePinItem.location + " Tây Ninh")' target='_blank' class='w-8 h-8 bg-[#C74634] text-white flex items-center justify-center hover:bg-[#B13C2C] transition shrink-0' title='Mở trên Google Maps'>
+              <i class='fa-solid fa-arrow-up-right-from-square text-xs'></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Quick List Grid -->
+        <div class='bg-white p-4 border border-[#E0DDD8]'>
+          <h3 class='font-bold text-sm text-[#161513] uppercase tracking-wide mb-3 flex items-center gap-2'>
+            <i class='fa-solid fa-list-ol text-[#C74634]'></i>
+            <span>Danh sách điểm đến nổi bật Tây Ninh</span>
+          </h3>
+          <div class='grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs'>
+            <div v-for='item in mapQuickList' v-bind:key='item.id' v-on:click='selectQuickListItem(item)' class='flex items-start gap-2.5 p-2.5 bg-[#F1EFED] hover:bg-slate-200 cursor-pointer border border-[#E0DDD8] transition'>
+              <span class='font-black text-[#C74634] text-sm'>{{ item.number }}.</span>
+              <div class='flex-1 min-w-0'>
+                <p class='font-bold text-slate-800 truncate'>{{ item.title }}</p>
+                <span class='text-[10px] text-slate-500 block'>{{ item.location }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </main>
     <!-- 4. CỘT PHẢI: BẢN ĐỒ TÂY NINH (MAP WIDGET - NO ROUNDED BORDER) -->
-    <aside class='w-72 xl:w-80 2xl:w-[340px] bg-white border-l border-[#E0DDD8] p-5 space-y-5 overflow-y-auto custom-scroll shrink-0 flex flex-col justify-between'>
+    <aside class='w-72 xl:w-80 2xl:w-[340px] bg-white border-l border-[#E0DDD8] p-4 xl:p-5 space-y-5 overflow-y-auto custom-scroll shrink-0 hidden xl:flex xl:flex-col justify-between'>
       <div class='space-y-4'>
         <!-- Header Bản đồ Tây Ninh -->
         <div class='flex items-center justify-between'>
@@ -1549,6 +1759,7 @@
         const activeTab = ref('feed');
         const activeCategory = ref('all');
         const viewMode = ref('grid');
+        const showMobileMenu = ref(false);
         const searchKeyword = ref('');
         const userMenuOpen = ref(false);
         const showApplyModal = ref(false);
@@ -2864,6 +3075,7 @@
           activeTab,
           activeCategory,
           viewMode,
+          showMobileMenu,
           searchKeyword,
           userMenuOpen,
           showApplyModal,
