@@ -576,7 +576,7 @@
                     <span class='px-1.5 py-0.5 text-[9px] font-bold bg-[#F1EFED] text-[#C74634] border border-[#E0DDD8] shrink-0'>
                       {{ card.badge || 'Tin mới' }}
                     </span>
-                    <span v-if='card.likedByMe' class='px-1.5 py-0.5 text-[9px] font-bold bg-[#C74634] text-white flex items-center gap-1 shadow-sm shrink-0' title='Bạn đã thích tin này'>
+                    <span v-if='card.likedByMe || isLiked(card)' class='px-1.5 py-0.5 text-[9px] font-bold bg-[#C74634] text-white flex items-center gap-1 shadow-sm shrink-0' title='Bạn đã thích tin này'>
                       <i class='fa-solid fa-thumbs-up text-[8px]'></i>
                       <span>Đã thích</span>
                     </span>
@@ -631,14 +631,14 @@
             <!-- 4. LinkedIn Social Stats Row: Like count, Comment count, View count -->
             <div class='px-3 sm:px-3.5 py-2 flex flex-wrap items-center justify-between gap-1 text-[11px] text-slate-500 border-b border-[#E0DDD8] bg-white'>
               <span class='flex items-center gap-1.5 cursor-pointer transition' 
-                    v-bind:class='card.likedByMe ? "text-[#C74634] font-bold" : "text-slate-500 hover:text-[#C74634]"' 
+                    v-bind:class='(card.likedByMe || isLiked(card)) ? "text-[#C74634] font-bold" : "text-slate-500 hover:text-[#C74634]"' 
                     v-on:click='toggleLike(card)'>
                 <span class='w-4 h-4 rounded-full flex items-center justify-center text-[8px] transition shrink-0'
-                      v-bind:class='card.likedByMe ? "bg-[#C74634] text-white shadow-sm ring-2 ring-[#C74634]/20" : "bg-[#C74634] text-white"'>
+                      v-bind:class='(card.likedByMe || isLiked(card)) ? "bg-[#C74634] text-white shadow-sm ring-2 ring-[#C74634]/20" : "bg-[#C74634] text-white"'>
                   <i class='fa-solid fa-thumbs-up'></i>
                 </span>
-                <span class='font-medium' v-bind:class='card.likedByMe ? "text-[#C74634] font-bold" : "text-slate-700"'>
-                  {{ card.likesCount || 0 }} lượt thích {{ card.likedByMe ? '• Đã thích' : '' }}
+                <span class='font-medium' v-bind:class='(card.likedByMe || isLiked(card)) ? "text-[#C74634] font-bold" : "text-slate-700"'>
+                  {{ card.likesCount || 0 }} lượt thích {{ (card.likedByMe || isLiked(card)) ? '• Đã thích' : '' }}
                 </span>
               </span>
               <div class='flex items-center gap-2'>
@@ -657,12 +657,12 @@
             <div class='px-1.5 sm:px-2 py-1.5 flex items-center justify-between bg-[#FAF9F8] border-b border-[#E0DDD8] gap-1'>
               <button type='button' v-on:click.prevent='toggleLike(card)' 
                       class='flex-1 py-1.5 flex items-center justify-center gap-1.5 text-[11px] sm:text-xs transition hover:bg-[#F1EFED]' 
-                      v-bind:class='card.likedByMe ? "text-[#C74634] font-bold" : "text-slate-600 hover:text-slate-900"'>
+                      v-bind:class='(card.likedByMe || isLiked(card)) ? "text-[#C74634] font-bold" : "text-slate-600 hover:text-slate-900"'>
                 <span class='w-5 h-5 flex items-center justify-center text-[10px] transition shrink-0' 
-                      v-bind:class='card.likedByMe ? "bg-[#C74634] text-white shadow-sm" : "text-slate-500"'>
-                  <i v-bind:class='card.likedByMe ? "fa-solid fa-thumbs-up" : "fa-regular fa-thumbs-up"'></i>
+                      v-bind:class='(card.likedByMe || isLiked(card)) ? "bg-[#C74634] text-white shadow-sm" : "text-slate-500"'>
+                  <i v-bind:class='(card.likedByMe || isLiked(card)) ? "fa-solid fa-thumbs-up" : "fa-regular fa-thumbs-up"'></i>
                 </span>
-                <span>{{ card.likedByMe ? 'Đã thích' : 'Thích' }}</span>
+                <span>{{ (card.likedByMe || isLiked(card)) ? 'Đã thích' : 'Thích' }}</span>
               </button>
               <button type='button' v-on:click.prevent='toggleComments(card)' 
                       class='flex-1 py-1.5 flex items-center justify-center gap-1 sm:gap-1.5 text-[11px] sm:text-xs text-slate-600 hover:text-slate-900 transition hover:bg-[#F1EFED]'>
@@ -1360,12 +1360,12 @@
               <div class='flex items-center gap-3'>
                 <button type='button' v-on:click.prevent='toggleLike(selectedDetailCard)' 
                         class='px-3.5 py-1.5 border border-[#E0DDD8] bg-white hover:bg-[#F1EFED] flex items-center gap-1.5 transition' 
-                        v-bind:class='selectedDetailCard.likedByMe ? "text-[#C74634] font-bold" : "text-slate-700 hover:text-slate-900"'>
+                        v-bind:class='(selectedDetailCard.likedByMe || isLiked(selectedDetailCard)) ? "text-[#C74634] font-bold" : "text-slate-700 hover:text-slate-900"'>
                   <span class='w-5 h-5 flex items-center justify-center text-[10px] transition shrink-0' 
-                        v-bind:class='selectedDetailCard.likedByMe ? "bg-[#C74634] text-white shadow-sm" : "text-slate-500"'>
-                    <i v-bind:class='selectedDetailCard.likedByMe ? "fa-solid fa-thumbs-up" : "fa-regular fa-thumbs-up"'></i>
+                        v-bind:class='(selectedDetailCard.likedByMe || isLiked(selectedDetailCard)) ? "bg-[#C74634] text-white shadow-sm" : "text-slate-500"'>
+                    <i v-bind:class='(selectedDetailCard.likedByMe || isLiked(selectedDetailCard)) ? "fa-solid fa-thumbs-up" : "fa-regular fa-thumbs-up"'></i>
                   </span>
-                  <span>{{ selectedDetailCard.likedByMe ? "Đã thích" : "Thích" }} ({{ selectedDetailCard.likesCount || 0 }})</span>
+                  <span>{{ (selectedDetailCard.likedByMe || isLiked(selectedDetailCard)) ? "Đã thích" : "Thích" }} ({{ selectedDetailCard.likesCount || 0 }})</span>
                 </button>
                 <span class='text-slate-400'>•</span>
                 <span class='text-slate-600 font-medium flex items-center gap-1'>
@@ -1831,25 +1831,37 @@
         };
 
         // Quản lý trạng thái Đã Thích (Like) lưu bền vững trong LocalStorage trình duyệt
-        const getLikedPostIds = () => {
+        const loadLikedPosts = () => {
           try {
-            const data = localStorage.getItem('tnhub_liked_posts');
-            return data ? JSON.parse(data) : [];
-          } catch (e) {
-            return [];
-          }
+            const raw = localStorage.getItem('tnhub_liked_posts');
+            if (raw) {
+              const parsed = JSON.parse(raw);
+              if (Array.isArray(parsed)) {
+                return parsed.map(x => String(x));
+              }
+            }
+          } catch (e) {}
+          return [];
         };
 
-        const setLikedPostId = (id, isLiked) => {
+        const likedPosts = ref(loadLikedPosts());
+
+        const isLiked = (cardOrId) => {
+          if (!cardOrId) return false;
+          if (typeof cardOrId === 'object') {
+            const idsToCheck = [
+              cardOrId.id,
+              cardOrId.docId,
+              cardOrId.listingCode
+            ].filter(Boolean).map(x => String(x));
+            return idsToCheck.some(id => likedPosts.value.includes(id));
+          }
+          return likedPosts.value.includes(String(cardOrId));
+        };
+
+        const saveLikedPosts = () => {
           try {
-            const ids = getLikedPostIds();
-            const idx = ids.indexOf(id);
-            if (isLiked && idx === -1) {
-              ids.push(id);
-            } else if (!isLiked && idx !== -1) {
-              ids.splice(idx, 1);
-            }
-            localStorage.setItem('tnhub_liked_posts', JSON.stringify(ids));
+            localStorage.setItem('tnhub_liked_posts', JSON.stringify(likedPosts.value));
           } catch (e) {}
         };
 
@@ -1935,8 +1947,7 @@
             validImage = 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&amp;fit=crop&amp;w=800&amp;q=80';
           }
 
-          const localLiked = getLikedPostIds();
-          const isLikedByMe = localLiked.includes(item.id) || Boolean(item.likedByMe);
+          const isLikedByMe = isLiked(item);
 
           return {
             ...item,
@@ -2476,37 +2487,53 @@
           }
         };
 
-        const toggleLike = (card) => {
+        const toggleLike = async (card) => {
           if (!card) return;
-          if (card.likedByMe) {
+          const docId = String(card.docId || card.id);
+          const codeId = card.listingCode ? String(card.listingCode) : docId;
+          const alreadyLiked = isLiked(card);
+
+          if (alreadyLiked) {
+            // Bỏ thích: xóa cả docId và codeId khỏi danh sách
+            likedPosts.value = likedPosts.value.filter(x => x !== docId && x !== codeId);
             card.likedByMe = false;
             card.likesCount = Math.max(0, (card.likesCount || 1) - 1);
-            setLikedPostId(card.id, false);
             showToast('Đã bỏ thích tin đăng', 'info');
           } else {
+            // Thích: thêm cả docId và codeId
+            if (!likedPosts.value.includes(docId)) likedPosts.value.push(docId);
+            if (codeId !== docId && !likedPosts.value.includes(codeId)) likedPosts.value.push(codeId);
             card.likedByMe = true;
             card.likesCount = (card.likesCount || 0) + 1;
-            setLikedPostId(card.id, true);
             showToast('Đã thích tin đăng!', 'success');
           }
 
-          // Đồng bộ tức thì giữa Card ngoài feed và Modal chi tiết
-          if (selectedDetailCard.value && card.id && selectedDetailCard.value.id === card.id) {
-            selectedDetailCard.value.likesCount = card.likesCount;
-            selectedDetailCard.value.likedByMe = card.likedByMe;
-          }
-          const targetInCards = cards.value.find(c => c.id === card.id);
-          if (targetInCards) {
-            targetInCards.likesCount = card.likesCount;
-            targetInCards.likedByMe = card.likedByMe;
-          }
+          saveLikedPosts();
 
-          if (db && card.id) {
+          // Đồng bộ tức thì giữa Card ngoài feed và Modal chi tiết
+          if (selectedDetailCard.value) {
+            const isMatch = selectedDetailCard.value.id === card.id || 
+                            selectedDetailCard.value.docId === docId || 
+                            selectedDetailCard.value.listingCode === codeId;
+            if (isMatch) {
+              selectedDetailCard.value.likesCount = card.likesCount;
+              selectedDetailCard.value.likedByMe = card.likedByMe;
+            }
+          }
+          
+          cards.value.forEach(c => {
+            if (c.id === card.id || c.docId === docId || (c.listingCode && c.listingCode === codeId)) {
+              c.likesCount = card.likesCount;
+              c.likedByMe = card.likedByMe;
+            }
+          });
+
+          // Cập nhật lượt likesCount lên Firestore
+          if (db && docId) {
             try {
-              setDoc(doc(db, 'listings', card.id), { likesCount: card.likesCount }, { merge: true })
-                .catch(e => console.warn('Sync like error:', e));
+              await setDoc(doc(db, 'listings', docId), { likesCount: card.likesCount }, { merge: true });
             } catch (e) {
-              console.warn('Sync like:', e);
+              console.warn('Sync like error:', e);
             }
           }
         };
@@ -2977,28 +3004,41 @@
               const listingsRef = collection(db, 'listings');
               onSnapshot(listingsRef, (snapshot) => {
                 if (!snapshot.empty) {
-                  // Lưu giữ trạng thái UI hiện tại của từng thẻ (không tự ý đóng khung comment, giữ like, giữ text đang gõ)
+                  // Lưu giữ trạng thái UI hiện tại của từng thẻ
                   const stateMap = {};
                   cards.value.forEach(c => {
                     if (c && c.id) {
-                      stateMap[c.id] = {
+                      stateMap[String(c.id)] = {
                         showComments: c.showComments,
-                        likedByMe: c.likedByMe,
                         newCommentText: c.newCommentText
                       };
+                      if (c.docId) stateMap[String(c.docId)] = stateMap[String(c.id)];
+                      if (c.listingCode) stateMap[String(c.listingCode)] = stateMap[String(c.id)];
                     }
                   });
 
                   const liveList = [];
                   snapshot.forEach((d) => {
-                    const rawData = { id: d.id, ...d.data() };
+                    const data = d.data() || {};
+                    const docId = String(d.id);
+                    const codeId = data.id ? String(data.id) : docId;
+                    const rawData = { 
+                      ...data, 
+                      id: docId, 
+                      docId: docId, 
+                      listingCode: codeId 
+                    };
                     const enriched = enrichListingWithFirebaseDoc(rawData);
+                    
                     // Phục hồi trạng thái UI của thẻ
-                    if (stateMap[d.id]) {
-                      if (stateMap[d.id].showComments !== undefined) enriched.showComments = stateMap[d.id].showComments;
-                      if (stateMap[d.id].likedByMe !== undefined) enriched.likedByMe = stateMap[d.id].likedByMe;
-                      if (stateMap[d.id].newCommentText) enriched.newCommentText = stateMap[d.id].newCommentText;
+                    const prev = stateMap[docId] || stateMap[codeId];
+                    if (prev) {
+                      if (prev.showComments !== undefined) enriched.showComments = prev.showComments;
+                      if (prev.newCommentText) enriched.newCommentText = prev.newCommentText;
                     }
+
+                    // Trạng thái Like của người dùng được xác định 100% chính xác từ likedPosts
+                    enriched.likedByMe = isLiked(enriched);
                     liveList.push(enriched);
                   });
                   liveList.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
@@ -3122,6 +3162,8 @@
           filterBookmarks,
           isBookmarked,
           toggleBookmark,
+          isLiked,
+          likedPosts,
           toggleSort,
           zoomMap,
           onSearchKey,
