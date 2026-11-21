@@ -417,7 +417,9 @@
         <!-- MAIN CARD GRID: 2 COLUMNS (LINKEDIN POST STYLE) -->
         <div class='grid grid-cols-1 md:grid-cols-2 gap-5'>
           
-          <article v-for='card in filteredCards' v-bind:key='card.id' class='bg-white border border-[#E0DDD8] shadow-sm hover:shadow-md transition flex flex-col justify-between'>
+          <article v-for='card in filteredCards' v-bind:key='card.id' 
+                   v-bind:class='card.likedByMe ? "border-[#C74634] shadow-md ring-1 ring-[#C74634]/30" : "border-[#E0DDD8] shadow-sm hover:shadow-md"' 
+                   class='bg-white border transition flex flex-col justify-between relative'>
             
             <!-- 1. Post Author Header (LinkedIn Style) -->
             <div class='p-3.5 pb-2.5 flex items-center justify-between border-b border-[#E0DDD8]/60'>
@@ -431,6 +433,10 @@
                     </h4>
                     <span class='px-1.5 py-0.5 text-[9px] font-bold bg-[#F1EFED] text-[#C74634] border border-[#E0DDD8]'>
                       {{ card.badge || 'Tin mới' }}
+                    </span>
+                    <span v-if='card.likedByMe' class='px-1.5 py-0.5 text-[9px] font-bold bg-[#C74634] text-white flex items-center gap-1 shadow-sm' title='Bạn đã thích tin này'>
+                      <i class='fa-solid fa-thumbs-up text-[8px]'></i>
+                      <span>Đã thích</span>
                     </span>
                   </div>
                   <p class='text-[10px] text-slate-400'>
@@ -482,11 +488,16 @@
 
             <!-- 4. LinkedIn Social Stats Row: Like count, Comment count, View count -->
             <div class='px-3.5 py-2 flex items-center justify-between text-[11px] text-slate-500 border-b border-[#E0DDD8] bg-white'>
-              <span class='flex items-center gap-1.5 cursor-pointer hover:text-[#C74634] transition' v-on:click='toggleLike(card)'>
-                <span class='w-4 h-4 rounded-full bg-[#C74634] text-white flex items-center justify-center text-[8px]'>
+              <span class='flex items-center gap-1.5 cursor-pointer transition' 
+                    v-bind:class='card.likedByMe ? "text-[#C74634] font-bold" : "text-slate-500 hover:text-[#C74634]"' 
+                    v-on:click='toggleLike(card)'>
+                <span class='w-4 h-4 rounded-full flex items-center justify-center text-[8px] transition'
+                      v-bind:class='card.likedByMe ? "bg-[#C74634] text-white shadow-sm ring-2 ring-[#C74634]/20" : "bg-[#C74634] text-white"'>
                   <i class='fa-solid fa-thumbs-up'></i>
                 </span>
-                <span class='font-medium text-slate-700'>{{ card.likesCount || 0 }} lượt thích</span>
+                <span class='font-medium' v-bind:class='card.likedByMe ? "text-[#C74634] font-bold" : "text-slate-700"'>
+                  {{ card.likesCount || 0 }} lượt thích {{ card.likedByMe ? '• Bạn đã thích' : '' }}
+                </span>
               </span>
               <div class='flex items-center gap-2'>
                 <span class='cursor-pointer hover:underline text-slate-600' v-on:click='toggleComments(card)'>
@@ -503,9 +514,9 @@
             <!-- 5. LinkedIn Action Bar: Like, Comment, Share, Action Button -->
             <div class='px-2 py-1.5 flex items-center justify-between bg-[#FAF9F8] border-b border-[#E0DDD8]'>
               <button type='button' v-on:click.prevent='toggleLike(card)' 
-                      v-bind:class='card.likedByMe ? "text-[#C74634] font-bold" : "text-slate-600 hover:text-slate-900"' 
-                      class='flex-1 py-1.5 flex items-center justify-center gap-1.5 text-xs transition hover:bg-[#F1EFED]'>
-                <i v-bind:class='card.likedByMe ? "fa-solid fa-thumbs-up" : "fa-regular fa-thumbs-up"' class='text-sm'></i>
+                      v-bind:class='card.likedByMe ? "bg-[#C74634] text-white font-bold hover:bg-[#B13C2C] shadow-sm" : "text-slate-600 hover:text-slate-900 hover:bg-[#F1EFED]"' 
+                      class='flex-1 py-1.5 flex items-center justify-center gap-1.5 text-xs transition'>
+                <i v-bind:class='card.likedByMe ? "fa-solid fa-thumbs-up text-white" : "fa-regular fa-thumbs-up"' class='text-sm'></i>
                 <span>{{ card.likedByMe ? 'Đã thích' : 'Thích' }}</span>
               </button>
               <button type='button' v-on:click.prevent='toggleComments(card)' 
@@ -1136,9 +1147,9 @@
             <div class='p-3 bg-[#FAF9F8] border-b border-[#E0DDD8] flex items-center justify-between text-xs'>
               <div class='flex items-center gap-3'>
                 <button type='button' v-on:click.prevent='toggleLike(selectedDetailCard)' 
-                        v-bind:class='selectedDetailCard.likedByMe ? "text-[#C74634] font-bold" : "text-slate-700 hover:text-slate-900"' 
-                        class='px-3 py-1.5 bg-white border border-[#E0DDD8] flex items-center gap-1.5 transition'>
-                  <i v-bind:class='selectedDetailCard.likedByMe ? "fa-solid fa-thumbs-up text-[#C74634]" : "fa-regular fa-thumbs-up"' class='text-sm'></i>
+                        v-bind:class='selectedDetailCard.likedByMe ? "bg-[#C74634] text-white font-bold border-[#C74634] shadow-sm hover:bg-[#B13C2C]" : "bg-white text-slate-700 hover:text-slate-900 border-[#E0DDD8] hover:bg-[#F1EFED]"' 
+                        class='px-3.5 py-1.5 border flex items-center gap-1.5 transition'>
+                  <i v-bind:class='selectedDetailCard.likedByMe ? "fa-solid fa-thumbs-up text-white" : "fa-regular fa-thumbs-up"' class='text-sm'></i>
                   <span>{{ selectedDetailCard.likedByMe ? "Đã thích" : "Thích" }} ({{ selectedDetailCard.likesCount || 0 }})</span>
                 </button>
                 <span class='text-slate-400'>•</span>
@@ -1603,6 +1614,29 @@
           popup.value.show = false;
         };
 
+        // Quản lý trạng thái Đã Thích (Like) lưu bền vững trong LocalStorage trình duyệt
+        const getLikedPostIds = () => {
+          try {
+            const data = localStorage.getItem('tnhub_liked_posts');
+            return data ? JSON.parse(data) : [];
+          } catch (e) {
+            return [];
+          }
+        };
+
+        const setLikedPostId = (id, isLiked) => {
+          try {
+            const ids = getLikedPostIds();
+            const idx = ids.indexOf(id);
+            if (isLiked && idx === -1) {
+              ids.push(id);
+            } else if (!isLiked && idx !== -1) {
+              ids.splice(idx, 1);
+            }
+            localStorage.setItem('tnhub_liked_posts', JSON.stringify(ids));
+          } catch (e) {}
+        };
+
         // 100% DỮ LIỆU ĐƯỢC LẤY TRỰC TIẾP TỪ CLOUD FIRESTORE (KHÔNG ĐỂ DATA TEST MẪU)
         const enrichListingWithFirebaseDoc = (item) => {
           let comments = [];
@@ -1685,11 +1719,14 @@
             validImage = 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&amp;fit=crop&amp;w=800&amp;q=80';
           }
 
+          const localLiked = getLikedPostIds();
+          const isLikedByMe = localLiked.includes(item.id) || Boolean(item.likedByMe);
+
           return {
             ...item,
             image: validImage,
             likesCount: typeof item.likesCount === 'number' ? item.likesCount : (parseInt(item.likesCount) || 12),
-            likedByMe: item.likedByMe || false,
+            likedByMe: isLikedByMe,
             viewsCount: typeof item.viewsCount === 'number' ? item.viewsCount : (parseInt(item.viewsCount) || 85),
             showComments: false,
             newCommentText: '',
@@ -2228,11 +2265,13 @@
           if (card.likedByMe) {
             card.likedByMe = false;
             card.likesCount = Math.max(0, (card.likesCount || 1) - 1);
-            showToast('Đã bỏ thích bài đăng', 'info');
+            setLikedPostId(card.id, false);
+            showToast('Đã bỏ thích tin đăng', 'info');
           } else {
             card.likedByMe = true;
             card.likesCount = (card.likesCount || 0) + 1;
-            showToast('Đã thích bài đăng!', 'success');
+            setLikedPostId(card.id, true);
+            showToast('Đã thích tin đăng!', 'success');
           }
 
           // Đồng bộ tức thì giữa Card ngoài feed và Modal chi tiết
