@@ -2587,7 +2587,7 @@
               {{ getCategoryLabel(selectedDetailCard.category) }}
             </span>
             <span v-if='selectedDetailCard.badge' class='px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-200 text-slate-700'>
-              {{ selectedDetailCard.badge }}
+              {{ getPostBadge(selectedDetailCard) }}
             </span>
           </div>
           <div class='flex items-center gap-2'>
@@ -2636,7 +2636,7 @@
               <span class='text-slate-300'>•</span>
               <span class='flex items-center gap-1.5'>
                 <i class='fa-regular fa-clock text-slate-400'></i>
-                <span>Mã tin: #{{ selectedDetailCard.id }}</span>
+                <span>{{ t('postCode') }}: #{{ selectedDetailCard.id }}</span>
               </span>
             </div>
           </div>
@@ -2644,20 +2644,20 @@
           <!-- Quick Specs Box -->
           <div class='grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50 p-3.5 rounded-none border border-[#E0DDD8] border border-slate-100'>
             <div class='flex flex-col'>
-              <span class='text-[10px] text-slate-400 font-medium uppercase'>Chuyên mục</span>
+              <span class='text-[10px] text-slate-400 font-medium uppercase'>{{ t('category') }}</span>
               <span class='font-bold text-slate-800 mt-0.5 truncate'>{{ getCategoryLabel(selectedDetailCard.category) }}</span>
             </div>
             <div class='flex flex-col'>
-              <span class='text-[10px] text-slate-400 font-medium uppercase'>Mức giá / Lương</span>
+              <span class='text-[10px] text-slate-400 font-medium uppercase'>{{ t('priceSalary') }}</span>
               <span class='font-bold text-[#C74634] mt-0.5 truncate'>{{ getPostPrice(selectedDetailCard) }}</span>
             </div>
             <div class='flex flex-col'>
-              <span class='text-[10px] text-slate-400 font-medium uppercase'>Khu vực</span>
+              <span class='text-[10px] text-slate-400 font-medium uppercase'>{{ t('location') }}</span>
               <span class='font-bold text-slate-800 mt-0.5 truncate'>{{ getPostLocation(selectedDetailCard) }}</span>
             </div>
             <div class='flex flex-col'>
-              <span class='text-[10px] text-slate-400 font-medium uppercase'>Tình trạng</span>
-              <span class='font-bold text-slate-800 mt-0.5 truncate'>{{ getPostBadge(selectedDetailCard) || "Còn tin" }}</span>
+              <span class='text-[10px] text-slate-400 font-medium uppercase'>{{ t('status') }}</span>
+              <span class='font-bold text-slate-800 mt-0.5 truncate'>{{ getPostBadge(selectedDetailCard) || t('available') }}</span>
             </div>
           </div>
 
@@ -2665,7 +2665,7 @@
           <div v-if='selectedDetailCard.specs &amp;&amp; selectedDetailCard.specs.length > 0' class='bg-[#F1EFED] p-3.5 border border-[#E0DDD8]'>
             <h5 class='text-xs font-bold text-[#161513] uppercase tracking-wide mb-2 flex items-center gap-1.5'>
               <i class='fa-solid fa-list-check text-[#C74634]'></i>
-              <span>Thông Số Chi Tiết Chuyên Mục</span>
+              <span>{{ t('specsTitle') }}</span>
             </h5>
             <div class='grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs'>
               <div v-for='spec in selectedDetailCard.specs' v-bind:key='spec.label' class='bg-white p-2 border border-[#E0DDD8] flex flex-col'>
@@ -2679,7 +2679,7 @@
           <div class='pt-2'>
             <h4 class='text-sm font-bold text-slate-900 uppercase tracking-wide mb-2.5 flex items-center gap-2'>
               <i class='fa-solid fa-align-left text-[#C74634]'></i>
-              <span>Mô Tả Chi Tiết Bài Đăng</span>
+              <span>{{ t('descTitle') }}</span>
             </h4>
             <div class='bg-slate-50/70 p-4 rounded-none border border-[#E0DDD8] border border-slate-100 whitespace-pre-line text-slate-700 leading-relaxed font-normal'>
               {{ getCardDescription(selectedDetailCard) }}
@@ -2717,7 +2717,7 @@
                 <div class='flex-1 flex gap-2'>
                   <input type='text' v-model='modalNewCommentText' 
                          v-on:keydown.enter.prevent='postDetailComment' 
-                         placeholder='Viết bình luận công khai về bài đăng này...' 
+                         v-bind:placeholder='t("commentPlaceholder")' 
                          class='w-full px-3 py-2 bg-[#F1EFED] border border-[#E0DDD8] text-xs outline-none focus:border-[#C74634] focus:bg-white transition' />
                   <button type='button' 
                           v-on:click.prevent='postDetailComment' 
@@ -2732,11 +2732,11 @@
             <div class='p-3.5 space-y-3 bg-[#FAF9F8]'>
               <h5 class='text-[11px] font-bold text-slate-800 uppercase tracking-wide flex items-center gap-1.5 mb-2'>
                 <i class='fa-regular fa-comments text-[#C74634]'></i>
-                <span>Bình luận cộng đồng ({{ (selectedDetailCard.comments &amp;&amp; selectedDetailCard.comments.length) || 0 }})</span>
+                <span>{{ t('communityComments') }} ({{ (selectedDetailCard.comments &amp;&amp; selectedDetailCard.comments.length) || 0 }})</span>
               </h5>
               
               <div v-if='!selectedDetailCard.comments || selectedDetailCard.comments.length === 0' class='text-center py-4 text-xs text-slate-400'>
-                Chưa có bình luận nào. Hãy là người đầu tiên bình luận về bài viết này!
+                {{ t('noCommentsYet') }}
               </div>
 
               <div v-for='cmt in selectedDetailCard.comments' v-bind:key='cmt.id' class='flex items-start gap-2.5 text-xs'>
@@ -2796,15 +2796,15 @@
           <div class='bg-teal-50/50 p-4 rounded-none border border-[#E0DDD8] border border-teal-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3'>
             <div>
               <div class='flex items-center gap-2'>
-                <span class='text-[11px] font-semibold text-teal-800 uppercase block mb-0.5'>Đơn vị / Người đăng tin</span>
+                <span class='text-[11px] font-semibold text-teal-800 uppercase block mb-0.5'>{{ t('contactHeader') }}</span>
                 <span v-if='isPostVip(selectedDetailCard)' class='px-1.5 py-0.2 bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 text-[9px] font-black uppercase shadow-xs'>⭐ VIP</span>
-                <span v-else='true' class='px-1.5 py-0.2 bg-slate-200 text-slate-600 text-[9px] font-bold uppercase'>Gói Free</span>
+                <span v-else='true' class='px-1.5 py-0.2 bg-slate-200 text-slate-600 text-[9px] font-bold uppercase'>{{ t('freePlan') }}</span>
               </div>
               <p class='font-bold text-slate-900 text-sm'>{{ selectedDetailCard.authorName || selectedDetailCard.subtitle || 'Ban Quản Trị TN Hub' }}</p>
               <p class='text-xs text-slate-500 mt-0.5'>
                 Hotline/Zalo: 
                 <span v-if='isPostVip(selectedDetailCard)' class='font-bold text-teal-700'>{{ selectedDetailCard.phone || '0908.123.456' }}</span>
-                <span v-else='true' class='font-semibold text-slate-400'>{{ maskPhoneNumber(selectedDetailCard.phone) }} <span class='text-[10px] text-amber-600'>(Ẩn - Tài khoản Free)</span></span>
+                <span v-else='true' class='font-semibold text-slate-400'>{{ maskPhoneNumber(selectedDetailCard.phone) }} <span class='text-[10px] text-amber-600'>{{ t('hiddenFree') }}</span></span>
               </p>
             </div>
             <div class='flex items-center gap-2 w-full sm:w-auto'>
@@ -2821,7 +2821,7 @@
                       v-bind:class='isPostVip(selectedDetailCard) ? "bg-blue-600 hover:bg-blue-700 text-white" : "bg-slate-200 text-slate-600 hover:bg-slate-300"'
                       class='flex-1 sm:flex-none px-4 py-2 rounded-none font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition'>
                 <i class='fa-solid fa-comment-dots' v-bind:class='isPostVip(selectedDetailCard) ? "text-white" : "text-slate-400"'></i>
-                <span>{{ isPostVip(selectedDetailCard) ? 'Chat Zalo' : 'Zalo (Tài khoản Free ẩn)' }}</span>
+                <span>{{ isPostVip(selectedDetailCard) ? t('chatZalo') : t('zaloHidden') }}</span>
               </button>
             </div>
           </div>
@@ -2833,21 +2833,21 @@
             <button v-on:click='toggleBookmark(selectedDetailCard)' class='px-3.5 py-2 rounded-none border border-slate-200 font-semibold text-xs flex items-center gap-1.5 transition'
                     v-bind:class='isBookmarked(selectedDetailCard.id) ? "bg-amber-50 border-amber-300 text-amber-700" : "bg-white text-slate-700 hover:bg-slate-100"'>
               <i v-bind:class='isBookmarked(selectedDetailCard.id) ? "fa-solid fa-bookmark text-amber-500" : "fa-regular fa-bookmark"'></i>
-              <span>{{ isBookmarked(selectedDetailCard.id) ? "Đã lưu tin" : "Lưu tin" }}</span>
+              <span>{{ isBookmarked(selectedDetailCard.id) ? t('bookmarked') : t('bookmark') }}</span>
             </button>
             <button v-on:click='shareCard(selectedDetailCard)' class='px-3.5 py-2 rounded-none bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 font-semibold text-xs flex items-center gap-1.5 transition'>
               <i class='fa-solid fa-share-nodes text-slate-500'></i>
-              <span>Chia sẻ</span>
+              <span>{{ t('share') }}</span>
             </button>
             <button v-on:click='openCommentDialog(selectedDetailCard)' class='px-3.5 py-2 rounded-none bg-[#F1EFED] hover:bg-[#E0DDD8] border border-[#E0DDD8] text-slate-800 font-semibold text-xs flex items-center gap-1.5 transition'>
               <i class='fa-regular fa-comment-dots text-[#C74634]'></i>
-              <span>Bình luận ({{ (selectedDetailCard.comments &amp;&amp; selectedDetailCard.comments.length) || 0 }})</span>
+              <span>{{ t('comment') }} ({{ (selectedDetailCard.comments &amp;&amp; selectedDetailCard.comments.length) || 0 }})</span>
             </button>
           </div>
           <div class='flex items-center gap-2'>
             <button v-if='selectedDetailCard.btnType === "apply"' v-on:click='showDetailModal = false; openApplyModal(selectedDetailCard)' class='px-5 py-2 rounded-none bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-sm transition flex items-center gap-1.5'>
               <i class='fa-solid fa-paper-plane'></i>
-              <span>Ứng tuyển ngay</span>
+              <span>{{ t('applyNow') }}</span>
             </button>
             <button v-else-if='selectedDetailCard.btnType === "contact"' v-on:click='showDetailModal = false; openContactModal(selectedDetailCard)' class='px-5 py-2 rounded-none bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-sm transition flex items-center gap-1.5'>
               <i class='fa-solid fa-envelope'></i>
@@ -4633,6 +4633,25 @@
             reply: 'Phản hồi',
             likeSuccess: 'Đã thích bài đăng!',
             unlikeSuccess: 'Đã bỏ thích bài đăng',
+            postCode: 'Mã tin',
+            category: 'Chuyên mục',
+            priceSalary: 'Mức giá / Lương',
+            location: 'Khu vực',
+            status: 'Tình trạng',
+            available: 'Còn tin',
+            specsTitle: 'Thông Số Chi Tiết Chuyên Mục',
+            descTitle: 'Mô Tả Chi Tiết Bài Đăng',
+            commentPlaceholder: 'Viết bình luận công khai về bài đăng này...',
+            communityComments: 'Bình luận cộng đồng',
+            noCommentsYet: '{{ t('noCommentsYet') }}',
+            contactHeader: 'Đơn vị / Người đăng tin',
+            freePlan: 'Gói Free',
+            hiddenFree: '(Ẩn - Tài khoản Free)',
+            chatZalo: 'Chat Zalo',
+            zaloHidden: 'Zalo (Tài khoản Free ẩn)',
+            bookmark: 'Lưu tin',
+            bookmarked: 'Đã lưu tin',
+            applyNow: 'Ứng tuyển ngay',
             chat: 'Chat',
             addFriend: 'Kết bạn',
             alreadyFriend: 'Bạn bè',
@@ -5189,7 +5208,31 @@
             'lẩu': 'hotpot',
             'Thỏa thuận': 'Negotiable',
             'Phục vụ:': 'Hours:',
-            'Mở cả ngày': 'Open 24/7'
+            'Mở cả ngày': 'Open 24/7',
+            'Vừa cào xong': 'Just crawled',
+            'Tỷ': 'Billion VND',
+            'Triệu': 'Million VND',
+            'Thành viên Tây Ninh': 'Tay Ninh Member',
+            'Người dùng Tây Ninh': 'Tay Ninh User',
+            'Bất Động Sản Trảng Bàng': 'Trang Bang Real Estate',
+            'Nhà Đất Hồ Dầu Tiếng': 'Dau Tieng Lake Real Estate',
+            'Địa Ốc Tây Ninh Land': 'Tay Ninh Land Real Estate',
+            'Công Ty TNHH Sailun Việt Nam': 'Sailun Vietnam Co., Ltd',
+            'Công Ty CP Kỹ Thuật Điện Gia Định': 'Gia Dinh Electrical Engineering JSC',
+            'Bình luận xác minh bài số 2 hoạt động hoàn hảo!': 'Verification comment on post #2 working perfectly!',
+            'ok test': 'OK test',
+            'THÔNG TIN BẤT ĐỘNG SẢN CHI TIẾT:': 'DETAILED REAL ESTATE INFO:',
+            'THÔNG TIN TUYỂN DỤNG CHI TIẾT:': 'DETAILED JOB INFORMATION:',
+            'MÔ TẢ CÔNG VIỆC:': 'JOB DESCRIPTION:',
+            'YÊU CẦU ỨNG VIÊN:': 'REQUIREMENTS:',
+            'QUYỀN LỢI ĐƯỢC HƯỞNG:': 'BENEFITS:',
+            'THÔNG TIN QUY HOẠCH & TIỀM NĂNG:': 'PLANNING & POTENTIAL:',
+            'Pháp lý chuẩn, sổ hồng riêng chính chủ, công chứng sang tên ngay trong ngày.': 'Standard legal status, authentic private pink book, immediate notarization & transfer.',
+            'Đường trước nhà thông thoáng, ô tô ra vào thoải mái, gần khu dân cư đông đúc.': 'Spacious front road, easy car access, close to bustling residential area.',
+            'Bán kính 1km đầy đủ tiện ích: chợ, trường học, trạm y tế, ủy ban nhân dân.': 'Full amenities within 1km radius: market, schools, medical station, ward office.',
+            'Phù hợp xây nhà định cư lâu dài hoặc đầu tư sinh lời bền vững. Hỗ trợ vay ngân hàng 70%.': 'Ideal for long-term residential settlement or profitable sustainable investment. 70% bank loan support.',
+            'Lương thưởng minh bạch, đóng BHXH, BHYT đầy đủ theo quy định của pháp luật.': 'Transparent compensation, full social & health insurance coverage according to law.',
+            'Nghỉ lễ tết, thưởng tháng 13 và du lịch hàng năm cùng công ty.': 'Holiday breaks, 13th-month bonus, and annual corporate vacations.',
           },
           ko: {
             'Đặc sản trứ danh': '대표 명물 요리',
@@ -5260,7 +5303,31 @@
             'lẩu': '전골',
             'Thỏa thuận': '협의 가능',
             'Phục vụ:': '영업시간:',
-            'Mở cả ngày': '24시간 영업'
+            'Mở cả ngày': '24시간 영업',
+            'Vừa cào xong': '방금 등록됨',
+            'Tỷ': '십억동',
+            'Triệu': '백만동',
+            'Thành viên Tây Ninh': '떠이닌 회원',
+            'Người dùng Tây Ninh': '떠이닌 사용자',
+            'Bất Động Sản Trảng Bàng': '짱방 부동산',
+            'Nhà Đất Hồ Dầu Tiếng': '저우띠엥 호수 부동산',
+            'Địa Ốc Tây Ninh Land': '떠이닌 랜드 부동산',
+            'Công Ty TNHH Sailun Việt Nam': '사일룬 베트남 유한책임회사',
+            'Công Ty CP Kỹ Thuật Điện Gia Định': '자딘 전기 엔지니어링 주식회사',
+            'Bình luận xác minh bài số 2 hoạt động hoàn hảo!': '2번 게시물 댓글 검증이 완벽하게 작동합니다!',
+            'ok test': '테스트 완료',
+            'THÔNG TIN BẤT ĐỘNG SẢN CHI TIẾT:': '부동산 매물 상세 정보:',
+            'THÔNG TIN TUYỂN DỤNG CHI TIẾT:': '채용 상세 정보:',
+            'MÔ TẢ CÔNG VIỆC:': '직무 내용:',
+            'YÊU CẦU ỨNG VIÊN:': '지원 자격:',
+            'QUYỀN LỢI ĐƯỢC HƯỞNG:': '복리후생:',
+            'THÔNG TIN QUY HOẠCH & TIỀM NĂNG:': '개발 호재 및 잠재력:',
+            'Pháp lý chuẩn, sổ hồng riêng chính chủ, công chứng sang tên ngay trong ngày.': '완벽한 법적 권리관계, 1인 소유 개별 핑크북, 당일 즉시 공증 및 명의이전 가능.',
+            'Đường trước nhà thông thoáng, ô tô ra vào thoải mái, gần khu dân cư đông đúc.': '집 앞 도로 넓고 쾌적, 차량 진출입 원활, 인구 밀집 주거지역 인접.',
+            'Bán kính 1km đầy đủ tiện ích: chợ, trường học, trạm y tế, ủy ban nhân dân.': '반경 1km 내 시장, 학교, 보건소, 주민센터 등 완벽한 생활 인프라 완비.',
+            'Phù hợp xây nhà định cư lâu dài hoặc đầu tư sinh lời bền vững. Hỗ trợ vay ngân hàng 70%.': '실거주 장기 정착 또는 안정적인 수익형 투자에 최적. 은행 대출 최대 70% 지원.',
+            'Lương thưởng minh bạch, đóng BHXH, BHYT đầy đủ theo quy định của pháp luật.': '투명한 급여 체계, 법정 4대 사회보험 및 건강보험 전액 보장.',
+            'Nghỉ lễ tết, thưởng tháng 13 và du lịch hàng năm cùng công ty.': '명절 휴가, 13월의 보너스 상여금 지급 및 매년 전사 워크숍/여행 지원.',
           },
           zh: {
             'Đặc sản trứ danh': '西宁著名特产',
@@ -5331,7 +5398,31 @@
             'lẩu': '火锅',
             'Thỏa thuận': '面议',
             'Phục vụ:': '营业时间:',
-            'Mở cả ngày': '24小时营业'
+            'Mở cả ngày': '24小时营业',
+            'Vừa cào xong': '刚刚发布',
+            'Tỷ': '十亿盾',
+            'Triệu': '百万盾',
+            'Thành viên Tây Ninh': '西宁会员',
+            'Người dùng Tây Ninh': '西宁用户',
+            'Bất Động Sản Trảng Bàng': '盏盘地产',
+            'Nhà Đất Hồ Dầu Tiếng': '油汀湖房产',
+            'Địa Ốc Tây Ninh Land': '西宁地产',
+            'Công Ty TNHH Sailun Việt Nam': '赛轮越南有限公司',
+            'Công Ty CP Kỹ Thuật Điện Gia Định': '嘉定电气工程股份公司',
+            'Bình luận xác minh bài số 2 hoạt động hoàn hảo!': '第2条信息评论验证运行完美！',
+            'ok test': '测试正常',
+            'THÔNG TIN BẤT ĐỘNG SẢN CHI TIẾT:': '房产详细信息:',
+            'THÔNG TIN TUYỂN DỤNG CHI TIẾT:': '招聘详细信息:',
+            'MÔ TẢ CÔNG VIỆC:': '工作职责:',
+            'YÊU CẦU ỨNG VIÊN:': '任职要求:',
+            'QUYỀN LỢI ĐƯỢC HƯỞNG:': '薪酬福利:',
+            'THÔNG TIN QUY HOẠCH & TIỀM NĂNG:': '规划与发展潜力:',
+            'Pháp lý chuẩn, sổ hồng riêng chính chủ, công chứng sang tên ngay trong ngày.': '产权清晰合规，一手房东独立红本，当天即可公证过户。',
+            'Đường trước nhà thông thoáng, ô tô ra vào thoải mái, gần khu dân cư đông đúc.': '门前道路通畅，汽车出入自如，紧邻繁华居民区。',
+            'Bán kính 1km đầy đủ tiện ích: chợ, trường học, trạm y tế, ủy ban nhân dân.': '1公里生活圈配套成熟：农贸市场、学校、卫生所、便民行政中心一应俱全。',
+            'Phù hợp xây nhà định cư lâu dài hoặc đầu tư sinh lời bền vững. Hỗ trợ vay ngân hàng 70%.': '非常适合长久定居自建房或稳健增值投资。支持银行按揭贷款高达70%。',
+            'Lương thưởng minh bạch, đóng BHXH, BHYT đầy đủ theo quy định của pháp luật.': '薪酬福利公开透明，严格按国家法规缴纳社会保险与医疗保险。',
+            'Nghỉ lễ tết, thưởng tháng 13 và du lịch hàng năm cùng công ty.': '法定节假日休假、十三薪年终奖及公司年度集体旅游。',
           }
         };
 
@@ -7163,29 +7254,34 @@
         });
 
         const getCategoryLabel = (category) => {
-          const map = {
-            'tuyendung': 'Tuyển dụng',
-            'batdongsan': 'Bất động sản',
-            'raovat': 'Mua bán - Rao vặt',
-            'suachua': 'Dịch vụ - Thợ',
-            'amthuc': 'Ẩm thực - Khách sạn'
+          const lang = currentLang.value || 'vi';
+          const labels = {
+            tuyendung: { vi: 'Tuyển dụng', en: 'Jobs & Hiring', ko: '구인구직 / 채용', zh: '招聘求职' },
+            batdongsan: { vi: 'Bất động sản', en: 'Real Estate', ko: '부동산 매물', zh: '房产物业' },
+            raovat: { vi: 'Mua bán - Rao vặt', en: 'Classifieds & Market', ko: '중고거래 / 벼룩시장', zh: '二手二手交易' },
+            suachua: { vi: 'Dịch vụ - Thợ', en: 'Services & Repairs', ko: '수리 / 전문 서비스', zh: '便民服务维修' },
+            amthuc: { vi: 'Ẩm thực - Khách sạn', en: 'Food & Hotels', ko: '맛집 & 호텔 숙박', zh: '美食餐饮酒店' }
           };
-          return map[category] || 'Tin đăng';
+          if (labels[category] && labels[category][lang]) return labels[category][lang];
+          if (labels[category]) return labels[category].vi;
+          return lang === 'vi' ? 'Tin đăng' : (lang === 'en' ? 'Listing' : (lang === 'ko' ? '게시물' : '信息'));
         };
 
         const getDistrictName = (districtKey) => {
+          const lang = currentLang.value || 'vi';
           const map = {
-            'tptayninh': 'TP. Tây Ninh',
-            'trangbang': 'TX. Trảng Bàng',
-            'hoathanh': 'TX. Hòa Thành',
-            'godau': 'Huyện Gò Dầu',
-            'bencau': 'Huyện Bến Cầu',
-            'duongminhchau': 'Huyện Dương Minh Châu',
-            'tanchau': 'Huyện Tân Châu',
-            'tanbien': 'Huyện Tân Biên',
-            'chauthanh': 'Huyện Châu Thành'
+            tptayninh: { vi: 'TP. Tây Ninh', en: 'Tay Ninh City', ko: '떠이닌시', zh: '西宁市' },
+            trangbang: { vi: 'TX. Trảng Bàng', en: 'Trang Bang Town', ko: '짱방 타운', zh: '盏盘市' },
+            hoathanh: { vi: 'TX. Hòa Thành', en: 'Hoa Thanh Town', ko: '화타인 타운', zh: '和城市' },
+            godau: { vi: 'Huyện Gò Dầu', en: 'Go Dau District', ko: '고저우현', zh: '鹅油县' },
+            bencau: { vi: 'Huyện Bến Cầu', en: 'Ben Cau District', ko: '벤꺼우현', zh: '合求县' },
+            duongminhchau: { vi: 'Huyện Dương Minh Châu', en: 'Duong Minh Chau District', ko: '즈엉민쩌우현', zh: '杨明珠县' },
+            tanchau: { vi: 'Huyện Tân Châu', en: 'Tan Châu District', ko: '떤쩌우현', zh: '新珠县' },
+            tanbien: { vi: 'Huyện Tân Biên', en: 'Tan Bien District', ko: '떤비엔현', zh: '新边县' },
+            chauthanh: { vi: 'Huyện Châu Thành', en: 'Chau Thanh District', ko: '쩌우타인현', zh: '周城县' }
           };
-          return map[districtKey] || 'Tây Ninh';
+          if (map[districtKey] && map[districtKey][lang]) return map[districtKey][lang];
+          return 'Tây Ninh';
         };
 
         const getCardDescription = (card) => {
@@ -7251,7 +7347,7 @@
               "- Có mặt tận nơi sau 15 - 30 phút liên hệ, phục vụ tất cả các ngày trong tuần.\n" +
               "- Báo giá rõ ràng trước khi sửa chữa, linh kiện thay thế chính hãng có tem bảo hành.";
           } else {
-            return "THÔNG TIN ẨM THỰC & KHÁCH SẠN:\n" +
+            const rawFallback = "THÔNG TIN ẨM THỰC & KHÁCH SẠN:\n" +
               "• Địa điểm: " + title + "\n" +
               "• Đơn vị: " + (subtitle || 'Ẩm thực Tây Ninh') + "\n" +
               "• Mức giá: " + price + (subprice ? " (" + subprice + ")" : "") + "\n" +
@@ -7260,6 +7356,7 @@
               "- Thực đơn phong phú các món ăn đặc sản Tây Ninh chế biến đậm đà, tươi ngon.\n" +
               "- Không gian thoáng mát, sạch sẽ, bãi đỗ xe ô tô và xe máy rộng rãi, an ninh.\n" +
               "- Nhận phục vụ tiệc họp mặt gia đình, sinh nhật, liên hoan theo yêu cầu.";
+            return lang === 'vi' ? rawFallback : translateDynamicText(rawFallback, lang);
           }
         };
 
