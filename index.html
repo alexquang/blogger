@@ -660,7 +660,7 @@
       position: absolute;
       bottom: 22px;
       left: 20px;
-      z-index: 25;
+      z-index: 65;
       display: flex;
       flex-direction: column;
       align-items: flex-start;
@@ -2736,7 +2736,7 @@
     let chatNickname = localStorage.getItem('metaverse_chat_nick') || ('Khách Tây Ninh #' + Math.floor(100 + Math.random() * 900));
 
     if (chatToggleBtn && chatWindow) {
-      chatToggleBtn.addEventListener('click', () => {
+      chatToggleBtn.addEventListener('click', () => {\n        if (document.exitPointerLock) document.exitPointerLock();
         chatWindow.style.display = chatWindow.style.display === 'none' ? 'flex' : 'none';
         if (chatWindow.style.display === 'flex') {
           chatInput.focus();
