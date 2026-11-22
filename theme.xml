@@ -359,6 +359,15 @@
               <span class='truncate'>{{ t('friends') }} ({{ friendsList.length }})</span>
             </button>
           </div>
+          <div class='pt-1.5'>
+            <button v-on:click='openProfileWithTab("applied")' class='w-full px-2.5 py-1.5 bg-white hover:bg-[#FAF9F8] border border-[#E0DDD8] text-slate-800 flex items-center justify-between gap-1.5 transition shadow-xs text-[11px] font-semibold'>
+              <div class='flex items-center gap-1.5'>
+                <i class='fa-solid fa-briefcase text-blue-600 text-xs shrink-0'></i>
+                <span>{{ t('appliedJobs') }}</span>
+              </div>
+              <span class='px-1.5 py-0.2 bg-emerald-100 text-emerald-800 text-[10px] font-bold border border-emerald-300'>{{ appliedJobsList.length }} {{ t('appliedStatus') }}</span>
+            </button>
+          </div>
           <div class='flex items-center justify-between pt-1'>
             <button v-on:click='openProfileModal' class='text-[10px] text-slate-600 hover:text-[#C74634] font-semibold'>
               <i class='fa-solid fa-gear text-[9px]'></i> {{ t('profileSettings') }}
@@ -3348,22 +3357,47 @@
         <!-- TRƯỜNG HỢP 1: KHI XEM VÀ CHỈNH SỬA PROFILE CỦA CHÍNH MÌNH -->
         <!-- ======================================================== -->
         <div v-if='isViewingMyOwnProfile' class='flex-1 overflow-y-auto p-4 space-y-4'>
-          <!-- Profile Stats Row -->
-          <div class='grid grid-cols-3 gap-2 bg-[#FAF9F8] p-3 border border-[#E0DDD8] text-center'>
-            <div>
+          <!-- Profile Stats Row (4 Cột) -->
+          <div class='grid grid-cols-2 sm:grid-cols-4 gap-2 bg-[#FAF9F8] p-3 border border-[#E0DDD8] text-center'>
+            <div class='cursor-pointer hover:bg-white p-1 transition' v-on:click='showProfileModal = false; setCategory("myposts");'>
               <span class='block font-black text-sm text-[#C74634]'>{{ myPostsCount }}</span>
-              <span class='text-[10px] text-slate-500 uppercase tracking-wider font-bold'>Bài viết đã đăng</span>
+              <span class='text-[10px] text-slate-500 uppercase tracking-wider font-bold'>{{ t('myPosts') }}</span>
             </div>
-            <div>
+            <div class='cursor-pointer hover:bg-white p-1 transition' v-on:click='showFriendsModal = true; showProfileModal = false;'>
               <span class='block font-black text-sm text-[#161513]'>{{ friendsList.length }}</span>
-              <span class='text-[10px] text-slate-500 uppercase tracking-wider font-bold'>Bạn bè Tây Ninh</span>
+              <span class='text-[10px] text-slate-500 uppercase tracking-wider font-bold'>{{ t('friends') }}</span>
             </div>
-            <div>
+            <div class='cursor-pointer hover:bg-white p-1 transition' v-on:click='profileTab = "applied"'>
+              <span class='block font-black text-sm text-emerald-600'>{{ appliedJobsList.length }}</span>
+              <span class='text-[10px] text-slate-500 uppercase tracking-wider font-bold'>{{ t('appliedJobs') }}</span>
+            </div>
+            <div class='p-1'>
               <span class='block font-black text-sm text-emerald-600'>Đã xác thực</span>
-              <span class='text-[10px] text-slate-500 uppercase tracking-wider font-bold'>Tài khoản Google</span>
+              <span class='text-[10px] text-slate-500 uppercase tracking-wider font-bold'>Google Account</span>
             </div>
           </div>
 
+          <!-- Profile Sub-Tabs Navigation -->
+          <div class='flex border-b border-[#E0DDD8] bg-white'>
+            <button type='button' 
+                    v-on:click='profileTab = "info"'
+                    v-bind:class='profileTab === "info" ? "border-b-2 border-[#C74634] text-[#C74634] font-bold bg-[#FAF9F8]" : "text-slate-600 hover:text-slate-900 font-medium"'
+                    class='flex-1 py-2 text-xs text-center transition flex items-center justify-center gap-1.5'>
+              <i class='fa-solid fa-user-gear'></i>
+              <span>{{ t('profileSettings') }}</span>
+            </button>
+            <button type='button' 
+                    v-on:click='profileTab = "applied"'
+                    v-bind:class='profileTab === "applied" ? "border-b-2 border-[#C74634] text-[#C74634] font-bold bg-[#FAF9F8]" : "text-slate-600 hover:text-slate-900 font-medium"'
+                    class='flex-1 py-2 text-xs text-center transition flex items-center justify-center gap-1.5'>
+              <i class='fa-solid fa-briefcase'></i>
+              <span>{{ t('appliedJobsTitle') }}</span>
+              <span class='ml-1 px-1.5 py-0.2 bg-emerald-100 text-emerald-800 text-[10px] font-bold border border-emerald-300'>{{ appliedJobsList.length }}</span>
+            </button>
+          </div>
+
+          <!-- Subtab 1: Cài đặt hồ sơ cá nhân -->
+          <div v-if='profileTab === "info"' class='space-y-4'>
           <!-- VIP & FUNDED ACCOUNT CARD (Tài khoản có nạp tiền / Admin) -->
           <div class='p-3.5 bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent border border-amber-300 relative overflow-hidden'>
             <div class='flex flex-wrap items-center justify-between gap-2.5'>
@@ -3474,6 +3508,77 @@
               <textarea v-model='userProfile.bio' rows='3' class='w-full px-3 py-2 bg-white border border-[#E0DDD8] focus:border-[#C74634] outline-none text-xs leading-relaxed' placeholder='Chia sẻ ngắn về bạn, ngành nghề hoặc thông điệp kết nối tại Tây Ninh...'></textarea>
             </div>
           </div>
+          </div>
+
+          <!-- Subtab 2: Danh sách việc làm đã ứng tuyển (Trạng thái: Đã nộp) -->
+          <div v-else-if='profileTab === "applied"' class='space-y-3'>
+            <div class='flex items-center justify-between pb-1 border-b border-[#E0DDD8]'>
+              <h4 class='font-bold text-xs text-[#161513] flex items-center gap-1.5'>
+                <i class='fa-solid fa-briefcase text-emerald-600'></i>
+                <span>{{ t('appliedJobsTitle') }} ({{ appliedJobsList.length }})</span>
+              </h4>
+              <span class='text-[11px] text-slate-500'>Tự động lưu lịch sử nộp hồ sơ việc làm</span>
+            </div>
+
+            <!-- Empty State -->
+            <div v-if='appliedJobsList.length === 0' class='text-center py-10 px-4 bg-[#FAF9F8] border border-[#E0DDD8] space-y-3'>
+              <div class='w-12 h-12 mx-auto bg-slate-100 text-slate-400 flex items-center justify-center text-xl'>
+                <i class='fa-solid fa-briefcase'></i>
+              </div>
+              <p class='text-xs text-slate-600 font-medium max-w-sm mx-auto'>
+                {{ t('noAppliedJobs') }}
+              </p>
+              <button type='button' v-on:click='showProfileModal = false; setCategory("tuyendung")' class='px-4 py-2 bg-[#C74634] hover:bg-[#B13C2C] text-white text-xs font-bold shadow-sm transition inline-flex items-center gap-1.5'>
+                <i class='fa-solid fa-magnifying-glass'></i>
+                <span>{{ t('exploreJobs') }}</span>
+              </button>
+            </div>
+
+            <!-- List of applied jobs -->
+            <div v-else='true' class='space-y-2.5'>
+              <div v-for='(job, jIdx) in appliedJobsList' v-bind:key='job.id || jIdx' class='p-3 bg-white border border-[#E0DDD8] hover:border-slate-400 transition shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3'>
+                <div class='flex items-start gap-3 min-w-0'>
+                  <img v-if='job.image' v-bind:src='job.image' class='w-14 h-14 object-cover border border-[#E0DDD8] shrink-0' />
+                  <div v-else='true' class='w-14 h-14 bg-gradient-to-br from-slate-100 to-slate-200 border border-[#E0DDD8] flex items-center justify-center text-slate-400 shrink-0'>
+                    <i class='fa-solid fa-building text-lg'></i>
+                  </div>
+                  <div class='min-w-0'>
+                    <div class='flex items-center gap-2 flex-wrap'>
+                      <h5 class='font-bold text-xs text-[#161513] truncate max-w-xs sm:max-w-md'>{{ job.title }}</h5>
+                      <!-- Status Badge "Đã nộp" -->
+                      <span class='inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-50 text-emerald-700 text-[10px] font-bold border border-emerald-300'>
+                        <i class='fa-solid fa-circle-check text-emerald-600'></i>
+                        <span>{{ t('appliedStatus') }}</span>
+                      </span>
+                    </div>
+                    <p class='text-[11px] text-slate-600 mt-0.5 flex items-center gap-2 flex-wrap'>
+                      <span class='font-medium text-[#C74634]'><i class='fa-solid fa-money-bill-wave text-[10px] mr-1'></i>{{ job.salary }}</span>
+                      <span class='text-slate-400'>•</span>
+                      <span><i class='fa-solid fa-building text-[10px] mr-1 text-slate-400'></i>{{ job.company }}</span>
+                      <span class='text-slate-400'>•</span>
+                      <span><i class='fa-solid fa-location-dot text-[10px] mr-1 text-slate-400'></i>{{ job.location }}</span>
+                    </p>
+                    <div class='text-[10px] text-slate-400 mt-1 flex items-center gap-3 flex-wrap'>
+                      <span><i class='fa-regular fa-clock mr-1'></i>{{ t('appliedDate') }}: {{ formatAppliedTime(job.appliedAt) }}</span>
+                      <span v-if='job.applicantPhone'><i class='fa-solid fa-phone mr-1'></i>{{ job.applicantPhone }}</span>
+                      <span v-if='job.applicantName'><i class='fa-regular fa-user mr-1'></i>{{ job.applicantName }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Actions -->
+                <div class='flex items-center gap-1.5 shrink-0 self-end sm:self-center'>
+                  <button type='button' v-on:click='openAppliedJobDetail(job)' class='px-2.5 py-1.5 bg-[#FAF9F8] hover:bg-slate-100 text-slate-700 border border-[#E0DDD8] text-[11px] font-semibold transition flex items-center gap-1'>
+                    <i class='fa-solid fa-eye text-xs text-blue-600'></i>
+                    <span>{{ t('details') }}</span>
+                  </button>
+                  <button type='button' v-on:click='removeAppliedJob(job.jobId || job.id)' title='Xóa khỏi lịch sử' class='px-2 py-1.5 bg-white hover:bg-rose-50 text-rose-600 border border-[#E0DDD8] hover:border-rose-300 text-[11px] font-semibold transition'>
+                    <i class='fa-regular fa-trash-can text-xs'></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- ======================================================== -->
@@ -3578,7 +3683,11 @@
             <button type='button' v-on:click='showProfileModal = false' class='px-4 py-2 bg-white border border-[#E0DDD8] hover:bg-slate-100 text-slate-700 font-bold text-xs transition'>
               {{ t('close') }}
             </button>
-            <button v-if='isViewingMyOwnProfile' type='button' v-on:click='saveUserProfile' v-bind:disabled='isSavingProfile' class='px-4 py-2 bg-[#C74634] hover:bg-[#B13C2C] text-white font-bold text-xs shadow-sm transition flex items-center gap-1.5'>
+            <button v-if='isViewingMyOwnProfile &amp;&amp; profileTab === "applied"' type='button' v-on:click='showProfileModal = false; setCategory("tuyendung")' class='px-4 py-2 bg-[#C74634] hover:bg-[#B13C2C] text-white font-bold text-xs shadow-sm transition flex items-center gap-1.5'>
+              <i class='fa-solid fa-magnifying-glass'></i>
+              <span>{{ t('exploreJobs') }}</span>
+            </button>
+            <button v-else-if='isViewingMyOwnProfile' type='button' v-on:click='saveUserProfile' v-bind:disabled='isSavingProfile' class='px-4 py-2 bg-[#C74634] hover:bg-[#B13C2C] text-white font-bold text-xs shadow-sm transition flex items-center gap-1.5'>
               <i v-if='isSavingProfile' class='fa-solid fa-circle-notch fa-spin'></i>
               <i v-else='true' class='fa-solid fa-floppy-disk'></i>
               <span>{{ isSavingProfile ? (t('saving') || 'Saving...') : t('saveProfile') }}</span>
@@ -4668,6 +4777,12 @@
             viewProfile: 'Xem hồ sơ',
             profileSettings: 'Cài đặt trang cá nhân',
             myPosts: 'Bài của tôi',
+            appliedJobs: 'Việc làm đã nộp',
+            appliedJobsTitle: 'Việc làm đã ứng tuyển',
+            appliedStatus: 'Đã nộp',
+            appliedDate: 'Ngày nộp',
+            noAppliedJobs: 'Bạn chưa ứng tuyển công việc nào tại Tây Ninh.',
+            exploreJobs: 'Khám phá việc làm Tây Ninh',
             friends: 'Bạn bè',
             searchPlaceholder: 'Tìm việc làm, nhà đất, dịch vụ Tây Ninh...',
             allDistricts: 'Khu vực: Toàn tỉnh Tây Ninh',
@@ -4775,6 +4890,12 @@
             viewProfile: 'View Profile',
             profileSettings: 'Profile Settings',
             myPosts: 'My Posts',
+            appliedJobs: 'Applied Jobs',
+            appliedJobsTitle: 'Applied Jobs History',
+            appliedStatus: 'Submitted',
+            appliedDate: 'Applied Date',
+            noAppliedJobs: 'You have not applied for any jobs in Tay Ninh yet.',
+            exploreJobs: 'Explore Tay Ninh Jobs',
             friends: 'Friends',
             searchPlaceholder: 'Search jobs, properties, services in Tay Ninh...',
             allDistricts: 'Region: All Tay Ninh',
@@ -4882,6 +5003,12 @@
             viewProfile: '프로필 보기',
             profileSettings: '프로필 설정',
             myPosts: '내가 쓴 글',
+            appliedJobs: '지원한 채용공고',
+            appliedJobsTitle: '지원 완료된 공고 목록',
+            appliedStatus: '지원 완료',
+            appliedDate: '지원일',
+            noAppliedJobs: '아직 지원한 채용공고가 없습니다.',
+            exploreJobs: '타이닌 채용공고 탐색',
             friends: '친구 목록',
             searchPlaceholder: '타이닌의 일자리, 부동산, 서비스 검색...',
             allDistricts: '지역: 타이닌성 전역',
@@ -4989,6 +5116,12 @@
             viewProfile: '查看主页',
             profileSettings: '资料设置',
             myPosts: '我发布的',
+            appliedJobs: '已投递职位',
+            appliedJobsTitle: '已投递工作列表',
+            appliedStatus: '已投递',
+            appliedDate: '申请时间',
+            noAppliedJobs: '您尚未在西宁申请任何工作。',
+            exploreJobs: '探索西宁招聘信息',
             friends: '好友列表',
             searchPlaceholder: '搜索西宁招聘、房产、便民服务...',
             allDistricts: '区域：西宁省全域',
@@ -5861,6 +5994,8 @@
         const showAvatarPresets = ref(false);
         const isSavingProfile = ref(false);
         const isViewingMyOwnProfile = ref(true);
+        const profileTab = ref('info'); // 'info' | 'applied'
+        const appliedJobsList = ref([]);
 
         const userProfile = ref({
           displayName: '',
@@ -7605,6 +7740,11 @@
             return;
           }
           selectedItem.value = card;
+          if (currentUser.value) {
+            applyForm.value.fullName = userProfile.value?.displayName || currentUser.value.displayName || '';
+            applyForm.value.phone = userProfile.value?.phone || '';
+            applyForm.value.email = userProfile.value?.email || currentUser.value.email || '';
+          }
           showApplyModal.value = true;
         };
 
@@ -8523,7 +8663,43 @@
                 })
               });
             }
-            showPopup('Ứng Tuyển Thành Công!', 'Hồ sơ cho vị trí "' + selectedItem.value.title + '" đã được gửi tới nhà tuyển dụng.', 'success');
+
+            // Lưu hồ sơ đã ứng tuyển vào danh sách cá nhân với trạng thái "Đã nộp"
+            const currentJob = selectedItem.value || {};
+            const appliedJobRecord = {
+              id: 'app_' + Date.now(),
+              jobId: currentJob.id || currentJob.title || ('job_' + Date.now()),
+              title: currentJob.title || 'Tuyển dụng Tây Ninh',
+              company: currentJob.company || currentJob.authorName || 'Nhà tuyển dụng Tây Ninh',
+              salary: currentJob.price || currentJob.salary || 'Thỏa thuận',
+              location: currentJob.location || currentJob.address || 'Tây Ninh',
+              image: currentJob.image || currentJob.img || '',
+              appliedAt: new Date().toISOString(),
+              applicantName: applyForm.value.fullName || currentUser.value?.displayName || '',
+              applicantPhone: applyForm.value.phone || '',
+              applicantEmail: applyForm.value.email || currentUser.value?.email || '',
+              note: applyForm.value.note || '',
+              status: 'Đã nộp'
+            };
+
+            const existingIdx = appliedJobsList.value.findIndex(j => (j.jobId && j.jobId === appliedJobRecord.jobId) || (j.title === appliedJobRecord.title));
+            if (existingIdx >= 0) {
+              appliedJobsList.value[existingIdx] = appliedJobRecord;
+            } else {
+              appliedJobsList.value.unshift(appliedJobRecord);
+            }
+            saveAppliedJobsToStorage();
+
+            if (currentUser.value && currentUser.value.uid && db) {
+              try {
+                const safeKey = String(appliedJobRecord.jobId).replace(/[^a-zA-Z0-9_-]/g, '_');
+                await setDoc(doc(db, 'users', currentUser.value.uid, 'applied_jobs', safeKey), appliedJobRecord, { merge: true });
+              } catch (fsErr) {
+                console.warn('Firestore application sync notice:', fsErr);
+              }
+            }
+
+            showPopup('Ứng Tuyển Thành Công!', 'Hồ sơ cho vị trí "' + (selectedItem.value?.title || '') + '" đã được gửi tới nhà tuyển dụng và lưu vào trang cá nhân với trạng thái "Đã nộp".', 'success');
             showApplyModal.value = false;
           } catch (e) {
             showToast('Lỗi khi gửi hồ sơ: ' + e.message, 'error');
@@ -8988,6 +9164,113 @@
           }
         };
 
+        const getAppliedStorageKey = () => {
+          const uid = currentUser.value?.uid || 'guest';
+          return 'tnhub_applied_jobs_' + uid;
+        };
+
+        const saveAppliedJobsToStorage = () => {
+          try {
+            const key = getAppliedStorageKey();
+            localStorage.setItem(key, JSON.stringify(appliedJobsList.value));
+          } catch (e) {
+            console.warn('Failed to save applied jobs', e);
+          }
+        };
+
+        const loadAppliedJobs = async () => {
+          try {
+            const key = getAppliedStorageKey();
+            const localData = localStorage.getItem(key);
+            if (localData) {
+              try {
+                appliedJobsList.value = JSON.parse(localData) || [];
+              } catch (e) {
+                appliedJobsList.value = [];
+              }
+            } else {
+              appliedJobsList.value = [];
+            }
+
+            // Đồng bộ từ Cloud Firestore nếu đã đăng nhập
+            if (currentUser.value && currentUser.value.uid && db) {
+              try {
+                const appsCol = collection(db, 'users', currentUser.value.uid, 'applied_jobs');
+                const snap = await getDocs(appsCol);
+                if (!snap.empty) {
+                  const remoteJobs = [];
+                  snap.forEach(docSnap => {
+                    remoteJobs.push({ id: docSnap.id, ...docSnap.data() });
+                  });
+                  if (remoteJobs.length > 0) {
+                    const map = new Map();
+                    appliedJobsList.value.forEach(j => map.set(j.jobId || j.id, j));
+                    remoteJobs.forEach(j => map.set(j.jobId || j.id, j));
+                    appliedJobsList.value = Array.from(map.values()).sort((a, b) => new Date(b.appliedAt || 0) - new Date(a.appliedAt || 0));
+                    saveAppliedJobsToStorage();
+                  }
+                }
+              } catch (err) {
+                console.warn('Sync applied jobs from Firestore:', err);
+              }
+            }
+          } catch (err) {
+            console.warn('Error loading applied jobs:', err);
+          }
+        };
+
+        const openProfileWithTab = (tab) => {
+          profileTab.value = tab || 'info';
+          openProfileModal();
+        };
+
+        const removeAppliedJob = async (jobId) => {
+          appliedJobsList.value = appliedJobsList.value.filter(j => (j.jobId !== jobId && j.id !== jobId));
+          saveAppliedJobsToStorage();
+          if (currentUser.value && currentUser.value.uid && db) {
+            try {
+              const safeId = String(jobId).replace(/[^a-zA-Z0-9_-]/g, '_');
+              await deleteDoc(doc(db, 'users', currentUser.value.uid, 'applied_jobs', safeId));
+            } catch (err) {
+              console.warn('Error deleting applied job doc:', err);
+            }
+          }
+          showToast('Đã xóa hồ sơ khỏi danh sách đã ứng tuyển', 'info');
+        };
+
+        const openAppliedJobDetail = (appliedJob) => {
+          const found = cards.value.find(c => c.id === appliedJob.jobId || c.title === appliedJob.title);
+          if (found) {
+            openDetailModal(found);
+          } else {
+            openDetailModal({
+              id: appliedJob.jobId || appliedJob.id,
+              title: appliedJob.title,
+              category: 'tuyendung',
+              categoryName: 'Tuyển dụng',
+              company: appliedJob.company,
+              authorName: appliedJob.company,
+              price: appliedJob.salary,
+              location: appliedJob.location,
+              image: appliedJob.image,
+              content: 'Vị trí công việc: ' + appliedJob.title + '\nTrạng thái: Đã nộp hồ sơ\nNgày nộp: ' + (appliedJob.appliedAt || ''),
+              timeAgo: 'Đã nộp hồ sơ'
+            });
+          }
+        };
+
+        const formatAppliedTime = (dateStr) => {
+          if (!dateStr) return '';
+          try {
+            const d = new Date(dateStr);
+            if (isNaN(d.getTime())) return dateStr;
+            const pad = (n) => String(n).padStart(2, '0');
+            return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+          } catch (e) {
+            return dateStr;
+          }
+        };
+
         const openProfileModal = async () => {
           if (!currentUser.value) {
             loginGoogle();
@@ -8999,6 +9282,7 @@
           userProfile.value.photoURL = currentUser.value.photoURL || '';
           
           await loadUserProfile(currentUser.value.uid, currentUser.value.email);
+          await loadAppliedJobs();
 
           showProfileModal.value = true;
         };
@@ -9373,6 +9657,7 @@
                 };
                 // Tải thông tin hồ sơ, số dư, trạng thái nạp tiền VIP
                 await loadUserProfile(user.uid, user.email);
+                await loadAppliedJobs();
                 // Kích hoạt lắng nghe Realtime Notifications cho người dùng này (kèm kênh Global nếu đã nạp tiền hoặc Admin)
                 listenRealtimeNotifications(user.email);
               } else {
@@ -9817,6 +10102,12 @@
           saveUserProfile,
           isViewingMyOwnProfile,
           viewingUserProfile,
+          profileTab,
+          appliedJobsList,
+          openProfileWithTab,
+          removeAppliedJob,
+          openAppliedJobDetail,
+          formatAppliedTime,
           isFriend,
           toggleFriend,
           removeFriend,
