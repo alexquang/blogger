@@ -917,12 +917,12 @@
                   <!-- Thông tin giá & giờ mở cửa góc dưới ảnh -->
                   <div class='absolute bottom-3 left-3 right-3 flex items-end justify-between text-white'>
                     <div>
-                      <span class='text-[10px] uppercase font-bold text-amber-300 tracking-wider block'>{{ card.subprice || "Tây Ninh" }}</span>
-                      <span class='text-lg font-black text-white drop-shadow'>{{ card.price }}</span>
+                      <span class='text-[10px] uppercase font-bold text-amber-300 tracking-wider block'>{{ getPostSubprice(card) || "Tây Ninh" }}</span>
+                      <span class='text-lg font-black text-white drop-shadow'>{{ getPostPrice(card) }}</span>
                     </div>
                     <span class='px-2.5 py-1 bg-white/20 hover:bg-white/30 backdrop-blur-md text-xs font-bold border border-white/30 transition flex items-center gap-1'>
                       <i class='fa-regular fa-clock text-[10px]'></i>
-                      <span>{{ card.foodHours || "Mở cả ngày" }}</span>
+                      <span>{{ getPostHours(card) }}</span>
                     </span>
                   </div>
                 </div>
@@ -931,18 +931,18 @@
                 <div class='p-4 space-y-3'>
                   <!-- Tên địa điểm -->
                   <h3 class='text-base font-black text-[#161513] group-hover:text-[#C74634] transition line-clamp-1 cursor-pointer leading-snug' v-on:click='openFoodDetailPage(card)'>
-                    {{ card.title }}
+                    {{ getPostTitle(card) }}
                   </h3>
 
                   <!-- Địa chỉ -->
                   <p class='text-xs text-slate-600 flex items-center gap-1.5 line-clamp-1'>
                     <i class='fa-solid fa-location-dot text-[#C74634] shrink-0 text-xs'></i>
-                    <span>{{ card.subtitle || card.location || "Tây Ninh" }}</span>
+                    <span>{{ getPostLocation(card) }}</span>
                   </p>
 
                   <!-- Đoạn mô tả ngắn -->
                   <p class='text-xs text-slate-500 line-clamp-2 leading-relaxed'>
-                    {{ card.description }}
+                    {{ getPostDescription(card) }}
                   </p>
 
                   <!-- Tags tiện ích nổi bật -->
@@ -1058,10 +1058,10 @@
             <!-- 2. Post Title & Excerpt -->
             <div class='px-3.5 pt-2 pb-1 cursor-pointer' v-on:click='openDetailModal(card)'>
               <h3 class='font-bold text-sm text-[#161513] hover:text-[#C74634] transition line-clamp-1 mb-1'>
-                {{ card.title }}
+                {{ getPostTitle(card) }}
               </h3>
               <p class='text-xs text-slate-600 line-clamp-2 leading-relaxed'>
-                {{ card.description || card.subtitle }}
+                {{ getPostDescription(card) }}
               </p>
             </div>
 
@@ -1071,7 +1071,7 @@
               
               <!-- Badge giá nổi bật -->
               <span class='absolute bottom-3 left-3 px-2.5 py-1 text-xs font-black bg-[#161513] text-white shadow-sm flex items-center gap-1.5'>
-                <span class='text-amber-400'>{{ card.price }}</span>
+                <span class='text-amber-400'>{{ getPostPrice(card) }}</span>
               </span>
 
               <span class='absolute top-3 right-3 px-2 py-0.5 text-[10px] font-bold bg-white/90 text-[#161513] shadow-sm'>
@@ -1085,16 +1085,16 @@
                 <span class='w-4 h-4 rounded-full bg-[#C74634] text-white flex items-center justify-center text-[8px]'>
                   <i class='fa-solid fa-thumbs-up'></i>
                 </span>
-                <span class='font-medium text-slate-700'>{{ card.likesCount || 0 }} lượt thích</span>
+                <span class='font-medium text-slate-700'>{{ card.likesCount || 0 }} {{ t('likes') }}</span>
               </span>
               <div class='flex items-center gap-2'>
                 <span class='cursor-pointer hover:underline text-slate-600' v-on:click='openCommentDialog(card)'>
-                  {{ (card.comments &amp;&amp; card.comments.length) || 0 }} bình luận
+                  {{ (card.comments &amp;&amp; card.comments.length) || 0 }} {{ t('comments') }}
                 </span>
                 <span>•</span>
                 <span class='flex items-center gap-1 text-slate-500 font-medium'>
                   <i class='fa-regular fa-eye text-[11px] text-slate-400'></i>
-                  <span>{{ card.viewsCount || 0 }} lượt xem</span>
+                  <span>{{ card.viewsCount || 0 }} {{ t('views') }}</span>
                 </span>
               </div>
             </div>
@@ -1102,31 +1102,31 @@
             <!-- 5. LinkedIn Action Bar: Like, Comment, Share, Action Button -->
             <div class='px-2 py-1.5 flex items-center justify-between bg-[#FAF9F8] border-b border-[#E0DDD8]'>
               <button type='button' v-on:click.prevent='toggleLike(card)' 
-                      v-bind:class='card.likedByMe ? "text-[#C74634] font-bold" : "text-slate-600 hover:text-slate-900"' 
+                      v-bind:class='(card.likedByMe || isPostLiked(card.id)) ? "text-[#C74634] font-bold" : "text-slate-600 hover:text-slate-900"' 
                       class='flex-1 py-1.5 flex items-center justify-center gap-1.5 text-xs transition hover:bg-[#F1EFED]'>
-                <i v-bind:class='card.likedByMe ? "fa-solid fa-thumbs-up" : "fa-regular fa-thumbs-up"' class='text-sm'></i>
-                <span>{{ card.likedByMe ? 'Đã thích' : 'Thích' }}</span>
+                <i v-bind:class='(card.likedByMe || isPostLiked(card.id)) ? "fa-solid fa-thumbs-up text-[#C74634]" : "fa-regular fa-thumbs-up"' class='text-sm'></i>
+                <span>{{ (card.likedByMe || isPostLiked(card.id)) ? t('liked') : t('like') }}</span>
               </button>
               <button type='button' v-on:click.prevent='openCommentDialog(card)' 
                       class='flex-1 py-1.5 flex items-center justify-center gap-1.5 text-xs text-slate-600 hover:text-slate-900 transition hover:bg-[#F1EFED]'>
                 <i class='fa-regular fa-comment text-sm'></i>
-                <span>Bình luận</span>
+                <span>{{ t('comment') }}</span>
               </button>
               <button v-on:click='shareCard(card)' 
                       class='flex-1 py-1.5 flex items-center justify-center gap-1.5 text-xs text-slate-600 hover:text-slate-900 transition hover:bg-[#F1EFED]'>
                 <i class='fa-solid fa-share text-sm'></i>
-                <span>Chia sẻ</span>
+                <span>{{ t('share') }}</span>
               </button>
               
               <!-- Quick Action according to Category -->
               <button v-if='card.btnType === "apply"' v-on:click='openApplyModal(card)' class='px-3.5 py-1.5 bg-[#C74634] hover:bg-[#B13C2C] text-white font-bold text-xs shadow-sm transition ml-1 shrink-0'>
-                Ứng tuyển
+                {{ t('apply') }}
               </button>
               <button v-else-if='card.btnType === "call"' v-on:click='openCallModal(card)' class='px-3.5 py-1.5 bg-[#161513] hover:bg-black text-white font-bold text-xs shadow-sm transition ml-1 shrink-0'>
-                Gọi ngay
+                {{ t('callNow') }}
               </button>
               <button v-else='true' v-on:click='openDetailModal(card)' class='px-3.5 py-1.5 bg-[#161513] hover:bg-black text-white font-bold text-xs shadow-sm transition ml-1 shrink-0'>
-                Chi tiết
+                {{ t('details') }}
               </button>
             </div>
 
@@ -1684,7 +1684,7 @@
             <span class='text-slate-300'>/</span>
             <span class='text-slate-500 hidden sm:inline'>Ẩm thực &amp; Khách sạn Tây Ninh</span>
             <span class='text-slate-300 hidden sm:inline'>/</span>
-            <span class='font-bold text-[#C74634] truncate max-w-[200px] sm:max-w-[320px]'>{{ selectedFoodCard.title }}</span>
+            <span class='font-bold text-[#C74634] truncate max-w-[200px] sm:max-w-[320px]'>{{ getPostTitle(selectedFoodCard) }}</span>
           </div>
 
           <div class='flex items-center gap-2'>
@@ -2614,11 +2614,11 @@
             <div class='absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent'></div>
             <div class='absolute bottom-3 left-4 right-4 text-white flex items-end justify-between'>
               <div>
-                <span class='text-xs opacity-90 block'>{{ selectedDetailCard.location || "Tây Ninh" }}</span>
-                <span class='text-xl sm:text-2xl font-black text-amber-300 drop-shadow'>{{ selectedDetailCard.price }}</span>
+                <span class='text-xs opacity-90 block'>{{ getPostLocation(selectedDetailCard) }}</span>
+                <span class='text-xl sm:text-2xl font-black text-amber-300 drop-shadow'>{{ getPostPrice(selectedDetailCard) }}</span>
               </div>
               <span v-if='selectedDetailCard.subprice' class='text-xs bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-white font-medium'>
-                {{ selectedDetailCard.subprice }}
+                {{ getPostSubprice(selectedDetailCard) }}
               </span>
             </div>
           </div>
@@ -2626,12 +2626,12 @@
           <!-- Title & Subtitle / Location -->
           <div>
             <h2 class='text-lg sm:text-xl font-black text-slate-900 leading-snug mb-2'>
-              {{ selectedDetailCard.title }}
+              {{ getPostTitle(selectedDetailCard) }}
             </h2>
             <div class='flex flex-wrap items-center gap-3 text-xs text-slate-500'>
               <span class='flex items-center gap-1.5 text-slate-700 font-medium'>
                 <i class='fa-solid fa-location-dot text-[#C74634]'></i>
-                <span>{{ selectedDetailCard.subtitle || selectedDetailCard.location }}</span>
+                <span>{{ getPostLocation(selectedDetailCard) }}</span>
               </span>
               <span class='text-slate-300'>•</span>
               <span class='flex items-center gap-1.5'>
@@ -2649,15 +2649,15 @@
             </div>
             <div class='flex flex-col'>
               <span class='text-[10px] text-slate-400 font-medium uppercase'>Mức giá / Lương</span>
-              <span class='font-bold text-[#C74634] mt-0.5 truncate'>{{ selectedDetailCard.price }}</span>
+              <span class='font-bold text-[#C74634] mt-0.5 truncate'>{{ getPostPrice(selectedDetailCard) }}</span>
             </div>
             <div class='flex flex-col'>
               <span class='text-[10px] text-slate-400 font-medium uppercase'>Khu vực</span>
-              <span class='font-bold text-slate-800 mt-0.5 truncate'>{{ selectedDetailCard.location || "Tây Ninh" }}</span>
+              <span class='font-bold text-slate-800 mt-0.5 truncate'>{{ getPostLocation(selectedDetailCard) }}</span>
             </div>
             <div class='flex flex-col'>
               <span class='text-[10px] text-slate-400 font-medium uppercase'>Tình trạng</span>
-              <span class='font-bold text-slate-800 mt-0.5 truncate'>{{ selectedDetailCard.badge || "Còn tin" }}</span>
+              <span class='font-bold text-slate-800 mt-0.5 truncate'>{{ getPostBadge(selectedDetailCard) || "Còn tin" }}</span>
             </div>
           </div>
 
@@ -2669,8 +2669,8 @@
             </h5>
             <div class='grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs'>
               <div v-for='spec in selectedDetailCard.specs' v-bind:key='spec.label' class='bg-white p-2 border border-[#E0DDD8] flex flex-col'>
-                <span class='text-[10px] text-slate-400 font-medium'>{{ spec.label }}</span>
-                <span class='font-bold text-slate-800 mt-0.5'>{{ spec.val }}</span>
+                <span class='text-[10px] text-slate-400 font-medium'>{{ getSpecLabel(spec) }}</span>
+                <span class='font-bold text-slate-800 mt-0.5'>{{ getSpecValue(spec) }}</span>
               </div>
             </div>
           </div>
@@ -2692,20 +2692,20 @@
             <div class='p-3 bg-[#FAF9F8] border-b border-[#E0DDD8] flex items-center justify-between text-xs'>
               <div class='flex items-center gap-3'>
                 <button type='button' v-on:click.prevent='toggleLike(selectedDetailCard)' 
-                        v-bind:class='selectedDetailCard.likedByMe ? "text-[#C74634] font-bold" : "text-slate-700 hover:text-slate-900"' 
+                        v-bind:class='(selectedDetailCard.likedByMe || isPostLiked(selectedDetailCard.id)) ? "text-[#C74634] font-bold" : "text-slate-700 hover:text-slate-900"' 
                         class='px-3 py-1.5 bg-white border border-[#E0DDD8] flex items-center gap-1.5 transition'>
-                  <i v-bind:class='selectedDetailCard.likedByMe ? "fa-solid fa-thumbs-up text-[#C74634]" : "fa-regular fa-thumbs-up"' class='text-sm'></i>
-                  <span>{{ selectedDetailCard.likedByMe ? "Đã thích" : "Thích" }} ({{ selectedDetailCard.likesCount || 0 }})</span>
+                  <i v-bind:class='(selectedDetailCard.likedByMe || isPostLiked(selectedDetailCard.id)) ? "fa-solid fa-thumbs-up text-[#C74634]" : "fa-regular fa-thumbs-up"' class='text-sm'></i>
+                  <span>{{ (selectedDetailCard.likedByMe || isPostLiked(selectedDetailCard.id)) ? t('liked') : t('like') }} ({{ selectedDetailCard.likesCount || 0 }})</span>
                 </button>
                 <span class='text-slate-400'>•</span>
                 <span class='text-slate-600 font-medium flex items-center gap-1'>
                   <i class='fa-regular fa-comment text-slate-400'></i>
-                  <span>{{ (selectedDetailCard.comments &amp;&amp; selectedDetailCard.comments.length) || 0 }} bình luận</span>
+                  <span>{{ (selectedDetailCard.comments &amp;&amp; selectedDetailCard.comments.length) || 0 }} {{ t('comments') }}</span>
                 </span>
               </div>
               <div class='flex items-center gap-1.5 text-slate-500 font-medium'>
                 <i class='fa-regular fa-eye text-[#C74634]'></i>
-                <span>{{ selectedDetailCard.viewsCount || 0 }} lượt xem</span>
+                <span>{{ selectedDetailCard.viewsCount || 0 }} {{ t('views') }}</span>
               </div>
             </div>
 
@@ -2745,20 +2745,20 @@
                 <div class='flex-1 bg-white p-3 border border-[#E0DDD8]'>
                   <div class='flex items-center justify-between'>
                     <span class='font-bold text-[#161513] text-xs'>{{ cmt.authorName }}</span>
-                    <span class='text-[10px] text-slate-400'>{{ cmt.timeAgo }}</span>
+                    <span class='text-[10px] text-slate-400'>{{ getCommentTime(cmt) }}</span>
                   </div>
-                  <p class='text-slate-700 mt-1 text-xs leading-relaxed'>{{ cmt.text }}</p>
+                  <p class='text-slate-700 mt-1 text-xs leading-relaxed'>{{ getCommentText(cmt) }}</p>
                   
                   <!-- Comment Actions: Thích & Phản hồi -->
                   <div class='flex items-center gap-3 mt-2 pt-1.5 border-t border-[#F1EFED] text-[11px] text-slate-500 font-semibold'>
                     <button type='button' v-on:click.prevent='likeComment(cmt, selectedDetailCard)' class='hover:text-[#C74634] flex items-center gap-1 transition'>
                       <i class='fa-regular fa-thumbs-up'></i>
-                      <span>Thích ({{ cmt.likes || 0 }})</span>
+                      <span>{{ t("like") }} ({{ cmt.likes || 0 }})</span>
                     </button>
                     <span>•</span>
                     <button type='button' v-on:click.prevent='cmt.showReply = !cmt.showReply' class='hover:text-[#C74634] flex items-center gap-1 transition'>
                       <i class='fa-regular fa-comment-dots'></i>
-                      <span>Phản hồi ({{ (cmt.replies &amp;&amp; cmt.replies.length) || 0 }})</span>
+                      <span>{{ t("reply") || "Phản hồi" }} ({{ (cmt.replies &amp;&amp; cmt.replies.length) || 0 }})</span>
                     </button>
                   </div>
 
@@ -2767,9 +2767,9 @@
                     <div v-for='rep in cmt.replies' v-bind:key='rep.id' class='bg-[#F1EFED] p-2.5 border border-[#E0DDD8]'>
                       <div class='flex items-center justify-between'>
                         <span class='font-bold text-[11px] text-[#161513]'>{{ rep.authorName }}</span>
-                        <span class='text-[9px] text-slate-400'>{{ rep.timeAgo }}</span>
+                        <span class='text-[9px] text-slate-400'>{{ getCommentTime(rep) }}</span>
                       </div>
-                      <p class='text-[11px] text-slate-700 mt-0.5 leading-relaxed'>{{ rep.text }}</p>
+                      <p class='text-[11px] text-slate-700 mt-0.5 leading-relaxed'>{{ getCommentText(rep) }}</p>
                     </div>
                   </div>
 
@@ -2876,7 +2876,7 @@
                 </span>
               </h3>
               <p class='text-[10px] text-slate-500 line-clamp-1 max-w-[240px] sm:max-w-xs'>
-                {{ activeCommentCard.title || activeCommentCard.content }}
+                {{ getPostTitle(activeCommentCard) }}
               </p>
             </div>
           </div>
@@ -2899,9 +2899,9 @@
                 </span>
                 <span class='text-[10px] text-slate-400'>{{ activeCommentCard.timeAgo || 'Tây Ninh' }}</span>
               </div>
-              <h4 class='font-bold text-xs text-[#161513] truncate mt-0.5'>{{ activeCommentCard.title }}</h4>
+              <h4 class='font-bold text-xs text-[#161513] truncate mt-0.5'>{{ getPostTitle(activeCommentCard) }}</h4>
               <p class='text-[11px] text-[#C74634] font-semibold' v-if='activeCommentCard.price || activeCommentCard.salary'>
-                {{ activeCommentCard.price || activeCommentCard.salary }}
+                {{ getPostPrice(activeCommentCard) }}
               </p>
             </div>
           </div>
@@ -2922,20 +2922,20 @@
               <div class='flex-1 bg-white p-3 border border-[#E0DDD8]'>
                 <div class='flex items-center justify-between'>
                   <span class='font-bold text-[#161513] text-[11px]'>{{ cmt.authorName }}</span>
-                  <span class='text-[10px] text-slate-400'>{{ cmt.timeAgo }}</span>
+                  <span class='text-[10px] text-slate-400'>{{ getCommentTime(cmt) }}</span>
                 </div>
-                <p class='text-slate-700 mt-1 text-xs leading-relaxed'>{{ cmt.text }}</p>
+                <p class='text-slate-700 mt-1 text-xs leading-relaxed'>{{ getCommentText(cmt) }}</p>
 
                 <!-- Actions: Like + Reply -->
                 <div class='flex items-center gap-3 mt-2 pt-1.5 border-t border-[#F1EFED] text-[10px] text-slate-500 font-semibold'>
                   <button type='button' v-on:click.prevent='likeComment(cmt, activeCommentCard)' class='hover:text-[#C74634] flex items-center gap-1 transition'>
                     <i class='fa-regular fa-thumbs-up'></i>
-                    <span>Thích ({{ cmt.likes || 0 }})</span>
+                    <span>{{ t("like") }} ({{ cmt.likes || 0 }})</span>
                   </button>
                   <span>•</span>
                   <button type='button' v-on:click.prevent='cmt.showReply = !cmt.showReply' class='hover:text-[#C74634] flex items-center gap-1 transition'>
                     <i class='fa-regular fa-comment-dots'></i>
-                    <span>Phản hồi ({{ (cmt.replies &amp;&amp; cmt.replies.length) || 0 }})</span>
+                    <span>{{ t("reply") || "Phản hồi" }} ({{ (cmt.replies &amp;&amp; cmt.replies.length) || 0 }})</span>
                   </button>
                 </div>
 
@@ -2944,9 +2944,9 @@
                   <div v-for='rep in cmt.replies' v-bind:key='rep.id' class='bg-[#F1EFED] p-2 border border-[#E0DDD8]'>
                     <div class='flex items-center justify-between'>
                       <span class='font-bold text-[11px] text-[#161513]'>{{ rep.authorName }}</span>
-                      <span class='text-[9px] text-slate-400'>{{ rep.timeAgo }}</span>
+                      <span class='text-[9px] text-slate-400'>{{ getCommentTime(rep) }}</span>
                     </div>
-                    <p class='text-[11px] text-slate-700 mt-0.5'>{{ rep.text }}</p>
+                    <p class='text-[11px] text-slate-700 mt-0.5'>{{ getCommentText(rep) }}</p>
                   </div>
                 </div>
 
@@ -4626,6 +4626,9 @@
             apply: 'Ứng tuyển',
             callNow: 'Gọi ngay',
             details: 'Chi tiết',
+            reply: 'Phản hồi',
+            likeSuccess: 'Đã thích bài đăng!',
+            unlikeSuccess: 'Đã bỏ thích bài đăng',
             chat: 'Chat',
             addFriend: 'Kết bạn',
             alreadyFriend: 'Bạn bè',
@@ -4879,6 +4882,544 @@
             zh: '已切换为中文'
           };
           showToast(toastMsgs[lang] || 'Language updated', 'success');
+        };
+
+        // =========================================================================
+        // MULTILINGUAL ARTICLE TRANSLATION ENGINE (TỰ ĐỘNG CHUYỂN NGÔN NGỮ BÀI VIẾT)
+        // Hỗ trợ dịch toàn bộ Tiêu đề, Mô tả, Giá, Khu vực, Badge, Bình luận
+        // =========================================================================
+        const postTranslations = {
+          'Bán Đất Vườn Cây Ăn Trái Ven Hồ Dầu Tiếng Tây Ninh': {
+            en: {
+              title: 'Fruit Orchard Garden Land For Sale by Dau Tieng Lake, Tay Ninh',
+              desc: 'Area 1,000m2 with 100m2 residential land, direct car access. Actively harvesting Ri6 durian and green pomelo with regular yield.'
+            },
+            ko: {
+              title: '떠이닌 저우띠엥 호숫가 과수원 토지 매매',
+              desc: '총 면적 1,000m²(주거용 100m² 포함), 차량 진입 도로 접함. 현재 Ri6 두리안과 청자몽 정기 수확 중인 알짜 과수원 부지입니다.'
+            },
+            zh: {
+              title: '西宁油汀湖畔果园土地出售',
+              desc: '面积1000平米（含100平米住宅用地），汽车直达地块。园内种植Ri6榴莲及青皮柚，产量丰硕，收益稳定。'
+            }
+          },
+          'Cần Bán Nhà Phố 1 Trệt 1 Lầu Liền Kề KCN Trảng Bàng': {
+            en: {
+              title: 'Townhouse For Sale (1 Ground + 1 Floor) Near Trang Bang IP',
+              desc: 'Newly solidly built house: 3 bedrooms, 2 bathrooms, spacious living room. Only 500m from Trang Bang Industrial Park, ideal for living or rental investment.'
+            },
+            ko: {
+              title: '짱방 산업단지 인근 2층 타운하우스 급매',
+              desc: '신축 견고한 단독 타운하우스 (방 3개, 욕실 2개, 넓은 거실). 짱방 산업단지에서 500m 거리로 실거주 및 임대 수익용으로 매우 적합합니다.'
+            },
+            zh: {
+              title: '急售盏盘工业区旁两层联排别墅',
+              desc: '新建坚固两层楼房：3房2卫，宽敞客厅。距盏盘工业园区仅500米，自住或出租收益俱佳。'
+            }
+          },
+          'Bán Đất Nền Thổ Cư Sổ Sẵn View Núi Bà Đen Tuyệt Đẹp': {
+            en: {
+              title: 'Residential Land with Pink Book & Stunning Ba Den Mountain View',
+              desc: 'Area 5x25m (125m2) full residential land, 8m paved asphalt road with car turnaround. Direct view of Tay Bo Da Son Buddha Statue on Ba Den Mountain. Pink book ready for notarization.'
+            },
+            ko: {
+              title: '바덴산 전망 좋은 주거용 대지 매매 (소유권 증서 완비)',
+              desc: '면적 5x25m (125m²), 100% 주거용 대지, 8m 아스팔트 포장 도로(차량 회차 가능). 바덴산 정상 보타산 불상 조망, 즉시 공증 가능한 핑크북 보유.'
+            },
+            zh: {
+              title: '黑婆山绝佳景观住宅用地出售（红本现成）',
+              desc: '占地5x25米（125平米）纯住宅用地，8米宽沥青路可调头。正对黑婆山西补陀山佛像，景观绝美，红本现成即刻过户。'
+            }
+          },
+          'Bán Máy Cày Kubota L5018 Nhập Khẩu Đã Qua Sử Dụng': {
+            en: {
+              title: 'Used Imported Kubota L5018 Tractor For Sale',
+              desc: 'Imported Japanese Kubota L5018 tractor, good engine condition, hydraulic system working smoothly, complete with plow and harrow.'
+            },
+            ko: {
+              title: '중고 수입 구보다 L5018 트랙터 팝니다',
+              desc: '일본 직수입 구보다 L5018 트랙터, 엔진 및 유압 시스템 최상급 상태, 로터리 및 쟁기 풀세트 포함.'
+            },
+            zh: {
+              title: '出售二手进口久保田L5018拖拉机',
+              desc: '日本原装进口久保田L5018农用拖拉机，发动机动力强劲，液压系统完好，附带全套旋耕犁具。'
+            }
+          },
+          'Thanh Lý Xe Máy Honda SH 150i ABS Biển Số Tây Ninh': {
+            en: {
+              title: 'Honda SH 150i ABS Scooter Liquidation - Tay Ninh License Plate',
+              desc: 'Honda SH 150i ABS 2022 model, elegant grey color, 12,000km odometer, beautiful 70-Tay Ninh license plate, authentic single owner.'
+            },
+            ko: {
+              title: '혼다 SH 150i ABS 스쿠터 급처분 (떠이닌 번호판)',
+              desc: '2022년식 혼다 SH 150i ABS 스쿠터, 세련된 그레이 색상, 주행거리 12,000km, 70-떠이닌 골드 번호판, 1인 신조 무사고 차량.'
+            },
+            zh: {
+              title: '转让本田SH 150i ABS摩托车（西宁牌照）',
+              desc: '2022款本田SH 150i ABS踏板车，经典水泥灰，实表1.2万公里，70-西宁靓号车牌，一手车况精品。'
+            }
+          },
+          'Tuyển Dược Sĩ Bán Thuốc - TX. Hòa Thành Tây Ninh': {
+            en: {
+              title: 'Hiring Pharmacist - Hoa Thanh Town, Tay Ninh',
+              desc: 'Dispense medications at counter, consult customers and manage inventory. Requires intermediate pharmacy degree or higher, friendly, dynamic.'
+            },
+            ko: {
+              title: '약사 채용 - 떠이닌 화타인 타운',
+              desc: '처방전 조제 및 약국 카운터 복약 상담, 의약품 재고 관리. 약학 중급 이상 학위 소지자 우대, 친절하고 성실한 분 환영.'
+            },
+            zh: {
+              title: '招聘药剂师 - 西宁和城市镇',
+              desc: '负责药店柜台售药咨询及药品盘点管理。要求中专及以上药学专业，热情开朗、责任心强。'
+            }
+          },
+          'Tuyển Tài Xế Xe Tải Giao Hàng B2/C - Cửa Khẩu Mộc Bài': {
+            en: {
+              title: 'Hiring Delivery Truck Driver (License B2/C) - Moc Bai Border Gate',
+              desc: 'Drive delivery route between Moc Bai - HCMC and provincial warehouses. Requires B2/C driver license with 2+ years experience, honest and diligent.'
+            },
+            ko: {
+              title: '화물 배송 기사 채용 (면허 B2/C) - 목바이 국경 관문',
+              desc: '목바이 - 호치민 및 도내 물류 창고 간 화물 배송 운전. B2 또는 C종 운전면허 소지 및 경력 2년 이상, 성실하고 신중한 분 모집.'
+            },
+            zh: {
+              title: '招聘货车司机（B2/C驾照）- 木排口岸',
+              desc: '负责木排口岸至胡志明市及省内各仓储站点的物流货运配送。要求持有B2或C照满2年以上，诚信务实、稳重负责。'
+            }
+          },
+          'Tuyển Nhân Viên Kế Toán Tổng Hợp - TP. Tây Ninh': {
+            en: {
+              title: 'Hiring General Accountant - Tay Ninh City',
+              desc: 'Manage revenue and expense books, quarterly tax declarations, prepare financial reports. Full benefits and competitive salary.'
+            },
+            ko: {
+              title: '총괄 회계원 채용 - 떠이닌시',
+              desc: '수입/지출 전표 관리, 분기별 세무 신고, 재무제표 작성 및 결산 업무 총괄. 4대 보험 및 우수한 복리후생 제공.'
+            },
+            zh: {
+              title: '招聘总账会计 - 西宁市',
+              desc: '负责日常收支账务核算、季度税务申报及财务报表编制。待遇优厚，福利保障齐全。'
+            }
+          },
+          'Tuyển 50 Công Nhân May & Đóng Gói - KCN Phước Đông': {
+            en: {
+              title: 'Hiring 50 Garment & Packaging Workers - Phuoc Dong IP',
+              desc: 'Operate industrial sewing machines, fold and pack garments for export. High overtime pay, free daily lunch, full social insurance.'
+            },
+            ko: {
+              title: '봉제 및 포장 생산직 50명 모집 - 프억동 산업단지',
+              desc: '산업용 재봉기 조작, 의류 검품 및 수출 포장 작업. 높은 잔업 수당, 매일 점심 무료 제공, 4대 사회보험 전액 보장.'
+            },
+            zh: {
+              title: '招聘50名缝纫与包装普工 - 福东工业区',
+              desc: '操作工业平缝机、成衣整理质检及出口包装。加班费丰厚，免费工作午餐，社保齐全。'
+            }
+          },
+          'Tuyển Kỹ Sư Vận Hành Hệ Thống Điện - KCN Trảng Bàng': {
+            en: {
+              title: 'Hiring Electrical Operations Engineer - Trang Bang IP',
+              desc: 'Supervise substation transformers, three-phase distribution grids, maintain manufacturing line machinery.'
+            },
+            ko: {
+              title: '전기 시스템 운전 엔지니어 모집 - 짱방 산업단지',
+              desc: '변전소 변압기 및 3상 전력 배전망 운용 감독, 생산 라인 기계 설비 예방 정비 및 유지보수 관리.'
+            },
+            zh: {
+              title: '招聘电气系统运行工程师 - 盏盘工业区',
+              desc: '负责变电站变压器、三相配电网络运行监控及工厂生产线自动化机械设备的维保检修。'
+            }
+          },
+          'Tuyển 25 Kỹ Sư Cơ Điện & Vận Hành Máy Tự Động - KCN Phước Đông': {
+            en: {
+              title: 'Hiring 25 Electromechanical & Automation Engineers - Phuoc Dong IP',
+              desc: 'Setup and operate automated PLC production lines, diagnose mechanical and electrical machinery.'
+            },
+            ko: {
+              title: '기계전기 및 자동화 설비 엔지니어 25명 모집 - 프억동 산업단지',
+              desc: 'PLC 자동화 생산 라인 셋업 및 오퍼레이션, 기계 전기 장애 진단 및 정밀 유지보수.'
+            },
+            zh: {
+              title: '招聘25名机电与自动化设备工程师 - 福东工业区',
+              desc: '负责PLC自动化生产线的调试运行与维护，机械电气故障诊断排除。'
+            }
+          },
+          'Tuyển 60 Công Nhân May & Đóng Gói Xuất Khẩu - KCN Trảng Bàng': {
+            en: {
+              title: 'Hiring 60 Export Garment & Packing Workers - Trang Bang IP',
+              desc: 'Sew apparel, sort and package fashion garments for export. Clean air-conditioned workshops.'
+            },
+            ko: {
+              title: '수출 봉제 및 포장 근로자 60명 모집 - 짱방 산업단지',
+              desc: '의류 봉제, 검품 및 수출 의류 패키징 작업. 쾌적한 냉난방 실내 작업장 환경 제공.'
+            },
+            zh: {
+              title: '招聘60名出口服装与包装工人 - 盏盘工业区',
+              desc: '服装平车缝制、出口成衣分类与包装。车间中央空调恒温环境舒适。'
+            }
+          },
+          'Bò Tơ Tây Ninh Năm Sánh 17 - Đặc Sản Than Hồng Trứ Danh': {
+            en: {
+              title: 'Nam Sanh 17 Tay Ninh Veal - Renowned Charcoal Grilled Specialty',
+              desc: 'Nam Sanh 17 is a top culinary destination in Tay Ninh. Renowned for daily fresh tender veal grilled over fragrant glowing charcoal, wrapped with wild forest herbs and dew-wetted rice paper.'
+            },
+            ko: {
+              title: '남산 17 떠이닌 송아지 고기 - 참숯 구이 명물',
+              desc: '떠이닌 여행 시 꼭 들러야 할 대표 미식 명소. 매일 공급되는 신선하고 부드러운 송아지 고기를 참숯에 구워 떠이닌 야생 나물과 라이스페이퍼에 싸먹는 일품 요리입니다.'
+            },
+            zh: {
+              title: '南生17西宁嫩牛肉 - 炭火烧烤名吃',
+              desc: '南生17是探访西宁不可错过的顶级美食地标。精选当日新鲜鲜嫩小牛肉，炭火现烤外焦里嫩，搭配盏盘露水米纸及十余种天然森林野菜裹卷食用。'
+            }
+          },
+          'Bánh Canh Trảng Bàng Hoàng Ty - Gia Truyền Xứ Vượn Mây': {
+            en: {
+              title: 'Hoang Ty Trang Bang Thick Noodle Soup - Traditional Heritage',
+              desc: 'Hoang Ty noodle soup is a longstanding traditional culinary symbol of Tay Ninh. Silky noodles made from Nang Thom rice, paired with richly simmered marrow bone broth.'
+            },
+            ko: {
+              title: '황띠 짱방 반깐 (쌀국수) - 대대로 전해지는 전통 맛',
+              desc: '떠이닌 짱방 지역을 대표하는 유서 깊은 전통 반깐(쌀국수) 전문점. 낭텀 쌀로 정성스레 빻은 부드러운 면발과 오랜 시간 끓여낸 맑고 깊은 사골 육수가 일품입니다.'
+            },
+            zh: {
+              title: '皇芝盏盘粗米粉 - 传世地道风味',
+              desc: '皇芝盏盘粗米粉是西宁市经久不衰的传统饮食象征。纯手工磨制香米米粉筋道滑爽，配以熬制数小时的清甜大骨高汤，唇齿留香。'
+            }
+          },
+          'Khách Sạn 5 Sao Melia Vinpearl Tây Ninh - View Núi Bà Đen': {
+            en: {
+              title: '5-Star Melia Vinpearl Tay Ninh Hotel - Ba Den Mountain View',
+              desc: 'Soaring 21 stories in the heart of Tay Ninh City, Melia Vinpearl provides world-class luxury stays overlooking sacred Ba Den Mountain and Cao Dai Holy See.'
+            },
+            ko: {
+              title: '5성급 멜리아 빈펄 떠이닌 호텔 - 바덴산 전망',
+              desc: '떠이닌 시내 중심에 당당히 솟은 21층 럭셔리 호텔. 신성한 바덴산과 까오다이교 성당의 장엄한 전경을 한눈에 감상할 수 있는 최고급 호캉스 휴식처.'
+            },
+            zh: {
+              title: '五星级美利亚珍珠西宁酒店 - 黑婆山景观',
+              desc: '屹立于西宁市中心的21层地标性豪华酒店。坐拥圣山黑婆山与高台教圣殿的壮丽全景，提供国际一流奢华度假体验。'
+            }
+          },
+          'Quán Cơm Chay Tri Ân Long Hoa - Văn Hóa Ẩm Thực Chay Tây Ninh': {
+            en: {
+              title: 'Tri An Long Hoa Vegetarian Restaurant - Tay Ninh Vegetarian Culture',
+              desc: 'Located by Long Hoa Market, serving pure, exquisite vegetarian delicacies rooted in Cao Dai spiritual culture with natural fresh ingredients.'
+            },
+            ko: {
+              title: '찌안 롱호아 채식 식당 - 떠이닌 사찰 채식 문화',
+              desc: '롱호아 시장 인근에 위치하며, 까오다이교의 청정 채식 문화에 기반한 순수하고 다채로운 식물성 건강 요리를 선보입니다.'
+            },
+            zh: {
+              title: '知恩龙花素食餐厅 - 西宁素食文化',
+              desc: '紧邻龙花市场，依托高台教深厚的素食文化底蕴，采用纯天然新鲜食材制作精致健康素斋。'
+            }
+          }
+        };
+
+        const postPhraseMap = {
+          en: {
+            'Đặc sản trứ danh': 'Signature Specialty',
+            'Gia truyền Trảng Bàng': 'Trang Bang Heritage',
+            'Khách sạn 5 sao': '5-Star Luxury Hotel',
+            'Ẩm thực Chay Cao Đài': 'Cao Dai Vegetarian',
+            'Chính chủ': 'Direct Owner',
+            'Sổ hồng riêng': 'Pink Book Ready',
+            'Tuyển gấp': 'Urgent Hiring',
+            'Lương cao': 'High Salary',
+            'Việc làm KCN': 'Industrial Park Job',
+            'Văn phòng': 'Office Work',
+            'Y Dược': 'Pharmacy / Healthcare',
+            'Giá tốt': 'Best Value',
+            'View đẹp': 'Scenic View',
+            'Check-in View Núi': 'Mountain View Spot',
+            'Homestay View Núi Bà': 'Ba Den View Homestay',
+            'Bóc tách MXH': 'Social Network Feed',
+            'Tin mới': 'New Post',
+            'Còn tin': 'Available',
+            'TX. Trảng Bàng, Tây Ninh': 'Trang Bang Town, Tay Ninh',
+            'TX. Trảng Bàng': 'Trang Bang Town',
+            'TX. Hòa Thành, Tây Ninh': 'Hoa Thanh Town, Tay Ninh',
+            'TX. Hòa Thành': 'Hoa Thanh Town',
+            'TP. Tây Ninh, Tây Ninh': 'Tay Ninh City, Tay Ninh',
+            'TP. Tây Ninh': 'Tay Ninh City',
+            'Huyện Gò Dầu': 'Go Dau District',
+            'Huyện Dương Minh Châu': 'Duong Minh Chau District',
+            'Huyện Châu Thành': 'Chau Thanh District',
+            'Huyện Tân Biên': 'Tan Bien District',
+            'Huyện Tân Châu': 'Tan Chau District',
+            'Huyện Bến Cầu': 'Ben Cau District',
+            'KCN Phước Đông, Huyện Gò Dầu': 'Phuoc Dong IP, Go Dau',
+            'KCN Phước Đông': 'Phuoc Dong Industrial Park',
+            'KCN Trảng Bàng, TX. Trảng Bàng': 'Trang Bang IP, Trang Bang',
+            'KCN Trảng Bàng': 'Trang Bang Industrial Park',
+            'Khu Kinh Tế Cửa Khẩu Mộc Bài, Huyện Bến Cầu': 'Moc Bai Border Economic Zone, Ben Cau',
+            'Cửa Khẩu Mộc Bài': 'Moc Bai Border Gate',
+            'Núi Bà Đen': 'Ba Den Mountain',
+            'Hồ Dầu Tiếng': 'Dau Tieng Lake',
+            'Toàn tỉnh Tây Ninh': 'All Tay Ninh Province',
+            'Tây Ninh': 'Tay Ninh',
+            'Bài đăng rất rõ ràng và hữu ích cho bà con Tây Ninh. Đã liên hệ trực tiếp!': 'Very clear and helpful post for Tay Ninh residents. Have contacted directly!',
+            'Cảm ơn anh/chị đã quan tâm! Cần thêm thông tin gì xin cứ gọi hoặc nhắn Zalo nhé.': 'Thank you for your interest! Please feel free to call or Zalo for any further info.',
+            'xin giá ban oi': 'Please let me know the price!',
+            'xin giá bạn ơi': 'Please let me know the price!',
+            'ok w': 'OK, received.',
+            'Vừa xong': 'Just now',
+            'giờ trước': 'hours ago',
+            'ngày trước': 'days ago',
+            'phút trước': 'mins ago',
+            'Chuyên mục': 'Category',
+            'Mức giá / Lương': 'Price / Salary',
+            'Khu vực': 'Location',
+            'Tình trạng': 'Status',
+            'Diện tích': 'Area',
+            'Pháp lý': 'Legal Status',
+            'Vị trí': 'Position',
+            'Kinh nghiệm': 'Experience',
+            'Loại hợp đồng': 'Contract Type',
+            'triệu/tháng': 'million VND/mo',
+            'triệu': 'million VND',
+            'tỷ': 'billion VND',
+            'người': 'person',
+            'đêm': 'night',
+            'tô': 'bowl',
+            'phần': 'portion',
+            'lẩu': 'hotpot',
+            'Thỏa thuận': 'Negotiable',
+            'Phục vụ:': 'Hours:',
+            'Mở cả ngày': 'Open 24/7'
+          },
+          ko: {
+            'Đặc sản trứ danh': '대표 명물 요리',
+            'Gia truyền Trảng Bàng': '짱방 전통 비법',
+            'Khách sạn 5 sao': '5성급 럭셔리 호텔',
+            'Ẩm thực Chay Cao Đài': '까오다이 사찰 채식',
+            'Chính chủ': '직접 소유주',
+            'Sổ hồng riêng': '개별 핑크북 완비',
+            'Tuyển gấp': '긴급 채용',
+            'Lương cao': '고소득 보장',
+            'Việc làm KCN': '산업단지 일자리',
+            'Văn phòng': '사무직 채용',
+            'Y Dược': '의약 / 헬스케어',
+            'Giá tốt': '착한 가격',
+            'View đẹp': '특급 전망',
+            'Check-in View Núi': '마운틴 뷰 명소',
+            'Homestay View Núi Bà': '바덴산 뷰 홈스테이',
+            'Bóc tách MXH': 'SNS 실시간 피드',
+            'Tin mới': '새 소식',
+            'Còn tin': '거래 가능',
+            'TX. Trảng Bàng, Tây Ninh': '떠이닌 짱방 타운',
+            'TX. Trảng Bàng': '짱방 타운',
+            'TX. Hòa Thành, Tây Ninh': '떠이닌 화타인 타운',
+            'TX. Hòa Thành': '화타인 타운',
+            'TP. Tây Ninh, Tây Ninh': '떠이닌시',
+            'TP. Tây Ninh': '떠이닌시',
+            'Huyện Gò Dầu': '고저우현',
+            'Huyện Dương Minh Châu': '즈엉민쩌우현',
+            'Huyện Châu Thành': '쩌우타인현',
+            'Huyện Tân Biên': '떤비엔현',
+            'Huyện Tân Châu': '떤쩌우현',
+            'Huyện Bến Cầu': '벤꺼우현',
+            'KCN Phước Đông, Huyện Gò Dầu': '고저우현 프억동 산업단지',
+            'KCN Phước Đông': '프억동 산업단지',
+            'KCN Trảng Bàng, TX. Trảng Bàng': '짱방 타운 짱방 산업단지',
+            'KCN Trảng Bàng': '짱방 산업단지',
+            'Khu Kinh Tế Cửa Khẩu Mộc Bài, Huyện Bến Cầu': '벤꺼우현 목바이 국경 경제구역',
+            'Cửa Khẩu Mộc Bài': '목바이 국경 관문',
+            'Núi Bà Đen': '바덴산',
+            'Hồ Dầu Tiếng': '저우띠엥 호수',
+            'Toàn tỉnh Tây Ninh': '떠이닌성 전역',
+            'Tây Ninh': '떠이닌',
+            'Bài đăng rất rõ ràng và hữu ích cho bà con Tây Ninh. Đã liên hệ trực tiếp!': '떠이닌 주민들에게 매우 유익하고 상세한 게시물입니다. 직접 연락드렸습니다!',
+            'Cảm ơn anh/chị đã quan tâm! Cần thêm thông tin gì xin cứ gọi hoặc nhắn Zalo nhé.': '관심 가져주셔서 감사합니다! 추가 문의사항은 언제든 전화나 잘로(Zalo)로 연락주세요.',
+            'xin giá ban oi': '가격 문의드립니다!',
+            'xin giá bạn ơi': '가격 문의드립니다!',
+            'ok w': '확인했습니다.',
+            'Vừa xong': '방금 전',
+            'giờ trước': '시간 전',
+            'ngày trước': '일 전',
+            'phút trước': '분 전',
+            'Chuyên mục': '카테고리',
+            'Mức giá / Lương': '가격 / 급여',
+            'Khu vực': '지역',
+            'Tình trạng': '상태',
+            'Diện tích': '면적',
+            'Pháp lý': '권리관계',
+            'Vị trí': '직책',
+            'Kinh nghiệm': '경력',
+            'Loại hợp đồng': '고용 형태',
+            'triệu/tháng': '백만동/월',
+            'triệu': '백만동',
+            'tỷ': '십억동',
+            'người': '인',
+            'đêm': '박',
+            'tô': '그릇',
+            'phần': '인분',
+            'lẩu': '전골',
+            'Thỏa thuận': '협의 가능',
+            'Phục vụ:': '영업시간:',
+            'Mở cả ngày': '24시간 영업'
+          },
+          zh: {
+            'Đặc sản trứ danh': '西宁著名特产',
+            'Gia truyền Trảng Bàng': '盏盘祖传风味',
+            'Khách sạn 5 sao': '五星级豪华酒店',
+            'Ẩm thực Chay Cao Đài': '高台教禅意素斋',
+            'Chính chủ': '房东直售',
+            'Sổ hồng riêng': '独立红本现成',
+            'Tuyển gấp': '急聘',
+            'Lương cao': '高薪诚聘',
+            'Việc làm KCN': '工业园区直聘',
+            'Văn phòng': '白领办公',
+            'Y Dược': '医药健康',
+            'Giá tốt': '超值特价',
+            'View đẹp': '景观绝佳',
+            'Check-in View Núi': '网红山景打卡点',
+            'Homestay View Núi Bà': '黑婆山景精品民宿',
+            'Bóc tách MXH': '全网热点汇总',
+            'Tin mới': '最新发布',
+            'Còn tin': '有效在售',
+            'TX. Trảng Bàng, Tây Ninh': '西宁省盏盘市',
+            'TX. Trảng Bàng': '盏盘市',
+            'TX. Hòa Thành, Tây Ninh': '西宁省和城市',
+            'TX. Hòa Thành': '和城市',
+            'TP. Tây Ninh, Tây Ninh': '西宁省西宁市',
+            'TP. Tây Ninh': '西宁市',
+            'Huyện Gò Dầu': '鹅油县',
+            'Huyện Dương Minh Châu': '杨明珠县',
+            'Huyện Châu Thành': '周城县',
+            'Huyện Tân Biên': '新边县',
+            'Huyện Tân Châu': '新珠县',
+            'Huyện Bến Cầu': '合求县',
+            'KCN Phước Đông, Huyện Gò Dầu': '鹅油县福东工业园区',
+            'KCN Phước Đông': '福东工业区',
+            'KCN Trảng Bàng, TX. Trảng Bàng': '盏盘市盏盘工业园区',
+            'KCN Trảng Bàng': '盏盘工业区',
+            'Khu Kinh Tế Cửa Khẩu Mộc Bài, Huyện Bến Cầu': '合求县木排口岸经济区',
+            'Cửa Khẩu Mộc Bài': '木排口岸',
+            'Núi Bà Đen': '黑婆山',
+            'Hồ Dầu Tiếng': '油汀湖',
+            'Toàn tỉnh Tây Ninh': '全西宁省',
+            'Tây Ninh': '西宁',
+            'Bài đăng rất rõ ràng và hữu ích cho bà con Tây Ninh. Đã liên hệ trực tiếp!': '内容非常详尽实用，对西宁乡亲很有帮助。已经直接取得联系！',
+            'Cảm ơn anh/chị đã quan tâm! Cần thêm thông tin gì xin cứ gọi hoặc nhắn Zalo nhé.': '感谢您的关注与支持！如需了解更多详情，欢迎随时来电或添加Zalo咨询。',
+            'xin giá ban oi': '请问价格是多少？',
+            'xin giá bạn ơi': '请问价格是多少？',
+            'ok w': '收到，好的。',
+            'Vừa xong': '刚刚',
+            'giờ trước': '小时前',
+            'ngày trước': '天前',
+            'phút trước': '分钟前',
+            'Chuyên mục': '所属类别',
+            'Mức giá / Lương': '价格 / 薪酬',
+            'Khu vực': '所在区域',
+            'Tình trạng': '当前状态',
+            'Diện tích': '占地面积',
+            'Pháp lý': '产权性质',
+            'Vị trí': '招聘岗位',
+            'Kinh nghiệm': '工作经验',
+            'Loại hợp đồng': '合同类型',
+            'triệu/tháng': '百万盾/月',
+            'triệu': '百万盾',
+            'tỷ': '十亿盾',
+            'người': '人',
+            'đêm': '晚',
+            'tô': '碗',
+            'phần': '份',
+            'lẩu': '火锅',
+            'Thỏa thuận': '面议',
+            'Phục vụ:': '营业时间:',
+            'Mở cả ngày': '24小时营业'
+          }
+        };
+
+        const translateDynamicText = (text, lang) => {
+          if (!text || typeof text !== 'string' || lang === 'vi') return text;
+          const pMap = postPhraseMap[lang];
+          if (!pMap) return text;
+          if (pMap[text]) return pMap[text];
+          let result = text;
+          const keys = Object.keys(pMap).sort((a, b) => b.length - a.length);
+          for (const k of keys) {
+            if (result.indexOf(k) !== -1) {
+              result = result.split(k).join(pMap[k]);
+            }
+          }
+          return result;
+        };
+
+        const getPostTitle = (card) => {
+          if (!card) return '';
+          const lang = currentLang.value || 'vi';
+          if (lang === 'vi') return card.title || '';
+          if (card.title && postTranslations[card.title] && postTranslations[card.title][lang] && postTranslations[card.title][lang].title) {
+            return postTranslations[card.title][lang].title;
+          }
+          return translateDynamicText(card.title || '', lang);
+        };
+
+        const getPostDescription = (card) => {
+          if (!card) return '';
+          const lang = currentLang.value || 'vi';
+          const rawDesc = card.description || card.subtitle || '';
+          if (lang === 'vi') return rawDesc;
+          if (card.title && postTranslations[card.title] && postTranslations[card.title][lang] && postTranslations[card.title][lang].desc) {
+            return postTranslations[card.title][lang].desc;
+          }
+          return translateDynamicText(rawDesc, lang);
+        };
+
+        const getPostPrice = (card) => {
+          if (!card || !card.price) return '';
+          const lang = currentLang.value || 'vi';
+          return translateDynamicText(card.price, lang);
+        };
+
+        const getPostSubprice = (card) => {
+          if (!card || !card.subprice) return '';
+          const lang = currentLang.value || 'vi';
+          return translateDynamicText(card.subprice, lang);
+        };
+
+        const getPostLocation = (card) => {
+          if (!card) return 'Tây Ninh';
+          const lang = currentLang.value || 'vi';
+          const loc = card.subtitle || card.location || 'Tây Ninh';
+          return translateDynamicText(loc, lang);
+        };
+
+        const getPostBadge = (card) => {
+          if (!card || !card.badge) return '';
+          const lang = currentLang.value || 'vi';
+          return translateDynamicText(card.badge, lang);
+        };
+
+        const getPostHours = (card) => {
+          if (!card || !card.foodHours) return 'Mở cả ngày';
+          const lang = currentLang.value || 'vi';
+          return translateDynamicText(card.foodHours, lang);
+        };
+
+        const getSpecLabel = (spec) => {
+          if (!spec || !spec.label) return '';
+          const lang = currentLang.value || 'vi';
+          return translateDynamicText(spec.label, lang);
+        };
+
+        const getSpecValue = (spec) => {
+          if (!spec || !spec.val) return '';
+          const lang = currentLang.value || 'vi';
+          return translateDynamicText(spec.val, lang);
+        };
+
+        const getCommentText = (cmt) => {
+          if (!cmt || !cmt.text) return '';
+          const lang = currentLang.value || 'vi';
+          return translateDynamicText(cmt.text, lang);
+        };
+
+        const getCommentTime = (cmt) => {
+          if (!cmt || !cmt.timeAgo) return '';
+          const lang = currentLang.value || 'vi';
+          return translateDynamicText(cmt.timeAgo, lang);
         };
 
         const activeTab = ref('feed');
@@ -5370,6 +5911,16 @@
         } catch(e) {}
         const bookmarks = ref(initialBookmarks);
 
+        // BỘ NHỚ LƯU TRỮ DANH SÁCH BÀI ĐÃ LIKE CỦA THIẾT BỊ / TÀI KHOẢN (KHÔNG BỊ MẤT KHI RELOAD)
+        let initialLikedPosts = [];
+        try {
+          const rawLiked = safeGetStorage('tnhub_liked_posts', '[]');
+          initialLikedPosts = JSON.parse(rawLiked);
+          if (!Array.isArray(initialLikedPosts)) initialLikedPosts = [];
+        } catch(e) { initialLikedPosts = []; }
+        const myLikedPosts = ref(initialLikedPosts);
+        const isPostLiked = (id) => !!(id && myLikedPosts.value.includes(id));
+
         const toasts = ref([]);
         const popup = ref({
           show: false,
@@ -5518,7 +6069,7 @@
             ...item,
             image: validImage,
             likesCount: typeof item.likesCount === 'number' ? item.likesCount : (parseInt(item.likesCount) || 12),
-            likedByMe: item.likedByMe || false,
+            likedByMe: isPostLiked(item.id) || !!item.likedByMe,
             viewsCount: typeof item.viewsCount === 'number' ? item.viewsCount : (parseInt(item.viewsCount) || 85),
             showComments: false,
             newCommentText: '',
@@ -6623,8 +7174,13 @@
 
         const getCardDescription = (card) => {
           if (!card) return '';
+          const lang = currentLang.value || 'vi';
           if (card.description && card.description.trim()) {
-            return card.description;
+            if (lang === 'vi') return card.description;
+            if (card.title && postTranslations[card.title] && postTranslations[card.title][lang] && postTranslations[card.title][lang].desc) {
+              return postTranslations[card.title][lang].desc;
+            }
+            return translateDynamicText(card.description, lang);
           }
           const title = card.title || '';
           const subtitle = card.subtitle || '';
@@ -6782,25 +7338,37 @@
 
         const toggleLike = (card) => {
           if (!card) return;
-          if (!currentUser.value || !currentUser.value.uid) {
-            showToast('Vui lòng đăng nhập Google để thích bài viết này.', 'warning');
-            loginGoogle();
-            return;
-          }
-          if (card.likedByMe) {
+          const cardId = card.id;
+          const currentlyLiked = card.likedByMe || isPostLiked(cardId);
+          if (currentlyLiked) {
             card.likedByMe = false;
             card.likesCount = Math.max(0, (card.likesCount || 1) - 1);
-            showToast('Đã bỏ thích bài đăng', 'info');
+            if (cardId) {
+              const idx = myLikedPosts.value.indexOf(cardId);
+              if (idx > -1) myLikedPosts.value.splice(idx, 1);
+            }
+            showToast(t('unlikeSuccess') || 'Đã bỏ thích bài đăng', 'info');
           } else {
             card.likedByMe = true;
             card.likesCount = (card.likesCount || 0) + 1;
-            showToast('Đã thích bài đăng!', 'success');
+            if (cardId && !myLikedPosts.value.includes(cardId)) {
+              myLikedPosts.value.push(cardId);
+            }
+            showToast(t('likeSuccess') || 'Đã thích bài đăng!', 'success');
           }
 
-          // Đồng bộ tức thì giữa Card ngoài feed và Modal chi tiết
+          try {
+            localStorage.setItem('tnhub_liked_posts', JSON.stringify(myLikedPosts.value));
+          } catch(e) {}
+
+          // Đồng bộ tức thì giữa Card ngoài feed, Modal chi tiết và Dialog bình luận
           if (selectedDetailCard.value && card.id && selectedDetailCard.value.id === card.id) {
             selectedDetailCard.value.likesCount = card.likesCount;
             selectedDetailCard.value.likedByMe = card.likedByMe;
+          }
+          if (activeCommentCard.value && card.id && activeCommentCard.value.id === card.id) {
+            activeCommentCard.value.likesCount = card.likesCount;
+            activeCommentCard.value.likedByMe = card.likedByMe;
           }
           const targetInCards = cards.value.find(c => c.id === card.id);
           if (targetInCards) {
@@ -8919,6 +9487,20 @@
           currentLang,
           switchLang,
           t,
+          myLikedPosts,
+          isPostLiked,
+          getPostTitle,
+          getPostDescription,
+          getPostPrice,
+          getPostSubprice,
+          getPostLocation,
+          getPostBadge,
+          getPostHours,
+          getSpecLabel,
+          getSpecValue,
+          getCommentText,
+          getCommentTime,
+          translateDynamicText,
           NO_IMAGE_PLACEHOLDER,
           NO_AVATAR_PLACEHOLDER,
           selectedFoodCard,
