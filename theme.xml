@@ -1061,14 +1061,13 @@
                   <i v-bind:class='isFriend(card.authorEmail) ? "fa-solid fa-user-check text-[#C74634]" : "fa-solid fa-user-plus text-slate-400"'></i>
                   <span class='whitespace-nowrap'>{{ isFriend(card.authorEmail) ? 'Bạn bè' : 'Kết bạn' }}</span>
                 </button>
-                <!-- Nút Chat Private 1-1 (User nạp tiền / Admin mở khóa) -->
-                <button v-if='currentUser &amp;&amp; !isMyPost(card)' 
+                <!-- Nút Chat Private 1-1 (Mở cho tất cả thành viên & khách) -->
+                <button v-if='!isMyPost(card)' 
                         type='button' 
                         v-on:click.stop='openPrivateChat(card)' 
-                        v-bind:class='(isAdmin || isFundedUser) ? "text-[#161513] hover:text-[#C74634] bg-slate-100 hover:bg-[#F1EFED]" : "text-slate-400 bg-slate-50 hover:bg-slate-100"' 
-                        class='h-7 px-2 text-[11px] font-semibold border border-[#E0DDD8] transition flex items-center gap-1 shrink-0 whitespace-nowrap shadow-xs' 
-                        v-bind:title='(isAdmin || isFundedUser) ? "Nhắn tin riêng tư 1-1" : "Mở khóa Chat 1-1 (Tài khoản VIP)"'>
-                  <i v-bind:class='(isAdmin || isFundedUser) ? "fa-regular fa-comment-dots text-[#C74634]" : "fa-solid fa-lock text-slate-400"' class='text-xs'></i>
+                        class='h-7 px-2 text-[11px] font-semibold border border-[#E0DDD8] transition flex items-center gap-1 shrink-0 whitespace-nowrap shadow-xs text-[#161513] hover:text-[#C74634] bg-white hover:bg-[#F1EFED]' 
+                        title='Nhắn tin riêng tư 1-1 với người đăng'>
+                  <i class='fa-regular fa-comment-dots text-[#C74634] text-xs'></i>
                   <span class='whitespace-nowrap'>Chat</span>
                 </button>
                 <button v-on:click.stop='toggleBookmark(card)' v-bind:class='isBookmarked(card.id) ? "text-[#C74634]" : "text-slate-400 hover:text-slate-700"' class='h-7 w-7 flex items-center justify-center transition shrink-0' title='Lưu bài viết'>
@@ -2407,15 +2406,19 @@
         </div>
 
         <!-- Messages List -->
-        <div class='flex-1 overflow-y-auto p-4 space-y-3 bg-[#F1EFED] custom-scroll'>
+        <div id='communityChatList' class='flex-1 overflow-y-auto p-4 space-y-3 bg-[#F1EFED] custom-scroll'>
           <div v-if='communityMessages.length === 0' class='text-center py-10 text-slate-400 text-xs'>
             Chưa có tin nhắn nào. Bạn hãy là người gửi tin nhắn đầu tiên!
           </div>
-          <div v-for='msg in communityMessages' v-bind:key='msg.id' class='bg-white p-3.5 border border-[#E0DDD8] shadow-sm'>
+          <div v-for='msg in communityMessages' v-bind:key='msg.id' 
+               v-bind:class='(msg.senderEmail === (currentUser ? currentUser.email : guestUser.email) || msg.senderId === (currentUser ? currentUser.uid : guestUser.uid)) ? "bg-red-50/50 border-[#C74634]/40" : "bg-white border-[#E0DDD8]"'
+               class='p-3.5 border shadow-sm transition'>
             <div class='flex items-center justify-between mb-1.5'>
               <span class='font-bold text-xs text-[#161513] flex items-center gap-1.5'>
-                <i class='fa-solid fa-circle-user text-[#C74634] text-sm'></i>
+                <i v-bind:class='msg.senderId &amp;&amp; msg.senderId.startsWith("guest_") ? "fa-regular fa-user text-amber-600" : "fa-solid fa-circle-user text-[#C74634]"' class='text-sm'></i>
                 <span>{{ msg.senderName || 'Thành viên Tây Ninh' }}</span>
+                <span v-if='msg.senderId &amp;&amp; msg.senderId.startsWith("guest_")' class='text-[9px] bg-amber-100 text-amber-800 font-semibold px-1 py-0.2'>Khách</span>
+                <span v-else='true' class='text-[9px] bg-emerald-100 text-emerald-800 font-semibold px-1 py-0.2'>Google</span>
               </span>
               <span class='text-[10px] text-slate-400 font-medium'>{{ formatTime(msg.createdAt) }}</span>
             </div>
@@ -2423,27 +2426,39 @@
           </div>
         </div>
 
-        <!-- Chat Input Footer -->
-        <div class='p-3.5 bg-white border-t border-[#E0DDD8]'>
-          <div v-if='currentUser &amp;&amp; currentUser.uid' class='flex gap-2'>
-            <input type='text' v-model='chatMessageInput' v-on:keyup.enter='sendCommunityMessage' placeholder='Nhập tin nhắn / thông báo gửi toàn cộng đồng...' class='flex-1 px-3 py-2 text-xs bg-[#F1EFED] border border-[#E0DDD8] outline-none focus:border-[#C74634]' />
-            <button v-on:click='sendCommunityMessage' class='px-4 py-2 bg-[#C74634] hover:bg-[#B13C2C] text-white font-bold text-xs shadow-sm transition'>
-              Gửi tin
+        <!-- Chat Input Footer (Mở tính năng gửi tin nhắn trực tiếp cho toàn bộ người dùng & khách) -->
+        <div class='p-3 bg-white border-t border-[#E0DDD8] flex flex-col gap-2'>
+          <!-- User Profile Bar -->
+          <div class='flex items-center justify-between text-[11px] text-slate-500'>
+            <div class='flex items-center gap-1.5 truncate'>
+              <span class='text-slate-400'>Gửi với tên:</span>
+              <span class='font-bold text-[#161513] truncate'>{{ currentUser ? (currentUser.displayName || currentUser.email) : guestUser.displayName }}</span>
+              <span v-if='currentUser' class='text-[9px] bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.2'>Google</span>
+              <span v-else='true' class='text-[9px] bg-amber-100 text-amber-800 font-bold px-1.5 py-0.2'>Khách</span>
+            </div>
+            <div class='flex items-center gap-2 shrink-0'>
+              <button v-if='!currentUser' type='button' v-on:click='changeGuestName' class='text-[10px] text-blue-600 hover:text-blue-800 underline font-semibold flex items-center gap-0.5' title='Đổi tên hiển thị'>
+                <i class='fa-solid fa-pen-to-square text-[9px]'></i>
+                <span>Đổi tên</span>
+              </button>
+              <button v-if='!currentUser' type='button' v-on:click='loginGoogle' class='text-[10px] text-slate-600 hover:text-[#C74634] font-semibold flex items-center gap-1' title='Đăng nhập tài khoản Google'>
+                <i class='fa-brands fa-google text-xs text-[#C74634]'></i>
+                <span>{{ t('login') }}</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Input Controls -->
+          <div class='flex items-center gap-2'>
+            <input type='text' id='communityChatInput' v-model='chatMessageInput' v-on:keydown.enter.prevent='sendCommunityMessage' placeholder='Nhập tin nhắn / thông báo cộng đồng Tây Ninh...' class='flex-1 px-3 py-2 text-xs bg-[#F1EFED] border border-[#E0DDD8] outline-none focus:border-[#C74634] focus:bg-white transition' />
+            <button type='button' v-on:click='sendCommunityMessage' class='px-4 py-2 bg-[#C74634] hover:bg-[#B13C2C] text-white font-bold text-xs shadow-sm transition flex items-center gap-1.5 shrink-0'>
+              <i class='fa-solid fa-paper-plane text-xs'></i>
+              <span>Gửi tin</span>
             </button>
           </div>
-          <div v-else='true' class='py-2 px-3 bg-[#FAF9F8] border border-[#E0DDD8] flex items-center justify-between gap-2'>
-            <span class='text-slate-600 text-xs flex items-center gap-1.5'>
-              <i class='fa-solid fa-lock text-slate-400'></i>
-              <span>{{ t('loginToChat') }}</span>
-            </span>
-            <button type='button' v-on:click='loginGoogle' class='px-3 py-1.5 bg-[#C74634] text-white font-bold text-xs shadow-sm transition flex items-center gap-1'>
-              <i class='fa-brands fa-google text-xs'></i>
-              <span>{{ t('login') }}</span>
-            </button>
-          </div>
-          <p class='text-[10px] text-slate-400 mt-2 flex items-center gap-1'>
-            <i class='fa-solid fa-bolt text-[#C74634]'></i>
-            <span>Realtime Firestore: Thông báo sẽ ngay lập tức phát âm thanh và hiển thị lên toàn bộ người dùng đang online.</span>
+          <p class='text-[10px] text-slate-400 flex items-center gap-1'>
+            <i class='fa-solid fa-bolt text-[#C74634] text-[9px]'></i>
+            <span>Realtime Firestore: Tin nhắn tức thì và hiển thị ngay cho toàn bộ thành viên đang online.</span>
           </p>
         </div>
       </div>
@@ -6238,6 +6253,28 @@
         const selectedItem = ref(null);
 
         const currentUser = ref(null);
+
+        // THÀNH VIÊN KHÁCH / GUEST PROFILE TỰ ĐỘNG LƯU LOCAL
+        const savedGuestUid = safeGetStorage('tnhub_guest_uid', 'guest_' + Math.random().toString(36).substring(2, 9));
+        safeSetStorage('tnhub_guest_uid', savedGuestUid);
+        const savedGuestName = safeGetStorage('tnhub_guest_name', 'Khách Tây Ninh #' + Math.floor(1000 + Math.random() * 9000));
+        safeSetStorage('tnhub_guest_name', savedGuestName);
+        const guestUser = ref({
+          uid: savedGuestUid,
+          displayName: savedGuestName,
+          email: '',
+          photoURL: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&q=80'
+        });
+
+        const changeGuestName = () => {
+          const current = guestUser.value.displayName;
+          const entered = prompt('Nhập tên hiển thị của bạn khi trò chuyện:', current);
+          if (entered && entered.trim()) {
+            guestUser.value.displayName = entered.trim();
+            safeSetStorage('tnhub_guest_name', entered.trim());
+            showToast('Đã đổi tên thành công: ' + entered.trim(), 'success');
+          }
+        };
         const isAdmin = computed(() => {
           return !!(
             currentUser.value && 
@@ -7093,6 +7130,12 @@
         const openChatDrawer = () => {
           showChatDrawer.value = true;
           unreadMessageCount.value = 0;
+          setTimeout(() => {
+            const box = document.getElementById('communityChatList');
+            if (box) box.scrollTop = box.scrollHeight;
+            const inp = document.getElementById('communityChatInput');
+            if (inp) inp.focus();
+          }, 150);
         };
 
         // HỆ THỐNG REALTIME NOTIFICATIONS (THÔNG BÁO THỜI GIAN THỰC)
@@ -7348,32 +7391,38 @@
         };
 
         const sendCommunityMessage = async () => {
-          if (!currentUser.value || !currentUser.value.uid) {
-            showToast('Vui lòng đăng nhập Google để gửi tin nhắn cộng đồng.', 'warning');
-            loginGoogle();
-            return;
-          }
           const text = chatMessageInput.value.trim();
           if (!text) return;
 
+          const sender = (currentUser.value && currentUser.value.uid) ? currentUser.value : guestUser.value;
           const newMsg = {
-            senderName: currentUser.value ? (currentUser.value.displayName || 'Thành viên Google') : 'Thành viên Tây Ninh',
-            senderEmail: currentUser.value ? currentUser.value.email : 'ptquang0968@gmail.com',
+            senderName: sender.displayName || 'Thành viên Tây Ninh',
+            senderEmail: sender.email || (sender.uid + '@guest.tnhub.vn'),
+            senderId: sender.uid || '',
+            senderAvatar: sender.photoURL || '',
             text: text,
             createdAt: new Date().toISOString()
           };
 
-          communityMessages.value.unshift({ id: 'msg_' + Date.now(), ...newMsg });
+          // Thêm tin nhắn ngay lập tức vào giao diện (Optimistic UI)
+          communityMessages.value.push({ id: 'msg_' + Date.now(), ...newMsg });
+
+          chatMessageInput.value = '';
+          playNotificationSound();
+
+          setTimeout(() => {
+            const box = document.getElementById('communityChatList');
+            if (box) box.scrollTop = box.scrollHeight;
+          }, 60);
 
           if (db) {
             try {
-              addDoc(collection(db, 'messages'), newMsg).catch(err => console.warn('Sync message:', err));
+              await addDoc(collection(db, 'messages'), newMsg);
             } catch (e) {
-              console.warn('Error sending message:', e);
+              console.warn('Lỗi gửi message Firestore:', e);
             }
           }
 
-          chatMessageInput.value = '';
           showToast('Đã gửi tin nhắn lên cộng đồng Tây Ninh!', 'success');
         };
 
@@ -9465,32 +9514,17 @@
         };
 
         const openPrivateChat = (target) => {
-          if (!currentUser.value) {
-            showToast('Vui lòng đăng nhập Google để sử dụng tính năng Chat!', 'warning');
-            loginGoogle();
-            return;
-          }
-          if (!isAdmin.value && !isFundedUser.value) {
-            showPopup(
-              'Mở Khóa Tính Năng Chat 1-1',
-              'Tính năng trò chuyện trực tiếp 1-1 trên TNHub chỉ dành cho tài khoản VIP đã nạp tiền. Nạp ngay chỉ từ 10.000đ (nhận 10 bài đăng) để mở khóa chat và kết nối khách hàng!',
-              'warning',
-              'Nạp tiền ngay (10.000đ)',
-              () => { openDepositModal(); },
-              true,
-              'Để sau'
-            );
-            return;
-          }
           if (!target) return;
+
+          const sender = (currentUser.value && currentUser.value.uid) ? currentUser.value : guestUser.value;
 
           // Hỗ trợ mọi loại target: card bài đăng, friend, user profile, notification
           const partnerEmail = (target.email || target.authorEmail || target.senderEmail || (target.rawTarget ? target.rawTarget.authorEmail : '') || '').toLowerCase().trim();
-          const partnerName = target.name || target.displayName || target.authorName || target.senderName || 'Thành viên Tây Ninh';
+          const partnerName = target.name || target.displayName || target.authorName || target.author || target.senderName || (partnerEmail ? partnerEmail.split('@')[0] : 'Người đăng');
           const partnerAvatar = target.avatar || target.photoURL || target.authorAvatar || target.senderAvatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&q=80';
-          const partnerId = partnerEmail || target.userId || target.uid || (target.id ? ('user_' + target.id) : 'partner');
+          const partnerId = partnerEmail || target.userId || target.uid || (target.id ? ('user_' + target.id) : 'partner_' + Date.now());
 
-          const myEmail = (currentUser.value.email || '').toLowerCase().trim();
+          const myEmail = (sender.email || sender.uid || '').toLowerCase().trim();
           if (myEmail && partnerEmail && myEmail === partnerEmail) {
             showToast('Đây là bài viết hoặc tài khoản của chính bạn. Không thể tự chat với mình!', 'info');
             return;
@@ -9503,7 +9537,7 @@
             avatar: partnerAvatar
           };
 
-          const chatId = getChatId(currentUser.value, activeChatPartner.value);
+          const chatId = getChatId(sender, activeChatPartner.value);
 
           privateMessages.value = [];
           showPrivateChat.value = true;
@@ -9526,7 +9560,7 @@
                 snapshot.forEach(d => {
                   const data = d.data();
                   const isMe = (myEmail && data.senderEmail && data.senderEmail.toLowerCase() === myEmail) ||
-                               (currentUser.value.uid && data.senderId === currentUser.value.uid);
+                               (sender.uid && data.senderId === sender.uid);
                   list.push({
                     id: d.id,
                     ...data,
@@ -9551,19 +9585,20 @@
 
         const sendPrivateMessage = async () => {
           const text = privateMessageInput.value.trim();
-          if (!text || !activeChatPartner.value || !currentUser.value) return;
+          if (!text || !activeChatPartner.value) return;
 
-          const myEmail = (currentUser.value.email || '').toLowerCase().trim();
+          const sender = (currentUser.value && currentUser.value.uid) ? currentUser.value : guestUser.value;
+          const myEmail = (sender.email || sender.uid || '').toLowerCase().trim();
           const partnerEmail = (activeChatPartner.value.email || '').toLowerCase().trim();
-          const chatId = getChatId(currentUser.value, activeChatPartner.value);
+          const chatId = getChatId(sender, activeChatPartner.value);
 
           const newMsg = {
             chatId: chatId,
-            senderId: currentUser.value.uid || '',
-            senderName: currentUser.value.displayName || 'Thành viên Tây Ninh',
+            senderId: sender.uid || '',
+            senderName: sender.displayName || 'Thành viên Tây Ninh',
             senderEmail: myEmail,
-            senderAvatar: currentUser.value.photoURL || '',
-            receiverId: activeChatPartner.value.id,
+            senderAvatar: sender.photoURL || '',
+            receiverId: activeChatPartner.value.id || '',
             receiverEmail: partnerEmail,
             receiverName: activeChatPartner.value.name,
             text: text,
@@ -9594,11 +9629,11 @@
               if (partnerEmail && partnerEmail !== myEmail) {
                 await addDoc(collection(db, 'notifications'), {
                   type: 'private_chat',
-                  title: 'Tin nhắn từ ' + (currentUser.value.displayName || 'Thành viên'),
+                  title: 'Tin nhắn từ ' + (sender.displayName || 'Thành viên'),
                   content: text,
-                  senderName: currentUser.value.displayName || 'Thành viên Tây Ninh',
+                  senderName: sender.displayName || 'Thành viên Tây Ninh',
                   senderEmail: myEmail,
-                  senderAvatar: currentUser.value.photoURL || '',
+                  senderAvatar: sender.photoURL || '',
                   receiverEmail: partnerEmail,
                   chatId: chatId,
                   read: false,
@@ -9775,10 +9810,14 @@
               onSnapshot(messagesRef, (snapshot) => {
                 const liveMsgs = [];
                 snapshot.forEach(d => liveMsgs.push({ id: d.id, ...d.data() }));
-                liveMsgs.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+                liveMsgs.sort((a, b) => (a.createdAt || '').localeCompare(b.createdAt || ''));
                 if (liveMsgs.length > 0) {
                   communityMessages.value = liveMsgs;
                 }
+                setTimeout(() => {
+                  const box = document.getElementById('communityChatList');
+                  if (box) box.scrollTop = box.scrollHeight;
+                }, 80);
 
                 if (initialMessagesDone) {
                   snapshot.docChanges().forEach(change => {
@@ -9981,6 +10020,8 @@
           submittingApply,
           selectedItem,
           currentUser,
+          guestUser,
+          changeGuestName,
           bookmarks,
           toasts,
           popup,
