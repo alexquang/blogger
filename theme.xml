@@ -1101,11 +1101,11 @@
 
             <!-- 5. LinkedIn Action Bar: Like, Comment, Share, Action Button -->
             <div class='px-2 py-1.5 flex items-center justify-between bg-[#FAF9F8] border-b border-[#E0DDD8]'>
-              <button type='button' v-on:click.prevent='toggleLike(card)' 
-                      v-bind:class='(card.likedByMe || isPostLiked(card.id)) ? "text-[#C74634] font-bold" : "text-slate-600 hover:text-slate-900"' 
-                      class='flex-1 py-1.5 flex items-center justify-center gap-1.5 text-xs transition hover:bg-[#F1EFED]'>
-                <i v-bind:class='(card.likedByMe || isPostLiked(card.id)) ? "fa-solid fa-thumbs-up text-[#C74634]" : "fa-regular fa-thumbs-up"' class='text-sm'></i>
-                <span>{{ (card.likedByMe || isPostLiked(card.id)) ? t('liked') : t('like') }}</span>
+              <button type='button' v-on:click.stop.prevent='toggleLike(card)' 
+                      v-bind:class='isPostLiked(card.id) ? "text-[#C74634] font-bold bg-[#C74634]/10 rounded-sm" : "text-slate-600 hover:text-slate-900 hover:bg-[#F1EFED]"' 
+                      class='flex-1 py-1.5 flex items-center justify-center gap-1.5 text-xs transition'>
+                <i v-bind:class='isPostLiked(card.id) ? "fa-solid fa-thumbs-up text-[#C74634]" : "fa-regular fa-thumbs-up"' class='text-sm'></i>
+                <span>{{ isPostLiked(card.id) ? t('liked') : t('like') }}</span>
               </button>
               <button type='button' v-on:click.prevent='openCommentDialog(card)' 
                       class='flex-1 py-1.5 flex items-center justify-center gap-1.5 text-xs text-slate-600 hover:text-slate-900 transition hover:bg-[#F1EFED]'>
@@ -2691,11 +2691,11 @@
             <!-- Social Bar Header: Stats & Actions -->
             <div class='p-3 bg-[#FAF9F8] border-b border-[#E0DDD8] flex items-center justify-between text-xs'>
               <div class='flex items-center gap-3'>
-                <button type='button' v-on:click.prevent='toggleLike(selectedDetailCard)' 
-                        v-bind:class='(selectedDetailCard.likedByMe || isPostLiked(selectedDetailCard.id)) ? "text-[#C74634] font-bold" : "text-slate-700 hover:text-slate-900"' 
-                        class='px-3 py-1.5 bg-white border border-[#E0DDD8] flex items-center gap-1.5 transition'>
-                  <i v-bind:class='(selectedDetailCard.likedByMe || isPostLiked(selectedDetailCard.id)) ? "fa-solid fa-thumbs-up text-[#C74634]" : "fa-regular fa-thumbs-up"' class='text-sm'></i>
-                  <span>{{ (selectedDetailCard.likedByMe || isPostLiked(selectedDetailCard.id)) ? t('liked') : t('like') }} ({{ selectedDetailCard.likesCount || 0 }})</span>
+                <button type='button' v-on:click.stop.prevent='toggleLike(selectedDetailCard)' 
+                        v-bind:class='isPostLiked(selectedDetailCard.id) ? "text-[#C74634] font-bold bg-[#C74634]/10 border-[#C74634]/30 rounded-sm" : "text-slate-700 hover:text-slate-900 bg-white border-[#E0DDD8]"' 
+                        class='px-3 py-1.5 border flex items-center gap-1.5 transition'>
+                  <i v-bind:class='isPostLiked(selectedDetailCard.id) ? "fa-solid fa-thumbs-up text-[#C74634]" : "fa-regular fa-thumbs-up"' class='text-sm'></i>
+                  <span>{{ isPostLiked(selectedDetailCard.id) ? t('liked') : t('like') }} ({{ selectedDetailCard.likesCount || 0 }})</span>
                 </button>
                 <span class='text-slate-400'>•</span>
                 <span class='text-slate-600 font-medium flex items-center gap-1'>
@@ -6069,7 +6069,7 @@
             ...item,
             image: validImage,
             likesCount: typeof item.likesCount === 'number' ? item.likesCount : (parseInt(item.likesCount) || 12),
-            likedByMe: isPostLiked(item.id) || !!item.likedByMe,
+            likedByMe: isPostLiked(item.id),
             viewsCount: typeof item.viewsCount === 'number' ? item.viewsCount : (parseInt(item.viewsCount) || 85),
             showComments: false,
             newCommentText: '',
@@ -7337,23 +7337,23 @@
         };
 
         const toggleLike = (card) => {
-          if (!card) return;
+          if (!card || !card.id) return;
           const cardId = card.id;
-          const currentlyLiked = card.likedByMe || isPostLiked(cardId);
+          const currentlyLiked = isPostLiked(cardId);
           if (currentlyLiked) {
+            // Đã like -> Bỏ like ngay lập tức
+            const idx = myLikedPosts.value.indexOf(cardId);
+            if (idx > -1) myLikedPosts.value.splice(idx, 1);
             card.likedByMe = false;
             card.likesCount = Math.max(0, (card.likesCount || 1) - 1);
-            if (cardId) {
-              const idx = myLikedPosts.value.indexOf(cardId);
-              if (idx > -1) myLikedPosts.value.splice(idx, 1);
-            }
             showToast(t('unlikeSuccess') || 'Đã bỏ thích bài đăng', 'info');
           } else {
-            card.likedByMe = true;
-            card.likesCount = (card.likesCount || 0) + 1;
-            if (cardId && !myLikedPosts.value.includes(cardId)) {
+            // Chưa like -> Like ngay lập tức chỉ với 1 click duy nhất
+            if (!myLikedPosts.value.includes(cardId)) {
               myLikedPosts.value.push(cardId);
             }
+            card.likedByMe = true;
+            card.likesCount = (card.likesCount || 0) + 1;
             showToast(t('likeSuccess') || 'Đã thích bài đăng!', 'success');
           }
 
@@ -8300,7 +8300,7 @@
             userId: currentUser.value ? currentUser.value.uid : '',
             createdAt: new Date().toISOString(),
             likesCount: 1,
-            likedByMe: true,
+            likedByMe: false,
             viewsCount: 1,
             showComments: false,
             newCommentText: '',
