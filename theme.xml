@@ -356,13 +356,13 @@
               <i class='fa-solid fa-gear text-[9px]'></i> {{ t('profileSettings') }}
             </button>
             <button v-on:click='logoutGoogle' class='text-[10px] text-rose-600 hover:underline font-semibold'>
-              Đăng xuất
+              {{ t('logout') }}
             </button>
           </div>
         </div>
         <div v-else='true' class='mb-2.5'>
-          <h5 class='font-bold text-[#161513] mb-0.5'>Tài khoản Google</h5>
-          <p class='text-[10px] text-slate-500 mb-2'>Đăng nhập để đăng tin lên Cổng thông tin TN Hub.</p>
+          <h5 class='font-bold text-[#161513] mb-0.5'>{{ t('googleAccount') }}</h5>
+          <p class='text-[10px] text-slate-500 mb-2'>{{ t('loginSubtitle') }}</p>
           <button v-on:click='loginGoogle' class='w-full py-1.5 px-2 bg-white border border-[#E0DDD8] text-slate-800 font-bold hover:bg-slate-100 flex items-center justify-center gap-1.5 shadow-sm transition mb-2'>
             <i class='fa-brands fa-google text-red-600 text-xs'></i>
             <span>{{ t('loginGoogle') }}</span>
@@ -499,16 +499,16 @@
               <!-- Notification Footer -->
               <div class='p-2 bg-white border-t border-[#E0DDD8] text-center'>
                 <button type='button' v-on:click='showNotificationDropdown = false' class='text-[11px] text-slate-500 hover:text-[#161513] font-semibold'>
-                  Đóng thông báo
+                  {{ t('close') }}
                 </button>
               </div>
             </div>
           </div>
 
           <!-- Nút Phòng Chat Cộng Đồng (Desktop Only) -->
-          <button v-on:click='openChatDrawer' class='hidden md:flex relative px-3 py-1.5 bg-white border border-[#E0DDD8] items-center gap-1.5 text-xs text-slate-700 hover:bg-[#F1EFED] shadow-sm transition' title='Phòng Chat Cộng Đồng Tây Ninh'>
+          <button v-on:click='openChatDrawer' class='hidden md:flex relative px-3 py-1.5 bg-white border border-[#E0DDD8] items-center gap-1.5 text-xs text-slate-700 hover:bg-[#F1EFED] shadow-sm transition' v-bind:title="t('chatRoom')">
             <i class='fa-regular fa-comments text-xs text-[#C74634]'></i>
-            <span class='font-semibold'>Phòng Chat</span>
+            <span class='font-semibold'>{{ t('chatRoom') }}</span>
             <span v-if='unreadMessageCount > 0' class='bg-[#C74634] text-white text-[10px] font-bold px-1.5 py-0.2'>{{ unreadMessageCount }}</span>
           </button>
 
@@ -516,18 +516,18 @@
           <button type='button' 
                   v-on:click='openLotteryModal' 
                   class='hidden md:flex relative px-3 py-1.5 bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-900 font-bold text-xs items-center gap-1.5 shadow-sm transition' 
-                  title='Xem trực tiếp kết quả Xổ Số Kiến Thiết Tây Ninh &amp; 3 Miền'>
+                  v-bind:title="t('lottery')">
             <i class='fa-solid fa-ticket text-amber-600 text-xs'></i>
-            <span>Xổ số kiến thiết</span>
+            <span>{{ t('lottery') }}</span>
             <span class='bg-amber-600 text-white text-[9px] font-black px-1.5 py-0.2 uppercase'>Live</span>
           </button>
 
           <!-- Button Google Login / Profile -->
           <div v-if='currentUser &amp;&amp; currentUser.uid' class='flex items-center gap-1.5'>
-            <button v-on:click='openProfileModal' class='inline-flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-1.5 bg-[#F1EFED] hover:bg-[#E0DDD8] border border-[#E0DDD8] text-xs font-semibold text-slate-800 shadow-xs transition' title='Xem và chỉnh sửa hồ sơ trang cá nhân'>
+            <button v-on:click='openProfileModal' class='inline-flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-1.5 bg-[#F1EFED] hover:bg-[#E0DDD8] border border-[#E0DDD8] text-xs font-semibold text-slate-800 shadow-xs transition' v-bind:title="t('viewProfile')">
               <img v-if='currentUser.photoURL' v-bind:src='currentUser.photoURL' class='w-5 h-5 object-cover shrink-0' />
               <i v-else='true' class='fa-regular fa-user text-xs'></i>
-              <span class='hidden sm:inline'>{{ currentUser.displayName ? currentUser.displayName.split(' ')[0] : 'Tài khoản' }}</span>
+              <span class='hidden sm:inline'>{{ currentUser.displayName ? currentUser.displayName.split(' ')[0] : t('account') }}</span>
               <span v-if='isAdmin' class='hidden sm:inline ml-1 px-1.5 py-0.2 bg-[#C74634] text-white text-[9px] font-black uppercase tracking-wider'>Admin</span>
               <span v-else-if='isFundedUser' class='hidden sm:inline ml-1 px-1.5 py-0.2 bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 text-[9px] font-black uppercase tracking-wider shadow-xs'>⭐ VIP</span>
             </button>
@@ -536,19 +536,19 @@
               <span>Crawler Hub</span>
               <span class='bg-rose-600 text-white text-[9px] font-black px-1 py-0.2 uppercase'>Bot</span>
             </button>
-            <button v-on:click='showFriendsModal = true' class='hidden sm:flex px-2.5 py-1.5 bg-white hover:bg-[#F1EFED] border border-[#E0DDD8] text-xs font-medium text-slate-700 shadow-sm transition items-center gap-1.5' title='Danh sách bạn bè Tây Ninh'>
+            <button v-on:click='showFriendsModal = true' class='hidden sm:flex px-2.5 py-1.5 bg-white hover:bg-[#F1EFED] border border-[#E0DDD8] text-xs font-medium text-slate-700 shadow-sm transition items-center gap-1.5' v-bind:title="t('friends')">
               <i class='fa-solid fa-user-group text-slate-500 text-xs'></i>
-              <span>Bạn bè</span>
+              <span>{{ t('friends') }}</span>
               <span v-if='friendsList.length > 0' class='bg-[#C74634] text-white text-[10px] font-bold px-1.5 py-0.2'>{{ friendsList.length }}</span>
             </button>
-            <button v-on:click='logoutGoogle' class='px-2 py-1 sm:py-1.5 bg-white border border-[#E0DDD8] text-slate-500 hover:text-rose-600 text-xs transition' title='Đăng xuất'>
+            <button v-on:click='logoutGoogle' class='px-2 py-1 sm:py-1.5 bg-white border border-[#E0DDD8] text-slate-500 hover:text-rose-600 text-xs transition' v-bind:title="t('logout')">
               <i class='fa-solid fa-arrow-right-from-bracket'></i>
             </button>
           </div>
           <button v-else='true' v-on:click='loginGoogle' class='inline-flex items-center gap-1 px-2.5 sm:px-3.5 py-1 sm:py-1.5 bg-[#C74634] hover:bg-[#B13C2C] text-xs font-bold text-white shadow-xs transition'>
             <i class='fa-brands fa-google text-xs'></i>
             <span class='hidden sm:inline'>{{ t('loginGoogle') }}</span>
-            <span class='sm:hidden text-[11px]'>Đăng nhập</span>
+            <span class='sm:hidden text-[11px]'>{{ t('login') }}</span>
           </button>
         </div>
       </div>
@@ -573,11 +573,11 @@
       <div class='hidden md:flex items-center gap-6 border-b border-[#E0DDD8] pt-1 pb-2.5 text-xs font-bold uppercase tracking-wide overflow-x-auto custom-scroll'>
         <button v-on:click='activeTab = "feed"' v-bind:class='activeTab === "feed" ? "text-[#C74634] border-b-2 border-[#C74634] pb-2 -mb-2.5 font-black" : "text-slate-500 hover:text-slate-900 pb-2 transition"' class='flex items-center gap-2 shrink-0'>
           <i class='fa-solid fa-newspaper text-xs'></i>
-          <span>Tất cả tin đăng ({{ totalFilteredCount }})</span>
+          <span>{{ t('allPosts') }} ({{ totalFilteredCount }})</span>
         </button>
         <button v-on:click='activeTab = "video"' v-bind:class='activeTab === "video" ? "text-[#C74634] border-b-2 border-[#C74634] pb-2 -mb-2.5 font-black" : "text-slate-500 hover:text-slate-900 pb-2 transition"' class='flex items-center gap-2 shrink-0'>
           <i class='fa-brands fa-youtube text-red-600 text-sm'></i>
-          <span>Video Tây Ninh ({{ tayNinhVideos.length }})</span>
+          <span>{{ t('videoTN') }} ({{ tayNinhVideos.length }})</span>
           <span class='bg-red-100 text-red-700 text-[9px] px-1 py-0.2 font-black'>YOUTUBE</span>
         </button>
         <button v-on:click='setCategory("amthuc"); activeTab = "feed"' v-bind:class='activeCategory === "amthuc" &amp;&amp; activeTab === "feed" ? "text-[#C74634] border-b-2 border-[#C74634] pb-2 -mb-2.5 font-black" : "text-slate-500 hover:text-slate-900 pb-2 transition"' class='flex items-center gap-2 shrink-0'>
@@ -660,11 +660,11 @@
 
           <!-- View Mode Buttons -->
           <div class='flex items-center gap-0.5 bg-white p-0.5 border border-[#E0DDD8] shadow-xs shrink-0'>
-            <button v-on:click='viewMode = "grid"' v-bind:class='viewMode === "grid" ? "bg-[#161513] text-white font-bold" : "text-slate-500 hover:text-slate-800"' class='px-2.5 py-1 text-xs flex items-center justify-center transition' title='Lưới'>
+            <button v-on:click='viewMode = "grid"' v-bind:class='viewMode === "grid" ? "bg-[#161513] text-white font-bold" : "text-slate-500 hover:text-slate-800"' class='px-2.5 py-1 text-xs flex items-center justify-center transition' v-bind:title="t('grid')">
               <i class='fa-solid fa-table-cells-large text-[11px]'></i>
               <span class='hidden sm:inline ml-1'>{{ t('grid') }}</span>
             </button>
-            <button v-on:click='viewMode = "map"' v-bind:class='viewMode === "map" ? "bg-[#161513] text-white font-bold" : "text-slate-500 hover:text-slate-800"' class='px-2.5 py-1 text-xs flex items-center justify-center transition' title='Bản đồ'>
+            <button v-on:click='viewMode = "map"' v-bind:class='viewMode === "map" ? "bg-[#161513] text-white font-bold" : "text-slate-500 hover:text-slate-800"' class='px-2.5 py-1 text-xs flex items-center justify-center transition' v-bind:title="t('map')">
               <i class='fa-solid fa-map-location-dot text-[11px]'></i>
               <span class='hidden sm:inline ml-1'>{{ t('map') }}</span>
             </button>
@@ -2362,11 +2362,11 @@
           <div v-else='true' class='py-2 px-3 bg-[#FAF9F8] border border-[#E0DDD8] flex items-center justify-between gap-2'>
             <span class='text-slate-600 text-xs flex items-center gap-1.5'>
               <i class='fa-solid fa-lock text-slate-400'></i>
-              <span>Đăng nhập để gửi tin nhắn lên cộng đồng</span>
+              <span>{{ t('loginToChat') }}</span>
             </span>
             <button type='button' v-on:click='loginGoogle' class='px-3 py-1.5 bg-[#C74634] text-white font-bold text-xs shadow-sm transition flex items-center gap-1'>
               <i class='fa-brands fa-google text-xs'></i>
-              <span>Đăng nhập</span>
+              <span>{{ t('login') }}</span>
             </button>
           </div>
           <p class='text-[10px] text-slate-400 mt-2 flex items-center gap-1'>
@@ -2993,11 +2993,11 @@
           <div v-else='true' class='py-2 px-3 bg-[#FAF9F8] border border-[#E0DDD8] flex items-center justify-between gap-3'>
             <span class='text-slate-600 text-xs flex items-center gap-1.5'>
               <i class='fa-solid fa-lock text-slate-400'></i>
-              <span>Vui lòng đăng nhập Google để tham gia bình luận</span>
+              <span>{{ t('loginToComment') }}</span>
             </span>
             <button type='button' v-on:click='loginGoogle' class='px-3 py-1.5 bg-[#C74634] hover:bg-[#B13C2C] text-white font-bold text-xs shadow-sm transition flex items-center gap-1.5 shrink-0'>
               <i class='fa-brands fa-google'></i>
-              <span>Đăng nhập Google</span>
+              <span>{{ t('loginGoogle') }}</span>
             </button>
           </div>
         </div>
@@ -3200,7 +3200,7 @@
           <div v-if='isViewingMyOwnProfile' class='absolute top-3 left-3 flex items-center gap-1.5'>
             <button type='button' v-on:click='showCoverPresets = !showCoverPresets' class='px-2.5 py-1 bg-black/60 hover:bg-black text-white font-bold text-[11px] backdrop-blur-sm transition flex items-center gap-1 shadow'>
               <i class='fa-solid fa-camera'></i>
-              <span>Đổi ảnh bìa Tây Ninh</span>
+              <span>{{ t('changeCover') }}</span>
             </button>
           </div>
 
@@ -3212,7 +3212,7 @@
               <!-- Nút đổi avatar chỉ khi là chính mình -->
               <button v-if='isViewingMyOwnProfile' type='button' v-on:click='showAvatarPresets = !showAvatarPresets' class='absolute inset-0 bg-black/50 text-white flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition text-[10px] font-bold'>
                 <i class='fa-solid fa-camera mb-0.5'></i>
-                <span>Đổi ảnh</span>
+                <span>{{ t('changeAvatar') }}</span>
               </button>
             </div>
             <div class='text-white drop-shadow-md mb-1 min-w-0 flex-1'>
@@ -3513,12 +3513,12 @@
 
           <div class='flex items-center gap-2'>
             <button type='button' v-on:click='showProfileModal = false' class='px-4 py-2 bg-white border border-[#E0DDD8] hover:bg-slate-100 text-slate-700 font-bold text-xs transition'>
-              Đóng
+              {{ t('close') }}
             </button>
             <button v-if='isViewingMyOwnProfile' type='button' v-on:click='saveUserProfile' v-bind:disabled='isSavingProfile' class='px-4 py-2 bg-[#C74634] hover:bg-[#B13C2C] text-white font-bold text-xs shadow-sm transition flex items-center gap-1.5'>
               <i v-if='isSavingProfile' class='fa-solid fa-circle-notch fa-spin'></i>
               <i v-else='true' class='fa-solid fa-floppy-disk'></i>
-              <span>{{ isSavingProfile ? 'Đang lưu...' : 'Lưu hồ sơ' }}</span>
+              <span>{{ isSavingProfile ? (t('saving') || 'Saving...') : t('saveProfile') }}</span>
             </button>
           </div>
         </div>
@@ -4464,20 +4464,20 @@
         <i class='fa-brands fa-youtube text-base mb-0.5' v-bind:class='activeTab === "video" ? "text-red-600" : "text-slate-400"'></i>
         <span class='text-[10px] font-bold'>Video</span>
       </button>
-      <button type='button' v-on:click='openPostModal' class='flex flex-col items-center justify-center -mt-4 px-2 py-1 transition group' title='Đăng tin'>
+      <button type='button' v-on:click='openPostModal' class='flex flex-col items-center justify-center -mt-4 px-2 py-1 transition group' v-bind:title="t('postNew')">
         <div class='w-11 h-11 bg-[#C74634] group-hover:bg-[#B13C2C] text-white flex items-center justify-center shadow-lg border-2 border-white transition transform active:scale-95'>
           <i class='fa-solid fa-plus text-lg'></i>
         </div>
-        <span class='text-[9px] font-bold text-[#C74634] mt-0.5'>Đăng tin</span>
+        <span class='text-[9px] font-bold text-[#C74634] mt-0.5'>{{ t('postNew') }}</span>
       </button>
-      <button type='button' v-on:click='openLotteryModal' class='flex flex-col items-center justify-center flex-1 py-1 text-slate-500 hover:text-slate-800 transition'>
+      <button type='button' v-on:click='openLotteryModal' class='flex flex-col items-center justify-center flex-1 py-1 text-slate-500 hover:text-slate-800 transition' v-bind:title="t('lottery')">
         <i class='fa-solid fa-ticket text-base text-amber-600 mb-0.5'></i>
-        <span class='text-[10px] font-bold'>Xổ số</span>
+        <span class='text-[10px] font-bold'>{{ t('lottery') }}</span>
       </button>
       <button type='button' v-on:click='currentUser ? openProfileModal() : loginGoogle()' class='flex flex-col items-center justify-center flex-1 py-1 text-slate-500 hover:text-slate-800 transition relative'>
         <img v-if='currentUser &amp;&amp; currentUser.photoURL' v-bind:src='currentUser.photoURL' class='w-5 h-5 object-cover border border-[#E0DDD8] mb-0.5' />
         <i v-else='true' class='fa-regular fa-user text-base text-slate-400 mb-0.5'></i>
-        <span class='text-[10px] font-bold'>{{ currentUser ? 'Cá nhân' : 'Tài khoản' }}</span>
+        <span class='text-[10px] font-bold'>{{ currentUser ? t('account') : t('login') }}</span>
         <span v-if='unreadNotificationCount > 0' class='absolute top-1 right-4 w-2 h-2 bg-[#C74634] rounded-full'></span>
       </button>
     </nav>
@@ -4670,7 +4670,15 @@
             privateChatTitle: 'Cuộc trò chuyện riêng tư',
             typeMessage: 'Nhập tin nhắn riêng...',
             send: 'Gửi',
-            onlineTN: 'Trực tuyến Tây Ninh'
+            onlineTN: 'Trực tuyến Tây Ninh',
+            chatRoom: 'Phòng Chat',
+            googleAccount: 'Tài khoản Google',
+            loginSubtitle: 'Đăng nhập để đăng tin lên Cổng thông tin TN Hub.',
+            login: 'Đăng nhập',
+            loginToComment: 'Vui lòng đăng nhập Google để tham gia bình luận',
+            loginToChat: 'Đăng nhập để gửi tin nhắn lên cộng đồng',
+            logoutSuccess: 'Đã đăng xuất Google thành công.',
+            saving: 'Đang lưu...'
           },
           en: {
             home: 'Home',
@@ -4762,7 +4770,15 @@
             privateChatTitle: 'Private Chat',
             typeMessage: 'Type a private message...',
             send: 'Send',
-            onlineTN: 'Tay Ninh Online'
+            onlineTN: 'Tay Ninh Online',
+            chatRoom: 'Chat Room',
+            googleAccount: 'Google Account',
+            loginSubtitle: 'Sign in to post listings on TN Hub.',
+            login: 'Sign in',
+            loginToComment: 'Please sign in with Google to join comments',
+            loginToChat: 'Sign in to send messages to the community',
+            logoutSuccess: 'Signed out successfully.',
+            saving: 'Saving...'
           },
           ko: {
             home: '홈',
@@ -4854,7 +4870,15 @@
             privateChatTitle: '1:1 비밀 대화',
             typeMessage: '메시지를 입력하세요...',
             send: '전송',
-            onlineTN: '타이닌 실시간 접속'
+            onlineTN: '타이닌 실시간 접속',
+            chatRoom: '대화방',
+            googleAccount: 'Google 계정',
+            loginSubtitle: 'TN Hub에 글을 등록하려면 로그인하세요.',
+            login: '로그인',
+            loginToComment: '댓글을 작성하려면 Google 계정으로 로그인하세요',
+            loginToChat: '커뮤니티에 메시지를 보내려면 로그인하세요',
+            logoutSuccess: '성공적으로 로그아웃되었습니다.',
+            saving: '저장 중...'
           },
           zh: {
             home: '首页',
@@ -4946,7 +4970,15 @@
             privateChatTitle: '私信对话',
             typeMessage: '输入私信内容...',
             send: '发送',
-            onlineTN: '西宁在线'
+            onlineTN: '西宁在线',
+            chatRoom: '聊天室',
+            googleAccount: 'Google 账户',
+            loginSubtitle: '登录以在 TN Hub 发布信息。',
+            login: '登录',
+            loginToComment: '请登录 Google 账户以参与评论',
+            loginToChat: '登录后即可向社区发送消息',
+            logoutSuccess: '已成功退出登录。',
+            saving: '保存中...'
           }
         };
 
@@ -8575,7 +8607,7 @@
           try {
             if (auth) await signOut(auth);
             currentUser.value = null;
-            showToast('Đã đăng xuất Google thành công.', 'info');
+            showToast(t('logoutSuccess'), 'info');
           } catch (e) {
             console.warn('Signout err:', e);
           }
