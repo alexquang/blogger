@@ -2824,7 +2824,7 @@
                   <!-- Comment Actions: Thích & Phản hồi -->
                   <div class='flex items-center gap-3 mt-2 pt-1.5 border-t border-[#F1EFED] text-[11px] text-slate-500 font-semibold'>
                     <button type='button' v-on:click.stop.prevent='likeComment(cmt, selectedDetailCard)' 
-                            v-bind:class='(cmt.likedByMe || isCommentLiked(cmt.id)) ? "text-[#C74634] font-bold bg-[#C74634]/15 px-2 py-0.5 rounded" : "text-slate-500 hover:text-[#C74634] hover:bg-[#F1EFED] px-2 py-0.5 rounded"' 
+                            v-bind:class='(cmt.likedByMe || isCommentLiked(cmt.id)) ? "text-[#C74634] font-bold bg-red-50 border border-red-200 shadow-xs px-2 py-0.5 rounded" : "text-slate-500 hover:text-[#C74634] hover:bg-[#F1EFED] px-2 py-0.5 rounded"' 
                             class='flex items-center gap-1 transition text-[11px] font-semibold'>
                       <i v-bind:class='(cmt.likedByMe || isCommentLiked(cmt.id)) ? "fa-solid fa-thumbs-up text-[#C74634]" : "fa-regular fa-thumbs-up"'></i>
                       <span>{{ (cmt.likedByMe || isCommentLiked(cmt.id)) ? t("liked") : t("like") }} ({{ cmt.likes || 0 }})</span>
@@ -3003,7 +3003,7 @@
                 <!-- Actions: Like + Reply -->
                 <div class='flex items-center gap-3 mt-2 pt-1.5 border-t border-[#F1EFED] text-[10px] text-slate-500 font-semibold'>
                   <button type='button' v-on:click.stop.prevent='likeComment(cmt, activeCommentCard)' 
-                          v-bind:class='(cmt.likedByMe || isCommentLiked(cmt.id)) ? "text-[#C74634] font-bold bg-[#C74634]/15 px-2 py-0.5 rounded" : "text-slate-500 hover:text-[#C74634] hover:bg-[#F1EFED] px-2 py-0.5 rounded"' 
+                          v-bind:class='(cmt.likedByMe || isCommentLiked(cmt.id)) ? "text-[#C74634] font-bold bg-red-50 border border-red-200 shadow-xs px-2 py-0.5 rounded" : "text-slate-500 hover:text-[#C74634] hover:bg-[#F1EFED] px-2 py-0.5 rounded"' 
                           class='flex items-center gap-1 transition text-[10px] font-semibold'>
                     <i v-bind:class='(cmt.likedByMe || isCommentLiked(cmt.id)) ? "fa-solid fa-thumbs-up text-[#C74634]" : "fa-regular fa-thumbs-up"'></i>
                     <span>{{ (cmt.likedByMe || isCommentLiked(cmt.id)) ? t("liked") : t("like") }} ({{ cmt.likes || 0 }})</span>
@@ -8275,6 +8275,8 @@
             comment.likes = (comment.likes || 0) + 1;
             showToast(t('likeSuccess') || 'Đã thích bình luận!', 'success');
           }
+          // Kích hoạt phản ứng tức thì cho Vue 3
+          myLikedComments.value = [...myLikedComments.value];
 
           try {
             localStorage.setItem('tnhub_liked_comments', JSON.stringify(myLikedComments.value));
