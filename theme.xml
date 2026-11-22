@@ -264,6 +264,14 @@
             </div>
             <span class='text-[9px] bg-amber-100 text-amber-800 px-2 py-0.5 font-bold uppercase shrink-0 whitespace-nowrap ml-2'>{{ t('lotterySubtitle') }}</span>
           </button>
+          <!-- Triển lãm Metaverse 3D Menu Item -->
+          <button v-on:click='activeTab = "metaverse"' v-bind:class='activeTab === "metaverse" ? "bg-[#F1EFED] text-[#C74634] font-bold border-l-2 border-[#C74634]" : "text-slate-700 hover:bg-[#F1EFED]"' class='w-full flex items-center justify-between px-3 py-2 transition text-xs'>
+            <div class='flex items-center gap-3 min-w-0'>
+              <i class='fa-solid fa-vr-cardboard text-purple-600 text-xs shrink-0 animate-pulse'></i>
+              <span class='whitespace-nowrap font-medium'>{{ t('metaverse') }}</span>
+            </div>
+            <span class='text-[9px] bg-purple-100 text-purple-700 px-2 py-0.5 font-bold uppercase shrink-0 whitespace-nowrap ml-2'>3D VR</span>
+          </button>
           <button v-on:click='activeCategory = "all"; activeTab = "feed"' class='w-full flex items-center gap-3 px-3 py-2 text-slate-700 hover:bg-[#F1EFED] transition'>
             <i class='fa-solid fa-bars text-slate-400 text-xs'></i>
             <span>{{ t('categories') }}</span>
@@ -589,6 +597,11 @@
           <i class='fa-solid fa-ticket text-amber-600 text-sm'></i>
           <span>{{ t('lottery') }}</span>
           <span class='bg-amber-100 text-amber-800 text-[9px] px-1.5 py-0.2 font-black'>TRỰC TIẾP</span>
+        </button>
+        <button v-on:click='activeTab = "metaverse"' v-bind:class='activeTab === "metaverse" ? "text-[#C74634] border-b-2 border-[#C74634] pb-2 -mb-2.5 font-black" : "text-slate-500 hover:text-slate-900 pb-2 transition"' class='flex items-center gap-2 shrink-0'>
+          <i class='fa-solid fa-cube text-purple-600 text-sm'></i>
+          <span>{{ t('metaverse') }}</span>
+          <span class='bg-purple-100 text-purple-700 text-[9px] px-1.5 py-0.2 font-black uppercase'>ONCYBER 3D</span>
         </button>
       </div>
 
@@ -1569,6 +1582,71 @@
         </div>
       </div> <!-- End 3C Xổ Số Section -->
 
+      <!-- 3E. TRIỂN LÃM METAVERSE 3D VIRTUAL GALLERY SECTION (ONCYBER.IO STYLE) -->
+      <div v-else-if='activeTab === "metaverse"' class='space-y-4'>
+        <!-- Banner Header -->
+        <div class='bg-white p-4 border border-[#E0DDD8] flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-sm'>
+          <div>
+            <div class='flex items-center gap-2'>
+              <span class='bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-[10px] font-black px-2.5 py-0.5 uppercase tracking-wider shadow-xs'>ONCYBER 3D</span>
+              <h2 class='text-sm sm:text-base font-black text-[#161513] uppercase flex items-center gap-2'>
+                <i class='fa-solid fa-cube text-purple-600'></i>
+                <span>{{ t('metaverseTitle') }}</span>
+              </h2>
+            </div>
+            <p class='text-xs text-[#655F58] mt-1 leading-relaxed'>
+              {{ t('metaverseDesc') }}
+            </p>
+          </div>
+          <div class='flex flex-wrap items-center gap-2 shrink-0'>
+            <a href='/p/metaverse.html' target='_blank' class='px-3.5 py-2 bg-white hover:bg-[#F1EFED] border border-[#E0DDD8] text-slate-800 text-xs font-bold transition flex items-center gap-1.5 shadow-xs'>
+              <i class='fa-solid fa-arrow-up-right-from-square text-xs text-purple-600'></i>
+              <span>{{ t('openInNewTab') }}</span>
+            </a>
+            <button type='button' v-on:click='toggleMetaverseFullscreen' class='px-3.5 py-2 bg-[#C74634] hover:bg-[#B13C2C] text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm'>
+              <i class='fa-solid fa-expand text-xs'></i>
+              <span>{{ t('fullscreen') }}</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Interactive 3D Metaverse Gallery Viewport Frame -->
+        <div id='metaverse-container' class='relative w-full h-[65vh] sm:h-[72vh] bg-[#0c0d14] border border-[#E0DDD8] shadow-lg overflow-hidden'>
+          <iframe id='metaverse-iframe' 
+                  src='/p/metaverse.html' 
+                  class='w-full h-full border-0'
+                  allow='fullscreen; accelerometer; gyroscope; magnetometer; xr-spatial-tracking'
+                  loading='eager'>
+          </iframe>
+        </div>
+
+        <!-- Controls Guide Card -->
+        <div class='bg-white p-3.5 border border-[#E0DDD8] text-xs shadow-xs'>
+          <div class='flex items-center gap-2 mb-2'>
+            <i class='fa-solid fa-gamepad text-[#C74634]'></i>
+            <h4 class='font-bold text-[#161513] uppercase tracking-wider text-[11px]'>Hướng Dẫn Điều Khiển Không Gian 3D</h4>
+          </div>
+          <div class='grid grid-cols-2 sm:grid-cols-4 gap-2 text-slate-600 text-[11px]'>
+            <div class='p-2 bg-[#FAF9F8] border border-[#E0DDD8] flex items-center gap-2'>
+              <span class='px-1.5 py-0.5 bg-white border border-slate-300 font-mono font-bold text-slate-900'>W A S D</span>
+              <span>Di chuyển trong phòng</span>
+            </div>
+            <div class='p-2 bg-[#FAF9F8] border border-[#E0DDD8] flex items-center gap-2'>
+              <span class='px-1.5 py-0.5 bg-white border border-slate-300 font-mono font-bold text-slate-900'>Chuột / Vuốt</span>
+              <span>Xoay góc nhìn 360°</span>
+            </div>
+            <div class='p-2 bg-[#FAF9F8] border border-[#E0DDD8] flex items-center gap-2'>
+              <span class='px-1.5 py-0.5 bg-white border border-slate-300 font-mono font-bold text-slate-900'>Click Tranh</span>
+              <span>Phóng to chi tiết tác phẩm</span>
+            </div>
+            <div class='p-2 bg-[#FAF9F8] border border-[#E0DDD8] flex items-center gap-2'>
+              <span class='px-1.5 py-0.5 bg-white border border-slate-300 font-mono font-bold text-slate-900'>Guided Tour</span>
+              <span>Bay tự động ngắm tranh</span>
+            </div>
+          </div>
+        </div>
+      </div> <!-- End 3E Metaverse Section -->
+
       <!-- 3D. TRANG CHI TIẾT RIÊNG CHO ẨM THỰC & KHÁCH SẠN (DEDICATED FULL-PAGE VIEW) -->
       
       <!-- 3D. TIN TỨC BÁO CHÍ 24H RSS SECTION (VNEXPRESS, THANH NIÊN, VIETNAMNET, TUỔI TRẺ) -->
@@ -2262,6 +2340,13 @@
               <span>{{ t('lottery') }}</span>
             </div>
             <span class='text-[9px] bg-amber-100 text-amber-800 px-1.5 py-0.2 font-bold uppercase'>Live</span>
+          </button>
+          <button v-on:click='activeTab = "metaverse"; showMobileMenu = false;' class='w-full flex items-center justify-between px-3 py-2.5 text-slate-700 hover:bg-[#F1EFED] transition'>
+            <div class='flex items-center gap-3'>
+              <i class='fa-solid fa-vr-cardboard text-purple-600'></i>
+              <span>{{ t('metaverse') }}</span>
+            </div>
+            <span class='text-[9px] bg-purple-100 text-purple-700 px-1.5 py-0.2 font-bold uppercase'>3D VR</span>
           </button>
           <!-- Nút Cài Đặt App Trên Mobile Drawer -->
           <button v-if='!isStandalone' v-on:click='triggerInstallApp(); showMobileMenu = false;' class='w-full flex items-center justify-between px-3 py-2.5 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 transition text-xs font-bold'>
@@ -4678,7 +4763,13 @@
             loginToComment: 'Vui lòng đăng nhập Google để tham gia bình luận',
             loginToChat: 'Đăng nhập để gửi tin nhắn lên cộng đồng',
             logoutSuccess: 'Đã đăng xuất Google thành công.',
-            saving: 'Đang lưu...'
+            saving: 'Đang lưu...',
+            metaverse: 'Metaverse 3D',
+            metaverseSubtitle: 'Không gian Ảo 3D',
+            metaverseTitle: 'Triển Lãm Không Gian Ảo 3D Metaverse',
+            metaverseDesc: 'Không gian nghệ thuật & triển lãm truyền thông 3D tương tác đa chiều phong cách Oncyber.',
+            fullscreen: 'Toàn màn hình',
+            openInNewTab: 'Mở trang riêng'
           },
           en: {
             home: 'Home',
@@ -4778,7 +4869,13 @@
             loginToComment: 'Please sign in with Google to join comments',
             loginToChat: 'Sign in to send messages to the community',
             logoutSuccess: 'Signed out successfully.',
-            saving: 'Saving...'
+            saving: 'Saving...',
+            metaverse: 'Metaverse 3D',
+            metaverseSubtitle: '3D Virtual Space',
+            metaverseTitle: '3D Metaverse Virtual Art Gallery',
+            metaverseDesc: 'Interactive 3D virtual art and media gallery inspired by Oncyber, powered by Three.js & WebGL.',
+            fullscreen: 'Fullscreen',
+            openInNewTab: 'Open in New Tab'
           },
           ko: {
             home: '홈',
@@ -4878,7 +4975,13 @@
             loginToComment: '댓글을 작성하려면 Google 계정으로 로그인하세요',
             loginToChat: '커뮤니티에 메시지를 보내려면 로그인하세요',
             logoutSuccess: '성공적으로 로그아웃되었습니다.',
-            saving: '저장 중...'
+            saving: '저장 중...',
+            metaverse: '메타버스 3D',
+            metaverseSubtitle: '3D 가상 공간',
+            metaverseTitle: '3D 메타버스 가상 미술관',
+            metaverseDesc: 'Oncyber 스타일의 몰입형 3D 인터랙티브 가상 갤러리.',
+            fullscreen: '전체 화면',
+            openInNewTab: '새 탭에서 열기'
           },
           zh: {
             home: '首页',
@@ -4978,7 +5081,13 @@
             loginToComment: '请登录 Google 账户以参与评论',
             loginToChat: '登录后即可向社区发送消息',
             logoutSuccess: '已成功退出登录。',
-            saving: '保存中...'
+            saving: '保存中...',
+            metaverse: '元宇宙 3D',
+            metaverseSubtitle: '3D 虚拟空间',
+            metaverseTitle: '元宇宙 3D 虚拟艺术展厅',
+            metaverseDesc: 'Oncyber 风格沉浸式 3D 互动艺术媒体展厅，支持 Three.js 与 WebGL。',
+            fullscreen: '全屏展示',
+            openInNewTab: '在新标签页打开'
           }
         };
 
@@ -9554,6 +9663,18 @@
           }
         } catch(e) {}
 
+        const toggleMetaverseFullscreen = () => {
+          const container = document.getElementById('metaverse-container');
+          if (!container) return;
+          if (!document.fullscreenElement) {
+            if (container.requestFullscreen) container.requestFullscreen();
+            else if (container.webkitRequestFullscreen) container.webkitRequestFullscreen();
+          } else {
+            if (document.exitFullscreen) document.exitFullscreen();
+            else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+          }
+        };
+
         return {
           displayLimit,
           activeDistrict,
@@ -9782,7 +9903,8 @@
           formatRssTime,
           filteredRssNews,
           openNewsTab,
-          fetchRssNews
+          fetchRssNews,
+          toggleMetaverseFullscreen
         };
       }
     }).mount('#app');
