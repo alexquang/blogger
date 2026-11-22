@@ -1,0 +1,2211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Metaverse 3D Virtual Art & Media Gallery | Oncyber Style</title>
+  <meta name="description" content="Production-ready 3D Metaverse Virtual Art & Media Gallery built with Three.js and Firebase, optimized for Google Blogger embedding." />
+
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <style>
+    /* CSS Reset & Blogger Overrides */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #0c0d12;
+      color: #f1f2f6;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      user-select: none;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Main Container (Blogger Embed Friendly: Default fixed full bleed or toggleable) */
+    #metaverse-wrapper {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      z-index: 999999; /* Ensure breakout when embedded in Blogger themes */
+      background: #090a0f;
+    }
+
+    #webgl-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      outline: none;
+      z-index: 0;
+    }
+
+    /* Glassmorphic UI Components */
+    .glass-panel {
+      background: rgba(15, 17, 24, 0.72);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      border-radius: 14px;
+      color: #fff;
+    }
+
+    .glass-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      color: #f3f4f6;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 8px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      font-family: inherit;
+      outline: none;
+    }
+
+    .glass-btn:hover {
+      background: rgba(255, 255, 255, 0.18);
+      border-color: rgba(255, 255, 255, 0.28);
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+
+    .glass-btn:active {
+      transform: translateY(0);
+    }
+
+    .glass-btn.primary {
+      background: linear-gradient(135deg, #C74634 0%, #e05340 100%);
+      border-color: rgba(255, 255, 255, 0.25);
+      color: #fff;
+      box-shadow: 0 4px 18px rgba(199, 70, 52, 0.35);
+    }
+
+    .glass-btn.primary:hover {
+      background: linear-gradient(135deg, #d84d3b 0%, #eb5b48 100%);
+      box-shadow: 0 6px 22px rgba(199, 70, 52, 0.5);
+    }
+
+    /* Top Navigation HUD */
+    #top-hud {
+      position: absolute;
+      top: 18px;
+      left: 20px;
+      right: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      pointer-events: none;
+      z-index: 20;
+    }
+
+    #top-hud > * {
+      pointer-events: auto;
+    }
+
+    .brand-badge {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 18px;
+    }
+
+    .brand-logo-glow {
+      width: 28px;
+      height: 28px;
+      background: linear-gradient(135deg, #C74634, #ff8c42);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: #fff;
+      box-shadow: 0 0 16px rgba(199, 70, 52, 0.6);
+    }
+
+    .brand-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      color: #fff;
+    }
+
+    .brand-subtitle {
+      font-size: 11px;
+      color: #9ca3af;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      background: #10b981;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #10b981;
+      animation: pulse-dot 2s infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Center Crosshair / Aim Reticle */
+    #crosshair {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 8px;
+      height: 8px;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.85);
+      border: 2px solid rgba(0, 0, 0, 0.4);
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 10;
+    }
+
+    #crosshair.hovering {
+      width: 24px;
+      height: 24px;
+      background: rgba(199, 70, 52, 0.25);
+      border: 2px solid #C74634;
+      box-shadow: 0 0 14px rgba(199, 70, 52, 0.8);
+    }
+
+    /* Floating Raycast Target Tooltip */
+    #artwork-tooltip {
+      position: absolute;
+      top: calc(50% + 22px);
+      left: 50%;
+      transform: translateX(-50%);
+      pointer-events: none;
+      padding: 8px 16px;
+      text-align: center;
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      z-index: 12;
+    }
+
+    #artwork-tooltip.visible {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    #artwork-tooltip .art-tt-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    #artwork-tooltip .art-tt-sub {
+      font-size: 11px;
+      color: #d1d5db;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    #artwork-tooltip .art-tt-key {
+      background: #C74634;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+
+    /* Start / Instructions Overlay */
+    #blocker {
+      position: absolute;
+      inset: 0;
+      background: rgba(8, 9, 13, 0.82);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 30;
+      transition: opacity 0.3s ease;
+    }
+
+    #instructions {
+      max-width: 480px;
+      width: 90%;
+      text-align: center;
+      padding: 36px 30px;
+    }
+
+    .intro-keys {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin: 24px 0 28px;
+    }
+
+    .key-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .key-capsule {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .key-label {
+      font-size: 11px;
+      color: #9ca3af;
+    }
+
+    /* Bottom Guided Tour & Quick Presets Bar */
+    #bottom-dock {
+      position: absolute;
+      bottom: 22px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      max-width: 95vw;
+      overflow-x: auto;
+      scrollbar-width: none;
+      z-index: 20;
+    }
+
+    #bottom-dock::-webkit-scrollbar {
+      display: none;
+    }
+
+    .preset-chip {
+      padding: 6px 14px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #e5e7eb;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .preset-chip:hover, .preset-chip.active {
+      background: #C74634;
+      border-color: #e05340;
+      color: #fff;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(199, 70, 52, 0.4);
+    }
+
+    /* Artwork Inspection Modal */
+    #artwork-modal {
+      position: absolute;
+      inset: 0;
+      background: rgba(5, 6, 9, 0.88);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+      padding: 24px;
+    }
+
+    #artwork-modal.active {
+      display: flex;
+      animation: modalFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .art-modal-card {
+      max-width: 900px;
+      width: 100%;
+      max-height: 85vh;
+      overflow-y: auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+      padding: 30px;
+      position: relative;
+    }
+
+    @media (max-width: 768px) {
+      .art-modal-card {
+        grid-template-columns: 1fr;
+        padding: 20px;
+        max-height: 90vh;
+      }
+    }
+
+    .art-modal-img-wrap {
+      width: 100%;
+      height: 100%;
+      min-height: 320px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .art-modal-img {
+      max-width: 100%;
+      max-height: 440px;
+      object-fit: contain;
+      border-radius: 6px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+    }
+
+    .art-modal-info {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .art-badge {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #C74634;
+      margin-bottom: 8px;
+    }
+
+    .art-modal-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 26px;
+      font-weight: 700;
+      line-height: 1.25;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+
+    .art-modal-artist {
+      font-size: 14px;
+      color: #9ca3af;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 18px;
+    }
+
+    .art-modal-desc {
+      font-size: 14px;
+      line-height: 1.6;
+      color: #d1d5db;
+      margin-bottom: 24px;
+      white-space: pre-line;
+    }
+
+    .art-modal-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .modal-close-btn {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .modal-close-btn:hover {
+      background: #C74634;
+      border-color: #C74634;
+      transform: rotate(90deg);
+    }
+
+    /* Customizer Studio Drawer */
+    #studio-drawer {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 420px;
+      max-width: 92vw;
+      z-index: 40;
+      transform: translateX(105%);
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      border-radius: 20px 0 0 20px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    #studio-drawer.open {
+      transform: translateX(0);
+    }
+
+    .drawer-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .drawer-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .drawer-tabs {
+      display: flex;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .drawer-tab {
+      flex: 1;
+      padding: 12px;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: #9ca3af;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s ease;
+    }
+
+    .drawer-tab.active {
+      color: #fff;
+      border-bottom-color: #C74634;
+      background: rgba(199, 70, 52, 0.08);
+    }
+
+    .drawer-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #d1d5db;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+      font-family: inherit;
+      font-size: 13px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: #C74634;
+      box-shadow: 0 0 0 3px rgba(199, 70, 52, 0.2);
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 70px;
+    }
+
+    .slot-selector-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .slot-btn {
+      padding: 8px 4px;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #d1d5db;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .slot-btn.active {
+      background: #C74634;
+      border-color: #e05340;
+      color: #fff;
+    }
+
+    .drawer-footer {
+      padding: 18px 24px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      gap: 12px;
+    }
+
+    /* Toast Notification */
+    #toast-msg {
+      position: absolute;
+      bottom: 84px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      opacity: 0;
+      pointer-events: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      background: rgba(16, 185, 129, 0.9);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 60;
+    }
+
+    #toast-msg.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Mobile Joystick Controls */
+    #mobile-controls {
+      display: none;
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 15;
+    }
+
+    @media (pointer: coarse) {
+      #mobile-controls {
+        display: block;
+      }
+    }
+
+    #touch-joystick-zone {
+      position: absolute;
+      bottom: 90px;
+      left: 30px;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      pointer-events: auto;
+      touch-action: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #touch-thumb {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(199, 70, 52, 0.85);
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      box-shadow: 0 4px 12px rgba(199, 70, 52, 0.5);
+      position: absolute;
+    }
+
+    #touch-look-zone {
+      position: absolute;
+      top: 80px;
+      bottom: 90px;
+      right: 0;
+      width: 55vw;
+      pointer-events: auto;
+      touch-action: none;
+    }
+  </style>
+
+  <!-- Import Maps for Three.js & Addons -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://esm.sh/three@0.160.0",
+      "three/addons/": "https://esm.sh/three@0.160.0/addons/"
+    }
+  }
+  </script>
+</head>
+<body>
+
+  <div id="metaverse-wrapper">
+    <!-- WebGL Canvas Container -->
+    <canvas id="webgl-canvas"></canvas>
+
+    <!-- Center Reticle / Crosshair for First-Person Inspection -->
+    <div id="crosshair"></div>
+
+    <!-- Floating Raycast Tooltip -->
+    <div id="artwork-tooltip" class="glass-panel">
+      <div class="art-tt-title" id="tt-title">Artwork Title</div>
+      <div class="art-tt-sub">
+        <span id="tt-artist">Artist Name</span>
+        <span class="art-tt-key">CLICK / [E]</span>
+      </div>
+    </div>
+
+    <!-- Top Navigation HUD -->
+    <div id="top-hud">
+      <div class="brand-badge glass-panel">
+        <div class="brand-logo-glow"><i class="fa-solid fa-cube"></i></div>
+        <div>
+          <div class="brand-title" id="ui-space-title">CyberArt Gallery</div>
+          <div class="brand-subtitle">
+            <span class="live-dot"></span>
+            <span id="ui-visitor-count">Metaverse 3D • Oncyber Edition</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="top-actions">
+        <!-- Audio Chime Toggle -->
+        <button type="button" class="glass-btn" id="btn-audio" title="Toggle Ambient Audio Experience">
+          <i class="fa-solid fa-volume-high" id="audio-icon"></i>
+        </button>
+
+        <!-- Fullscreen / Reset Viewport -->
+        <button type="button" class="glass-btn" id="btn-fullscreen" title="Toggle Fullscreen">
+          <i class="fa-solid fa-expand"></i>
+        </button>
+
+        <!-- Customize Space Button -->
+        <button type="button" class="glass-btn primary" id="btn-open-studio">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+          <span>Customize</span>
+        </button>
+
+        <!-- User / Firebase Auth Status Button -->
+        <button type="button" class="glass-btn" id="btn-auth">
+          <i class="fa-brands fa-google"></i>
+          <span id="auth-label">Sign In</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Bottom Guided Tour & Quick Presets Bar -->
+    <div id="bottom-dock" class="glass-panel">
+      <button type="button" class="preset-chip active" data-view="overview">
+        <i class="fa-solid fa-compass"></i> Overview
+      </button>
+      <button type="button" class="preset-chip" data-view="sculpture">
+        <i class="fa-solid fa-gem"></i> Centerpiece
+      </button>
+      <button type="button" class="preset-chip" data-view="slot-0">Slot 1</button>
+      <button type="button" class="preset-chip" data-view="slot-1">Slot 2</button>
+      <button type="button" class="preset-chip" data-view="slot-2">Slot 3</button>
+      <button type="button" class="preset-chip" data-view="slot-3">Slot 4</button>
+      <button type="button" class="preset-chip" data-view="slot-4">Slot 5</button>
+      <button type="button" class="preset-chip" data-view="slot-5">Slot 6</button>
+      <button type="button" class="preset-chip" data-view="slot-6">Slot 7</button>
+      <button type="button" class="preset-chip" data-view="slot-7">Slot 8</button>
+    </div>
+
+    <!-- Initial Welcome & Controls Instruction Overlay -->
+    <div id="blocker">
+      <div id="instructions" class="glass-panel">
+        <div class="brand-logo-glow" style="margin: 0 auto 16px; width: 44px; height: 44px; font-size: 20px;">
+          <i class="fa-solid fa-vr-cardboard"></i>
+        </div>
+        <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 700; margin-bottom: 8px;">
+          Virtual Art Gallery 3D
+        </h2>
+        <p style="font-size: 13px; color: #9ca3af; line-height: 1.5;">
+          Step inside a next-gen 3D virtual exhibition inspired by Oncyber. Explore digital artworks, inspect installations, and customize your metaverse space.
+        </p>
+
+        <div class="intro-keys">
+          <div class="key-group">
+            <span class="key-capsule">W A S D</span>
+            <span class="key-label">Walk Around</span>
+          </div>
+          <div class="key-group">
+            <span class="key-capsule"><i class="fa-solid fa-computer-mouse"></i> Look</span>
+            <span class="key-label">Free Mouse Look</span>
+          </div>
+          <div class="key-group">
+            <span class="key-capsule">Click / [E]</span>
+            <span class="key-label">Inspect Art</span>
+          </div>
+        </div>
+
+        <button type="button" class="glass-btn primary" id="btn-enter" style="padding: 12px 32px; font-size: 15px; width: 100%;">
+          <i class="fa-solid fa-person-walking"></i> Enter Gallery
+        </button>
+      </div>
+    </div>
+
+    <!-- Artwork Modal Overlay -->
+    <div id="artwork-modal">
+      <div class="art-modal-card glass-panel">
+        <button type="button" class="modal-close-btn" id="btn-close-modal" title="Close [ESC]">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <div class="art-modal-img-wrap">
+          <img id="modal-art-img" src="" alt="Artwork Preview" class="art-modal-img" />
+        </div>
+
+        <div class="art-modal-info">
+          <div>
+            <div class="art-badge" id="modal-art-badge">Frame Slot 1 • Digital Masterpiece</div>
+            <h3 class="art-modal-title" id="modal-art-title">Genesis of Cyberpunk</h3>
+            <div class="art-modal-artist">
+              <i class="fa-solid fa-circle-user" style="color: #C74634;"></i>
+              <span id="modal-art-artist">Artist: Alex Rivera</span>
+            </div>
+            <div class="art-modal-desc" id="modal-art-desc">
+              Detailed artwork overview and description rendered cleanly in high fidelity.
+            </div>
+          </div>
+
+          <div class="art-modal-actions">
+            <a id="modal-art-link" href="#" target="_blank" rel="noopener noreferrer" class="glass-btn primary">
+              <i class="fa-solid fa-arrow-up-right-from-square"></i> View on OpenSea / Web
+            </a>
+            <button type="button" class="glass-btn" id="modal-art-edit-btn">
+              <i class="fa-solid fa-pen-to-square"></i> Edit Slot
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Creator Studio Drawer -->
+    <div id="studio-drawer" class="glass-panel">
+      <div class="drawer-header">
+        <div class="drawer-title">
+          <i class="fa-solid fa-palette" style="color: #C74634;"></i>
+          <span>Creator Studio</span>
+        </div>
+        <button type="button" class="modal-close-btn" id="btn-close-drawer">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="drawer-tabs">
+        <div class="drawer-tab active" data-tab="artworks">Art Slots (1-8)</div>
+        <div class="drawer-tab" data-tab="environment">Environment</div>
+        <div class="drawer-tab" data-tab="firebase">Cloud Sync</div>
+      </div>
+
+      <div class="drawer-body">
+        <!-- Tab 1: Artworks Editor -->
+        <div id="tab-artworks" class="tab-content">
+          <div class="form-group" style="margin-bottom: 12px;">
+            <label class="form-label">Select Artwork Frame:</label>
+            <div class="slot-selector-bar">
+              <button type="button" class="slot-btn active" data-slot="0">Slot 1</button>
+              <button type="button" class="slot-btn" data-slot="1">Slot 2</button>
+              <button type="button" class="slot-btn" data-slot="2">Slot 3</button>
+              <button type="button" class="slot-btn" data-slot="3">Slot 4</button>
+              <button type="button" class="slot-btn" data-slot="4">Slot 5</button>
+              <button type="button" class="slot-btn" data-slot="5">Slot 6</button>
+              <button type="button" class="slot-btn" data-slot="6">Slot 7</button>
+              <button type="button" class="slot-btn" data-slot="7">Slot 8</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Artwork Title:</label>
+            <input type="text" id="slot-input-title" class="form-input" placeholder="e.g. Neon Odyssey #01" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Artist Name:</label>
+            <input type="text" id="slot-input-artist" class="form-input" placeholder="e.g. Elena Rostova" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              <span>Image URL:</span>
+              <button type="button" id="btn-regen-canvas" style="background:none; border:none; color:#C74634; font-size:11px; cursor:pointer;">Generate Procedural Art</button>
+            </label>
+            <input type="text" id="slot-input-url" class="form-input" placeholder="https://... (or leave blank for procedural)" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Description:</label>
+            <textarea id="slot-input-desc" class="form-textarea" placeholder="Describe the media, inspiration, or collector notes..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">External Link:</label>
+            <input type="text" id="slot-input-link" class="form-input" placeholder="https://opensea.io/... or portfolio link" />
+          </div>
+        </div>
+
+        <!-- Tab 2: Environment Settings -->
+        <div id="tab-environment" class="tab-content" style="display: none;">
+          <div class="form-group">
+            <label class="form-label">Space Title:</label>
+            <input type="text" id="env-input-title" class="form-input" placeholder="My Metaverse Gallery" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Gallery Color Theme:</label>
+            <select id="env-select-theme" class="form-select">
+              <option value="dark">Dark Cyber (Minimalist Obsidian & Neon)</option>
+              <option value="light">Light Minimalist (Pristine Marble & Sunlit)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Centerpiece Sculpture:</label>
+            <select id="env-select-sculpture" class="form-select">
+              <option value="hypercrystal">Multifaceted Prismatic Crystal</option>
+              <option value="gyro">Kinetic Gyroscope Rings</option>
+              <option value="torus">Neon Quantum Torus Knot</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Sculpture Rotation Speed:</label>
+            <input type="range" id="env-slider-speed" min="0" max="3" step="0.2" value="1" style="accent-color: #C74634;" />
+          </div>
+        </div>
+
+        <!-- Tab 3: Firebase Cloud Sync Configuration -->
+        <div id="tab-firebase" class="tab-content" style="display: none;">
+          <p style="font-size: 13px; color: #9ca3af; line-height: 1.5; margin-bottom: 12px;">
+            Changes are automatically stored locally in your browser. To sync live changes across all visitors on your Blogger site, connect your Firebase project keys below.
+          </p>
+
+          <div class="form-group">
+            <label class="form-label">Firebase Status:</label>
+            <div id="firebase-status-badge" style="font-size: 12px; color: #10b981; font-weight: 700; display:flex; align-items:center; gap:6px;">
+              <span class="live-dot"></span> <span id="fb-status-text">Local Storage Mode (Instant Offline Ready)</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Gallery Document ID:</label>
+            <input type="text" id="fb-input-docid" class="form-input" value="default-metaverse-gallery" />
+          </div>
+        </div>
+      </div>
+
+      <div class="drawer-footer">
+        <button type="button" class="glass-btn primary" id="btn-save-studio" style="flex: 1;">
+          <i class="fa-solid fa-cloud-arrow-up"></i> Save & Apply
+        </button>
+        <button type="button" class="glass-btn" id="btn-reset-default">
+          Reset
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Virtual Joystick & Touch Look Zones -->
+    <div id="mobile-controls">
+      <div id="touch-joystick-zone">
+        <div id="touch-thumb"></div>
+      </div>
+      <div id="touch-look-zone"></div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast-msg">Changes applied successfully!</div>
+  </div>
+
+  <!-- APPLICATION SCRIPT (Modular Three.js + Firebase) -->
+  <script type="module">
+    import * as THREE from 'three';
+    import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
+
+    /* ==========================================================================
+       1. FIREBASE CONFIGURATION & BACKEND INTEGRATION
+       ========================================================================== */
+    // Note: Replace with your Firebase Project keys to enable live multi-user syncing.
+    // If unconfigured or offline, the app seamlessly falls back to LocalStorage.
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY_HERE",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    let firebaseApp = null;
+    let firebaseAuth = null;
+    let firebaseDb = null;
+    let currentUser = null;
+    const isFirebaseConfigured = Boolean(
+      firebaseConfig.apiKey && 
+      !firebaseConfig.apiKey.includes("YOUR_API_KEY") &&
+      firebaseConfig.projectId && 
+      !firebaseConfig.projectId.includes("YOUR_PROJECT_ID")
+    );
+
+    async function initFirebaseServices() {
+      if (!isFirebaseConfigured) {
+        console.info('[Metaverse Gallery] Running in Zero-Config LocalStorage Mode (No external Firebase keys needed).');
+        updateFirebaseStatusUI('LocalStorage Mode (Offline Ready)', '#10b981');
+        return;
+      }
+      try {
+        const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js');
+        const { getAuth, onAuthStateChanged } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js');
+        const { getFirestore, doc, onSnapshot } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+
+        firebaseApp = initializeApp(firebaseConfig);
+        firebaseAuth = getAuth(firebaseApp);
+        firebaseDb = getFirestore(firebaseApp);
+
+        onAuthStateChanged(firebaseAuth, (user) => {
+          currentUser = user;
+          updateAuthUI(user);
+        });
+
+        // Live Realtime Firestore Sync
+        const docRef = doc(firebaseDb, 'galleries', 'default-metaverse-gallery');
+        onSnapshot(docRef, (docSnap) => {
+          if (docSnap.exists()) {
+            const cloudData = docSnap.data();
+            applyGalleryState(cloudData, false);
+            showToast('Synced updates from Cloud Firestore');
+          }
+        }, (err) => {
+          console.warn('Firestore snapshot error:', err);
+        });
+
+        updateFirebaseStatusUI('Connected to Cloud Firestore', '#10b981');
+      } catch (e) {
+        console.warn('Firebase init fallback:', e);
+        updateFirebaseStatusUI('LocalStorage Fallback Mode', '#f59e0b');
+      }
+    }
+
+    /* ==========================================================================
+       2. MOCK / DEFAULT ARTWORK DATA & PROCEDURAL TEXTURES
+       ========================================================================== */
+    const DEFAULT_GALLERY_STATE = {
+      spaceTitle: "CyberArt Virtual Gallery",
+      theme: "dark", // 'dark' or 'light'
+      sculptureStyle: "hypercrystal",
+      sculptureSpeed: 1.0,
+      slots: [
+        {
+          id: 0,
+          title: "Genesis of Cyberpunk",
+          artist: "Elena Rostova",
+          url: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80",
+          desc: "An exploration of neo-futurism and geometric abstractions in the heart of modern metropolis light reflections.",
+          link: "https://opensea.io"
+        },
+        {
+          id: 1,
+          title: "Hyper-Dimensional Wave",
+          artist: "Kai Thorne",
+          url: "https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?auto=format&fit=crop&w=1200&q=80",
+          desc: "Fluid dynamics simulated with quantum compute shaders, captured at peak harmonic resonance.",
+          link: "https://foundation.app"
+        },
+        {
+          id: 2,
+          title: "Neural Dreams in Bloom",
+          artist: "Sophia Chen",
+          url: "https://images.unsplash.com/photo-1618005198919-d3d4b5a92ead?auto=format&fit=crop&w=1200&q=80",
+          desc: "Bio-digital flora growing inside virtual soil, capturing the transition from organic life to metaverse eternity.",
+          link: "https://superrare.com"
+        },
+        {
+          id: 3,
+          title: "Prismatic Singularity",
+          artist: "Marcus Vance",
+          url: "https://images.unsplash.com/photo-1633167606207-d840b5070fc2?auto=format&fit=crop&w=1200&q=80",
+          desc: "Refraction study of hyper-dense glass prisms splitting pure light into iridescent spectral waveforms.",
+          link: "https://zora.co"
+        },
+        {
+          id: 4,
+          title: "Echoes of Antiquity",
+          artist: "Dante Bellini",
+          url: "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=1200&q=80",
+          desc: "Classical marble aesthetics infused with kinetic fiber optics and golden mathematical ratios.",
+          link: "https://oncyber.io"
+        },
+        {
+          id: 5,
+          title: "Cosmic Horizon XII",
+          artist: "Aria Sterling",
+          url: "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=1200&q=80",
+          desc: "Deep space photography captured from an orbital telescope, processed with custom color spectrum filters.",
+          link: "https://opensea.io"
+        },
+        {
+          id: 6,
+          title: "Luminescent Solitude",
+          artist: "Lucas Moreau",
+          url: "https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=1200&q=80",
+          desc: "Monochrome brutalist corridors illuminated by warm neon tubes, inviting contemplative stillness.",
+          link: "https://artblocks.io"
+        },
+        {
+          id: 7,
+          title: "The Golden Ratio Matrix",
+          artist: "Zahara King",
+          url: "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&w=1200&q=80",
+          desc: "Sacred geometry rendered via computational vector fields with brushed gold leaf finishes.",
+          link: "https://foundation.app"
+        }
+      ]
+    };
+
+    // Load initial state from LocalStorage or Default
+    let galleryState = (() => {
+      try {
+        const saved = localStorage.getItem('oncyber_blogger_gallery');
+        if (saved) return JSON.parse(saved);
+      } catch (e) {}
+      return JSON.parse(JSON.stringify(DEFAULT_GALLERY_STATE));
+    })();
+
+    /* Fallback Algorithmic Canvas Generator (Zero CORS issue guarantee) */
+    const PALETTES = [
+      ['#C74634', '#1a2238'],
+      ['#3b82f6', '#0f172a'],
+      ['#8b5cf6', '#18181b'],
+      ['#ec4899', '#31102b'],
+      ['#10b981', '#06281e'],
+      ['#f59e0b', '#261605'],
+      ['#06b6d4', '#082736'],
+      ['#f43f5e', '#2b0914']
+    ];
+
+    function createProceduralArtTexture(title, artist, colorA = '#C74634', colorB = '#1a2238', slotIdx = 0) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 512;
+      canvas.height = 512;
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+      // Vibrant Modern Generative Gradient
+      const grad = ctx.createLinearGradient(0, 0, 512, 512);
+      grad.addColorStop(0, colorA);
+      grad.addColorStop(0.45, '#11141e');
+      grad.addColorStop(1, colorB);
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 512, 512);
+
+      // Algorithmic generative concentric circles & wave curves
+      ctx.save();
+      ctx.translate(256, 220);
+      ctx.lineWidth = 3;
+      for (let i = 0; i < 7; i++) {
+        ctx.strokeStyle = `rgba(255, 255, 255, ${0.16 - i * 0.02})`;
+        ctx.beginPath();
+        ctx.arc(0, 0, 45 + i * 24, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+
+      // Modern geometric polygon accents
+      ctx.strokeStyle = colorA;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      for (let j = 0; j < 6; j++) {
+        const rad = (Math.PI / 3) * j;
+        const x = Math.cos(rad) * (100 + (slotIdx % 3) * 15);
+        const y = Math.sin(rad) * (100 + (slotIdx % 3) * 15);
+        if (j === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.closePath();
+      ctx.stroke();
+      ctx.restore();
+
+      // Glowing diagonal light beam
+      const beamGrad = ctx.createLinearGradient(75, 425, 425, 75);
+      beamGrad.addColorStop(0, 'rgba(255, 255, 255, 0)');
+      beamGrad.addColorStop(0.5, 'rgba(255, 255, 255, 0.25)');
+      beamGrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+      ctx.fillStyle = beamGrad;
+      ctx.fillRect(0, 0, 512, 512);
+
+      // Sleek Typography & Exhibition Meta
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
+      ctx.font = '600 11px "Space Grotesk", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(`METAVERSE ART COLLECTION • FRAME #${slotIdx + 1}`, 256, 380);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '700 22px "Space Grotesk", sans-serif';
+      ctx.fillText(title, 256, 415);
+
+      ctx.fillStyle = colorA;
+      ctx.font = '600 13px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText(`by ${artist}`, 256, 442);
+
+      const tex = new THREE.CanvasTexture(canvas);
+      tex.colorSpace = THREE.SRGBColorSpace;
+      return tex;
+    }
+
+    /* ==========================================================================
+       3. 3D SCENE SETUP & PROCEDURAL ONCYBER MUSEUM ARCHITECTURE
+       ========================================================================== */
+    const container = document.getElementById('metaverse-wrapper');
+    const canvas = document.getElementById('webgl-canvas');
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(galleryState.theme === 'light' ? 0xf4f4f7 : 0x090a0f);
+    scene.fog = new THREE.Fog(galleryState.theme === 'light' ? 0xeaeaf0 : 0x090a0f, 28, 75);
+
+    const camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 150);
+    camera.position.set(0, 1.7, 13); // Eye level walk start
+    camera.lookAt(0, 1.8, 0);
+
+    const renderer = new THREE.WebGLRenderer({
+      canvas: canvas,
+      antialias: true,
+      powerPreference: 'default',
+      preserveDrawingBuffer: true
+    });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFShadowMap;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.1;
+
+    window.metaverseScene = scene;
+    window.metaverseCamera = camera;
+    window.metaverseRenderer = renderer;
+
+    // Controls
+    const controls = new PointerLockControls(camera, container);
+    scene.add(controls.getObject());
+
+    // Texture Loader with anonymous CORS
+    const textureLoader = new THREE.TextureLoader();
+    textureLoader.setCrossOrigin('anonymous');
+
+    /* Procedural Floor Texture (Polished Museum Concrete) */
+    function generateFloorTexture() {
+      const fCanvas = document.createElement('canvas');
+      fCanvas.width = 256;
+      fCanvas.height = 256;
+      const fCtx = fCanvas.getContext('2d', { willReadFrequently: true });
+      fCtx.fillStyle = '#1c1e26';
+      fCtx.fillRect(0, 0, 256, 256);
+
+      // Subtle marble veining & grid
+      fCtx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
+      fCtx.lineWidth = 1;
+      fCtx.strokeRect(0, 0, 256, 256);
+
+      for (let i = 0; i < 600; i++) {
+        fCtx.fillStyle = `rgba(255, 255, 255, ${Math.random() * 0.03})`;
+        fCtx.fillRect(Math.random() * 256, Math.random() * 256, 2, 2);
+      }
+
+      const tex = new THREE.CanvasTexture(fCanvas);
+      tex.wrapS = THREE.RepeatWrapping;
+      tex.wrapT = THREE.RepeatWrapping;
+      tex.repeat.set(12, 16);
+      return tex;
+    }
+
+    const floorTexture = generateFloorTexture();
+
+    // Floor Mesh
+    const floorGeo = new THREE.PlaneGeometry(30, 42);
+    const floorMat = new THREE.MeshStandardMaterial({
+      map: floorTexture,
+      roughness: 0.28,
+      metalness: 0.35,
+      color: galleryState.theme === 'light' ? 0xd8d7d4 : 0x2a2e3d
+    });
+    const floor = new THREE.Mesh(floorGeo, floorMat);
+    floor.rotation.x = -Math.PI / 2;
+    floor.position.y = 0;
+    floor.receiveShadow = true;
+    scene.add(floor);
+
+    // Ceiling Mesh
+    const ceilingGeo = new THREE.PlaneGeometry(30, 42);
+    const ceilingMat = new THREE.MeshStandardMaterial({
+      color: galleryState.theme === 'light' ? 0xffffff : 0x1b1d28,
+      roughness: 0.8
+    });
+    const ceiling = new THREE.Mesh(ceilingGeo, ceilingMat);
+    ceiling.rotation.x = Math.PI / 2;
+    ceiling.position.y = 6.8;
+    scene.add(ceiling);
+
+    // Skylight luminous panels in ceiling
+    const skylightGeo = new THREE.PlaneGeometry(6, 26);
+    const skylightMat = new THREE.MeshBasicMaterial({
+      color: galleryState.theme === 'light' ? 0xfffaed : 0xd6e8ff
+    });
+    const skylight = new THREE.Mesh(skylightGeo, skylightMat);
+    skylight.rotation.x = Math.PI / 2;
+    skylight.position.set(0, 6.78, 0);
+    scene.add(skylight);
+
+    // Wall Materials & Meshes
+    const wallMat = new THREE.MeshStandardMaterial({
+      color: galleryState.theme === 'light' ? 0xf0efe9 : 0x262938,
+      roughness: 0.85,
+      metalness: 0.05
+    });
+
+    const roomWalls = new THREE.Group();
+
+    // North Wall (Z = -21)
+    const northWall = new THREE.Mesh(new THREE.BoxGeometry(30, 7, 0.4), wallMat);
+    northWall.position.set(0, 3.5, -21);
+    northWall.receiveShadow = true;
+    roomWalls.add(northWall);
+
+    // South Wall (Z = +21)
+    const southWall = new THREE.Mesh(new THREE.BoxGeometry(30, 7, 0.4), wallMat);
+    southWall.position.set(0, 3.5, 21);
+    southWall.receiveShadow = true;
+    roomWalls.add(southWall);
+
+    // West Wall (X = -15)
+    const westWall = new THREE.Mesh(new THREE.BoxGeometry(0.4, 7, 42), wallMat);
+    westWall.position.set(-15, 3.5, 0);
+    westWall.receiveShadow = true;
+    roomWalls.add(westWall);
+
+    // East Wall (X = +15)
+    const eastWall = new THREE.Mesh(new THREE.BoxGeometry(0.4, 7, 42), wallMat);
+    eastWall.position.set(15, 3.5, 0);
+    eastWall.receiveShadow = true;
+    roomWalls.add(eastWall);
+
+    scene.add(roomWalls);
+
+    /* Architectural Baseboards / Kickplates along room perimeter */
+    const baseboardMat = new THREE.MeshStandardMaterial({ color: 0x050608, roughness: 0.3, metalness: 0.8 });
+    const bbNorth = new THREE.Mesh(new THREE.BoxGeometry(30, 0.15, 0.45), baseboardMat);
+    bbNorth.position.set(0, 0.075, -20.9);
+    scene.add(bbNorth);
+    const bbSouth = new THREE.Mesh(new THREE.BoxGeometry(30, 0.15, 0.45), baseboardMat);
+    bbSouth.position.set(0, 0.075, 20.9);
+    scene.add(bbSouth);
+    const bbWest = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.15, 42), baseboardMat);
+    bbWest.position.set(-14.9, 0.075, 0);
+    scene.add(bbWest);
+    const bbEast = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.15, 42), baseboardMat);
+    bbEast.position.set(14.9, 0.075, 0);
+    scene.add(bbEast);
+
+    /* Room Lighting */
+    const ambientLight = new THREE.AmbientLight(
+      galleryState.theme === 'light' ? 0xffffff : 0xa4b1cd,
+      galleryState.theme === 'light' ? 1.4 : 1.35
+    );
+    scene.add(ambientLight);
+
+    const sunLight = new THREE.DirectionalLight(0xfff7e6, galleryState.theme === 'light' ? 1.6 : 1.35);
+    sunLight.position.set(6, 12, 6);
+    sunLight.castShadow = true;
+    sunLight.shadow.mapSize.width = 1024;
+    sunLight.shadow.mapSize.height = 1024;
+    sunLight.shadow.bias = -0.0001;
+    sunLight.shadow.camera.near = 0.5;
+    sunLight.shadow.camera.far = 40;
+    sunLight.shadow.camera.left = -16;
+    sunLight.shadow.camera.right = 16;
+    sunLight.shadow.camera.top = 22;
+    sunLight.shadow.camera.bottom = -22;
+    scene.add(sunLight);
+
+    // Architectural linear ceiling track lights
+    const railMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    const railN = new THREE.Mesh(new THREE.BoxGeometry(22, 0.08, 0.08), railMat);
+    railN.position.set(0, 6.7, -18.5);
+    scene.add(railN);
+    const railS = new THREE.Mesh(new THREE.BoxGeometry(22, 0.08, 0.08), railMat);
+    railS.position.set(0, 6.7, 18.5);
+    scene.add(railS);
+    const railW = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.08, 30), railMat);
+    railW.position.set(-12.5, 6.7, 0);
+    scene.add(railW);
+    const railE = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.08, 30), railMat);
+    railE.position.set(12.5, 6.7, 0);
+    scene.add(railE);
+
+    /* ==========================================================================
+       4. CENTERPIECE 3D SCULPTURE & ILLUMINATED PEDESTAL
+       ========================================================================== */
+    const pedestalGroup = new THREE.Group();
+    pedestalGroup.position.set(0, 0, 0);
+
+    // Circular Plinth
+    const plinthMat = new THREE.MeshStandardMaterial({
+      color: 0x12141a,
+      roughness: 0.2,
+      metalness: 0.5
+    });
+    const plinthMesh = new THREE.Mesh(new THREE.CylinderGeometry(2.4, 2.6, 0.45, 48), plinthMat);
+    plinthMesh.position.y = 0.225;
+    plinthMesh.receiveShadow = true;
+    pedestalGroup.add(plinthMesh);
+
+    // Glowing Neon Ring beneath Plinth
+    const plinthRingMat = new THREE.MeshBasicMaterial({ color: 0xC74634 });
+    const plinthRing = new THREE.Mesh(new THREE.TorusGeometry(2.55, 0.03, 16, 64), plinthRingMat);
+    plinthRing.rotation.x = Math.PI / 2;
+    plinthRing.position.y = 0.05;
+    pedestalGroup.add(plinthRing);
+
+    // Central Pedestal Pillar
+    const pillarMesh = new THREE.Mesh(new THREE.CylinderGeometry(1.1, 1.25, 1.1, 32), plinthMat);
+    pillarMesh.position.y = 1.0;
+    pillarMesh.castShadow = true;
+    pillarMesh.receiveShadow = true;
+    pedestalGroup.add(pillarMesh);
+
+    // Sculpture Object Holder
+    const sculptureHolder = new THREE.Group();
+    sculptureHolder.position.set(0, 2.2, 0);
+    pedestalGroup.add(sculptureHolder);
+
+    // Create Procedural Sculptures
+    let activeSculpture = null;
+
+    function buildSculpture(type = 'hypercrystal') {
+      while (sculptureHolder.children.length > 0) {
+        sculptureHolder.remove(sculptureHolder.children[0]);
+      }
+
+      if (type === 'gyro') {
+        const gyroGroup = new THREE.Group();
+        const ringMat1 = new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.9, roughness: 0.15 });
+        const ringMat2 = new THREE.MeshStandardMaterial({ color: 0xC74634, metalness: 0.8, roughness: 0.2 });
+        const ringMat3 = new THREE.MeshStandardMaterial({ color: 0x22d3ee, metalness: 0.8, roughness: 0.2 });
+
+        const r1 = new THREE.Mesh(new THREE.TorusGeometry(0.85, 0.04, 24, 64), ringMat1);
+        const r2 = new THREE.Mesh(new THREE.TorusGeometry(0.68, 0.04, 24, 64), ringMat2);
+        const r3 = new THREE.Mesh(new THREE.TorusGeometry(0.5, 0.04, 24, 64), ringMat3);
+        const core = new THREE.Mesh(new THREE.SphereGeometry(0.22, 32, 32), new THREE.MeshBasicMaterial({ color: 0xffffff }));
+
+        gyroGroup.add(r1, r2, r3, core);
+        gyroGroup.userData = { r1, r2, r3, type: 'gyro' };
+        sculptureHolder.add(gyroGroup);
+        activeSculpture = gyroGroup;
+      } else if (type === 'torus') {
+        const torusMat = new THREE.MeshPhysicalMaterial({
+          color: 0xC74634,
+          emissive: 0x3d1410,
+          roughness: 0.1,
+          metalness: 0.85,
+          clearcoat: 1.0
+        });
+        const knot = new THREE.Mesh(new THREE.TorusKnotGeometry(0.55, 0.16, 128, 32, 2, 3), torusMat);
+        knot.castShadow = true;
+        sculptureHolder.add(knot);
+        activeSculpture = knot;
+      } else {
+        // 'hypercrystal'
+        const crystalGroup = new THREE.Group();
+        const crystalMat = new THREE.MeshPhysicalMaterial({
+          color: 0xffffff,
+          transparent: true,
+          opacity: 0.75,
+          roughness: 0.1,
+          metalness: 0.1,
+          clearcoat: 1.0,
+          reflectivity: 0.9
+        });
+        const coreMat = new THREE.MeshBasicMaterial({ color: 0xC74634, wireframe: true });
+
+        const outerCrystal = new THREE.Mesh(new THREE.IcosahedronGeometry(0.75, 0), crystalMat);
+        const innerCore = new THREE.Mesh(new THREE.OctahedronGeometry(0.42, 0), coreMat);
+        outerCrystal.castShadow = true;
+
+        crystalGroup.add(outerCrystal, innerCore);
+        crystalGroup.userData = { outerCrystal, innerCore, type: 'crystal' };
+        sculptureHolder.add(crystalGroup);
+        activeSculpture = crystalGroup;
+      }
+
+      // Overhead Pedestal Spotlight
+      const pedestalSpot = new THREE.SpotLight(0xffeedd, 3.5, 12, Math.PI / 4, 0.5, 1);
+      pedestalSpot.position.set(0, 6.4, 0);
+      pedestalSpot.target = pillarMesh;
+      pedestalSpot.castShadow = true;
+      scene.add(pedestalSpot);
+    }
+
+    buildSculpture(galleryState.sculptureStyle);
+    scene.add(pedestalGroup);
+
+    /* ==========================================================================
+       5. DYNAMIC ARTWORK FRAMES (8 SLOTS ALONG WALLS)
+       ========================================================================== */
+    const artworkSlotsGroup = new THREE.Group();
+    const interactiveArtMeshes = []; // Raycasting targets
+
+    // Slot layout configurations: Position (x,y,z), Rotation (Euler)
+    const SLOT_TRANSFORMS = [
+      // North Wall (Z = -20.6)
+      { pos: new THREE.Vector3(-6, 2.5, -20.7), rot: new THREE.Euler(0, 0, 0), viewPos: new THREE.Vector3(-6, 2.5, -16.5) },
+      { pos: new THREE.Vector3(6, 2.5, -20.7), rot: new THREE.Euler(0, 0, 0), viewPos: new THREE.Vector3(6, 2.5, -16.5) },
+
+      // East Wall (X = +14.6)
+      { pos: new THREE.Vector3(14.7, 2.5, -9), rot: new THREE.Euler(0, -Math.PI / 2, 0), viewPos: new THREE.Vector3(10.5, 2.5, -9) },
+      { pos: new THREE.Vector3(14.7, 2.5, 9), rot: new THREE.Euler(0, -Math.PI / 2, 0), viewPos: new THREE.Vector3(10.5, 2.5, 9) },
+
+      // South Wall (Z = +20.6)
+      { pos: new THREE.Vector3(6, 2.5, 20.7), rot: new THREE.Euler(0, Math.PI, 0), viewPos: new THREE.Vector3(6, 2.5, 16.5) },
+      { pos: new THREE.Vector3(-6, 2.5, 20.7), rot: new THREE.Euler(0, Math.PI, 0), viewPos: new THREE.Vector3(-6, 2.5, 16.5) },
+
+      // West Wall (X = -14.6)
+      { pos: new THREE.Vector3(-14.7, 2.5, 9), rot: new THREE.Euler(0, Math.PI / 2, 0), viewPos: new THREE.Vector3(-10.5, 2.5, 9) },
+      { pos: new THREE.Vector3(-14.7, 2.5, -9), rot: new THREE.Euler(0, Math.PI / 2, 0), viewPos: new THREE.Vector3(-10.5, 2.5, -9) }
+    ];
+
+    const slotMeshMap = [];
+
+    function buildArtworkSlots() {
+      // Clear existing
+      while (artworkSlotsGroup.children.length > 0) {
+        artworkSlotsGroup.remove(artworkSlotsGroup.children[0]);
+      }
+      interactiveArtMeshes.length = 0;
+      slotMeshMap.length = 0;
+
+      galleryState.slots.forEach((slotData, idx) => {
+        const trans = SLOT_TRANSFORMS[idx] || SLOT_TRANSFORMS[0];
+        const frameGroup = new THREE.Group();
+        frameGroup.position.copy(trans.pos);
+        frameGroup.rotation.copy(trans.rot);
+
+        // Frame Border (Solid Anodized Metal / Wood)
+        const frameBorderMat = new THREE.MeshStandardMaterial({
+          color: 0x1f242d,
+          roughness: 0.35,
+          metalness: 0.7
+        });
+        const frameBorder = new THREE.Mesh(new THREE.BoxGeometry(4.2, 3.2, 0.12), frameBorderMat);
+        frameBorder.castShadow = true;
+        frameGroup.add(frameBorder);
+
+        // Passe-partout (Inner White Matting)
+        const matting = new THREE.Mesh(
+          new THREE.BoxGeometry(3.9, 2.9, 0.14),
+          new THREE.MeshStandardMaterial({ color: 0xf5f5f5, roughness: 0.9 })
+        );
+        frameGroup.add(matting);
+
+        // Artwork Canvas
+        const canvasGeo = new THREE.PlaneGeometry(3.5, 2.5);
+        const canvasMat = new THREE.MeshStandardMaterial({
+          roughness: 0.35,
+          metalness: 0.05
+        });
+
+        // Set immediate procedural canvas texture (Guarantees zero CORS / offline display)
+        const pal = PALETTES[idx % PALETTES.length];
+        canvasMat.map = createProceduralArtTexture(slotData.title, slotData.artist, pal[0], pal[1], idx);
+
+        // Asynchronously upgrade to remote image if accessible
+        if (slotData.url && slotData.url.trim().length > 5) {
+          textureLoader.load(
+            slotData.url,
+            (tex) => {
+              tex.colorSpace = THREE.SRGBColorSpace;
+              canvasMat.map = tex;
+              canvasMat.needsUpdate = true;
+            },
+            undefined,
+            () => {
+              // Keeps the procedural texture on CORS or network error
+            }
+          );
+        }
+
+        const artCanvas = new THREE.Mesh(canvasGeo, canvasMat);
+        artCanvas.position.z = 0.08;
+        artCanvas.userData = { slotIndex: idx, slotData: slotData };
+        frameGroup.add(artCanvas);
+        interactiveArtMeshes.push(artCanvas);
+
+        // Wall Plaque (Below Frame)
+        const plaque = new THREE.Mesh(
+          new THREE.BoxGeometry(1.2, 0.28, 0.04),
+          new THREE.MeshStandardMaterial({ color: 0x2b303c, metalness: 0.8, roughness: 0.3 })
+        );
+        plaque.position.set(0, -1.85, 0.04);
+        frameGroup.add(plaque);
+
+        // Dedicated Spotlight pointing down at the artwork
+        const spot = new THREE.SpotLight(0xfff3e0, 2.8, 8, Math.PI / 4, 0.45, 1.2);
+        // Position spotlight overhead, slightly out from wall
+        const localSpotPos = new THREE.Vector3(0, 3.8, 2.2);
+        const worldSpotPos = localSpotPos.applyEuler(trans.rot).add(trans.pos);
+        spot.position.copy(worldSpotPos);
+        spot.target = artCanvas;
+        spot.castShadow = false; // Disable heavy shadow maps per frame for 60fps performance
+        scene.add(spot);
+
+        artworkSlotsGroup.add(frameGroup);
+        slotMeshMap[idx] = { frameGroup, artCanvas, canvasMat, frameBorder };
+      });
+
+      scene.add(artworkSlotsGroup);
+    }
+
+    buildArtworkSlots();
+
+    /* ==========================================================================
+       6. DUAL CONTROLS & CAMERA MOVEMENT (FIRST-PERSON + GUIDED TOUR)
+       ========================================================================== */
+    const keysPressed = {};
+    const moveVelocity = new THREE.Vector3();
+    const moveDirection = new THREE.Vector3();
+    const playerRadius = 0.8;
+
+    window.addEventListener('keydown', (e) => {
+      keysPressed[e.code] = true;
+      if (e.code === 'KeyE') inspectCurrentTarget();
+      if (e.code === 'Escape') closeModal();
+    });
+
+    window.addEventListener('keyup', (e) => {
+      keysPressed[e.code] = false;
+    });
+
+    // Touch Virtual Joystick Variables
+    let joystickActive = false;
+    let joystickOrigin = { x: 0, y: 0 };
+    let joystickDelta = { x: 0, y: 0 };
+    const joystickZone = document.getElementById('touch-joystick-zone');
+    const joystickThumb = document.getElementById('touch-thumb');
+    const touchLookZone = document.getElementById('touch-look-zone');
+
+    if (joystickZone) {
+      joystickZone.addEventListener('touchstart', (e) => {
+        const touch = e.touches[0];
+        joystickActive = true;
+        joystickOrigin = { x: touch.clientX, y: touch.clientY };
+      }, { passive: false });
+
+      window.addEventListener('touchmove', (e) => {
+        if (!joystickActive) return;
+        const touch = Array.from(e.touches).find(t => t.target === joystickZone || joystickZone.contains(t.target));
+        if (!touch) return;
+        const dx = touch.clientX - joystickOrigin.x;
+        const dy = touch.clientY - joystickOrigin.y;
+        const dist = Math.min(Math.hypot(dx, dy), 40);
+        const angle = Math.atan2(dy, dx);
+        joystickDelta = {
+          x: (Math.cos(angle) * dist) / 40,
+          y: (Math.sin(angle) * dist) / 40
+        };
+        joystickThumb.style.transform = `translate(${joystickDelta.x * 35}px, ${joystickDelta.y * 35}px)`;
+      }, { passive: false });
+
+      const endJoystick = () => {
+        joystickActive = false;
+        joystickDelta = { x: 0, y: 0 };
+        joystickThumb.style.transform = `translate(0px, 0px)`;
+      };
+      window.addEventListener('touchend', endJoystick);
+      window.addEventListener('touchcancel', endJoystick);
+    }
+
+    // Touch Look Handler
+    let touchLookLast = { x: 0, y: 0 };
+    if (touchLookZone) {
+      touchLookZone.addEventListener('touchstart', (e) => {
+        touchLookLast = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      });
+      touchLookZone.addEventListener('touchmove', (e) => {
+        const touch = e.touches[0];
+        const dx = touch.clientX - touchLookLast.x;
+        const dy = touch.clientY - touchLookLast.y;
+        touchLookLast = { x: touch.clientX, y: touch.clientY };
+
+        camera.rotation.y -= dx * 0.004;
+        camera.rotation.x = Math.max(-Math.PI / 3, Math.min(Math.PI / 3, camera.rotation.x - dy * 0.003));
+      });
+    }
+
+    /* Guided Tour / Smooth Preset Camera Tween */
+    let isTweeningCamera = false;
+    let cameraTweenTarget = { pos: new THREE.Vector3(), lookAt: new THREE.Vector3(), alpha: 0 };
+
+    function flyToPreset(viewKey) {
+      isTweeningCamera = true;
+      cameraTweenTarget.alpha = 0;
+
+      if (viewKey === 'overview') {
+        cameraTweenTarget.pos.set(0, 2.2, 16);
+        cameraTweenTarget.lookAt.set(0, 2.0, 0);
+      } else if (viewKey === 'sculpture') {
+        cameraTweenTarget.pos.set(0, 1.8, 5.2);
+        cameraTweenTarget.lookAt.set(0, 2.1, 0);
+      } else if (viewKey.startsWith('slot-')) {
+        const sIdx = parseInt(viewKey.replace('slot-', ''), 10);
+        const trans = SLOT_TRANSFORMS[sIdx];
+        if (trans) {
+          cameraTweenTarget.pos.copy(trans.viewPos);
+          cameraTweenTarget.lookAt.copy(trans.pos);
+        }
+      }
+    }
+
+    /* ==========================================================================
+       7. RAYCASTING & INTERACTION
+       ========================================================================== */
+    const raycaster = new THREE.Raycaster();
+    const centerScreenVec = new THREE.Vector2(0, 0);
+    const crosshairEl = document.getElementById('crosshair');
+    const tooltipEl = document.getElementById('artwork-tooltip');
+    const ttTitle = document.getElementById('tt-title');
+    const ttArtist = document.getElementById('tt-artist');
+    let hoveredArtwork = null;
+
+    function handleRaycast() {
+      raycaster.setFromCamera(centerScreenVec, camera);
+      const intersects = raycaster.intersectObjects(interactiveArtMeshes, false);
+
+      if (intersects.length > 0 && intersects[0].distance < 12) {
+        const hit = intersects[0].object;
+        if (hoveredArtwork !== hit) {
+          if (hoveredArtwork) unhighlightFrame(hoveredArtwork);
+          hoveredArtwork = hit;
+          highlightFrame(hoveredArtwork);
+        }
+
+        crosshairEl.classList.add('hovering');
+        tooltipEl.classList.add('visible');
+        ttTitle.textContent = hit.userData.slotData.title || `Artwork ${hit.userData.slotIndex + 1}`;
+        ttArtist.textContent = hit.userData.slotData.artist ? `by ${hit.userData.slotData.artist}` : 'Digital Artist';
+      } else {
+        if (hoveredArtwork) {
+          unhighlightFrame(hoveredArtwork);
+          hoveredArtwork = null;
+        }
+        crosshairEl.classList.remove('hovering');
+        tooltipEl.classList.remove('visible');
+      }
+    }
+
+    function highlightFrame(artMesh) {
+      const idx = artMesh.userData.slotIndex;
+      if (slotMeshMap[idx] && slotMeshMap[idx].frameBorder) {
+        slotMeshMap[idx].frameBorder.material.color.setHex(0xC74634);
+        slotMeshMap[idx].frameBorder.material.emissive.setHex(0x35100c);
+      }
+    }
+
+    function unhighlightFrame(artMesh) {
+      const idx = artMesh.userData.slotIndex;
+      if (slotMeshMap[idx] && slotMeshMap[idx].frameBorder) {
+        slotMeshMap[idx].frameBorder.material.color.setHex(0x1f242d);
+        slotMeshMap[idx].frameBorder.material.emissive.setHex(0x000000);
+      }
+    }
+
+    function inspectCurrentTarget() {
+      if (hoveredArtwork) {
+        openModal(hoveredArtwork.userData.slotData);
+      }
+    }
+
+    canvas.addEventListener('click', () => {
+      if (controls.isLocked) {
+        inspectCurrentTarget();
+      }
+    });
+
+    /* ==========================================================================
+       8. UI MODALS & CREATOR STUDIO
+       ========================================================================== */
+    const blockerEl = document.getElementById('blocker');
+    const btnEnter = document.getElementById('btn-enter');
+    const modalEl = document.getElementById('artwork-modal');
+    const modalImg = document.getElementById('modal-art-img');
+    const modalTitle = document.getElementById('modal-art-title');
+    const modalArtist = document.getElementById('modal-art-artist');
+    const modalDesc = document.getElementById('modal-art-desc');
+    const modalBadge = document.getElementById('modal-art-badge');
+    const modalLink = document.getElementById('modal-art-link');
+    const modalCloseBtn = document.getElementById('btn-close-modal');
+    const modalEditBtn = document.getElementById('modal-art-edit-btn');
+
+    btnEnter.addEventListener('click', () => {
+      blockerEl.style.opacity = '0';
+      setTimeout(() => { blockerEl.style.display = 'none'; }, 300);
+      controls.lock();
+      startGenerativeAudio();
+    });
+
+    controls.addEventListener('unlock', () => {
+      if (!modalEl.classList.contains('active') && !drawerEl.classList.contains('open')) {
+        blockerEl.style.display = 'flex';
+        blockerEl.style.opacity = '1';
+      }
+    });
+
+    function openModal(slotData) {
+      controls.unlock();
+      modalTitle.textContent = slotData.title;
+      modalArtist.textContent = `Artist: ${slotData.artist}`;
+      modalDesc.textContent = slotData.desc || 'No detailed description provided.';
+      modalBadge.textContent = `Frame Slot ${slotData.id + 1} • Metaverse Exclusive`;
+      modalImg.src = slotData.url && slotData.url.length > 5 ? slotData.url : '';
+      modalImg.onerror = () => { modalImg.src = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80'; };
+      modalLink.href = slotData.link || '#';
+
+      modalEditBtn.onclick = () => {
+        closeModal();
+        openStudioDrawer(slotData.id);
+      };
+
+      modalEl.classList.add('active');
+    }
+
+    function closeModal() {
+      modalEl.classList.remove('active');
+    }
+    modalCloseBtn.addEventListener('click', closeModal);
+
+    /* Creator Studio Drawer */
+    const drawerEl = document.getElementById('studio-drawer');
+    const btnOpenStudio = document.getElementById('btn-open-studio');
+    const btnCloseDrawer = document.getElementById('btn-close-drawer');
+    let currentEditSlot = 0;
+
+    function openStudioDrawer(slotIndex = 0) {
+      controls.unlock();
+      drawerEl.classList.add('open');
+      selectSlotTab(slotIndex);
+      // Load environment inputs
+      document.getElementById('env-input-title').value = galleryState.spaceTitle;
+      document.getElementById('env-select-theme').value = galleryState.theme;
+      document.getElementById('env-select-sculpture').value = galleryState.sculptureStyle;
+      document.getElementById('env-slider-speed').value = galleryState.sculptureSpeed;
+    }
+
+    function closeStudioDrawer() {
+      drawerEl.classList.remove('open');
+    }
+
+    btnOpenStudio.addEventListener('click', () => openStudioDrawer(0));
+    btnCloseDrawer.addEventListener('click', closeStudioDrawer);
+
+    // Drawer Tabs
+    document.querySelectorAll('.drawer-tab').forEach(tab => {
+      tab.addEventListener('click', (e) => {
+        document.querySelectorAll('.drawer-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+        tab.classList.add('active');
+        const targetId = `tab-${tab.dataset.tab}`;
+        const targetEl = document.getElementById(targetId);
+        if (targetEl) targetEl.style.display = 'block';
+      });
+    });
+
+    // Slot Buttons (1-8)
+    const slotBtns = document.querySelectorAll('.slot-btn');
+    slotBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        saveCurrentSlotFormValues();
+        selectSlotTab(parseInt(btn.dataset.slot, 10));
+      });
+    });
+
+    function selectSlotTab(slotIdx) {
+      currentEditSlot = slotIdx;
+      slotBtns.forEach(b => b.classList.toggle('active', parseInt(b.dataset.slot, 10) === slotIdx));
+      const s = galleryState.slots[slotIdx];
+      if (s) {
+        document.getElementById('slot-input-title').value = s.title || '';
+        document.getElementById('slot-input-artist').value = s.artist || '';
+        document.getElementById('slot-input-url').value = s.url || '';
+        document.getElementById('slot-input-desc').value = s.desc || '';
+        document.getElementById('slot-input-link').value = s.link || '';
+      }
+    }
+
+    function saveCurrentSlotFormValues() {
+      const s = galleryState.slots[currentEditSlot];
+      if (s) {
+        s.title = document.getElementById('slot-input-title').value;
+        s.artist = document.getElementById('slot-input-artist').value;
+        s.url = document.getElementById('slot-input-url').value;
+        s.desc = document.getElementById('slot-input-desc').value;
+        s.link = document.getElementById('slot-input-link').value;
+      }
+    }
+
+    document.getElementById('btn-regen-canvas').addEventListener('click', () => {
+      document.getElementById('slot-input-url').value = '';
+      showToast('Procedural canvas will generate for this slot.');
+    });
+
+    // Save & Apply Studio
+    document.getElementById('btn-save-studio').addEventListener('click', async () => {
+      saveCurrentSlotFormValues();
+      galleryState.spaceTitle = document.getElementById('env-input-title').value || "CyberArt Virtual Gallery";
+      galleryState.theme = document.getElementById('env-select-theme').value;
+      galleryState.sculptureStyle = document.getElementById('env-select-sculpture').value;
+      galleryState.sculptureSpeed = parseFloat(document.getElementById('env-slider-speed').value);
+
+      applyGalleryState(galleryState, true);
+      closeStudioDrawer();
+      showToast('Gallery space successfully updated!');
+    });
+
+    // Reset Defaults
+    document.getElementById('btn-reset-default').addEventListener('click', () => {
+      if (confirm('Reset gallery to original Oncyber default state?')) {
+        galleryState = JSON.parse(JSON.stringify(DEFAULT_GALLERY_STATE));
+        applyGalleryState(galleryState, true);
+        selectSlotTab(0);
+        showToast('Reset to default gallery state');
+      }
+    });
+
+    function applyGalleryState(newState, shouldSaveCloud = true) {
+      galleryState = newState;
+      try {
+        localStorage.setItem('oncyber_blogger_gallery', JSON.stringify(galleryState));
+      } catch (e) {}
+
+      // UI updates
+      document.getElementById('ui-space-title').textContent = galleryState.spaceTitle;
+
+      // Theme
+      const isLight = galleryState.theme === 'light';
+      scene.background.setHex(isLight ? 0xf4f4f7 : 0x090a0f);
+      scene.fog.color.setHex(isLight ? 0xeaeaf0 : 0x090a0f);
+      wallMat.color.setHex(isLight ? 0xeaeaf0 : 0x14161f);
+      floorMat.color.setHex(isLight ? 0xcccccc : 0x181a20);
+      ceilingMat.color.setHex(isLight ? 0xffffff : 0x11131a);
+      ambientLight.color.setHex(isLight ? 0xffffff : 0x8a92a6);
+      ambientLight.intensity = isLight ? 0.9 : 0.45;
+
+      // Sculpture
+      buildSculpture(galleryState.sculptureStyle);
+
+      // Rebuild Art Frames
+      buildArtworkSlots();
+
+      // Cloud Firestore Sync (if connected)
+      if (shouldSaveCloud && firebaseDb && currentUser) {
+        import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js').then(({ doc, setDoc }) => {
+          const docRef = doc(firebaseDb, 'galleries', 'default-metaverse-gallery');
+          setDoc(docRef, galleryState, { merge: true })
+            .then(() => console.log('Saved to Firestore!'))
+            .catch(err => console.warn('Firestore write warning:', err));
+        });
+      }
+    }
+
+    // Bottom Presets Bar Click
+    document.querySelectorAll('.preset-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        document.querySelectorAll('.preset-chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        flyToPreset(chip.dataset.view);
+      });
+    });
+
+    // Toast Function
+    let toastTimer = null;
+    function showToast(text) {
+      const t = document.getElementById('toast-msg');
+      t.textContent = text;
+      t.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => { t.classList.remove('show'); }, 3200);
+    }
+
+    // Fullscreen Toggle
+    document.getElementById('btn-fullscreen').addEventListener('click', () => {
+      if (!document.fullscreenElement) {
+        container.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    });
+
+    // Auth Button
+    const btnAuth = document.getElementById('btn-auth');
+    btnAuth.addEventListener('click', async () => {
+      if (!isFirebaseConfigured) {
+        showToast('Running in standalone demo mode. Edit & save anytime!');
+        return;
+      }
+      try {
+        const { signInWithPopup, GoogleAuthProvider, signOut } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js');
+        if (currentUser) {
+          await signOut(firebaseAuth);
+          showToast('Signed out of Firebase');
+        } else {
+          const provider = new GoogleAuthProvider();
+          await signInWithPopup(firebaseAuth, provider);
+          showToast('Signed in successfully!');
+        }
+      } catch (err) {
+        alert('Firebase Auth Note: Please configure your Authorized Domains in Firebase Console to include your Blogger domain.');
+      }
+    });
+
+    function updateAuthUI(user) {
+      const label = document.getElementById('auth-label');
+      if (user) {
+        label.textContent = user.displayName ? user.displayName.split(' ')[0] : 'Creator';
+        btnAuth.classList.add('primary');
+      } else {
+        label.textContent = 'Sign In';
+        btnAuth.classList.remove('primary');
+      }
+    }
+
+    function updateFirebaseStatusUI(text, color) {
+      const st = document.getElementById('fb-status-text');
+      if (st) {
+        st.textContent = text;
+        st.style.color = color;
+      }
+    }
+
+    /* ==========================================================================
+       9. ZERO-DEPENDENCY GENERATIVE AMBIENT AUDIO
+       ========================================================================== */
+    let audioCtx = null;
+    let isAudioPlaying = false;
+    let audioInterval = null;
+
+    function startGenerativeAudio() {
+      if (isAudioPlaying || audioCtx) return;
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new AudioContext();
+        isAudioPlaying = true;
+        document.getElementById('audio-icon').className = 'fa-solid fa-volume-high';
+
+        // Play gentle, harmonic metaverse chimes (pentatonic scale)
+        const notes = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25];
+        audioInterval = setInterval(() => {
+          if (!isAudioPlaying || !audioCtx) return;
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          const freq = notes[Math.floor(Math.random() * notes.length)];
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+          gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.035, audioCtx.currentTime + 1.2);
+          gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 4.5);
+
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 4.6);
+        }, 3400);
+      } catch (e) {}
+    }
+
+    document.getElementById('btn-audio').addEventListener('click', () => {
+      if (!audioCtx) {
+        startGenerativeAudio();
+      } else {
+        isAudioPlaying = !isAudioPlaying;
+        document.getElementById('audio-icon').className = isAudioPlaying ? 'fa-solid fa-volume-high' : 'fa-solid fa-volume-xmark';
+        if (!isAudioPlaying && audioCtx) {
+          audioCtx.suspend();
+        } else if (audioCtx) {
+          audioCtx.resume();
+        }
+      }
+    });
+
+    /* ==========================================================================
+       10. ANIMATION & RENDER LOOP
+       ========================================================================== */
+    const clock = new THREE.Clock();
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const delta = Math.min(clock.getDelta(), 0.1);
+
+      // Rotate Sculpture
+      if (activeSculpture) {
+        const speed = galleryState.sculptureSpeed || 1.0;
+        if (activeSculpture.userData && activeSculpture.userData.type === 'gyro') {
+          activeSculpture.userData.r1.rotation.x += 0.8 * speed * delta;
+          activeSculpture.userData.r2.rotation.y += 1.1 * speed * delta;
+          activeSculpture.userData.r3.rotation.z += 1.4 * speed * delta;
+        } else if (activeSculpture.userData && activeSculpture.userData.type === 'crystal') {
+          activeSculpture.userData.outerCrystal.rotation.y += 0.6 * speed * delta;
+          activeSculpture.userData.outerCrystal.rotation.x += 0.3 * speed * delta;
+          activeSculpture.userData.innerCore.rotation.y -= 0.9 * speed * delta;
+        } else {
+          activeSculpture.rotation.y += 0.7 * speed * delta;
+          activeSculpture.rotation.x += 0.35 * speed * delta;
+        }
+      }
+
+      // Smooth Camera Preset Tweening
+      if (isTweeningCamera) {
+        cameraTweenTarget.alpha += delta * 1.8;
+        camera.position.lerp(cameraTweenTarget.pos, 0.08);
+
+        // Calculate smooth look direction
+        const currentLook = new THREE.Vector3();
+        camera.getWorldDirection(currentLook);
+        const targetDir = cameraTweenTarget.lookAt.clone().sub(camera.position).normalize();
+        currentLook.lerp(targetDir, 0.1);
+        camera.lookAt(camera.position.clone().add(currentLook));
+
+        if (cameraTweenTarget.alpha >= 1.0 && camera.position.distanceTo(cameraTweenTarget.pos) < 0.2) {
+          isTweeningCamera = false;
+        }
+      }
+
+      // FPS Walk Movement Physics & Boundary Collision
+      if (controls.isLocked || joystickActive) {
+        // Friction / Damping
+        moveVelocity.x -= moveVelocity.x * 10.0 * delta;
+        moveVelocity.z -= moveVelocity.z * 10.0 * delta;
+
+        moveDirection.z = Number(Boolean(keysPressed['KeyW'] || keysPressed['ArrowUp'])) - Number(Boolean(keysPressed['KeyS'] || keysPressed['ArrowDown']));
+        moveDirection.x = Number(Boolean(keysPressed['KeyD'] || keysPressed['ArrowRight'])) - Number(Boolean(keysPressed['KeyA'] || keysPressed['ArrowLeft']));
+
+        // Touch Joystick injection
+        if (joystickActive) {
+          moveDirection.z = -joystickDelta.y;
+          moveDirection.x = joystickDelta.x;
+        }
+
+        moveDirection.normalize();
+
+        const walkSpeed = 38.0;
+        if (keysPressed['KeyW'] || keysPressed['KeyS'] || keysPressed['ArrowUp'] || keysPressed['ArrowDown'] || joystickActive) {
+          moveVelocity.z -= moveDirection.z * walkSpeed * delta;
+        }
+        if (keysPressed['KeyA'] || keysPressed['KeyD'] || keysPressed['ArrowLeft'] || keysPressed['ArrowRight'] || joystickActive) {
+          moveVelocity.x -= moveDirection.x * walkSpeed * delta;
+        }
+
+        controls.moveRight(-moveVelocity.x * delta);
+        controls.moveForward(-moveVelocity.z * delta);
+
+        // Lock eye level height
+        camera.position.y = 1.7;
+
+        // Gallery Perimeter Boundary Collision (Stay inside museum walls)
+        const boundX = 13.8 - playerRadius;
+        const boundZ = 19.8 - playerRadius;
+        camera.position.x = Math.max(-boundX, Math.min(boundX, camera.position.x));
+        camera.position.z = Math.max(-boundZ, Math.min(boundZ, camera.position.z));
+
+        // Pedestal collision (Keep player outside central circle)
+        const distFromCenter = Math.hypot(camera.position.x, camera.position.z);
+        const minPedestalDist = 2.7 + playerRadius;
+        if (distFromCenter < minPedestalDist) {
+          const pushAngle = Math.atan2(camera.position.z, camera.position.x);
+          camera.position.x = Math.cos(pushAngle) * minPedestalDist;
+          camera.position.z = Math.sin(pushAngle) * minPedestalDist;
+        }
+      }
+
+      // Continuous Raycast Target Hover
+      handleRaycast();
+
+      // Render Scene
+      renderer.render(scene, camera);
+    }
+
+    // Window Resize Handler
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    });
+
+    // Start Animation Loop & Services
+    animate();
+    initFirebaseServices();
+  </script>
+</body>
+</html>
