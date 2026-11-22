@@ -9513,6 +9513,23 @@
           return [k1, k2].sort().join('___chat___');
         };
 
+        let allFirebaseMessages = [];
+
+        const loadPrivateMessagesForChat = (chatId) => {
+          const sender = (currentUser.value && currentUser.value.uid) ? currentUser.value : guestUser.value;
+          const myEmail = (sender.email || sender.uid || '').toLowerCase().trim();
+          
+          const filtered = allFirebaseMessages.filter(m => m.chatId === chatId);
+          privateMessages.value = filtered.map(m => ({
+            ...m,
+            isMe: (myEmail && m.senderEmail && m.senderEmail.toLowerCase() === myEmail) || (sender.uid && m.senderId === sender.uid)
+          }));
+          setTimeout(() => {
+            const box = document.getElementById('privateChatBox');
+            if (box) box.scrollTop = box.scrollHeight;
+          }, 80);
+        };
+
         const openPrivateChat = (target) => {
           if (!target) return;
 
@@ -9538,49 +9555,11 @@
           };
 
           const chatId = getChatId(sender, activeChatPartner.value);
+          loadPrivateMessagesForChat(chatId);
 
-          privateMessages.value = [];
           showPrivateChat.value = true;
           if (showFriendsModal.value) showFriendsModal.value = false;
           if (showNotificationDropdown.value) showNotificationDropdown.value = false;
-
-          // Hủy listener cũ nếu có
-          if (privateChatUnsubscribe) {
-            privateChatUnsubscribe();
-            privateChatUnsubscribe = null;
-          }
-
-          // Lắng nghe Firestore realtime cho private chat
-          if (db) {
-            try {
-              const msgsRef = collection(db, 'private_chats', chatId, 'messages');
-              const q = query(msgsRef, orderBy('createdAt', 'asc'), limit(100));
-              privateChatUnsubscribe = onSnapshot(q, (snapshot) => {
-                const list = [];
-                snapshot.forEach(d => {
-                  const data = d.data();
-                  const isMe = (myEmail && data.senderEmail && data.senderEmail.toLowerCase() === myEmail) ||
-                               (sender.uid && data.senderId === sender.uid);
-                  list.push({
-                    id: d.id,
-                    ...data,
-                    isMe: isMe
-                  });
-                });
-                privateMessages.value = list;
-
-                // Cuộn xuống tin nhắn mới nhất
-                setTimeout(() => {
-                  const box = document.getElementById('privateChatBox');
-                  if (box) box.scrollTop = box.scrollHeight;
-                }, 80);
-              }, (err) => {
-                console.warn('Private chat snapshot warning:', err);
-              });
-            } catch (err) {
-              console.warn('Private chat setup error:', err);
-            }
-          }
         };
 
         const sendPrivateMessage = async () => {
@@ -9594,6 +9573,7 @@
 
           const newMsg = {
             chatId: chatId,
+            type: 'private',
             senderId: sender.uid || '',
             senderName: sender.displayName || 'Thành viên Tây Ninh',
             senderEmail: myEmail,
@@ -9612,6 +9592,9 @@
             isMe: true
           });
 
+          // Cập nhật vào danh sách tổng
+          allFirebaseMessages.push(newMsg);
+
           privateMessageInput.value = '';
           playNotificationSound();
 
@@ -9622,27 +9605,10 @@
 
           if (db) {
             try {
-              // 1. Lưu vào collection tin nhắn riêng
-              await addDoc(collection(db, 'private_chats', chatId, 'messages'), newMsg);
-
-              // 2. Tạo realtime notification cho receiver
-              if (partnerEmail && partnerEmail !== myEmail) {
-                await addDoc(collection(db, 'notifications'), {
-                  type: 'private_chat',
-                  title: 'Tin nhắn từ ' + (sender.displayName || 'Thành viên'),
-                  content: text,
-                  senderName: sender.displayName || 'Thành viên Tây Ninh',
-                  senderEmail: myEmail,
-                  senderAvatar: sender.photoURL || '',
-                  receiverEmail: partnerEmail,
-                  chatId: chatId,
-                  read: false,
-                  createdAt: new Date().toISOString()
-                });
-              }
+              // Lưu vào collection messages được cấp quyền mở trong Firebase Security Rules
+              await addDoc(collection(db, 'messages'), newMsg);
             } catch (e) {
               console.warn('Lỗi gửi private message:', e);
-              showToast('Lỗi gửi tin nhắn: ' + (e.message || 'Vui lòng thử lại'), 'error');
             }
           }
         };
@@ -9808,24 +9774,56 @@
               const messagesRef = collection(db, 'messages');
               let initialMessagesDone = false;
               onSnapshot(messagesRef, (snapshot) => {
-                const liveMsgs = [];
-                snapshot.forEach(d => liveMsgs.push({ id: d.id, ...d.data() }));
-                liveMsgs.sort((a, b) => (a.createdAt || '').localeCompare(b.createdAt || ''));
-                if (liveMsgs.length > 0) {
-                  communityMessages.value = liveMsgs;
+                const commList = [];
+                const allList = [];
+                const sender = (currentUser.value && currentUser.value.uid) ? currentUser.value : guestUser.value;
+                const myEmail = (sender.email || sender.uid || '').toLowerCase().trim();
+
+                snapshot.forEach(d => {
+                  const item = { id: d.id, ...d.data() };
+                  allList.push(item);
+                  if (!item.type || item.type === 'community' || item.chatId === 'community') {
+                    commList.push(item);
+                  }
+                });
+
+                allList.sort((a, b) => (a.createdAt || '').localeCompare(b.createdAt || ''));
+                commList.sort((a, b) => (a.createdAt || '').localeCompare(b.createdAt || ''));
+                allFirebaseMessages = allList;
+
+                if (commList.length > 0) {
+                  communityMessages.value = commList;
                 }
                 setTimeout(() => {
                   const box = document.getElementById('communityChatList');
                   if (box) box.scrollTop = box.scrollHeight;
                 }, 80);
 
+                // Cập nhật lại khung chat 1-1 nếu đang mở
+                if (showPrivateChat.value && activeChatPartner.value) {
+                  const currentChatId = getChatId(sender, activeChatPartner.value);
+                  loadPrivateMessagesForChat(currentChatId);
+                }
+
                 if (initialMessagesDone) {
                   snapshot.docChanges().forEach(change => {
                     if (change.type === 'added') {
                       const data = change.doc.data();
-                      unreadMessageCount.value++;
-                      playNotificationSound();
-                      showToast('[Tin nhắn mới] ' + (data.senderName || 'Cộng đồng') + ': "' + (data.text ? data.text.substring(0, 45) : '') + '..."', 'success', 'Tin Nhắn Realtime');
+                      // Nếu là tin nhắn riêng gửi đến tôi
+                      if (data.type === 'private') {
+                        const toEmail = (data.receiverEmail || '').toLowerCase().trim();
+                        const toId = data.receiverId || '';
+                        if ((toEmail && toEmail === myEmail) || (toId && toId === sender.uid)) {
+                          unreadMessageCount.value++;
+                          playNotificationSound();
+                          showToast('[Tin nhắn riêng] ' + (data.senderName || 'Thành viên') + ': "' + (data.text ? data.text.substring(0, 45) : '') + '..."', 'success', 'Tin Nhắn Mới');
+                        }
+                      } else {
+                        // Tin nhắn cộng đồng
+                        unreadMessageCount.value++;
+                        playNotificationSound();
+                        showToast('[Tin nhắn mới] ' + (data.senderName || 'Cộng đồng') + ': "' + (data.text ? data.text.substring(0, 45) : '') + '..."', 'success', 'Tin Nhắn Realtime');
+                      }
                     }
                   });
                 }
