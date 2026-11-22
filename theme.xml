@@ -4558,7 +4558,7 @@
 
     const { createApp, ref, computed, onMounted, watch } = Vue;
 
-    createApp({
+    window.vueApp = createApp({
       setup() {
         // Safe Storage Helper
         const safeGetStorage = (key, defaultVal = '') => {
