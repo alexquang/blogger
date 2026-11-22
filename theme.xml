@@ -362,9 +362,12 @@
               <i class='fa-solid fa-list-check text-[#C74634] text-xs shrink-0'/>
               <span class='truncate'>{{ t(&#39;myPosts&#39;) }} ({{ myPostsCount }})</span>
             </button>
-            <button class='px-2.5 py-1.5 bg-white hover:bg-[#FAF9F8] border border-[#E0DDD8] text-slate-800 flex items-center justify-center gap-1.5 transition whitespace-nowrap shadow-xs' v-on:click='openFriendsModal'>
+            <button class='px-2.5 py-1.5 bg-white hover:bg-[#FAF9F8] border border-[#E0DDD8] text-slate-800 flex items-center justify-center gap-1.5 transition whitespace-nowrap shadow-xs relative' v-on:click='openFriendsModal()'>
               <i class='fa-solid fa-user-group text-blue-600 text-xs shrink-0'/>
               <span class='truncate'>{{ t(&#39;friends&#39;) }} ({{ friendsList.length }})</span>
+              <span class='px-1.5 py-0.2 bg-[#C74634] text-white text-[9px] font-black rounded-full animate-pulse shrink-0' v-if='incomingFriendRequests.length &gt; 0'>
+                +{{ incomingFriendRequests.length }}
+              </span>
             </button>
           </div>
           <div class='pt-1.5'>
@@ -1143,9 +1146,9 @@
                   <i class='fa-solid fa-trash-can text-[10px]'/>
                 </button>
                 <!-- Nút Kết bạn nếu không phải bài của mình -->
-                <button class='h-7 px-2 text-[11px] font-medium border transition flex items-center gap-1 shrink-0 whitespace-nowrap shadow-xs' type='button' v-bind:class='isFriend(card) ? &quot;text-[#C74634] bg-red-50 border-red-200 font-bold&quot; : &quot;text-slate-600 hover:text-slate-900 bg-white hover:bg-slate-50 border-[#E0DDD8]&quot;' v-bind:title='isFriend(card) ? &quot;Đã là bạn bè (nhấn để hủy kết bạn)&quot; : &quot;Kết bạn với tác giả&quot;' v-if='!isMyPost(card)' v-on:click.stop='toggleFriend(card)'>
-                  <i v-bind:class='isFriend(card) ? &quot;fa-solid fa-user-check text-[#C74634]&quot; : &quot;fa-solid fa-user-plus text-slate-400&quot;'/>
-                  <span class='whitespace-nowrap'>{{ isFriend(card) ? &#39;Bạn bè&#39; : &#39;Kết bạn&#39; }}</span>
+                <button class='h-7 px-2 text-[11px] font-medium border transition flex items-center gap-1 shrink-0 whitespace-nowrap shadow-xs' type='button' v-bind:class='isFriend(card) ? &quot;text-[#C74634] bg-red-50 border-red-200 font-bold&quot; : hasIncomingFriendRequest(card) ? &quot;text-emerald-700 bg-emerald-50 border-emerald-300 font-bold&quot; : hasSentFriendRequest(card) ? &quot;text-amber-700 bg-amber-50 border-amber-300 font-medium&quot; : &quot;text-slate-600 hover:text-slate-900 bg-white hover:bg-slate-50 border-[#E0DDD8]&quot;' v-bind:title='isFriend(card) ? &quot;Đã là bạn bè (nhấn để hủy kết bạn)&quot; : hasIncomingFriendRequest(card) ? &quot;Nhấn để chấp nhận lời mời kết bạn&quot; : hasSentFriendRequest(card) ? &quot;Đã gửi lời mời kết bạn (chờ đối phương phản hồi)&quot; : &quot;Kết bạn với tác giả&quot;' v-if='!isMyPost(card)' v-on:click.stop='toggleFriend(card)'>
+                  <i v-bind:class='isFriend(card) ? &quot;fa-solid fa-user-check text-[#C74634]&quot; : hasIncomingFriendRequest(card) ? &quot;fa-solid fa-user-check text-emerald-600 animate-pulse&quot; : hasSentFriendRequest(card) ? &quot;fa-solid fa-clock text-amber-500&quot; : &quot;fa-solid fa-user-plus text-slate-400&quot;'/>
+                  <span class='whitespace-nowrap'>{{ isFriend(card) ? &#39;Bạn bè&#39; : hasIncomingFriendRequest(card) ? &#39;Chấp nhận&#39; : hasSentFriendRequest(card) ? &#39;Đã gửi lời mời&#39; : &#39;Kết bạn&#39; }}</span>
                 </button>
                 <!-- Nút Chat Private 1-1 (Mở cho tất cả thành viên & khách) -->
                 <button class='h-7 px-2 text-[11px] font-semibold border border-[#E0DDD8] transition flex items-center gap-1 shrink-0 whitespace-nowrap shadow-xs text-[#161513] hover:text-[#C74634] bg-white hover:bg-[#F1EFED]' title='Nhắn tin riêng tư 1-1 với người đăng' type='button' v-if='!isMyPost(card)' v-on:click.stop='openPrivateChat(card)'>
@@ -2614,6 +2617,12 @@
               <span class='absolute -bottom-1 -right-1 w-4 h-4 bg-[#C74634] text-white rounded-full flex items-center justify-center text-[8px]' title='Tin nhắn riêng' v-if='notif.type === &quot;private_chat&quot;'>
                 <i class='fa-solid fa-comment-dots'/>
               </span>
+              <span class='absolute -bottom-1 -right-1 w-4 h-4 bg-amber-500 text-white rounded-full flex items-center justify-center text-[8px]' title='Lời mời kết bạn' v-else-if='notif.type === &quot;friend_request&quot;'>
+                <i class='fa-solid fa-user-plus'/>
+              </span>
+              <span class='absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-600 text-white rounded-full flex items-center justify-center text-[8px]' title='Chấp nhận kết bạn' v-else-if='notif.type === &quot;friend_accept&quot;'>
+                <i class='fa-solid fa-user-check'/>
+              </span>
               <span class='absolute -bottom-1 -right-1 w-4 h-4 bg-blue-600 text-white rounded-full flex items-center justify-center text-[8px]' title='Bạn bè kết nối' v-else-if='notif.type === &quot;friend_add&quot; || notif.type === &quot;friend_relation&quot;'>
                 <i class='fa-solid fa-user-group'/>
               </span>
@@ -3973,6 +3982,7 @@
             <div class='cursor-pointer hover:bg-white p-1 transition' v-on:click='openFriendsModal(); showProfileModal = false;'>
               <span class='block font-black text-sm text-[#161513]'>{{ friendsList.length }}</span>
               <span class='text-[10px] text-slate-500 uppercase tracking-wider font-bold'>{{ t(&#39;friends&#39;) }}</span>
+              <span class='text-[9px] font-bold text-[#C74634] block' v-if='incomingFriendRequests.length &gt; 0'>({{ incomingFriendRequests.length }} chờ)</span>
             </div>
             <div class='cursor-pointer hover:bg-white p-1 transition' v-on:click='profileTab = &quot;applied&quot;'>
               <span class='block font-black text-sm text-emerald-600'>{{ appliedJobsList.length }}</span>
@@ -4229,9 +4239,9 @@
               <i class='fa-regular fa-comment-dots'/>
               <span>Nhắn tin riêng 1-1</span>
             </button>
-            <button class='px-4 py-2 border font-bold text-xs flex items-center justify-center gap-1.5 transition' type='button' v-bind:class='isFriend(viewingUserProfile.email) ? &quot;bg-red-50 text-[#C74634] border-red-200&quot; : &quot;bg-white text-slate-700 border-[#E0DDD8] hover:bg-slate-50&quot;' v-if='currentUser' v-on:click='toggleFriend(viewingUserProfile.rawTarget || viewingUserProfile)'>
-              <i v-bind:class='isFriend(viewingUserProfile.email) ? &quot;fa-solid fa-user-check text-[#C74634]&quot; : &quot;fa-solid fa-user-plus text-slate-400&quot;'/>
-              <span>{{ isFriend(viewingUserProfile.email) ? &#39;Đã là bạn bè&#39; : &#39;Kết bạn&#39; }}</span>
+            <button class='px-4 py-2 border font-bold text-xs flex items-center justify-center gap-1.5 transition' type='button' v-bind:class='isFriend(viewingUserProfile.email) ? &quot;bg-red-50 text-[#C74634] border-red-200&quot; : hasIncomingFriendRequest(viewingUserProfile.email) ? &quot;bg-emerald-50 text-emerald-700 border-emerald-300&quot; : hasSentFriendRequest(viewingUserProfile.email) ? &quot;bg-amber-50 text-amber-700 border-amber-300&quot; : &quot;bg-white text-slate-700 border-[#E0DDD8] hover:bg-slate-50&quot;' v-if='currentUser' v-on:click='toggleFriend(viewingUserProfile.rawTarget || viewingUserProfile)'>
+              <i v-bind:class='isFriend(viewingUserProfile.email) ? &quot;fa-solid fa-user-check text-[#C74634]&quot; : hasIncomingFriendRequest(viewingUserProfile.email) ? &quot;fa-solid fa-user-check text-emerald-600&quot; : hasSentFriendRequest(viewingUserProfile.email) ? &quot;fa-solid fa-clock text-amber-500&quot; : &quot;fa-solid fa-user-plus text-slate-400&quot;'/>
+              <span>{{ isFriend(viewingUserProfile.email) ? &#39;Đã là bạn bè&#39; : hasIncomingFriendRequest(viewingUserProfile.email) ? &#39;Chấp nhận kết bạn&#39; : hasSentFriendRequest(viewingUserProfile.email) ? &#39;Đã gửi lời mời&#39; : &#39;Kết bạn&#39; }}</span>
             </button>
           </div>
 
@@ -4298,6 +4308,9 @@
                 <span class='px-1.5 py-0.2 bg-[#C74634] text-white text-[10px] font-bold'>
                   {{ friendsList.length }}
                 </span>
+                <span class='px-1.5 py-0.2 bg-amber-500 text-white text-[10px] font-bold animate-pulse' v-if='incomingFriendRequests.length &gt; 0'>
+                  {{ incomingFriendRequests.length }} chờ duyệt
+                </span>
               </h3>
               <p class='text-[10px] text-slate-500'>Danh sách những người bạn đã kết nối để nhắn tin và giao lưu</p>
             </div>
@@ -4307,53 +4320,115 @@
           </button>
         </div>
 
+        <!-- Friends Tabs Switcher -->
+        <div class='flex border-b border-[#E0DDD8] bg-white sticky top-[57px] z-10'>
+          <button class='flex-1 py-2.5 text-center font-bold text-xs transition border-b-2 flex items-center justify-center gap-1.5' type='button' v-bind:class='friendsTab === &quot;friends&quot; ? &quot;border-[#C74634] text-[#C74634] bg-white&quot; : &quot;border-transparent text-slate-600 hover:text-slate-900 bg-slate-50/50&quot;' v-on:click='friendsTab = &quot;friends&quot;'>
+            <i class='fa-solid fa-user-group text-[11px]'/>
+            <span>Bạn bè ({{ friendsList.length }})</span>
+          </button>
+          <button class='flex-1 py-2.5 text-center font-bold text-xs transition border-b-2 flex items-center justify-center gap-1.5 relative' type='button' v-bind:class='friendsTab === &quot;requests&quot; ? &quot;border-[#C74634] text-[#C74634] bg-white&quot; : &quot;border-transparent text-slate-600 hover:text-slate-900 bg-slate-50/50&quot;' v-on:click='friendsTab = &quot;requests&quot;'>
+            <i class='fa-solid fa-user-clock text-[11px]'/>
+            <span>Lời mời kết bạn</span>
+            <span class='px-1.5 py-0.2 bg-[#C74634] text-white text-[9px] font-black rounded-full' v-if='incomingFriendRequests.length &gt; 0'>
+              {{ incomingFriendRequests.length }}
+            </span>
+          </button>
+        </div>
+
         <!-- Friends List Body -->
         <div class='flex-1 overflow-y-auto p-4 space-y-2.5 bg-[#FAF9F8]'>
-          <div class='text-center py-10 text-slate-400 space-y-3' v-if='friendsList.length === 0'>
-            <div class='w-12 h-12 mx-auto rounded-full bg-white border border-[#E0DDD8] flex items-center justify-center text-slate-300 text-xl'>
-              <i class='fa-solid fa-user-plus'/>
+          <!-- TAB 1: DANH SÁCH BẠN BÈ ĐÃ KẾT NỐI -->
+          <div class='space-y-2.5' v-if='friendsTab === &quot;friends&quot;'>
+            <div class='text-center py-10 text-slate-400 space-y-3' v-if='friendsList.length === 0'>
+              <div class='w-12 h-12 mx-auto rounded-full bg-white border border-[#E0DDD8] flex items-center justify-center text-slate-300 text-xl'>
+                <i class='fa-solid fa-user-plus'/>
+              </div>
+              <p class='font-bold text-xs text-slate-600'>Bạn chưa có bạn bè nào trong danh sách kết nối.</p>
+              <p class='text-[11px] text-slate-400 max-w-xs mx-auto'>
+                Hãy lướt bảng tin Tây Ninh và bấm nút <strong>&quot;Kết bạn&quot;</strong> trên từng bài đăng để kết nối với bà con địa phương!
+              </p>
             </div>
-            <p class='font-bold text-xs text-slate-600'>Bạn chưa có bạn bè nào trong danh sách kết nối.</p>
-            <p class='text-[11px] text-slate-400 max-w-xs mx-auto'>
-              Hãy lướt bảng tin Tây Ninh và bấm nút <strong>&quot;Kết bạn&quot;</strong> trên từng bài đăng để kết nối với bà con địa phương!
-            </p>
-          </div>
 
-          <div class='p-3 bg-white border border-[#E0DDD8] flex items-center justify-between gap-3 shadow-sm' v-bind:key='friend.email' v-for='friend in friendsList'>
-            <div class='flex items-center gap-2.5 min-w-0'>
-              <img class='w-10 h-10 object-cover border border-[#E0DDD8] shrink-0' v-bind:src='friend.avatar || &quot;https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&amp;fit=crop&amp;w=80&amp;q=80&quot;'/>
-              <div class='min-w-0'>
-                <div class='flex items-center gap-1.5 truncate'>
-                  <h4 class='font-bold text-xs text-[#161513] truncate'>{{ friend.name }}</h4>
-                  <span class='text-[9px] bg-rose-100 text-rose-700 px-1 py-0.2 font-bold uppercase shrink-0 border border-rose-200' v-if='isUserChatBlocked(friend.email)'>Bị Khóa Chat</span>
+            <div class='p-3 bg-white border border-[#E0DDD8] flex items-center justify-between gap-3 shadow-sm' v-bind:key='friend.email || friend.key' v-for='friend in friendsList'>
+              <div class='flex items-center gap-2.5 min-w-0'>
+                <img class='w-10 h-10 object-cover border border-[#E0DDD8] shrink-0' v-bind:src='friend.avatar || &quot;https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&amp;fit=crop&amp;w=80&amp;q=80&quot;'/>
+                <div class='min-w-0'>
+                  <div class='flex items-center gap-1.5 truncate'>
+                    <h4 class='font-bold text-xs text-[#161513] truncate'>{{ friend.name }}</h4>
+                    <span class='text-[9px] bg-rose-100 text-rose-700 px-1 py-0.2 font-bold uppercase shrink-0 border border-rose-200' v-if='isUserChatBlocked(friend.email)'>Bị Khóa Chat</span>
+                  </div>
+                  <p class='text-[10px] text-slate-500 truncate'>{{ friend.email }}</p>
+                  <p class='text-[10px] text-[#C74634] font-medium'>
+                    <i class='fa-solid fa-location-dot text-[9px]'/> {{ friend.location || &#39;Tây Ninh&#39; }}
+                  </p>
                 </div>
-                <p class='text-[10px] text-slate-500 truncate'>{{ friend.email }}</p>
-                <p class='text-[10px] text-[#C74634] font-medium'>
-                  <i class='fa-solid fa-location-dot text-[9px]'/> {{ friend.location || &#39;Tây Ninh&#39; }}
-                </p>
+              </div>
+
+              <div class='flex items-center gap-1.5 shrink-0'>
+                <!-- Admin Blogger Block/Unblock Chat Action -->
+                <button class='px-2 py-1.5 font-bold text-[10px] flex items-center gap-1 transition shadow-xs' type='button' v-bind:class='isUserChatBlocked(friend.email) ? &quot;bg-emerald-600 hover:bg-emerald-700 text-white&quot; : &quot;bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-300&quot;' v-bind:title='isUserChatBlocked(friend.email) ? &quot;Admin: Mở khóa chat cho người này&quot; : &quot;Admin: Khóa chat vi phạm quy định&quot;' v-if='isBloggerAdmin &amp;&amp; !isUserAdmin(friend.email)' v-on:click='isUserChatBlocked(friend.email) ? adminUnblockUserChat(friend) : adminOpenBlockModal(friend)'>
+                  <i v-bind:class='isUserChatBlocked(friend.email) ? &quot;fa-solid fa-lock-open&quot; : &quot;fa-solid fa-ban&quot;'/>
+                  <span class='hidden sm:inline'>{{ isUserChatBlocked(friend.email) ? &quot;Mở Khóa&quot; : &quot;Khóa Chat&quot; }}</span>
+                </button>
+
+                <button class='px-2.5 py-1.5 bg-[#C74634] hover:bg-[#B13C2C] text-white font-bold text-[11px] flex items-center gap-1 transition shadow-sm' type='button' v-on:click='openPrivateChat(friend)'>
+                  <i class='fa-regular fa-comment-dots'/>
+                  <span>Nhắn tin</span>
+                </button>
+                <button class='px-2 py-1.5 bg-slate-100 hover:bg-rose-50 text-slate-500 hover:text-rose-600 border border-[#E0DDD8] text-[11px] transition' title='Hủy kết bạn' type='button' v-on:click='removeFriend(friend)'>
+                  <i class='fa-solid fa-user-minus'/>
+                </button>
               </div>
             </div>
+          </div>
 
-            <div class='flex items-center gap-1.5 shrink-0'>
-              <!-- Admin Blogger Block/Unblock Chat Action -->
-              <button class='px-2 py-1.5 font-bold text-[10px] flex items-center gap-1 transition shadow-xs' type='button' v-bind:class='isUserChatBlocked(friend.email) ? &quot;bg-emerald-600 hover:bg-emerald-700 text-white&quot; : &quot;bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-300&quot;' v-bind:title='isUserChatBlocked(friend.email) ? &quot;Admin: Mở khóa chat cho người này&quot; : &quot;Admin: Khóa chat vi phạm quy định&quot;' v-if='isBloggerAdmin &amp;&amp; !isUserAdmin(friend.email)' v-on:click='isUserChatBlocked(friend.email) ? adminUnblockUserChat(friend) : adminOpenBlockModal(friend)'>
-                <i v-bind:class='isUserChatBlocked(friend.email) ? &quot;fa-solid fa-lock-open&quot; : &quot;fa-solid fa-ban&quot;'/>
-                <span class='hidden sm:inline'>{{ isUserChatBlocked(friend.email) ? &quot;Mở Khóa&quot; : &quot;Khóa Chat&quot; }}</span>
-              </button>
+          <!-- TAB 2: LỜI MỜI KẾT BẠN ĐẾN MÌNH (INCOMING FRIEND REQUESTS) -->
+          <div class='space-y-2.5' v-if='friendsTab === &quot;requests&quot;'>
+            <div class='text-center py-10 text-slate-400 space-y-3' v-if='incomingFriendRequests.length === 0'>
+              <div class='w-12 h-12 mx-auto rounded-full bg-white border border-[#E0DDD8] flex items-center justify-center text-slate-300 text-xl'>
+                <i class='fa-solid fa-user-clock'/>
+              </div>
+              <p class='font-bold text-xs text-slate-600'>Không có lời mời kết bạn nào đang chờ.</p>
+              <p class='text-[11px] text-slate-400 max-w-xs mx-auto'>
+                Khi có người gửi lời mời kết bạn với bạn, danh sách sẽ hiển thị ngay tại đây theo thời gian thực!
+              </p>
+            </div>
 
-              <button class='px-2.5 py-1.5 bg-[#C74634] hover:bg-[#B13C2C] text-white font-bold text-[11px] flex items-center gap-1 transition shadow-sm' type='button' v-on:click='openPrivateChat(friend)'>
-                <i class='fa-regular fa-comment-dots'/>
-                <span>Nhắn tin</span>
-              </button>
-              <button class='px-2 py-1.5 bg-slate-100 hover:bg-rose-50 text-slate-500 hover:text-rose-600 border border-[#E0DDD8] text-[11px] transition' title='Hủy kết bạn' type='button' v-on:click='removeFriend(friend.email)'>
-                <i class='fa-solid fa-user-minus'/>
-              </button>
+            <div class='p-3 bg-white border border-[#E0DDD8] flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm hover:border-slate-300 transition' v-bind:key='req.email || req.key' v-for='req in incomingFriendRequests'>
+              <div class='flex items-center gap-2.5 min-w-0'>
+                <img class='w-10 h-10 object-cover border border-[#E0DDD8] shrink-0' v-bind:src='req.avatar || &quot;https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&amp;fit=crop&amp;w=80&amp;q=80&quot;'/>
+                <div class='min-w-0'>
+                  <div class='flex items-center gap-1.5 truncate'>
+                    <h4 class='font-bold text-xs text-[#161513] truncate'>{{ req.name }}</h4>
+                    <span class='text-[9px] bg-blue-100 text-blue-700 px-1 py-0.2 font-bold shrink-0'>Lời mời mới</span>
+                  </div>
+                  <p class='text-[10px] text-slate-500 truncate'>{{ req.email }}</p>
+                  <p class='text-[10px] text-[#C74634] font-medium flex items-center gap-1'>
+                    <i class='fa-solid fa-location-dot text-[9px]'/> {{ req.location || &#39;Tây Ninh&#39; }}
+                    <span class='text-slate-400 text-[9px]' v-if='req.requestedAt'>• {{ timeAgo(req.requestedAt) }}</span>
+                  </p>
+                </div>
+              </div>
+
+              <div class='flex items-center gap-2 shrink-0 self-end sm:self-center'>
+                <button class='px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] flex items-center gap-1.5 transition shadow-sm' type='button' v-on:click='acceptFriendRequest(req)'>
+                  <i class='fa-solid fa-check text-xs'/>
+                  <span>Chấp nhận</span>
+                </button>
+                <button class='px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold border border-[#E0DDD8] text-[11px] flex items-center gap-1 transition' type='button' v-on:click='rejectFriendRequest(req)'>
+                  <i class='fa-solid fa-xmark text-xs'/>
+                  <span>Từ chối</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
 
-        <div class='p-3 border-t border-[#E0DDD8] bg-white flex items-center justify-end'>
-          <button class='px-4 py-1.5 bg-slate-900 text-white font-bold text-xs' type='button' v-on:click='showFriendsModal = false'>
+        <div class='p-3 border-t border-[#E0DDD8] bg-white flex items-center justify-between'>
+          <span class='text-[10px] text-slate-500'>
+            <i class='fa-solid fa-bolt text-amber-500 mr-1'/>Kết nối trực tiếp thời gian thực
+          </span>
+          <button class='px-4 py-1.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs' type='button' v-on:click='showFriendsModal = false'>
             Đóng
           </button>
         </div>
@@ -7359,7 +7434,10 @@
 
         // QUẢN LÝ BẠN BÈ STATE
         const showFriendsModal = ref(false);
+        const friendsTab = ref('friends'); // 'friends' | 'requests'
         const friendsList = ref([]);
+        const incomingFriendRequests = ref([]);
+        const sentFriendRequests = ref([]);
 
         // ==========================================
         // TÍNH NĂNG TIKTOK SHORTS VIDEO (REELS 9:16)
@@ -9452,9 +9530,12 @@
               name: notif.senderName,
               avatar: notif.senderAvatar
             });
-          } else if (notif.type === 'friend_add' || notif.type === 'friend_relation') {
-            // 2. Bạn bè & Kết nối -> Mở modal danh sách Bạn bè
-            openFriendsModal();
+          } else if (notif.type === 'friend_request') {
+            // Lời mời kết bạn mới -> Mở tab Lời mời kết bạn
+            openFriendsModal('requests');
+          } else if (notif.type === 'friend_add' || notif.type === 'friend_relation' || notif.type === 'friend_accept') {
+            // Bạn bè & Kết nối -> Mở modal danh sách Bạn bè
+            openFriendsModal('friends');
           } else if (notif.type === 'short_video' || notif.type === 'short_comment' || notif.type === 'short_like') {
             // 3. Short video TikTok -> Chuyển sang trang Shorts
             openShortsPage();
@@ -12318,51 +12399,89 @@
               friendsList.value = [];
             }
 
-            // 2. Đồng bộ 2 CHIỀU TỪ allFirebaseMessages (Nếu đã có lịch sử kết bạn trên Firestore)
+            // 2. Đồng bộ 2 CHIỀU TỪ allFirebaseMessages
             if (allFirebaseMessages && allFirebaseMessages.length > 0 && (email || (uid && uid !== 'guest'))) {
               const relationMap = new Map();
-              allFirebaseMessages.filter(m => m.type === 'friend_relation').forEach(m => {
+              const incomingReqMap = new Map();
+              const sentReqMap = new Map();
+
+              // Sắp xếp theo thứ tự thời gian tăng dần
+              const sortedFriendMsgs = allFirebaseMessages
+                .filter(m => m.type === 'friend_relation')
+                .slice()
+                .sort((a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0));
+
+              sortedFriendMsgs.forEach(m => {
                 const u1Email = (m.user1Email || '').toLowerCase().trim();
                 const u1Uid = (m.user1Uid || '').toLowerCase().trim();
                 const u2Email = (m.user2Email || '').toLowerCase().trim();
                 const u2Uid = (m.user2Uid || '').toLowerCase().trim();
 
-                let other = null;
-                if ((email && u2Email === email) || (uid && uid !== 'guest' && u2Uid === uid)) {
-                  // Tôi là user2 (người được User 1 kết bạn) -> user1 là bạn của tôi
-                  other = {
-                    id: u1Email || u1Uid,
-                    key: u1Email || u1Uid,
-                    name: m.user1Name || 'Thành viên Tây Ninh',
-                    email: m.user1Email,
-                    avatar: m.user1Avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&q=80',
-                    location: m.user1Location || 'Tây Ninh',
-                    uid: m.user1Uid,
-                    addedAt: m.createdAt
-                  };
-                } else if ((email && u1Email === email) || (uid && uid !== 'guest' && u1Uid === uid)) {
-                  // Tôi là user1 (người chủ động kết bạn) -> user2 là bạn của tôi
-                  other = {
-                    id: u2Email || u2Uid,
-                    key: u2Email || u2Uid,
-                    name: m.user2Name || 'Thành viên Tây Ninh',
-                    email: m.user2Email,
-                    avatar: m.user2Avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&q=80',
-                    location: m.user2Location || 'Tây Ninh',
-                    uid: m.user2Uid,
-                    addedAt: m.createdAt
-                  };
-                }
+                const isMeUser1 = (email && u1Email === email) || (uid && uid !== 'guest' && u1Uid === uid);
+                const isMeUser2 = (email && u2Email === email) || (uid && uid !== 'guest' && u2Uid === uid);
 
-                if (other) {
-                  const key = getFriendKey(other);
-                  if (m.action === 'remove') {
-                    relationMap.delete(key);
-                  } else {
-                    relationMap.set(key, other);
+                if (!isMeUser1 && !isMeUser2) return;
+
+                const otherUser1 = {
+                  id: u1Email || u1Uid,
+                  key: u1Email || u1Uid,
+                  name: m.user1Name || 'Thành viên Tây Ninh',
+                  email: m.user1Email,
+                  avatar: m.user1Avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&q=80',
+                  location: m.user1Location || 'Tây Ninh',
+                  uid: m.user1Uid,
+                  requestedAt: m.createdAt,
+                  addedAt: m.createdAt
+                };
+
+                const otherUser2 = {
+                  id: u2Email || u2Uid,
+                  key: u2Email || u2Uid,
+                  name: m.user2Name || 'Thành viên Tây Ninh',
+                  email: m.user2Email,
+                  avatar: m.user2Avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&q=80',
+                  location: m.user2Location || 'Tây Ninh',
+                  uid: m.user2Uid,
+                  requestedAt: m.createdAt,
+                  addedAt: m.createdAt
+                };
+
+                const key1 = getFriendKey(otherUser1);
+                const key2 = getFriendKey(otherUser2);
+
+                if (m.action === 'request') {
+                  if (isMeUser2) {
+                    incomingReqMap.set(key1, otherUser1);
+                  } else if (isMeUser1) {
+                    sentReqMap.set(key2, otherUser2);
+                  }
+                } else if (m.action === 'accept' || m.action === 'add') {
+                  if (isMeUser2) {
+                    incomingReqMap.delete(key1);
+                    relationMap.set(key1, otherUser1);
+                  } else if (isMeUser1) {
+                    sentReqMap.delete(key2);
+                    relationMap.set(key2, otherUser2);
+                  }
+                } else if (m.action === 'reject') {
+                  if (isMeUser2) {
+                    incomingReqMap.delete(key1);
+                  } else if (isMeUser1) {
+                    sentReqMap.delete(key2);
+                  }
+                } else if (m.action === 'remove') {
+                  if (isMeUser2) {
+                    incomingReqMap.delete(key1);
+                    relationMap.delete(key1);
+                  } else if (isMeUser1) {
+                    sentReqMap.delete(key2);
+                    relationMap.delete(key2);
                   }
                 }
               });
+
+              incomingFriendRequests.value = Array.from(incomingReqMap.values());
+              sentFriendRequests.value = Array.from(sentReqMap.values());
 
               relationMap.forEach((val, k) => {
                 const existingIdx = friendsList.value.findIndex(f => getFriendKey(f) === k);
@@ -12372,6 +12491,12 @@
                   friendsList.value[existingIdx] = { ...friendsList.value[existingIdx], ...val };
                 }
               });
+
+              friendsList.value = friendsList.value.filter(f => {
+                const k = getFriendKey(f);
+                return !k || relationMap.has(k) || !sortedFriendMsgs.some(m => m.action === 'remove' && (getFriendKey(m.user1Email) === k || getFriendKey(m.user2Email) === k));
+              });
+
               saveFriendsToStorage(user);
             }
           } catch (e) {
@@ -12379,7 +12504,8 @@
           }
         };
 
-        const openFriendsModal = () => {
+        const openFriendsModal = (tab = 'friends') => {
+          friendsTab.value = tab || 'friends';
           loadFriends();
           showFriendsModal.value = true;
         };
@@ -12394,7 +12520,27 @@
           });
         };
 
-        const toggleFriend = async (target) => {
+        const hasIncomingFriendRequest = (target) => {
+          if (!target) return false;
+          const key = getFriendKey(target);
+          if (!key) return false;
+          return incomingFriendRequests.value.some(r => {
+            const rKey = getFriendKey(r);
+            return rKey && (rKey === key || (r.email && r.email.toLowerCase() === key));
+          });
+        };
+
+        const hasSentFriendRequest = (target) => {
+          if (!target) return false;
+          const key = getFriendKey(target);
+          if (!key) return false;
+          return sentFriendRequests.value.some(r => {
+            const rKey = getFriendKey(r);
+            return rKey && (rKey === key || (r.email && r.email.toLowerCase() === key));
+          });
+        };
+
+        const sendFriendRequest = async (target) => {
           if (!target) return;
           if (!currentUser.value) {
             showToast('Vui lòng đăng nhập Google để kết bạn và liên lạc.', 'warning');
@@ -12420,7 +12566,7 @@
           const location = target.location || target.subtitle || 'Tây Ninh';
           const targetUid = (target.userId || target.uid || target.authorId || '').toLowerCase().trim();
 
-          const friendRecord = {
+          const targetRecord = {
             id: targetKey,
             key: targetKey,
             name: name,
@@ -12428,7 +12574,7 @@
             avatar: avatar,
             location: location,
             uid: targetUid,
-            addedAt: new Date().toISOString()
+            requestedAt: new Date().toISOString()
           };
 
           const senderRecord = {
@@ -12439,121 +12585,225 @@
             avatar: myAvatar,
             location: myLocation,
             uid: myUid,
+            requestedAt: new Date().toISOString()
+          };
+
+          if (!sentFriendRequests.value.some(r => getFriendKey(r) === targetKey)) {
+            sentFriendRequests.value.unshift(targetRecord);
+          }
+
+          showToast('Đã gửi lời mời kết bạn đến ' + name + '!', 'success');
+
+          // BroadcastChannel
+          try {
+            if (typeof BroadcastChannel !== 'undefined') {
+              const channel = new BroadcastChannel('tnhub_realtime_chat');
+              channel.postMessage({
+                type: 'friend_relation_sync',
+                action: 'request',
+                sender: senderRecord,
+                target: targetRecord
+              });
+            }
+          } catch(e) {}
+
+          // Firestore messages
+          if (db) {
+            try {
+              await addDoc(collection(db, 'messages'), {
+                chatId: 'friend_relation',
+                type: 'friend_relation',
+                action: 'request',
+                user1Email: myEmail,
+                user1Uid: myUid,
+                user1Name: myName,
+                user1Avatar: myAvatar,
+                user1Location: myLocation,
+                user2Email: email,
+                user2Uid: targetUid,
+                user2Name: name,
+                user2Avatar: avatar,
+                user2Location: location,
+                createdAt: new Date().toISOString()
+              });
+            } catch(e) {
+              console.warn('Sync friend request error:', e);
+            }
+
+            // Realtime notification cho người nhận
+            saveNotificationToFirebase({
+              id: 'notif_fr_req_' + Date.now(),
+              type: 'friend_request',
+              title: '🤝 Lời mời kết bạn mới',
+              content: myName + ' đã gửi cho bạn một lời mời kết bạn trên TNHub!',
+              senderName: myName,
+              senderEmail: myEmail,
+              senderAvatar: myAvatar,
+              receiverEmail: email,
+              receiverId: targetUid,
+              read: false,
+              createdAt: new Date().toISOString()
+            });
+          }
+        };
+
+        const acceptFriendRequest = async (reqOrTarget) => {
+          if (!reqOrTarget) return;
+          if (!currentUser.value) {
+            showToast('Vui lòng đăng nhập Google.', 'warning');
+            loginGoogle();
+            return;
+          }
+
+          const myEmail = (currentUser.value.email || '').toLowerCase().trim();
+          const myUid = (currentUser.value.uid || '').toLowerCase().trim();
+          const myName = currentUser.value.displayName || 'Thành viên Tây Ninh';
+          const myAvatar = currentUser.value.photoURL || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&q=80';
+          const myLocation = (userProfile.value && userProfile.value.location) ? userProfile.value.location : 'Tây Ninh';
+
+          const targetKey = getFriendKey(reqOrTarget);
+          const req = incomingFriendRequests.value.find(r => getFriendKey(r) === targetKey) || reqOrTarget;
+          const targetName = req.name || req.authorName || 'Thành viên';
+          const targetEmail = (req.email || req.authorEmail || '').toLowerCase().trim();
+          const targetUid = (req.uid || req.userId || req.authorId || '').toLowerCase().trim();
+          const targetAvatar = req.avatar || req.authorAvatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&q=80';
+          const targetLocation = req.location || 'Tây Ninh';
+
+          // 1. Xóa khỏi danh sách chờ duyệt incomingFriendRequests
+          incomingFriendRequests.value = incomingFriendRequests.value.filter(r => getFriendKey(r) !== targetKey);
+
+          // 2. Thêm vào friendsList
+          const friendRecord = {
+            id: targetKey,
+            key: targetKey,
+            name: targetName,
+            email: targetEmail,
+            avatar: targetAvatar,
+            location: targetLocation,
+            uid: targetUid,
             addedAt: new Date().toISOString()
           };
 
-          const idx = friendsList.value.findIndex(f => {
-            const fKey = getFriendKey(f);
-            return fKey && (fKey === targetKey || (f.email && f.email.toLowerCase() === targetKey));
-          });
-
-          if (idx > -1) {
-            // HỦY KẾT BẠN 2 CHIỀU
-            friendsList.value.splice(idx, 1);
-            saveFriendsToStorage();
-            showToast('Đã hủy kết bạn với ' + name, 'info');
-
-            // 1. Phát BroadcastChannel tức thì
-            try {
-              if (typeof BroadcastChannel !== 'undefined') {
-                const channel = new BroadcastChannel('tnhub_realtime_chat');
-                channel.postMessage({
-                  type: 'friend_relation_sync',
-                  action: 'remove',
-                  sender: senderRecord,
-                  target: friendRecord
-                });
-              }
-            } catch(e) {}
-
-            // 2. Gửi sự kiện remove lên Firestore messages
-            if (db) {
-              try {
-                await addDoc(collection(db, 'messages'), {
-                  chatId: 'friend_relation',
-                  type: 'friend_relation',
-                  action: 'remove',
-                  user1Email: myEmail,
-                  user1Uid: myUid,
-                  user1Name: myName,
-                  user2Email: email,
-                  user2Uid: targetUid,
-                  user2Name: name,
-                  createdAt: new Date().toISOString()
-                });
-              } catch(e) {}
-            }
-          } else {
-            // KẾT BẠN 2 CHIỀU THÀNH CÔNG (CẢ 2 USER ĐỀU CÓ NHAU TRONG DANH SÁCH BẠN BÈ)
+          if (!friendsList.value.some(f => getFriendKey(f) === targetKey)) {
             friendsList.value.unshift(friendRecord);
             saveFriendsToStorage();
-            showToast('Đã kết bạn thành công với ' + name + '! Cả 2 bạn đã được kết nối.', 'success');
+          }
 
-            // 1. Phát BroadcastChannel tức thì để đối phương nhận ngay
+          showToast('Đã chấp nhận lời mời kết bạn từ ' + targetName + '!', 'success');
+
+          // BroadcastChannel
+          try {
+            if (typeof BroadcastChannel !== 'undefined') {
+              const channel = new BroadcastChannel('tnhub_realtime_chat');
+              channel.postMessage({
+                type: 'friend_relation_sync',
+                action: 'accept',
+                sender: { email: myEmail, uid: myUid, name: myName, avatar: myAvatar, location: myLocation },
+                target: friendRecord
+              });
+            }
+          } catch(e) {}
+
+          // Firestore messages
+          if (db) {
             try {
-              if (typeof BroadcastChannel !== 'undefined') {
-                const channel = new BroadcastChannel('tnhub_realtime_chat');
-                channel.postMessage({
-                  type: 'friend_relation_sync',
-                  action: 'add',
-                  sender: senderRecord,
-                  target: friendRecord
-                });
-              }
-            } catch(e) {}
-
-            // 2. Ghi nhận mối quan hệ bạn bè 2 chiều lên Cloud Firestore collection messages
-            if (db) {
-              try {
-                await addDoc(collection(db, 'messages'), {
-                  chatId: 'friend_relation',
-                  type: 'friend_relation',
-                  action: 'add',
-                  user1Email: myEmail,
-                  user1Uid: myUid,
-                  user1Name: myName,
-                  user1Avatar: myAvatar,
-                  user1Location: myLocation,
-                  user2Email: email,
-                  user2Uid: targetUid,
-                  user2Name: name,
-                  user2Avatar: avatar,
-                  user2Location: location,
-                  createdAt: new Date().toISOString()
-                });
-              } catch(e) {
-                console.warn('Sync friend relation firestore warning:', e);
-              }
-              // Lưu notification Firebase cho đối phương
-              saveNotificationToFirebase({
-                id: 'notif_fr_rcv_' + Date.now(),
-                type: 'friend_add',
-                title: '🤝 Kết bạn mới thành công',
-                content: myName + ' đã kết bạn với bạn trên TNHub!',
-                senderName: myName,
-                senderEmail: myEmail,
-                senderAvatar: myAvatar,
-                receiverEmail: email,
-                receiverId: targetUid,
-                read: false,
+              await addDoc(collection(db, 'messages'), {
+                chatId: 'friend_relation',
+                type: 'friend_relation',
+                action: 'accept',
+                user1Email: targetEmail,
+                user1Uid: targetUid,
+                user1Name: targetName,
+                user1Avatar: targetAvatar,
+                user1Location: targetLocation,
+                user2Email: myEmail,
+                user2Uid: myUid,
+                user2Name: myName,
+                user2Avatar: myAvatar,
+                user2Location: myLocation,
                 createdAt: new Date().toISOString()
               });
-
-              // Lưu notification Firebase cho chính mình
-              addNotification({
-                id: 'notif_fr_snd_' + Date.now(),
-                type: 'friend_add',
-                title: '🤝 Đã kết bạn với ' + name,
-                content: 'Bạn đã kết bạn thành công với ' + name + ' (' + email + ').',
-                senderName: name,
-                senderEmail: email,
-                senderAvatar: avatar,
-                receiverEmail: myEmail,
-                receiverId: myUid,
-                read: true,
-                createdAt: new Date().toISOString()
-              }, true);
+            } catch(e) {
+              console.warn('Sync friend accept error:', e);
             }
+
+            // Realtime notification cho người đã gửi lời mời (user1)
+            saveNotificationToFirebase({
+              id: 'notif_fr_acc_' + Date.now(),
+              type: 'friend_accept',
+              title: '🎉 Lời mời kết bạn được chấp nhận',
+              content: myName + ' đã chấp nhận lời mời kết bạn của bạn!',
+              senderName: myName,
+              senderEmail: myEmail,
+              senderAvatar: myAvatar,
+              receiverEmail: targetEmail,
+              receiverId: targetUid,
+              read: false,
+              createdAt: new Date().toISOString()
+            });
+          }
+        };
+
+        const rejectFriendRequest = async (reqOrTarget) => {
+          if (!reqOrTarget) return;
+          const targetKey = getFriendKey(reqOrTarget);
+          const req = incomingFriendRequests.value.find(r => getFriendKey(r) === targetKey) || reqOrTarget;
+          const targetEmail = (req.email || '').toLowerCase().trim();
+          const targetUid = (req.uid || '').toLowerCase().trim();
+          const targetName = req.name || 'Thành viên';
+
+          incomingFriendRequests.value = incomingFriendRequests.value.filter(r => getFriendKey(r) !== targetKey);
+          showToast('Đã từ chối lời mời kết bạn từ ' + targetName + '.', 'info');
+
+          const myEmail = (currentUser.value?.email || '').toLowerCase().trim();
+          const myUid = (currentUser.value?.uid || '').toLowerCase().trim();
+
+          // BroadcastChannel
+          try {
+            if (typeof BroadcastChannel !== 'undefined') {
+              const channel = new BroadcastChannel('tnhub_realtime_chat');
+              channel.postMessage({
+                type: 'friend_relation_sync',
+                action: 'reject',
+                sender: { email: myEmail, uid: myUid },
+                target: { email: targetEmail, uid: targetUid }
+              });
+            }
+          } catch(e) {}
+
+          // Firestore messages
+          if (db) {
+            try {
+              await addDoc(collection(db, 'messages'), {
+                chatId: 'friend_relation',
+                type: 'friend_relation',
+                action: 'reject',
+                user1Email: targetEmail,
+                user1Uid: targetUid,
+                user2Email: myEmail,
+                user2Uid: myUid,
+                createdAt: new Date().toISOString()
+              });
+            } catch(e) {}
+          }
+        };
+
+        const toggleFriend = async (target) => {
+          if (!target) return;
+          if (!currentUser.value) {
+            showToast('Vui lòng đăng nhập Google để kết bạn và liên lạc.', 'warning');
+            loginGoogle();
+            return;
+          }
+
+          if (isFriend(target)) {
+            await removeFriend(target);
+          } else if (hasIncomingFriendRequest(target)) {
+            await acceptFriendRequest(target);
+          } else if (hasSentFriendRequest(target)) {
+            showToast('Bạn đã gửi lời mời kết bạn. Đang chờ người này phản hồi!', 'info');
+          } else {
+            await sendFriendRequest(target);
           }
         };
 
@@ -13493,7 +13743,94 @@
                         const liveMyEmail = (liveSender.email || '').toLowerCase().trim();
                         const liveMyUid = (liveSender.uid || '').toLowerCase().trim();
 
-                        if (data.action === 'add') {
+                        if (data.action === 'request') {
+                          // LỜI MỜI KẾT BẠN MỚI GỬI TỚI TÔI (TÔI LÀ U2)
+                          if ((u2Email && u2Email === liveMyEmail) || (u2Uid && u2Uid === liveMyUid)) {
+                            const reqObj = {
+                              id: u1Email || u1Uid,
+                              key: u1Email || u1Uid,
+                              name: data.user1Name || 'Thành viên Tây Ninh',
+                              email: data.user1Email,
+                              avatar: data.user1Avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&q=80',
+                              location: data.user1Location || 'Tây Ninh',
+                              uid: data.user1Uid,
+                              requestedAt: data.createdAt || new Date().toISOString()
+                            };
+                            if (!incomingFriendRequests.value.some(r => getFriendKey(r) === getFriendKey(reqObj))) {
+                              incomingFriendRequests.value.unshift(reqObj);
+                              playNotificationSound();
+                              unreadNotificationCount.value++;
+                              showToast('🤝 [Lời mời kết bạn] ' + reqObj.name + ' đã gửi cho bạn lời mời kết bạn!', 'info', 'Lời mời kết bạn');
+                              notifications.value.unshift({
+                                id: 'notif_fr_req_' + Date.now(),
+                                type: 'friend_request',
+                                title: '🤝 Lời mời kết bạn mới',
+                                content: reqObj.name + ' đã gửi cho bạn một lời mời kết bạn trên TNHub!',
+                                senderName: reqObj.name,
+                                senderEmail: reqObj.email,
+                                senderAvatar: reqObj.avatar,
+                                read: false,
+                                createdAt: data.createdAt || new Date().toISOString()
+                              });
+                            }
+                          }
+                        } else if (data.action === 'accept') {
+                          // ĐỐI PHƯƠNG ĐÃ CHẤP NHẬN LỜI MỜI CỦA TÔI (TÔI LÀ U1)
+                          if ((u1Email && u1Email === liveMyEmail) || (u1Uid && u1Uid === liveMyUid)) {
+                            sentFriendRequests.value = sentFriendRequests.value.filter(r => getFriendKey(r) !== (u2Email || u2Uid));
+                            const newFriendObj = {
+                              id: u2Email || u2Uid,
+                              key: u2Email || u2Uid,
+                              name: data.user2Name || 'Thành viên Tây Ninh',
+                              email: data.user2Email,
+                              avatar: data.user2Avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&q=80',
+                              location: data.user2Location || 'Tây Ninh',
+                              uid: data.user2Uid,
+                              addedAt: data.createdAt || new Date().toISOString()
+                            };
+                            if (!friendsList.value.some(f => getFriendKey(f) === getFriendKey(newFriendObj))) {
+                              friendsList.value.unshift(newFriendObj);
+                              saveFriendsToStorage();
+                              playNotificationSound();
+                              unreadNotificationCount.value++;
+                              showToast('🎉 ' + newFriendObj.name + ' đã chấp nhận lời mời kết bạn của bạn!', 'success', 'Kết bạn thành công');
+                              notifications.value.unshift({
+                                id: 'notif_fr_acc_' + Date.now(),
+                                type: 'friend_accept',
+                                title: '🎉 Lời mời kết bạn được chấp nhận',
+                                content: newFriendObj.name + ' đã chấp nhận lời mời kết bạn của bạn!',
+                                senderName: newFriendObj.name,
+                                senderEmail: newFriendObj.email,
+                                senderAvatar: newFriendObj.avatar,
+                                read: false,
+                                createdAt: data.createdAt || new Date().toISOString()
+                              });
+                            }
+                          } else if ((u2Email && u2Email === liveMyEmail) || (u2Uid && u2Uid === liveMyUid)) {
+                            // Tôi vừa chấp nhận từ thiết bị/tab khác (Tôi là U2)
+                            incomingFriendRequests.value = incomingFriendRequests.value.filter(r => getFriendKey(r) !== (u1Email || u1Uid));
+                            const newFriendObj = {
+                              id: u1Email || u1Uid,
+                              key: u1Email || u1Uid,
+                              name: data.user1Name || 'Thành viên Tây Ninh',
+                              email: data.user1Email,
+                              avatar: data.user1Avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&q=80',
+                              location: data.user1Location || 'Tây Ninh',
+                              uid: data.user1Uid,
+                              addedAt: data.createdAt || new Date().toISOString()
+                            };
+                            if (!friendsList.value.some(f => getFriendKey(f) === getFriendKey(newFriendObj))) {
+                              friendsList.value.unshift(newFriendObj);
+                              saveFriendsToStorage();
+                            }
+                          }
+                        } else if (data.action === 'reject') {
+                          if ((u1Email && u1Email === liveMyEmail) || (u1Uid && u1Uid === liveMyUid)) {
+                            sentFriendRequests.value = sentFriendRequests.value.filter(r => getFriendKey(r) !== (u2Email || u2Uid));
+                          } else if ((u2Email && u2Email === liveMyEmail) || (u2Uid && u2Uid === liveMyUid)) {
+                            incomingFriendRequests.value = incomingFriendRequests.value.filter(r => getFriendKey(r) !== (u1Email || u1Uid));
+                          }
+                        } else if (data.action === 'add') {
                           let newFriendObj = null;
                           if ((u2Email && u2Email === liveMyEmail) || (u2Uid && u2Uid === liveMyUid)) {
                             // Người gửi (user1) kết bạn với tôi
@@ -13690,7 +14027,88 @@
                   const myEmail = (currentUser.value?.email || guestUser.value?.email || '').toLowerCase().trim();
                   const myUid = (currentUser.value?.uid || guestUser.value?.uid || '').toLowerCase().trim();
 
-                  if (data.action === 'add' && data.sender && data.target) {
+                  if (data.action === 'request' && data.sender && data.target) {
+                    const toEmail = (data.target.email || '').toLowerCase().trim();
+                    const toUid = (data.target.uid || '').toLowerCase().trim();
+
+                    if ((toEmail && toEmail === myEmail) || (toUid && toUid === myUid)) {
+                      const reqObj = {
+                        id: data.sender.email || data.sender.uid || data.sender.id,
+                        key: getFriendKey(data.sender),
+                        name: data.sender.name || 'Thành viên Tây Ninh',
+                        email: data.sender.email,
+                        avatar: data.sender.avatar,
+                        location: data.sender.location || 'Tây Ninh',
+                        uid: data.sender.uid,
+                        requestedAt: data.sender.requestedAt || new Date().toISOString()
+                      };
+                      if (!incomingFriendRequests.value.some(r => getFriendKey(r) === getFriendKey(reqObj))) {
+                        incomingFriendRequests.value.unshift(reqObj);
+                        playNotificationSound();
+                        unreadNotificationCount.value++;
+                        showToast('🤝 [Lời mời kết bạn] ' + reqObj.name + ' đã gửi cho bạn lời mời kết bạn!', 'info', 'Lời mời kết bạn');
+                        notifications.value.unshift({
+                          id: 'notif_fr_req_' + Date.now(),
+                          type: 'friend_request',
+                          title: '🤝 Lời mời kết bạn mới',
+                          content: reqObj.name + ' đã gửi cho bạn một lời mời kết bạn trên TNHub!',
+                          senderName: reqObj.name,
+                          senderEmail: reqObj.email,
+                          senderAvatar: reqObj.avatar,
+                          read: false,
+                          createdAt: new Date().toISOString()
+                        });
+                      }
+                    }
+                  } else if (data.action === 'accept' && data.sender && data.target) {
+                    const toEmail = (data.target.email || '').toLowerCase().trim();
+                    const toUid = (data.target.uid || '').toLowerCase().trim();
+                    const fromEmail = (data.sender.email || '').toLowerCase().trim();
+                    const fromUid = (data.sender.uid || '').toLowerCase().trim();
+
+                    if ((toEmail && toEmail === myEmail) || (toUid && toUid === myUid)) {
+                      // Tôi là người được chấp nhận
+                      sentFriendRequests.value = sentFriendRequests.value.filter(r => getFriendKey(r) !== (fromEmail || fromUid));
+                      const newFriend = data.sender;
+                      if (!friendsList.value.some(f => getFriendKey(f) === getFriendKey(newFriend))) {
+                        friendsList.value.unshift(newFriend);
+                        saveFriendsToStorage();
+                        playNotificationSound();
+                        unreadNotificationCount.value++;
+                        showToast('🎉 ' + newFriend.name + ' đã chấp nhận lời mời kết bạn của bạn!', 'success', 'Kết Bạn Thành Công');
+                        notifications.value.unshift({
+                          id: 'notif_fr_acc_' + Date.now(),
+                          type: 'friend_accept',
+                          title: '🎉 Lời mời kết bạn được chấp nhận',
+                          content: newFriend.name + ' đã chấp nhận lời mời kết bạn của bạn!',
+                          senderName: newFriend.name,
+                          senderEmail: newFriend.email,
+                          senderAvatar: newFriend.avatar,
+                          read: false,
+                          createdAt: new Date().toISOString()
+                        });
+                      }
+                    } else if ((fromEmail && fromEmail === myEmail) || (fromUid && fromUid === myUid)) {
+                      // Tôi là người vừa chấp nhận
+                      incomingFriendRequests.value = incomingFriendRequests.value.filter(r => getFriendKey(r) !== (toEmail || toUid));
+                      const newFriend = data.target;
+                      if (!friendsList.value.some(f => getFriendKey(f) === getFriendKey(newFriend))) {
+                        friendsList.value.unshift(newFriend);
+                        saveFriendsToStorage();
+                      }
+                    }
+                  } else if (data.action === 'reject' && data.sender && data.target) {
+                    const toEmail = (data.target.email || '').toLowerCase().trim();
+                    const toUid = (data.target.uid || '').toLowerCase().trim();
+                    const fromEmail = (data.sender.email || '').toLowerCase().trim();
+                    const fromUid = (data.sender.uid || '').toLowerCase().trim();
+
+                    if ((toEmail && toEmail === myEmail) || (toUid && toUid === myUid)) {
+                      sentFriendRequests.value = sentFriendRequests.value.filter(r => getFriendKey(r) !== (fromEmail || fromUid));
+                    } else if ((fromEmail && fromEmail === myEmail) || (fromUid && fromUid === myUid)) {
+                      incomingFriendRequests.value = incomingFriendRequests.value.filter(r => getFriendKey(r) !== (toEmail || toUid));
+                    }
+                  } else if (data.action === 'add' && data.sender && data.target) {
                     const toEmail = (data.target.email || '').toLowerCase().trim();
                     const toUid = (data.target.uid || '').toLowerCase().trim();
 
@@ -14152,10 +14570,18 @@
           coverPresets,
           avatarPresets,
           showFriendsModal,
+          friendsTab,
           friendsList,
+          incomingFriendRequests,
+          sentFriendRequests,
           loadFriends,
           openFriendsModal,
           saveFriendsToStorage,
+          hasIncomingFriendRequest,
+          hasSentFriendRequest,
+          sendFriendRequest,
+          acceptFriendRequest,
+          rejectFriendRequest,
           showPrivateChat,
           activeChatPartner,
           privateMessages,
