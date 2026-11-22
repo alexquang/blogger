@@ -2617,8 +2617,20 @@
               <span class='absolute -bottom-1 -right-1 w-4 h-4 bg-blue-600 text-white rounded-full flex items-center justify-center text-[8px]' title='Bạn bè kết nối' v-else-if='notif.type === &quot;friend_add&quot; || notif.type === &quot;friend_relation&quot;'>
                 <i class='fa-solid fa-user-group'/>
               </span>
+              <span class='absolute -bottom-1 -right-1 w-4 h-4 bg-rose-600 text-white rounded-full flex items-center justify-center text-[8px]' title='Lượt thích bài viết' v-else-if='notif.type === &quot;post_like&quot; || notif.type === &quot;like&quot;'>
+                <i class='fa-solid fa-heart'/>
+              </span>
+              <span class='absolute -bottom-1 -right-1 w-4 h-4 bg-[#FE2C55] text-white rounded-full flex items-center justify-center text-[8px]' title='Thả tim Short Video' v-else-if='notif.type === &quot;short_like&quot;'>
+                <i class='fa-solid fa-heart'/>
+              </span>
+              <span class='absolute -bottom-1 -right-1 w-4 h-4 bg-[#FE2C55] text-white rounded-full flex items-center justify-center text-[8px]' title='Bình luận Short Video' v-else-if='notif.type === &quot;short_comment&quot;'>
+                <i class='fa-brands fa-tiktok'/>
+              </span>
               <span class='absolute -bottom-1 -right-1 w-4 h-4 bg-[#FE2C55] text-white rounded-full flex items-center justify-center text-[8px]' title='Short Video TikTok' v-else-if='notif.type === &quot;short_video&quot;'>
                 <i class='fa-brands fa-tiktok'/>
+              </span>
+              <span class='absolute -bottom-1 -right-1 w-4 h-4 bg-blue-500 text-white rounded-full flex items-center justify-center text-[8px]' title='Thích bình luận' v-else-if='notif.type === &quot;comment_like&quot;'>
+                <i class='fa-solid fa-thumbs-up'/>
               </span>
               <span class='absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-600 text-white rounded-full flex items-center justify-center text-[8px]' title='Tuyển dụng / Ứng tuyển' v-else-if='notif.type === &quot;applied_job&quot;'>
                 <i class='fa-solid fa-briefcase'/>
@@ -2655,7 +2667,9 @@
                 <span class='text-[#C74634] font-medium flex items-center gap-1'>
                   <span v-if='notif.type === &quot;private_chat&quot;'>Nhắn tin riêng &#8594;</span>
                   <span v-else-if='notif.type === &quot;friend_add&quot; || notif.type === &quot;friend_relation&quot;'>Xem danh sách bạn bè &#8594;</span>
-                  <span v-else-if='notif.type === &quot;short_video&quot;'>Xem Short Video &#8594;</span>
+                  <span v-else-if='notif.type === &quot;post_like&quot; || notif.type === &quot;like&quot;'>Xem bài viết được thích &#8594;</span>
+                  <span v-else-if='notif.type === &quot;short_like&quot; || notif.type === &quot;short_comment&quot; || notif.type === &quot;short_video&quot;'>Xem Short Video TikTok &#8594;</span>
+                  <span v-else-if='notif.type === &quot;comment_like&quot;'>Xem bình luận được thích &#8594;</span>
                   <span v-else-if='notif.type === &quot;applied_job&quot;'>Xem hồ sơ ứng tuyển &#8594;</span>
                   <span v-else-if='notif.type === &quot;community_chat&quot;'>Mở phòng chat cộng đồng &#8594;</span>
                   <span v-else-if='notif.type === &quot;comment&quot;'>Xem bài viết &amp; bình luận &#8594;</span>
@@ -7599,6 +7613,29 @@
             video.likesCount = (video.likesCount || 0) + 1;
             video.likedByMe = true;
             playNotificationSound();
+
+            // GỬI NOTIFICATION CHO TÁC GIẢ SHORT VIDEO
+            const targetEmail = (video.authorEmail || '').toLowerCase().trim();
+            const targetId = video.authorId || video.userId || '';
+            const myUser = currentUser.value || guestUser.value;
+            const myEmail = (myUser?.email || '').toLowerCase().trim();
+            const myName = myUser?.displayName || 'Thành viên Tây Ninh';
+            if (targetEmail && targetEmail !== myEmail) {
+              const captionSnippet = video.caption ? (video.caption.length > 35 ? video.caption.substring(0, 35) + '...' : video.caption) : 'video ngắn';
+              saveNotificationToFirebase({
+                id: 'notif_short_like_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+                type: 'short_like',
+                title: '❤️ Có người thả tim video ngắn của bạn',
+                content: myName + ' vừa thả tim video ngắn "' + captionSnippet + '" của bạn.',
+                senderName: myName,
+                senderEmail: myEmail,
+                senderAvatar: myUser?.photoURL || '',
+                receiverEmail: targetEmail,
+                receiverId: targetId,
+                read: false,
+                createdAt: new Date().toISOString()
+              });
+            }
           }
           safeSetStorage('tnhub_shorts_videos', JSON.stringify(shortVideosList.value));
         };
@@ -7617,12 +7654,34 @@
             id: 'c_' + Date.now(),
             authorName: user.displayName || 'Thành viên Tây Ninh',
             authorAvatar: user.photoURL || NO_AVATAR_PLACEHOLDER,
+            authorEmail: user.email || '',
             text: text,
             createdAt: new Date().toISOString()
           });
           shortNewCommentText.value = '';
           safeSetStorage('tnhub_shorts_videos', JSON.stringify(shortVideosList.value));
           showToast('Đã đăng bình luận!', 'success');
+
+          // GỬI NOTIFICATION CHO TÁC GIẢ SHORT VIDEO
+          const targetEmail = (currentShortVideo.value.authorEmail || '').toLowerCase().trim();
+          const targetId = currentShortVideo.value.authorId || currentShortVideo.value.userId || '';
+          const myEmail = (user.email || '').toLowerCase().trim();
+          if (targetEmail && targetEmail !== myEmail) {
+            const captionSnippet = currentShortVideo.value.caption ? (currentShortVideo.value.caption.length > 30 ? currentShortVideo.value.caption.substring(0, 30) + '...' : currentShortVideo.value.caption) : 'video ngắn';
+            saveNotificationToFirebase({
+              id: 'notif_short_cmt_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+              type: 'short_comment',
+              title: '💬 Bình luận mới trên video ngắn của bạn',
+              content: (user.displayName || 'Thành viên') + ' vừa bình luận: "' + (text.length > 40 ? text.substring(0, 40) + '...' : text) + '" trên video "' + captionSnippet + '".',
+              senderName: user.displayName || 'Thành viên Tây Ninh',
+              senderEmail: myEmail,
+              senderAvatar: user.photoURL || NO_AVATAR_PLACEHOLDER,
+              receiverEmail: targetEmail,
+              receiverId: targetId,
+              read: false,
+              createdAt: new Date().toISOString()
+            });
+          }
         };
 
         const shareShortVideo = (video) => {
@@ -9395,8 +9454,8 @@
             });
           } else if (notif.type === 'friend_add' || notif.type === 'friend_relation') {
             // 2. Bạn bè & Kết nối -> Mở modal danh sách Bạn bè
-            showFriendsModal.value = true;
-          } else if (notif.type === 'short_video' || notif.type === 'short_comment') {
+            openFriendsModal();
+          } else if (notif.type === 'short_video' || notif.type === 'short_comment' || notif.type === 'short_like') {
             // 3. Short video TikTok -> Chuyển sang trang Shorts
             openShortsPage();
           } else if (notif.type === 'applied_job' || notif.type === 'job_application') {
@@ -9405,8 +9464,8 @@
           } else if (notif.type === 'community_chat' || notif.type === 'community') {
             // 5. Tin nhắn cộng đồng -> Mở drawer Tin Nhắn Realtime
             openChatDrawer();
-          } else if (notif.type === 'comment' && notif.targetPostId) {
-            // 6. Bình luận bài đăng -> Mở chi tiết bài đăng đó
+          } else if ((notif.type === 'comment' || notif.type === 'post_like' || notif.type === 'like' || notif.type === 'comment_like') && notif.targetPostId) {
+            // 6. Bình luận hoặc Thích bài đăng -> Mở chi tiết bài đăng đó
             openDetailModal({ id: notif.targetPostId });
           } else if (notif.type === 'global_new_post' && notif.postId) {
             // 7. Tin đăng mới VIP / Toàn cầu -> Mở chi tiết bài đăng
@@ -10167,6 +10226,33 @@
             card.likedByMe = true;
             card.likesCount = (card.likesCount || 0) + 1;
             showToast(t('likeSuccess') || 'Đã thích bài đăng!', 'success');
+
+            // GỬI REALTIME NOTIFICATION CHO TÁC GIẢ BÀI VIẾT
+            const targetEmail = (card.authorEmail || '').toLowerCase().trim();
+            const targetId = card.userId || card.authorId || '';
+            const myUser = currentUser.value || guestUser.value;
+            const myEmail = (myUser?.email || '').toLowerCase().trim();
+            const myName = myUser?.displayName || 'Thành viên Tây Ninh';
+            const myAvatar = myUser?.photoURL || '';
+
+            if (targetEmail && targetEmail !== myEmail) {
+              const postTitle = (typeof getPostTitle === 'function' ? getPostTitle(card) : (card.title || 'bài viết'));
+              const shortTitle = postTitle.length > 35 ? postTitle.substring(0, 35) + '...' : postTitle;
+              saveNotificationToFirebase({
+                id: 'notif_like_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+                type: 'post_like',
+                title: '❤️ Có người thích bài viết của bạn',
+                content: myName + ' vừa thích bài viết "' + shortTitle + '" của bạn.',
+                senderName: myName,
+                senderEmail: myEmail,
+                senderAvatar: myAvatar,
+                receiverEmail: targetEmail,
+                receiverId: targetId,
+                targetPostId: card.id,
+                read: false,
+                createdAt: new Date().toISOString()
+              });
+            }
           }
 
           try {
@@ -10313,18 +10399,22 @@
               const targetEmail = (targetCard.authorEmail || '').toLowerCase().trim();
               const myEmail = (currentUser.value && currentUser.value.email ? currentUser.value.email : '').toLowerCase().trim();
               if (targetEmail && targetEmail !== myEmail) {
-                addDoc(collection(db, 'notifications'), {
+                const postTitle = (typeof getPostTitle === 'function' ? getPostTitle(targetCard) : (targetCard.title || 'bài viết'));
+                const shortTitle = postTitle.length > 35 ? postTitle.substring(0, 35) + '...' : postTitle;
+                saveNotificationToFirebase({
+                  id: 'notif_cmt_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
                   type: 'comment',
-                  title: 'Bình luận mới về bài viết của bạn',
-                  content: author + ' vừa bình luận: "' + (text.length > 50 ? text.substring(0, 50) + '...' : text) + '"',
+                  title: '💬 Bình luận mới về bài viết của bạn',
+                  content: author + ' vừa bình luận: "' + (text.length > 45 ? text.substring(0, 45) + '...' : text) + '" trên bài viết "' + shortTitle + '".',
                   senderName: author,
                   senderEmail: myEmail,
                   senderAvatar: avatar,
                   receiverEmail: targetEmail,
+                  receiverId: targetCard.userId || targetCard.authorId || '',
                   targetPostId: targetCard.id,
                   read: false,
                   createdAt: new Date().toISOString()
-                }).catch(e => console.warn('Sync comment notif error:', e));
+                });
               }
             } catch (e) {
               console.warn('Sync comment:', e);
@@ -10606,18 +10696,22 @@
               const targetEmail = (card.authorEmail || '').toLowerCase().trim();
               const myEmail = (currentUser.value && currentUser.value.email ? currentUser.value.email : '').toLowerCase().trim();
               if (targetEmail && targetEmail !== myEmail) {
-                addDoc(collection(db, 'notifications'), {
+                const postTitle = (typeof getPostTitle === 'function' ? getPostTitle(card) : (card.title || 'bài viết'));
+                const shortTitle = postTitle.length > 35 ? postTitle.substring(0, 35) + '...' : postTitle;
+                saveNotificationToFirebase({
+                  id: 'notif_cmt_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
                   type: 'comment',
-                  title: 'Bình luận mới về bài viết của bạn',
-                  content: author + ' vừa bình luận: "' + (text.length > 50 ? text.substring(0, 50) + '...' : text) + '"',
+                  title: '💬 Bình luận mới về bài viết của bạn',
+                  content: author + ' vừa bình luận: "' + (text.length > 45 ? text.substring(0, 45) + '...' : text) + '" trên bài viết "' + shortTitle + '".',
                   senderName: author,
                   senderEmail: myEmail,
                   senderAvatar: avatar,
                   receiverEmail: targetEmail,
+                  receiverId: card.userId || card.authorId || '',
                   targetPostId: card.id,
                   read: false,
                   createdAt: new Date().toISOString()
-                }).catch(() => {});
+                });
               }
             } catch (e) {
               console.warn('Sync comment:', e);
@@ -10644,6 +10738,28 @@
             comment.likedByMe = true;
             comment.likes = (comment.likes || 0) + 1;
             showToast(t('likeSuccess') || 'Đã thích bình luận!', 'success');
+
+            // GỬI NOTIFICATION CHO NGƯỜI VIẾT BÌNH LUẬN
+            const targetEmail = (comment.authorEmail || '').toLowerCase().trim();
+            const myUser = currentUser.value || guestUser.value;
+            const myEmail = (myUser?.email || '').toLowerCase().trim();
+            const myName = myUser?.displayName || 'Thành viên Tây Ninh';
+            if (targetEmail && targetEmail !== myEmail) {
+              const cmtSnippet = (comment.text || '').substring(0, 35);
+              saveNotificationToFirebase({
+                id: 'notif_like_cmt_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+                type: 'comment_like',
+                title: '👍 Có người thích bình luận của bạn',
+                content: myName + ' vừa thích bình luận của bạn: "' + (cmtSnippet ? cmtSnippet + '...' : '') + '".',
+                senderName: myName,
+                senderEmail: myEmail,
+                senderAvatar: myUser?.photoURL || '',
+                receiverEmail: targetEmail,
+                targetPostId: (card || selectedDetailCard.value || activeCommentCard.value)?.id || '',
+                read: false,
+                createdAt: new Date().toISOString()
+              });
+            }
           }
           // Kích hoạt phản ứng tức thì cho Vue 3
           myLikedComments.value = [...myLikedComments.value];
@@ -10720,6 +10836,27 @@
               console.warn('Sync reply:', e);
             }
           }
+
+          // GỬI NOTIFICATION CHO NGƯỜI ĐƯỢC PHẢN HỒI BÌNH LUẬN
+          const targetEmail = (comment.authorEmail || (targetCard ? targetCard.authorEmail : '') || '').toLowerCase().trim();
+          const targetId = comment.authorId || (targetCard ? (targetCard.userId || targetCard.authorId) : '') || '';
+          const myEmail = (currentUser.value && currentUser.value.email ? currentUser.value.email : '').toLowerCase().trim();
+          if (targetEmail && targetEmail !== myEmail) {
+            saveNotificationToFirebase({
+              id: 'notif_reply_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+              type: 'comment',
+              title: '💬 Phản hồi bình luận của bạn',
+              content: author + ' vừa phản hồi bình luận: "' + (text.length > 45 ? text.substring(0, 45) + '...' : text) + '".',
+              senderName: author,
+              senderEmail: myEmail,
+              senderAvatar: avatar,
+              receiverEmail: targetEmail,
+              receiverId: targetId,
+              targetPostId: targetCard ? targetCard.id : '',
+              read: false,
+              createdAt: new Date().toISOString()
+            });
+          }
         };
 
         const postDetailComment = () => {
@@ -10774,18 +10911,22 @@
               const targetEmail = (targetCard.authorEmail || '').toLowerCase().trim();
               const myEmail = (currentUser.value && currentUser.value.email ? currentUser.value.email : '').toLowerCase().trim();
               if (targetEmail && targetEmail !== myEmail) {
-                addDoc(collection(db, 'notifications'), {
+                const postTitle = (typeof getPostTitle === 'function' ? getPostTitle(targetCard) : (targetCard.title || 'bài viết'));
+                const shortTitle = postTitle.length > 35 ? postTitle.substring(0, 35) + '...' : postTitle;
+                saveNotificationToFirebase({
+                  id: 'notif_cmt_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
                   type: 'comment',
-                  title: 'Bình luận mới về bài viết của bạn',
-                  content: author + ' vừa bình luận: "' + (text.length > 50 ? text.substring(0, 50) + '...' : text) + '"',
+                  title: '💬 Bình luận mới về bài viết của bạn',
+                  content: author + ' vừa bình luận: "' + (text.length > 45 ? text.substring(0, 45) + '...' : text) + '" trên bài viết "' + shortTitle + '".',
                   senderName: author,
                   senderEmail: myEmail,
                   senderAvatar: avatar,
                   receiverEmail: targetEmail,
+                  receiverId: targetCard.userId || targetCard.authorId || '',
                   targetPostId: targetCard.id,
                   read: false,
                   createdAt: new Date().toISOString()
-                }).catch(e => console.warn('Sync detail notif error:', e));
+                });
               }
             } catch (e) {
               console.warn('Sync detail cmt:', e);
@@ -13335,7 +13476,8 @@
                         if ((toEmail && toEmail === myEmail) || (toId && toId === myUid)) {
                           addNotification(n, false);
                           playNotificationSound();
-                          showToast('🔔 ' + (n.title || 'Thông báo mới') + ': ' + (n.content ? n.content.substring(0, 45) : ''), 'info', n.senderName || 'TNHub Tây Ninh');
+                          const notifIcon = (n.type === 'post_like' || n.type === 'short_like' || n.type === 'like') ? '❤️ ' : (n.type === 'comment' || n.type === 'short_comment' || n.type === 'comment_like') ? '💬 ' : '🔔 ';
+                          showToast(notifIcon + (n.title || 'Thông báo mới') + ': ' + (n.content ? n.content.substring(0, 50) : ''), 'info', n.senderName || 'TNHub Tây Ninh');
                         }
                         return;
                       }
