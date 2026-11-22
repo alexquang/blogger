@@ -2854,7 +2854,7 @@
               <span>Gửi liên hệ</span>
             </button>
             <button v-else='true' v-on:click='showDetailModal = false' class='px-5 py-2 rounded-none bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-sm transition'>
-              Đóng
+              {{ t('close') }}
             </button>
           </div>
         </div>
