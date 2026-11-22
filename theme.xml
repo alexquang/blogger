@@ -2751,9 +2751,11 @@
                   
                   <!-- Comment Actions: Thích & Phản hồi -->
                   <div class='flex items-center gap-3 mt-2 pt-1.5 border-t border-[#F1EFED] text-[11px] text-slate-500 font-semibold'>
-                    <button type='button' v-on:click.prevent='likeComment(cmt, selectedDetailCard)' class='hover:text-[#C74634] flex items-center gap-1 transition'>
-                      <i class='fa-regular fa-thumbs-up'></i>
-                      <span>{{ t("like") }} ({{ cmt.likes || 0 }})</span>
+                    <button type='button' v-on:click.stop.prevent='likeComment(cmt, selectedDetailCard)' 
+                            v-bind:class='(cmt.likedByMe || isCommentLiked(cmt.id)) ? "text-[#C74634] font-bold bg-[#C74634]/15 px-2 py-0.5 rounded" : "text-slate-500 hover:text-[#C74634] hover:bg-[#F1EFED] px-2 py-0.5 rounded"' 
+                            class='flex items-center gap-1 transition text-[11px] font-semibold'>
+                      <i v-bind:class='(cmt.likedByMe || isCommentLiked(cmt.id)) ? "fa-solid fa-thumbs-up text-[#C74634]" : "fa-regular fa-thumbs-up"'></i>
+                      <span>{{ (cmt.likedByMe || isCommentLiked(cmt.id)) ? t("liked") : t("like") }} ({{ cmt.likes || 0 }})</span>
                     </button>
                     <span>•</span>
                     <button type='button' v-on:click.prevent='cmt.showReply = !cmt.showReply' class='hover:text-[#C74634] flex items-center gap-1 transition'>
@@ -2928,9 +2930,11 @@
 
                 <!-- Actions: Like + Reply -->
                 <div class='flex items-center gap-3 mt-2 pt-1.5 border-t border-[#F1EFED] text-[10px] text-slate-500 font-semibold'>
-                  <button type='button' v-on:click.prevent='likeComment(cmt, activeCommentCard)' class='hover:text-[#C74634] flex items-center gap-1 transition'>
-                    <i class='fa-regular fa-thumbs-up'></i>
-                    <span>{{ t("like") }} ({{ cmt.likes || 0 }})</span>
+                  <button type='button' v-on:click.stop.prevent='likeComment(cmt, activeCommentCard)' 
+                          v-bind:class='(cmt.likedByMe || isCommentLiked(cmt.id)) ? "text-[#C74634] font-bold bg-[#C74634]/15 px-2 py-0.5 rounded" : "text-slate-500 hover:text-[#C74634] hover:bg-[#F1EFED] px-2 py-0.5 rounded"' 
+                          class='flex items-center gap-1 transition text-[10px] font-semibold'>
+                    <i v-bind:class='(cmt.likedByMe || isCommentLiked(cmt.id)) ? "fa-solid fa-thumbs-up text-[#C74634]" : "fa-regular fa-thumbs-up"'></i>
+                    <span>{{ (cmt.likedByMe || isCommentLiked(cmt.id)) ? t("liked") : t("like") }} ({{ cmt.likes || 0 }})</span>
                   </button>
                   <span>•</span>
                   <button type='button' v-on:click.prevent='cmt.showReply = !cmt.showReply' class='hover:text-[#C74634] flex items-center gap-1 transition'>
@@ -5921,6 +5925,16 @@
         const myLikedPosts = ref(initialLikedPosts);
         const isPostLiked = (id) => !!(id && myLikedPosts.value.includes(id));
 
+        // BỘ NHỚ LƯU TRỮ CÁC BÌNH LUẬN ĐÃ LIKE CỦA THIẾT BỊ / USER
+        let initialLikedComments = [];
+        try {
+          const rawLikedCmt = safeGetStorage('tnhub_liked_comments', '[]');
+          initialLikedComments = JSON.parse(rawLikedCmt);
+          if (!Array.isArray(initialLikedComments)) initialLikedComments = [];
+        } catch(e) { initialLikedComments = []; }
+        const myLikedComments = ref(initialLikedComments);
+        const isCommentLiked = (cmtId) => !!(cmtId && myLikedComments.value.includes(cmtId));
+
         const toasts = ref([]);
         const popup = ref({
           show: false,
@@ -6045,13 +6059,15 @@
                 replies: []
               };
             }
+            const cId = cmt.id || ('c_' + (item.id || 'x') + '_' + (cIdx + 1));
             return {
-              id: cmt.id || ('c_' + (item.id || 'x') + '_' + (cIdx + 1)),
+              id: cId,
               authorName: cmt.authorName || 'Thành viên Tây Ninh',
               authorAvatar: cmt.authorAvatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&q=80',
               timeAgo: cmt.timeAgo || 'Vừa xong',
               text: cmt.text || cmt.content || '',
               likes: cmt.likes || 0,
+              likedByMe: isCommentLiked(cId) || !!cmt.likedByMe,
               showReply: false,
               newReplyText: '',
               replies: Array.isArray(cmt.replies) ? cmt.replies : []
@@ -7814,23 +7830,52 @@
         };
 
         const likeComment = (comment, card) => {
-          if (!currentUser.value || !currentUser.value.uid) {
-            showToast('Vui lòng đăng nhập Google để thích bình luận.', 'warning');
-            loginGoogle();
-            return;
+          if (!comment || typeof comment !== 'object' || !comment.id) return;
+          const cmtId = comment.id;
+          const currentlyLiked = isCommentLiked(cmtId) || !!comment.likedByMe;
+          if (currentlyLiked) {
+            // Bỏ thích bình luận
+            const idx = myLikedComments.value.indexOf(cmtId);
+            if (idx > -1) myLikedComments.value.splice(idx, 1);
+            comment.likedByMe = false;
+            comment.likes = Math.max(0, (comment.likes || 1) - 1);
+            showToast(t('unlikeSuccess') || 'Đã bỏ thích bình luận', 'info');
+          } else {
+            // Thích bình luận ngay lập tức
+            if (!myLikedComments.value.includes(cmtId)) {
+              myLikedComments.value.push(cmtId);
+            }
+            comment.likedByMe = true;
+            comment.likes = (comment.likes || 0) + 1;
+            showToast(t('likeSuccess') || 'Đã thích bình luận!', 'success');
           }
-          if (!comment || typeof comment !== 'object') return;
-          comment.likes = (comment.likes || 0) + 1;
-          showToast('Đã thích bình luận!', 'info');
-          const targetCard = card || selectedDetailCard.value;
+
+          try {
+            localStorage.setItem('tnhub_liked_comments', JSON.stringify(myLikedComments.value));
+          } catch(e) {}
+
+          const targetCard = card || selectedDetailCard.value || activeCommentCard.value;
           if (targetCard && targetCard.id) {
-            // Đồng bộ giữa feed và modal
+            // Đồng bộ giữa modal chi tiết, dialog bình luận và card ngoài feed
             if (selectedDetailCard.value && selectedDetailCard.value.id === targetCard.id) {
               const cmtInModal = (selectedDetailCard.value.comments || []).find(c => c.id === comment.id);
-              if (cmtInModal) cmtInModal.likes = comment.likes;
+              if (cmtInModal) {
+                cmtInModal.likes = comment.likes;
+                cmtInModal.likedByMe = comment.likedByMe;
+              }
+            }
+            if (activeCommentCard.value && activeCommentCard.value.id === targetCard.id) {
+              const cmtInDlg = (activeCommentCard.value.comments || []).find(c => c.id === comment.id);
+              if (cmtInDlg) {
+                cmtInDlg.likes = comment.likes;
+                cmtInDlg.likedByMe = comment.likedByMe;
+              }
             }
             const cmtInCard = (targetCard.comments || []).find(c => c.id === comment.id);
-            if (cmtInCard) cmtInCard.likes = comment.likes;
+            if (cmtInCard) {
+              cmtInCard.likes = comment.likes;
+              cmtInCard.likedByMe = comment.likedByMe;
+            }
 
             if (db && Array.isArray(targetCard.comments)) {
               try {
@@ -9489,6 +9534,8 @@
           t,
           myLikedPosts,
           isPostLiked,
+          myLikedComments,
+          isCommentLiked,
           getPostTitle,
           getPostDescription,
           getPostPrice,
