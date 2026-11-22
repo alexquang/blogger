@@ -643,6 +643,246 @@
       transform: translateX(-50%) translateY(0);
     }
 
+    /* Exit Button Style */
+    .glass-btn.danger {
+      background: rgba(220, 38, 38, 0.82);
+      border-color: rgba(239, 68, 68, 0.5);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(220, 38, 38, 0.35);
+    }
+    .glass-btn.danger:hover {
+      background: rgba(185, 28, 28, 0.95);
+      box-shadow: 0 6px 20px rgba(220, 38, 38, 0.55);
+    }
+
+    /* Metaverse Chat Panel (Bottom Left) */
+    #metaverse-chat-panel {
+      position: absolute;
+      bottom: 22px;
+      left: 20px;
+      z-index: 25;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+      pointer-events: auto;
+    }
+
+    #chat-toggle-btn {
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    }
+
+    #chat-window {
+      width: 340px;
+      max-width: 90vw;
+      height: 380px;
+      max-height: 55vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+    }
+
+    .chat-header {
+      padding: 10px 14px;
+      background: rgba(0, 0, 0, 0.35);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .chat-header-title {
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .chat-badge {
+      font-size: 10px;
+      color: #10b981;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-left: 4px;
+    }
+
+    .chat-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .chat-icon-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: none;
+      color: #d1d5db;
+      font-size: 11px;
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .chat-icon-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+    }
+
+    .chat-messages-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 12px;
+      scroll-behavior: smooth;
+    }
+
+    .chat-msg-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 6px 10px;
+      border-radius: 8px;
+      border-left: 3px solid #C74634;
+    }
+
+    .chat-msg-item.system {
+      border-left-color: #3b82f6;
+      background: rgba(59, 130, 246, 0.08);
+      font-style: italic;
+      font-size: 11px;
+    }
+
+    .chat-msg-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 10px;
+      color: #9ca3af;
+    }
+
+    .chat-msg-sender {
+      font-weight: 700;
+      color: #f3f4f6;
+    }
+
+    .chat-msg-text {
+      color: #e5e7eb;
+      line-height: 1.4;
+      word-break: break-word;
+    }
+
+    .chat-input-row {
+      display: flex;
+      padding: 8px;
+      gap: 6px;
+      background: rgba(0, 0, 0, 0.4);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .chat-text-input {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+      font-size: 12px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      outline: none;
+    }
+
+    .chat-text-input:focus {
+      border-color: #C74634;
+    }
+
+    .chat-send-btn {
+      background: #C74634;
+      border: none;
+      color: #fff;
+      padding: 0 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.2s ease;
+    }
+
+    .chat-send-btn:hover {
+      background: #e05340;
+    }
+
+    /* Floating 3D Chat Toast / Bubble */
+    .floating-chat-bubble {
+      position: absolute;
+      top: 76px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      background: rgba(15, 17, 24, 0.88);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(199, 70, 52, 0.4);
+      border-radius: 30px;
+      padding: 8px 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 28;
+      max-width: 80vw;
+    }
+
+    .floating-chat-bubble.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .fc-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #C74634, #f59e0b);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .fc-content {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .fc-name {
+      font-size: 11px;
+      font-weight: 700;
+      color: #f59e0b;
+    }
+
+    .fc-text {
+      font-size: 12px;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 400px;
+    }
+
     /* Mobile Joystick Controls */
     #mobile-controls {
       display: none;
@@ -737,6 +977,11 @@
       </div>
 
       <div class="top-actions">
+        <!-- Exit Metaverse Button -->
+        <button type="button" class="glass-btn danger" id="btn-exit-metaverse" title="Thoát Metaverse về trang chủ [ESC / Q]">
+          <i class="fa-solid fa-arrow-left"></i>
+          <span>Thoát Metaverse</span>
+        </button>
         <!-- Audio Chime Toggle -->
         <button type="button" class="glass-btn" id="btn-audio" title="Toggle Ambient Audio Experience">
           <i class="fa-solid fa-volume-high" id="audio-icon"></i>
@@ -808,8 +1053,56 @@
         </div>
 
         <button type="button" class="glass-btn primary" id="btn-enter" style="padding: 12px 32px; font-size: 15px; width: 100%;">
-          <i class="fa-solid fa-person-walking"></i> Enter Gallery
+          <i class="fa-solid fa-person-walking"></i> Vào Triển Lãm & Gian Hàng 3D
         </button>
+        <button type="button" class="glass-btn" id="btn-exit-intro" style="margin-top: 10px; width: 100%; border-color: rgba(220, 38, 38, 0.4); color: #fca5a5;">
+          <i class="fa-solid fa-arrow-left"></i> Thoát ra trang chủ TNHub
+        </button>
+      </div>
+    </div>
+
+    <!-- Metaverse Realtime Social Chat Box -->
+    <div id="metaverse-chat-panel">
+      <!-- Minimized Pill Button -->
+      <button type="button" class="glass-btn primary" id="chat-toggle-btn">
+        <span class="live-dot" style="width: 8px; height: 8px;"></span>
+        <i class="fa-solid fa-comments"></i>
+        <span>Trò chuyện Metaverse (<span id="chat-online-count">5</span> online)</span>
+      </button>
+
+      <!-- Expanded Chat Window -->
+      <div id="chat-window" class="glass-panel" style="display: none;">
+        <div class="chat-header">
+          <div class="chat-header-title">
+            <i class="fa-solid fa-comments" style="color: #C74634;"></i>
+            <span>Trò chuyện trực tuyến</span>
+            <span class="chat-badge"><span class="live-dot"></span> <span id="chat-online-text">5 online</span></span>
+          </div>
+          <div class="chat-header-actions">
+            <button type="button" class="chat-icon-btn" id="btn-change-nickname" title="Đổi tên hiển thị"><i class="fa-solid fa-user-pen"></i></button>
+            <button type="button" class="chat-icon-btn" id="btn-close-chat" title="Thu nhỏ"><i class="fa-solid fa-minus"></i></button>
+          </div>
+        </div>
+
+        <div id="chat-messages" class="chat-messages-container">
+          <!-- Dynamic chat messages -->
+        </div>
+
+        <form id="chat-input-form" class="chat-input-row">
+          <input type="text" id="chat-input" class="chat-text-input" placeholder="Nhập tin nhắn trò chuyện (Enter)..." maxlength="300" autocomplete="off" />
+          <button type="submit" class="chat-send-btn" id="btn-send-chat" title="Gửi tin nhắn">
+            <i class="fa-solid fa-paper-plane"></i>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Floating 3D Chat Speech Bubble / Toast -->
+    <div id="floating-chat-bubble" class="floating-chat-bubble">
+      <div class="fc-avatar" id="fc-avatar">Q</div>
+      <div class="fc-content">
+        <div class="fc-name" id="fc-name">Quang Pham</div>
+        <div class="fc-text" id="fc-text">Chào mừng bạn đến với triển lãm Metaverse Tây Ninh!</div>
       </div>
     </div>
 
@@ -820,29 +1113,51 @@
           <i class="fa-solid fa-xmark"></i>
         </button>
 
-        <div class="art-modal-img-wrap">
+        <div class="art-modal-img-wrap" id="modal-media-wrap">
           <img id="modal-art-img" src="" alt="Artwork Preview" class="art-modal-img" />
+          <div id="modal-video-container" style="display: none; width: 100%; height: 100%; min-height: 320px;"></div>
         </div>
 
         <div class="art-modal-info">
           <div>
-            <div class="art-badge" id="modal-art-badge">Frame Slot 1 • Digital Masterpiece</div>
+            <div class="art-badge" id="modal-art-badge">Frame Slot 1 • Gian Hàng 3D Tây Ninh</div>
             <h3 class="art-modal-title" id="modal-art-title">Genesis of Cyberpunk</h3>
-            <div class="art-modal-artist">
-              <i class="fa-solid fa-circle-user" style="color: #C74634;"></i>
-              <span id="modal-art-artist">Artist: Alex Rivera</span>
+            
+            <!-- Price Display -->
+            <div id="modal-art-price-wrap" style="margin: 8px 0 12px; display: inline-flex; align-items: center; gap: 8px; background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4); padding: 6px 14px; border-radius: 8px;">
+              <i class="fa-solid fa-tag" style="color: #f59e0b;"></i>
+              <span id="modal-art-price" style="font-size: 16px; font-weight: 800; color: #f59e0b;">1.2 Tỷ (1.000m²)</span>
             </div>
+
+            <!-- Seller / Contact Info -->
+            <div class="art-modal-artist" id="modal-seller-wrap">
+              <i class="fa-solid fa-circle-user" style="color: #C74634;"></i>
+              <span id="modal-art-artist">Người đăng: Quang Pham Thanh</span>
+            </div>
+
             <div class="art-modal-desc" id="modal-art-desc">
               Detailed artwork overview and description rendered cleanly in high fidelity.
             </div>
           </div>
 
           <div class="art-modal-actions">
-            <a id="modal-art-link" href="#" target="_blank" rel="noopener noreferrer" class="glass-btn primary">
-              <i class="fa-solid fa-arrow-up-right-from-square"></i> View on OpenSea / Web
+            <!-- Buy / Contact Hotline -->
+            <a id="modal-art-call-btn" href="tel:0908123456" class="glass-btn primary" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+              <i class="fa-solid fa-phone"></i>
+              <span>Mua ngay: <b id="modal-art-phone">0908.123.456</b></span>
             </a>
+            <!-- Chat Zalo -->
+            <a id="modal-art-zalo-btn" href="https://zalo.me/0908123456" target="_blank" rel="noopener noreferrer" class="glass-btn" style="border-color: #0284c7; color: #38bdf8;">
+              <i class="fa-solid fa-comment-dots"></i>
+              <span>Chat Zalo</span>
+            </a>
+            <!-- External link -->
+            <a id="modal-art-link" href="#" target="_blank" rel="noopener noreferrer" class="glass-btn">
+              <i class="fa-solid fa-arrow-up-right-from-square"></i> Chi tiết
+            </a>
+            <!-- Edit slot -->
             <button type="button" class="glass-btn" id="modal-art-edit-btn">
-              <i class="fa-solid fa-pen-to-square"></i> Edit Slot
+              <i class="fa-solid fa-pen-to-square"></i> Đăng bán / Sửa slot
             </button>
           </div>
         </div>
@@ -885,31 +1200,69 @@
           </div>
 
           <div class="form-group">
-            <label class="form-label">Artwork Title:</label>
-            <input type="text" id="slot-input-title" class="form-input" placeholder="e.g. Neon Odyssey #01" />
+            <label class="form-label">Tên sản phẩm / Tiêu đề rao bán:</label>
+            <input type="text" id="slot-input-title" class="form-input" placeholder="Ví dụ: Bán Đất Nền Nghỉ Dưỡng Suối Đá View Núi Bà Đen" />
+          </div>
+
+          <div class="grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+            <div class="form-group">
+              <label class="form-label">Giá bán / Mức lương:</label>
+              <input type="text" id="slot-input-price" class="form-input" placeholder="Ví dụ: 1.2 Tỷ (1.000m2)" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">SĐT / Zalo người bán:</label>
+              <input type="text" id="slot-input-phone" class="form-input" placeholder="0908.123.456" />
+            </div>
           </div>
 
           <div class="form-group">
-            <label class="form-label">Artist Name:</label>
-            <input type="text" id="slot-input-artist" class="form-input" placeholder="e.g. Elena Rostova" />
+            <label class="form-label">Tên người bán / Công ty:</label>
+            <input type="text" id="slot-input-artist" class="form-input" placeholder="Ví dụ: Quang Pham Thanh (Chính chủ)" />
           </div>
 
+          <!-- Media Type Selector (Image vs Video) -->
           <div class="form-group">
+            <label class="form-label">Loại Media trưng bày:</label>
+            <div style="display: flex; gap: 8px; margin-bottom: 4px;">
+              <button type="button" class="slot-btn active" id="btn-media-type-image" style="flex:1;">
+                <i class="fa-solid fa-image"></i> Hình ảnh
+              </button>
+              <button type="button" class="slot-btn" id="btn-media-type-video" style="flex:1;">
+                <i class="fa-solid fa-video"></i> Video YouTube
+              </button>
+            </div>
+          </div>
+
+          <!-- Image Media Inputs -->
+          <div id="media-input-image-group" class="form-group">
             <label class="form-label">
-              <span>Image URL:</span>
-              <button type="button" id="btn-regen-canvas" style="background:none; border:none; color:#C74634; font-size:11px; cursor:pointer;">Generate Procedural Art</button>
+              <span>Hình ảnh sản phẩm:</span>
+              <button type="button" id="btn-regen-canvas" style="background:none; border:none; color:#C74634; font-size:11px; cursor:pointer;">Tạo texture tự động</button>
             </label>
-            <input type="text" id="slot-input-url" class="form-input" placeholder="https://... (or leave blank for procedural)" />
+            <div style="display: flex; gap: 6px;">
+              <input type="text" id="slot-input-url" class="form-input" placeholder="Dán link ảnh https://... hoặc tải từ máy" />
+              <input type="file" id="slot-input-file" accept="image/*" style="display:none;" />
+              <button type="button" class="glass-btn" id="btn-upload-file" title="Tải ảnh từ máy tính" style="padding: 8px 12px; white-space:nowrap;">
+                <i class="fa-solid fa-upload"></i> Tải ảnh
+              </button>
+            </div>
+          </div>
+
+          <!-- Video Media Inputs -->
+          <div id="media-input-video-group" class="form-group" style="display: none;">
+            <label class="form-label">Link Video YouTube / MP4:</label>
+            <input type="text" id="slot-input-video" class="form-input" placeholder="https://www.youtube.com/watch?v=... hoặc https://youtu.be/..." />
+            <span style="font-size: 11px; color: #9ca3af;">Khung 3D sẽ hiển thị video trực tiếp khi click xem.</span>
           </div>
 
           <div class="form-group">
-            <label class="form-label">Description:</label>
-            <textarea id="slot-input-desc" class="form-textarea" placeholder="Describe the media, inspiration, or collector notes..."></textarea>
+            <label class="form-label">Mô tả chi tiết sản phẩm:</label>
+            <textarea id="slot-input-desc" class="form-textarea" placeholder="Mô tả thông số, diện tích, pháp lý hoặc điều kiện giao dịch..."></textarea>
           </div>
 
           <div class="form-group">
-            <label class="form-label">External Link:</label>
-            <input type="text" id="slot-input-link" class="form-input" placeholder="https://opensea.io/... or portfolio link" />
+            <label class="form-label">Liên kết ngoài (Tùy chọn):</label>
+            <input type="text" id="slot-input-link" class="form-input" placeholder="https://tayninhinfo.com/... hoặc link Zalo" />
           </div>
         </div>
 
@@ -996,12 +1349,13 @@
     // Note: Replace with your Firebase Project keys to enable live multi-user syncing.
     // If unconfigured or offline, the app seamlessly falls back to LocalStorage.
     const firebaseConfig = {
-      apiKey: "YOUR_API_KEY_HERE",
-      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT_ID.appspot.com",
-      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-      appId: "YOUR_APP_ID"
+      apiKey: "AIzaSyB36E4W7BG8ZLQnfBLeZu-pVtf4TVDqLUQ",
+      authDomain: "fir-1b417.firebaseapp.com",
+      projectId: "fir-1b417",
+      storageBucket: "fir-1b417.firebasestorage.app",
+      messagingSenderId: "593916869236",
+      appId: "1:593916869236:web:e7c6233011227b80f72f21",
+      measurementId: "G-9604F39B4E"
     };
 
     let firebaseApp = null;
@@ -1058,74 +1412,114 @@
        2. MOCK / DEFAULT ARTWORK DATA & PROCEDURAL TEXTURES
        ========================================================================== */
     const DEFAULT_GALLERY_STATE = {
-      spaceTitle: "CyberArt Virtual Gallery",
+      spaceTitle: "Gian Hàng 3D Metaverse Tây Ninh • TNHub",
       theme: "dark", // 'dark' or 'light'
       sculptureStyle: "hypercrystal",
       sculptureSpeed: 1.0,
       slots: [
         {
           id: 0,
-          title: "Genesis of Cyberpunk",
-          artist: "Elena Rostova",
-          url: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80",
-          desc: "An exploration of neo-futurism and geometric abstractions in the heart of modern metropolis light reflections.",
-          link: "https://opensea.io"
+          title: "Bán Đất Nền Nghỉ Dưỡng Suối Đá View Núi Bà Đen",
+          artist: "Quang BĐS Tây Ninh",
+          sellerName: "Quang BĐS Tây Ninh",
+          price: "1.2 Tỷ (1.000m²)",
+          phone: "0908.123.456",
+          mediaType: "image",
+          url: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1200&q=80",
+          videoUrl: "",
+          desc: "Đất thổ cư 5x25m mặt tiền đường nhựa 8m xe hơi quay đầu. View trực diện tượng Phật Bà Tây Bổ Đà Sơn Núi Bà Đen. Sổ hồng riêng công chứng ngay.",
+          link: "tel:0908123456"
         },
         {
           id: 1,
-          title: "Hyper-Dimensional Wave",
-          artist: "Kai Thorne",
-          url: "https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?auto=format&fit=crop&w=1200&q=80",
-          desc: "Fluid dynamics simulated with quantum compute shaders, captured at peak harmonic resonance.",
-          link: "https://foundation.app"
+          title: "Toàn Cảnh Chùa Bà Đen & Tượng Phật Tây Bổ Đà Sơn 3D",
+          artist: "Truyền Thông Tây Ninh",
+          sellerName: "Ban Quản Lý KDL Núi Bà Đen",
+          price: "Trải nghiệm 3D",
+          phone: "0908.123.456",
+          mediaType: "video",
+          url: "https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=1200&q=80",
+          videoUrl: "https://www.youtube.com/watch?v=4xR-kP3Rz5s",
+          desc: "Chiêm ngưỡng đỉnh Núi Bà Đen cao 986m nóc nhà Nam Bộ, hệ thống cáp treo Sun World hiện đại và quần thể tượng Phật Bà bằng đồng cao nhất châu Á.",
+          link: "https://tayninhinfo.com"
         },
         {
           id: 2,
-          title: "Neural Dreams in Bloom",
-          artist: "Sophia Chen",
-          url: "https://images.unsplash.com/photo-1618005198919-d3d4b5a92ead?auto=format&fit=crop&w=1200&q=80",
-          desc: "Bio-digital flora growing inside virtual soil, capturing the transition from organic life to metaverse eternity.",
-          link: "https://superrare.com"
+          title: "Tuyển Kỹ Sư Vận Hành Hệ Thống Điện - KCN Trảng Bàng",
+          artist: "Công Ty CP Kỹ Thuật Điện Gia Định",
+          sellerName: "Phòng Nhân Sự Gia Định",
+          price: "14 - 20 triệu/tháng",
+          phone: "0912.345.678",
+          mediaType: "image",
+          url: "https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=1200&q=80",
+          videoUrl: "",
+          desc: "Vận hành hệ thống trạm biến áp, tủ điện phân phối và máy phát điện dự phòng tại nhà máy KCN Trảng Bàng. Đầy đủ bảo hiểm, thưởng lễ tết và xe đưa rước.",
+          link: "tel:0912345678"
         },
         {
           id: 3,
-          title: "Prismatic Singularity",
-          artist: "Marcus Vance",
-          url: "https://images.unsplash.com/photo-1633167606207-d840b5070fc2?auto=format&fit=crop&w=1200&q=80",
-          desc: "Refraction study of hyper-dense glass prisms splitting pure light into iridescent spectral waveforms.",
-          link: "https://zora.co"
+          title: "Bán Máy Cày Kubota L5018 Nhập Khẩu Đã Qua Sử Dụng",
+          artist: "Nông Cơ Tân Châu Tây Ninh",
+          sellerName: "Cửa Hàng Nông Cơ Tân Châu",
+          price: "185 Triệu",
+          phone: "0938.888.999",
+          mediaType: "image",
+          url: "https://images.unsplash.com/photo-1592982537447-7440770cbfc9?auto=format&fit=crop&w=1200&q=80",
+          videoUrl: "",
+          desc: "Máy cày Kubota 50HP động cơ nguyên bản, kèm dàn xới và dàn chảo cày đất. Máy móc hoạt động tốt, nông dân Tân Châu thiện chí mua bớt lộc.",
+          link: "tel:0938888999"
         },
         {
           id: 4,
-          title: "Echoes of Antiquity",
-          artist: "Dante Bellini",
-          url: "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=1200&q=80",
-          desc: "Classical marble aesthetics infused with kinetic fiber optics and golden mathematical ratios.",
-          link: "https://oncyber.io"
+          title: "Đặc Sản Mãng Cầu Bà Đen Tây Ninh Chuẩn VietGAP OCOP 4 Sao",
+          artist: "HTX Nông Nghiệp Mãng Cầu Bà Đen",
+          sellerName: "HTX Nông Nghiệp Tây Ninh",
+          price: "65.000đ/kg",
+          phone: "0977.123.456",
+          mediaType: "image",
+          url: "https://images.unsplash.com/photo-1619566636858-adf3ef46400b?auto=format&fit=crop&w=1200&q=80",
+          videoUrl: "",
+          desc: "Mãng cầu dai Bà Đen trái to đều, vị ngọt thanh đặc trưng của vùng đất phù sa chân núi Bà Đen. Đạt chuẩn OCOP 4 sao, đóng thùng giao tận nơi toàn quốc.",
+          link: "tel:0977123456"
         },
         {
           id: 5,
-          title: "Cosmic Horizon XII",
-          artist: "Aria Sterling",
-          url: "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=1200&q=80",
-          desc: "Deep space photography captured from an orbital telescope, processed with custom color spectrum filters.",
-          link: "https://opensea.io"
+          title: "Video: Trải Nghiệm Ẩm Thực Chay & Bánh Tráng Phơi Sương Trảng Bàng",
+          artist: "Văn Hóa Ẩm Thực Tây Ninh",
+          sellerName: "Làng Nghề Bánh Tráng Phơi Sương",
+          price: "Đặc sản Tây Ninh",
+          phone: "0908.123.456",
+          mediaType: "video",
+          url: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80",
+          videoUrl: "https://www.youtube.com/watch?v=5rB5mK1o9v8",
+          desc: "Hành trình khám phá làng nghề truyền thống Bánh tráng phơi sương Trảng Bàng và nét văn hóa ẩm thực chay độc đáo được công nhận Di sản văn hóa phi vật thể.",
+          link: "https://tayninhinfo.com"
         },
         {
           id: 6,
-          title: "Luminescent Solitude",
-          artist: "Lucas Moreau",
-          url: "https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=1200&q=80",
-          desc: "Monochrome brutalist corridors illuminated by warm neon tubes, inviting contemplative stillness.",
-          link: "https://artblocks.io"
+          title: "Cần Bán Nhà Phố 1 Trệt 1 Lầu Liền Kề KCN Trảng Bàng",
+          artist: "Nhà Đất Trảng Bàng Chính Chủ",
+          sellerName: "Nguyễn Văn Hùng",
+          price: "1.45 Tỷ",
+          phone: "0938.888.999",
+          mediaType: "image",
+          url: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=1200&q=80",
+          videoUrl: "",
+          desc: "Nhà mới xây 100%, 3 phòng ngủ, 2WC, sân đậu ô tô. Cách KCN Trảng Bàng 500m, tiện ở hoặc cho chuyên gia thuê 7 triệu/tháng. Sổ hồng riêng sang tên ngay.",
+          link: "tel:0938888999"
         },
         {
           id: 7,
-          title: "The Golden Ratio Matrix",
-          artist: "Zahara King",
-          url: "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&w=1200&q=80",
-          desc: "Sacred geometry rendered via computational vector fields with brushed gold leaf finishes.",
-          link: "https://foundation.app"
+          title: "Bộ Sưu Tập Tranh Nghệ Thuật Hồ Dầu Tiếng & Tòa Thánh 3D",
+          artist: "CLB Mỹ Thuật Tây Ninh",
+          sellerName: "Họa Sĩ Lê Minh",
+          price: "8.5 Triệu",
+          phone: "0908.123.456",
+          mediaType: "image",
+          url: "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=1200&q=80",
+          videoUrl: "",
+          desc: "Tranh sơn dầu phong cảnh hoàng hôn Hồ Dầu Tiếng và kiến trúc nguy nga Tòa Thánh Cao Đài Tây Ninh. Khung gỗ sồi cao cấp xử lý chống ẩm mốc.",
+          link: "tel:0908123456"
         }
       ]
     };
@@ -1539,6 +1933,12 @@
 
     const slotMeshMap = [];
 
+        function extractYouTubeId(url) {
+      if (!url) return null;
+      const m = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i);
+      return m ? m[1] : null;
+    }
+
     function buildArtworkSlots() {
       // Clear existing
       while (artworkSlotsGroup.children.length > 0) {
@@ -1579,21 +1979,24 @@
 
         // Set immediate procedural canvas texture (Guarantees zero CORS / offline display)
         const pal = PALETTES[idx % PALETTES.length];
-        canvasMat.map = createProceduralArtTexture(slotData.title, slotData.artist, pal[0], pal[1], idx);
+        canvasMat.map = createProceduralArtTexture(slotData.title, slotData.artist || slotData.sellerName, pal[0], pal[1], idx);
 
-        // Asynchronously upgrade to remote image if accessible
-        if (slotData.url && slotData.url.trim().length > 5) {
+        // Check if item is video or has YouTube link
+        const ytId = extractYouTubeId(slotData.videoUrl || (slotData.mediaType === 'video' ? slotData.url : ''));
+        const remoteImg = (ytId && (!slotData.url || slotData.url.length < 5))
+          ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`
+          : slotData.url;
+
+        if (remoteImg && remoteImg.trim().length > 5) {
           textureLoader.load(
-            slotData.url,
+            remoteImg,
             (tex) => {
               tex.colorSpace = THREE.SRGBColorSpace;
               canvasMat.map = tex;
               canvasMat.needsUpdate = true;
             },
             undefined,
-            () => {
-              // Keeps the procedural texture on CORS or network error
-            }
+            () => {}
           );
         }
 
@@ -1753,8 +2156,10 @@
 
         crosshairEl.classList.add('hovering');
         tooltipEl.classList.add('visible');
-        ttTitle.textContent = hit.userData.slotData.title || `Artwork ${hit.userData.slotIndex + 1}`;
-        ttArtist.textContent = hit.userData.slotData.artist ? `by ${hit.userData.slotData.artist}` : 'Digital Artist';
+        const d = hit.userData.slotData;
+        const isVideo = d.mediaType === 'video' || extractYouTubeId(d.videoUrl || d.url);
+        ttTitle.textContent = (isVideo ? '▶ [VIDEO 3D] ' : '🏷 ') + (d.title || `Sản phẩm ${hit.userData.slotIndex + 1}`);
+        ttArtist.textContent = (d.price ? `Giá: ${d.price} • ` : '') + (d.artist || d.sellerName || 'Chính chủ');
       } else {
         if (hoveredArtwork) {
           unhighlightFrame(hoveredArtwork);
@@ -1824,12 +2229,43 @@
 
     function openModal(slotData) {
       controls.unlock();
-      modalTitle.textContent = slotData.title;
-      modalArtist.textContent = `Artist: ${slotData.artist}`;
-      modalDesc.textContent = slotData.desc || 'No detailed description provided.';
-      modalBadge.textContent = `Frame Slot ${slotData.id + 1} • Metaverse Exclusive`;
-      modalImg.src = slotData.url && slotData.url.length > 5 ? slotData.url : '';
-      modalImg.onerror = () => { modalImg.src = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80'; };
+      modalTitle.textContent = slotData.title || 'Sản phẩm trưng bày 3D';
+      modalArtist.textContent = `Người đăng: ${slotData.artist || slotData.sellerName || 'Chính chủ Tây Ninh'}`;
+      modalDesc.textContent = slotData.desc || 'Chưa có thông tin mô tả chi tiết.';
+      modalBadge.textContent = `Gian Hàng 3D Slot ${slotData.id + 1} • TNHub Marketplace`;
+
+      // Price
+      const priceVal = slotData.price || 'Thương lượng';
+      document.getElementById('modal-art-price').textContent = priceVal;
+
+      // Phone & Hotline
+      const phoneVal = slotData.phone || '0908.123.456';
+      document.getElementById('modal-art-phone').textContent = phoneVal;
+      document.getElementById('modal-art-call-btn').href = 'tel:' + phoneVal.replace(/[^0-9]/g, '');
+      const cleanPhone = phoneVal.replace(/[^0-9]/g, '');
+      document.getElementById('modal-art-zalo-btn').href = 'https://zalo.me/' + cleanPhone;
+
+      // Media Handling: Video vs Image
+      const videoContainer = document.getElementById('modal-video-container');
+      const ytId = extractYouTubeId(slotData.videoUrl || (slotData.mediaType === 'video' ? slotData.url : ''));
+
+      if (slotData.mediaType === 'video' || ytId || (slotData.videoUrl && slotData.videoUrl.trim().length > 5)) {
+        modalImg.style.display = 'none';
+        videoContainer.style.display = 'block';
+        if (ytId) {
+          videoContainer.innerHTML = `<iframe src="https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="width:100%; height:100%; min-height:340px; border:none; border-radius:10px;"></iframe>`;
+        } else {
+          const vUrl = slotData.videoUrl || slotData.url;
+          videoContainer.innerHTML = `<video src="${vUrl}" controls autoplay style="width:100%; max-height:420px; border-radius:10px;"></video>`;
+        }
+      } else {
+        videoContainer.style.display = 'none';
+        videoContainer.innerHTML = '';
+        modalImg.style.display = 'block';
+        modalImg.src = slotData.url && slotData.url.length > 5 ? slotData.url : '';
+        modalImg.onerror = () => { modalImg.src = 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80'; };
+      }
+
       modalLink.href = slotData.link || '#';
 
       modalEditBtn.onclick = () => {
@@ -1842,6 +2278,8 @@
 
     function closeModal() {
       modalEl.classList.remove('active');
+      const videoContainer = document.getElementById('modal-video-container');
+      if (videoContainer) videoContainer.innerHTML = '';
     }
     modalCloseBtn.addEventListener('click', closeModal);
 
@@ -1890,16 +2328,58 @@
       });
     });
 
+    let currentMediaType = 'image';
+    function setMediaTypeTab(type) {
+      currentMediaType = type;
+      const btnImg = document.getElementById('btn-media-type-image');
+      const btnVid = document.getElementById('btn-media-type-video');
+      const grpImg = document.getElementById('media-input-image-group');
+      const grpVid = document.getElementById('media-input-video-group');
+      if (type === 'video') {
+        btnVid.classList.add('active');
+        btnImg.classList.remove('active');
+        grpVid.style.display = 'block';
+        grpImg.style.display = 'none';
+      } else {
+        btnImg.classList.add('active');
+        btnVid.classList.remove('active');
+        grpImg.style.display = 'block';
+        grpVid.style.display = 'none';
+      }
+    }
+
+    document.getElementById('btn-media-type-image').addEventListener('click', () => setMediaTypeTab('image'));
+    document.getElementById('btn-media-type-video').addEventListener('click', () => setMediaTypeTab('video'));
+
+    // File upload handler
+    const fileInput = document.getElementById('slot-input-file');
+    document.getElementById('btn-upload-file').addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (re) => {
+          document.getElementById('slot-input-url').value = re.target.result;
+          showToast('Đã nạp ảnh thành công! Bấm Lưu để hiển thị lên gian hàng 3D.');
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
     function selectSlotTab(slotIdx) {
       currentEditSlot = slotIdx;
       slotBtns.forEach(b => b.classList.toggle('active', parseInt(b.dataset.slot, 10) === slotIdx));
       const s = galleryState.slots[slotIdx];
       if (s) {
         document.getElementById('slot-input-title').value = s.title || '';
-        document.getElementById('slot-input-artist').value = s.artist || '';
+        document.getElementById('slot-input-artist').value = s.artist || s.sellerName || '';
+        document.getElementById('slot-input-price').value = s.price || '';
+        document.getElementById('slot-input-phone').value = s.phone || '';
         document.getElementById('slot-input-url').value = s.url || '';
+        document.getElementById('slot-input-video').value = s.videoUrl || '';
         document.getElementById('slot-input-desc').value = s.desc || '';
         document.getElementById('slot-input-link').value = s.link || '';
+        setMediaTypeTab(s.mediaType === 'video' ? 'video' : 'image');
       }
     }
 
@@ -1908,9 +2388,14 @@
       if (s) {
         s.title = document.getElementById('slot-input-title').value;
         s.artist = document.getElementById('slot-input-artist').value;
+        s.sellerName = document.getElementById('slot-input-artist').value;
+        s.price = document.getElementById('slot-input-price').value;
+        s.phone = document.getElementById('slot-input-phone').value;
         s.url = document.getElementById('slot-input-url').value;
+        s.videoUrl = document.getElementById('slot-input-video').value;
         s.desc = document.getElementById('slot-input-desc').value;
         s.link = document.getElementById('slot-input-link').value;
+        s.mediaType = currentMediaType;
       }
     }
 
@@ -2205,7 +2690,213 @@
 
     // Start Animation Loop & Services
     animate();
+
+    /* ==========================================================================
+       11. EXIT METAVERSE HANDLER
+       ========================================================================== */
+    function exitMetaverse() {
+      if (document.exitPointerLock) document.exitPointerLock();
+      if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen();
+      try {
+        window.parent.postMessage({ type: 'exit_metaverse' }, '*');
+      } catch (e) {}
+      if (window.self === window.top) {
+        window.location.href = 'https://www.tayninhinfo.com';
+      }
+    }
+    const btnExit = document.getElementById('btn-exit-metaverse');
+    if (btnExit) btnExit.addEventListener('click', exitMetaverse);
+    const btnExitIntro = document.getElementById('btn-exit-intro');
+    if (btnExitIntro) btnExitIntro.addEventListener('click', exitMetaverse);
+
+    // Escape or Q key to exit
+    window.addEventListener('keydown', (e) => {
+      if ((e.code === 'KeyQ' || e.code === 'KeyX') && !modalEl.classList.contains('active') && !drawerEl.classList.contains('open')) {
+        if (chatInput !== document.activeElement) {
+          exitMetaverse();
+        }
+      }
+    });
+
+    /* ==========================================================================
+       12. REALTIME METAVERSE SOCIAL CHAT & MULTIPLAYER PRESENCE
+       ========================================================================== */
+    const chatToggleBtn = document.getElementById('chat-toggle-btn');
+    const chatWindow = document.getElementById('chat-window');
+    const chatCloseBtn = document.getElementById('btn-close-chat');
+    const chatForm = document.getElementById('chat-input-form');
+    const chatInput = document.getElementById('chat-input');
+    const chatMessagesEl = document.getElementById('chat-messages');
+    const floatingBubble = document.getElementById('floating-chat-bubble');
+    const fcAvatar = document.getElementById('fc-avatar');
+    const fcName = document.getElementById('fc-name');
+    const fcText = document.getElementById('fc-text');
+    let bubbleTimer = null;
+
+    let chatNickname = localStorage.getItem('metaverse_chat_nick') || ('Khách Tây Ninh #' + Math.floor(100 + Math.random() * 900));
+
+    if (chatToggleBtn && chatWindow) {
+      chatToggleBtn.addEventListener('click', () => {
+        chatWindow.style.display = chatWindow.style.display === 'none' ? 'flex' : 'none';
+        if (chatWindow.style.display === 'flex') {
+          chatInput.focus();
+          scrollChatToBottom();
+        }
+      });
+      chatCloseBtn.addEventListener('click', () => {
+        chatWindow.style.display = 'none';
+      });
+
+      document.getElementById('btn-change-nickname').addEventListener('click', () => {
+        const newNick = prompt('Nhập tên hiển thị của bạn trong Metaverse:', chatNickname);
+        if (newNick && newNick.trim().length > 0) {
+          chatNickname = newNick.trim();
+          localStorage.setItem('metaverse_chat_nick', chatNickname);
+          showToast('Đã đổi tên thành: ' + chatNickname);
+        }
+      });
+
+      // Pause movement controls while typing in chat
+      chatInput.addEventListener('focus', () => {
+        controls.unlock();
+      });
+    }
+
+    function scrollChatToBottom() {
+      if (chatMessagesEl) chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+    }
+
+    function showFloatingBubble(name, text) {
+      if (!floatingBubble) return;
+      fcName.textContent = name || 'Khách Tây Ninh';
+      fcText.textContent = text || '';
+      fcAvatar.textContent = (name || 'K').charAt(0).toUpperCase();
+      floatingBubble.classList.add('show');
+      clearTimeout(bubbleTimer);
+      bubbleTimer = setTimeout(() => {
+        floatingBubble.classList.remove('show');
+      }, 4500);
+    }
+
+    function appendChatMessage(msg, isSystem = false) {
+      if (!chatMessagesEl) return;
+      const item = document.createElement('div');
+      item.className = 'chat-msg-item' + (isSystem ? ' system' : '');
+      const timeStr = new Date(msg.createdAt || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      item.innerHTML = `
+        <div class="chat-msg-meta">
+          <span class="chat-msg-sender">${escapeHtml(msg.name || 'Thành viên')}</span>
+          <span>${timeStr}</span>
+        </div>
+        <div class="chat-msg-text">${escapeHtml(msg.text)}</div>
+      `;
+      chatMessagesEl.appendChild(item);
+      scrollChatToBottom();
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // BroadcastChannel for cross-tab local sync
+    let chatBroadcast = null;
+    try {
+      chatBroadcast = new BroadcastChannel('tnhub_metaverse_chat_bus');
+      chatBroadcast.onmessage = (e) => {
+        if (e.data && e.data.type === 'new_chat') {
+          appendChatMessage(e.data.msg);
+          showFloatingBubble(e.data.msg.name, e.data.msg.text);
+        }
+      };
+    } catch (e) {}
+
+    // Send chat message
+    if (chatForm) {
+      chatForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const text = chatInput.value.trim();
+        if (!text) return;
+        chatInput.value = '';
+
+        const senderName = currentUser ? (currentUser.displayName || chatNickname) : chatNickname;
+        const msgObj = {
+          name: senderName,
+          text: text,
+          createdAt: Date.now(),
+          uid: currentUser ? currentUser.uid : 'guest'
+        };
+
+        appendChatMessage(msgObj);
+        showFloatingBubble(msgObj.name, msgObj.text);
+
+        if (chatBroadcast) {
+          try { chatBroadcast.postMessage({ type: 'new_chat', msg: msgObj }); } catch (err) {}
+        }
+
+        // Save to Firebase Firestore if connected
+        if (firebaseDb) {
+          try {
+            const { collection, addDoc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+            await addDoc(collection(firebaseDb, 'metaverse_chat'), {
+              name: senderName,
+              text: text,
+              createdAt: serverTimestamp(),
+              uid: currentUser ? currentUser.uid : 'guest'
+            });
+          } catch (err) {
+            console.warn('Firestore chat send notice:', err);
+          }
+        }
+      });
+    }
+
+    // Listen to Firebase Firestore Chat in realtime
+    async function listenMetaverseChat() {
+      // Add initial welcome messages
+      appendChatMessage({
+        name: 'Hệ thống Metaverse TNHub',
+        text: 'Chào mừng bạn đến với Triển lãm & Gian hàng 3D Tây Ninh! Bạn có thể gửi tin nhắn trò chuyện với tất cả mọi người đang tham quan.',
+        createdAt: Date.now()
+      }, true);
+
+      if (!firebaseDb) return;
+      try {
+        const { collection, query, orderBy, limitToLast, onSnapshot } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+        const q = query(collection(firebaseDb, 'metaverse_chat'), orderBy('createdAt', 'asc'), limitToLast(35));
+        let initialLoadDone = false;
+        onSnapshot(q, (snapshot) => {
+          if (!initialLoadDone) {
+            snapshot.forEach(docSnap => {
+              const d = docSnap.data();
+              appendChatMessage({
+                name: d.name,
+                text: d.text,
+                createdAt: d.createdAt ? (d.createdAt.toMillis ? d.createdAt.toMillis() : Date.now()) : Date.now()
+              });
+            });
+            initialLoadDone = true;
+          } else {
+            snapshot.docChanges().forEach(change => {
+              if (change.type === 'added') {
+                const d = change.doc.data();
+                appendChatMessage({
+                  name: d.name,
+                  text: d.text,
+                  createdAt: d.createdAt ? (d.createdAt.toMillis ? d.createdAt.toMillis() : Date.now()) : Date.now()
+                });
+                showFloatingBubble(d.name, d.text);
+              }
+            });
+          }
+        }, (err) => console.warn('Chat snapshot notice:', err));
+      } catch (e) {
+        console.warn('Init chat listener:', e);
+      }
+    }
+
     initFirebaseServices();
+    listenMetaverseChat();
   </script>
 </body>
 </html>
