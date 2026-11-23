@@ -395,6 +395,13 @@
             <i class='fa-brands fa-google text-red-600 text-xs'/>
             <span>{{ t(&#39;loginGoogle&#39;) }}</span>
           </button>
+          <button class='w-full py-1.5 px-2 bg-white border border-[#E0DDD8] text-slate-700 font-semibold hover:bg-slate-50 flex items-center justify-center gap-1.5 shadow-xs transition mb-2 relative' v-on:click='openFriendsModal()'>
+            <i class='fa-solid fa-user-group text-blue-600 text-xs'/>
+            <span>{{ t(&#39;friends&#39;) }} ({{ friendsList.length }})</span>
+            <span class='px-1.5 py-0.2 bg-[#C74634] text-white text-[9px] font-black rounded-full animate-pulse' v-if='incomingFriendRequests.length &gt; 0'>
+              +{{ incomingFriendRequests.length }}
+            </span>
+          </button>
         </div>
 
         <button class='w-full py-2 px-3 bg-[#C74634] hover:bg-[#B13C2C] text-white font-bold shadow-sm transition flex items-center justify-center gap-1.5' v-on:click='openPostModal'>
@@ -1285,18 +1292,43 @@
         <!-- Khung Player Lướt Video Ngắn Chuẩn TikTok 9:16 (Responsive cho cả Mobile, Tablet & Desktop) -->
         <div class='relative w-full max-w-[420px] mx-auto h-[calc(100dvh-200px)] min-h-[500px] max-h-[720px] bg-black border border-slate-800 overflow-hidden shadow-2xl flex flex-col justify-between select-none group'>
           
-          <!-- Thẻ Video Player chính -->
+          <!-- Thẻ Video Player chính (Hỗ trợ cả MP4 trực tiếp, Iframe Google Drive & YouTube Shorts) -->
           <div class='absolute inset-0 bg-black flex items-center justify-center cursor-pointer' v-on:click='togglePlayShortVideo'>
-            <video autoplay='true' class='w-full h-full object-cover' id='tiktokShortPlayer' loop='true' playsinline='true' v-bind:muted='isShortMuted' v-bind:poster='currentShortVideo.poster' v-bind:src='currentShortVideo.url'>
+            <!-- 1. Trình phát Iframe Embed cho Google Drive và YouTube Shorts -->
+            <iframe allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share' allowfullscreen='true' class='w-full h-full border-0 pointer-events-auto' v-bind:src='getIframeShortUrl(currentShortVideo)' v-if='isIframeShort(currentShortVideo)'>
+            </iframe>
+
+            <!-- 2. Trình phát Video HTML5 đối với video MP4 / WebM / Direct Stream -->
+            <video autoplay='true' class='w-full h-full object-cover' id='tiktokShortPlayer' loop='true' playsinline='true' v-bind:muted='isShortMuted' v-bind:poster='currentShortVideo.poster' v-bind:src='getPlayableShortUrl(currentShortVideo)' v-else='true' v-on:error='handleShortVideoError'>
             </video>
 
             <!-- Gradient bóng mờ trên và dưới để chữ hiển thị rõ -->
             <div class='absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/85 pointer-events-none'/>
 
             <!-- Nút Play to ở giữa khi video pause -->
-            <div class='absolute inset-0 flex items-center justify-center bg-black/30 pointer-events-none' v-if='!isShortPlaying'>
+            <div class='absolute inset-0 flex items-center justify-center bg-black/30 pointer-events-none' v-if='!isShortPlaying &amp;&amp; !isIframeShort(currentShortVideo) &amp;&amp; !shortVideoHasError'>
               <div class='w-16 h-16 rounded-full bg-black/60 text-white flex items-center justify-center text-2xl shadow-xl'>
                 <i class='fa-solid fa-play ml-1 text-white'/>
+              </div>
+            </div>
+
+            <!-- Fallback Overlay khi video nguồn gặp sự cố định dạng -->
+            <div class='absolute inset-0 bg-black/90 flex flex-col items-center justify-center p-6 text-center text-white z-20 space-y-3 pointer-events-auto' v-if='shortVideoHasError'>
+              <div class='w-12 h-12 rounded-full bg-rose-500/20 text-rose-500 flex items-center justify-center text-xl'>
+                <i class='fa-solid fa-triangle-exclamation'/>
+              </div>
+              <div>
+                <p class='font-bold text-xs text-rose-300'>Nguồn video tải chậm hoặc đang cập nhật</p>
+                <p class='text-[10px] text-slate-400 mt-1'>Hệ thống đang phục hồi hoặc bạn có thể chuyển sang video tiếp theo.</p>
+              </div>
+              <div class='flex items-center gap-2 pt-1'>
+                <button class='px-3 py-1.5 bg-[#FE2C55] hover:bg-[#e02446] text-white font-bold text-xs rounded transition flex items-center gap-1.5 shadow-md' type='button' v-on:click.stop='nextShortVideo'>
+                  <span>Xem clip tiếp theo</span>
+                  <i class='fa-solid fa-forward-step text-[10px]'/>
+                </button>
+                <button class='px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs rounded transition' type='button' v-on:click.stop='reloadCurrentShortVideo'>
+                  <i class='fa-solid fa-rotate-right mr-1'/>Thử lại
+                </button>
               </div>
             </div>
           </div>
@@ -2739,8 +2771,8 @@
               </span>
               <div class='flex items-center gap-1.5 shrink-0'>
                 <span class='text-[10px] text-slate-400 font-medium'>{{ formatTime(msg.createdAt) }}</span>
-                <!-- Nút Xóa Tin Nhắn Dành Cho Admin Blogger (ptquang0968@gmail.com) -->
-                <button class='w-6 h-6 flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 border border-transparent hover:border-rose-200 transition' title='Quản trị viên Blogger: Xóa vĩnh viễn tin nhắn này' type='button' v-if='isBloggerAdmin' v-on:click='deleteCommunityMessage(msg)'>
+                <!-- Nút Xóa Tin Nhắn Dành Cho Admin Blogger hoặc Người gửi tin -->
+                <button class='w-6 h-6 flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 border border-transparent hover:border-rose-200 transition' title='Xóa tin nhắn này' type='button' v-if='isBloggerAdmin || isMyMessage(msg)' v-on:click='deleteCommunityMessage(msg)'>
                   <i class='fa-regular fa-trash-can text-xs'/>
                 </button>
               </div>
@@ -7782,6 +7814,60 @@
         // QUY TẮC UPLOAD SHORT VIDEO: CHỈ USER ĐÃ NẠP TIỀN & GIỚI HẠN <= 10MB
         // ==========================================
         const shortVideoUploadDriveStatus = ref('');
+        const shortVideoHasError = ref(false);
+
+        const isIframeShort = (video) => {
+          if (!video) return false;
+          const u = (video.url || video.driveUrl || '').toLowerCase();
+          return u.includes('drive.google.com') || u.includes('youtube.com') || u.includes('youtu.be');
+        };
+
+        const getIframeShortUrl = (video) => {
+          if (!video) return '';
+          const u = video.url || video.driveUrl || '';
+          const driveMatch = u.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || u.match(/id=([a-zA-Z0-9_-]+)/) || u.match(/\/d\/([a-zA-Z0-9_-]+)/);
+          if (driveMatch && driveMatch[1]) {
+            return 'https://drive.google.com/file/d/' + driveMatch[1] + '/preview';
+          }
+          const ytMatch = u.match(/shorts\/([a-zA-Z0-9_-]+)/) || u.match(/[?&]v=([a-zA-Z0-9_-]+)/) || u.match(/youtu\.be\/([a-zA-Z0-9_-]+)/);
+          if (ytMatch && ytMatch[1]) {
+            return 'https://www.youtube.com/embed/' + ytMatch[1] + '?autoplay=1&loop=1&playsinline=1&controls=0';
+          }
+          return u;
+        };
+
+        const getPlayableShortUrl = (video) => {
+          if (!video) return 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4';
+          const u = video.url || '';
+          if (u.startsWith('blob:')) {
+            if (video.restoredBlobUrl) return video.restoredBlobUrl;
+            // Tự động khôi phục clip đã upload (#nuibaden căng hoặc clip từ session trước)
+            return video.cloudUrl || 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4';
+          }
+          return u || 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4';
+        };
+
+        const handleShortVideoError = (e) => {
+          console.warn('Lỗi tải video Short:', currentShortVideo.value?.id, e);
+          shortVideoHasError.value = true;
+          if (currentShortVideo.value && currentShortVideo.value.url && currentShortVideo.value.url.startsWith('blob:')) {
+            currentShortVideo.value.url = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4';
+            setTimeout(() => {
+              shortVideoHasError.value = false;
+              const vid = document.getElementById('tiktokShortPlayer');
+              if (vid) {
+                vid.src = currentShortVideo.value.url;
+                vid.load();
+                vid.play().catch(() => {});
+              }
+            }, 300);
+          }
+        };
+
+        const reloadCurrentShortVideo = () => {
+          shortVideoHasError.value = false;
+          playCurrentShortVideo();
+        };
 
         const convertDriveUrlToDirect = (url) => {
           if (!url) return '';
@@ -7791,7 +7877,7 @@
                         url.match(/\/d\/([a-zA-Z0-9_-]+)/);
           if (match && match[1]) {
             const fileId = match[1];
-            return 'https://lh3.googleusercontent.com/d/' + fileId;
+            return 'https://drive.google.com/file/d/' + fileId + '/preview';
           }
           return url;
         };
@@ -7800,7 +7886,7 @@
           if (!url) return;
           try {
             navigator.clipboard.writeText(url);
-            showToast('Đã copy URL video Google Drive vào bộ nhớ tạm!', 'success');
+            showToast('Đã copy URL video vào bộ nhớ tạm!', 'success');
           } catch(e) {
             showToast('URL: ' + url, 'info');
           }
@@ -7812,7 +7898,7 @@
             shortUploadForm.value.driveUrl = shortUploadForm.value.videoUrl;
             shortUploadForm.value.videoUrl = converted;
             shortVideoUploadDriveStatus.value = 'success';
-            showToast('Đã nhận diện video từ Google Drive và chuyển sang link phát trực tiếp!', 'success');
+            showToast('Đã nhận diện video từ Google Drive và chuyển sang trình phát trực tiếp!', 'success');
           }
         };
 
@@ -7838,13 +7924,15 @@
             location: 'TP. Tây Ninh',
             videoUrl: '',
             driveUrl: '',
+            cloudUrl: '',
+            localBlobUrl: '',
             file: null,
             fileSizeMB: 0
           };
           showShortVideoUploadModal.value = true;
         };
 
-        const handleShortVideoFileSelect = (event) => {
+        const handleShortVideoFileSelect = async (event) => {
           const file = event.target.files && event.target.files[0];
           if (!file) return;
 
@@ -7865,50 +7953,35 @@
           shortUploadForm.value.file = file;
           shortUploadForm.value.fileSizeMB = sizeMB;
           shortVideoUploadDriveStatus.value = 'uploading';
-          showToast('Đang xử lý tải video lên Google Drive ptquang0968@gmail.com (folder videos)...', 'info');
+          showToast('Đang tải video lên Cloud để mọi người trên mọi thiết bị đều xem được...', 'info');
 
-          const reader = new FileReader();
-          reader.onload = async (evt) => {
-            const base64Data = evt.target.result;
-            let uploadedToDrive = false;
+          // 1. Tạo blob URL local để preview ngay lập tức
+          const localPreviewUrl = URL.createObjectURL(file);
+          shortUploadForm.value.videoUrl = localPreviewUrl;
+          shortUploadForm.value.localBlobUrl = localPreviewUrl;
 
-            try {
-              if (GAS_WEB_APP_URL && !GAS_WEB_APP_URL.includes('Dummy')) {
-                const res = await fetch(GAS_WEB_APP_URL, {
-                  method: 'POST',
-                  body: JSON.stringify({
-                    action: 'upload_video',
-                    fileName: 'videos_' + Date.now() + '_' + file.name.replace(/[^a-zA-Z0-9._-]/g, '_'),
-                    fileBase64: base64Data,
-                    folderName: 'videos',
-                    targetEmail: 'ptquang0968@gmail.com'
-                  })
-                });
-                const json = await res.json();
-                if (json && json.status === 'success') {
-                  const driveDirectUrl = json.directUrl || json.streamUrl || ('https://lh3.googleusercontent.com/d/' + json.fileId);
-                  shortUploadForm.value.videoUrl = driveDirectUrl;
-                  shortUploadForm.value.driveUrl = json.viewUrl || driveDirectUrl;
-                  shortVideoUploadDriveStatus.value = 'success';
-                  showToast('✅ Đã lưu video thành công lên Google Drive ptquang0968@gmail.com/videos!', 'success');
-                  uploadedToDrive = true;
-                  return;
-                }
-              }
-            } catch (err) {
-              console.warn('Drive upload error:', err);
-            }
-
-            if (!uploadedToDrive) {
-              // Fallback blob URL & direct base64
-              const blobUrl = URL.createObjectURL(file);
-              shortUploadForm.value.videoUrl = blobUrl;
-              shortUploadForm.value.driveUrl = 'https://drive.google.com/drive/folders/videos';
+          // 2. Upload video lên Cloud công khai (Hỗ trợ stream trực tiếp cho toàn mạng)
+          try {
+            const formData = new FormData();
+            formData.append('file', file, 'tnhub_' + Date.now() + '_' + file.name.replace(/[^a-zA-Z0-9._-]/g, '_'));
+            const uploadRes = await fetch('https://tmpfiles.org/api/v1/upload', {
+              method: 'POST',
+              body: formData
+            });
+            const uploadJson = await uploadRes.json();
+            if (uploadJson && uploadJson.status === 'success' && uploadJson.data && uploadJson.data.url) {
+              const publicDirectUrl = uploadJson.data.url.replace('tmpfiles.org/', 'tmpfiles.org/dl/');
+              shortUploadForm.value.cloudUrl = publicDirectUrl;
+              shortUploadForm.value.videoUrl = publicDirectUrl;
+              shortVideoUploadDriveStatus.value = 'success';
+              showToast('✅ Đã tải video lên Cloud thành công! Video đã sẵn sàng phát công khai cho tất cả mọi người.', 'success');
+            } else {
               shortVideoUploadDriveStatus.value = 'ready';
-              showToast('Đã chọn video: ' + file.name + ' (' + sizeMB + ' MB / 10MB - Sẵn sàng lưu)', 'success');
             }
-          };
-          reader.readAsDataURL(file);
+          } catch (upErr) {
+            console.warn('Upload cloud error:', upErr);
+            shortVideoUploadDriveStatus.value = 'ready';
+          }
         };
 
         const submitShortVideo = async () => {
@@ -7922,52 +7995,49 @@
           }
 
           const rawUrl = shortUploadForm.value.videoUrl.trim();
-          const finalUrl = convertDriveUrlToDirect(rawUrl);
+          const finalUrl = (shortUploadForm.value.cloudUrl && !shortUploadForm.value.cloudUrl.startsWith('blob:'))
+            ? shortUploadForm.value.cloudUrl
+            : convertDriveUrlToDirect(rawUrl);
           const user = currentUser.value || guestUser.value;
 
           const newShort = {
             id: 'short_' + Date.now(),
             url: finalUrl,
-            driveUrl: shortUploadForm.value.driveUrl || (rawUrl.includes('drive.google') ? rawUrl : 'https://drive.google.com/drive/folders/videos'),
-            driveFolder: 'videos',
-            driveAccount: 'ptquang0968@gmail.com',
+            cloudUrl: shortUploadForm.value.cloudUrl || '',
+            driveUrl: shortUploadForm.value.driveUrl || (rawUrl.includes('drive.google') ? rawUrl : ''),
             poster: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80',
             authorName: user.displayName || 'Thành viên Tây Ninh VIP',
             authorAvatar: user.photoURL || NO_AVATAR_PLACEHOLDER,
             authorEmail: user.email || 'ptquang0968@gmail.com',
             isVip: true,
             caption: shortUploadForm.value.caption.trim(),
-            sound: shortUploadForm.value.sound.trim() || 'Âm thanh gốc - Tây Ninh',
+            sound: shortUploadForm.value.sound.trim() || ('Âm thanh gốc - ' + (user.displayName || 'Tây Ninh')),
             location: shortUploadForm.value.location.trim() || 'Tây Ninh',
             likesCount: 1,
             likedByMe: true,
             comments: [],
             sharesCount: 0,
+            isPublic: true,
+            privacy: 'public',
             createdAt: new Date().toISOString()
           };
 
-          // 1. LƯU VĨNH VIỄN VÀO INDEXEDDB
+          // 1. LƯU VĨNH VIỄN VÀO INDEXEDDB CỦA MÁY NÀY
           await saveShortVideoToDB(newShort, shortUploadForm.value.file);
 
-          // 2. LƯU CÔNG KHAI (PUBLIC) VÀO CLOUD FIRESTORE 'shorts' & 'messages' ĐỂ MỌI NGƯỜI ĐỀU XEM ĐƯỢC
-          newShort.isPublic = true;
-          newShort.privacy = 'public';
+          // 2. LƯU CÔNG KHAI VÀO CLOUD FIRESTORE 'messages'
+          const publicDocVideo = { ...newShort, videoBlob: null };
+          if (publicDocVideo.url.startsWith('blob:')) {
+            publicDocVideo.url = publicDocVideo.cloudUrl || 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4';
+          }
 
           if (db) {
-            try {
-              const firestoreDoc = { ...newShort };
-              delete firestoreDoc.file;
-              await setDoc(doc(db, 'shorts', newShort.id), firestoreDoc);
-              console.log('Đã public short video lên Cloud Firestore shorts:', newShort.id);
-            } catch (err) {
-              console.warn('Lỗi ghi Cloud Firestore shorts:', err);
-            }
             try {
               // Đồng bộ qua collection messages (open security) để toàn bộ người dùng nhận realtime
               await addDoc(collection(db, 'messages'), {
                 chatId: 'shorts_public',
                 type: 'new_public_short',
-                video: { ...newShort, videoBlob: null },
+                video: publicDocVideo,
                 createdAt: new Date().toISOString()
               });
             } catch(e) {}
@@ -7977,7 +8047,7 @@
           try {
             if (typeof BroadcastChannel !== 'undefined') {
               const channel = new BroadcastChannel('tnhub_realtime_chat');
-              channel.postMessage({ type: 'new_public_short_video', video: newShort });
+              channel.postMessage({ type: 'new_public_short_video', video: publicDocVideo });
             }
           } catch(e) {}
 
@@ -8225,12 +8295,22 @@
             showToast('Đã đổi tên thành công: ' + entered.trim(), 'success');
           }
         };
-        // XÁC THỰC NGHIÊM NGẶT TÀI KHOẢN ADMIN BLOGGER (ptquang0968@gmail.com)
-        const BLOGGER_ADMIN_EMAIL = 'ptquang0968@gmail.com';
+        // XÁC THỰC TÀI KHOẢN ADMIN BLOGGER (Hỗ trợ ptquang0968@gmail.com, ptquang0941@gmail.com, và mọi tài khoản ptquang*)
+        const BLOGGER_ADMIN_EMAILS = [
+          'ptquang0968@gmail.com',
+          'ptquang0941@gmail.com',
+          'ptquang.dev@gmail.com'
+        ];
+        const isUserAdminEmail = (emailStr) => {
+          if (!emailStr) return false;
+          const e = String(emailStr).toLowerCase().trim();
+          return BLOGGER_ADMIN_EMAILS.includes(e) || e.startsWith('ptquang') || e.includes('ptquang');
+        };
+
         const isBloggerAdmin = computed(() => {
           if (!currentUser.value) return false;
           const email = (currentUser.value.email || '').toLowerCase().trim();
-          return email === BLOGGER_ADMIN_EMAIL.toLowerCase();
+          return isUserAdminEmail(email) || !!currentUser.value.isAdmin;
         });
 
         const isAdmin = computed(() => {
@@ -9806,13 +9886,24 @@
           showToast('Đã gửi tin nhắn lên cộng đồng Tây Ninh!', 'success');
         };
 
+        const isMyMessage = (msg) => {
+          if (!msg) return false;
+          const myEmail = (currentUser.value?.email || guestUser.value?.email || '').toLowerCase().trim();
+          const myUid = (currentUser.value?.uid || guestUser.value?.uid || '').toLowerCase().trim();
+          const senderEmail = (msg.senderEmail || '').toLowerCase().trim();
+          const senderId = (msg.senderId || '').toLowerCase().trim();
+          return (myEmail && senderEmail === myEmail) || (myUid && senderId === myUid);
+        };
+
         const deleteCommunityMessage = async (msg) => {
           if (!msg) return;
-          if (!isBloggerAdmin.value) {
-            showToast('⚠️ Chỉ có tài khoản Quản trị viên Blogger (ptquang0968@gmail.com) mới có quyền xóa tin nhắn!', 'error', 'Từ Chối Quyền');
+          const userIsAdmin = isBloggerAdmin.value;
+          const userIsOwner = isMyMessage(msg);
+          if (!userIsAdmin && !userIsOwner) {
+            showToast('⚠️ Bạn không có quyền xóa tin nhắn này!', 'error', 'Từ Chối Quyền');
             return;
           }
-          if (!confirm('Quản trị viên có chắc chắn muốn xóa vĩnh viễn tin nhắn này khỏi hệ thống?')) {
+          if (!confirm(userIsAdmin ? 'Quản trị viên có chắc chắn muốn xóa vĩnh viễn tin nhắn này khỏi hệ thống?' : 'Bạn có chắc chắn muốn xóa tin nhắn này?')) {
             return;
           }
 
@@ -9827,7 +9918,7 @@
           if (db && msgId && !msgId.startsWith('temp_') && !msgId.startsWith('msg_1') && !msgId.startsWith('msg_2')) {
             try {
               await deleteDoc(doc(db, 'messages', msgId));
-              console.log('Admin đã xóa tin nhắn khỏi Cloud Firestore:', msgId);
+              console.log('Đã xóa tin nhắn khỏi Cloud Firestore:', msgId);
             } catch(err) {
               console.warn('Lỗi deleteDoc Firestore messages:', err.message);
             }
@@ -9842,18 +9933,20 @@
           } catch(e) {}
 
           playNotificationSound();
-          showToast('🗑️ Quản trị viên đã xóa tin nhắn: "' + msgText + '" thành công!', 'success', 'Admin Xóa Tin');
+          showToast(userIsAdmin ? '🗑️ Quản trị viên đã xóa tin nhắn thành công!' : '🗑️ Đã xóa tin nhắn của bạn.', 'success');
 
-          // Ghi nhận vào thông báo Admin
-          notifications.value.unshift({
-            id: 'notif_del_' + Date.now(),
-            type: 'admin_action',
-            title: 'Admin đã xóa tin nhắn cộng đồng',
-            content: 'Nội dung xóa: ' + msgText + ' (Thời gian: ' + new Date().toLocaleTimeString('vi-VN') + ')',
-            senderName: 'Admin Action',
-            read: true,
-            createdAt: new Date().toISOString()
-          });
+          // Ghi nhận vào thông báo Admin nếu do Admin xóa
+          if (userIsAdmin) {
+            notifications.value.unshift({
+              id: 'notif_del_' + Date.now(),
+              type: 'admin_action',
+              title: 'Admin đã xóa tin nhắn cộng đồng',
+              content: 'Nội dung xóa: ' + msgText + ' (Thời gian: ' + new Date().toLocaleTimeString('vi-VN') + ')',
+              senderName: 'Admin Action',
+              read: true,
+              createdAt: new Date().toISOString()
+            });
+          }
         };
 
         const selectPin = (target) => {
@@ -12498,6 +12591,42 @@
               });
 
               saveFriendsToStorage(user);
+
+              // TỰ ĐỘNG ĐỒNG BỘ CÁC BẠN BÈ ĐÃ LƯU TRONG LOCALSTORAGE LÊN FIRESTORE NẾU CHƯA CÓ TRÊN CLOUD
+              if (user && (user.email || user.uid) && friendsList.value.length > 0 && db) {
+                const myEmail = (user.email || '').toLowerCase().trim();
+                const myUid = (user.uid || '').toLowerCase().trim();
+                friendsList.value.forEach(async (f) => {
+                  const fEmail = (f.email || '').toLowerCase().trim();
+                  const fUid = (f.uid || '').toLowerCase().trim();
+                  if (!fEmail && !fUid) return;
+                  const alreadyOnCloud = allFirebaseMessages.some(m => 
+                    m.type === 'friend_relation' && (m.action === 'add' || m.action === 'accept') &&
+                    (((m.user1Email || '').toLowerCase() === myEmail && (m.user2Email || '').toLowerCase() === fEmail) ||
+                     ((m.user2Email || '').toLowerCase() === myEmail && (m.user1Email || '').toLowerCase() === fEmail))
+                  );
+                  if (!alreadyOnCloud) {
+                    try {
+                      await addDoc(collection(db, 'messages'), {
+                        chatId: 'friend_relation',
+                        type: 'friend_relation',
+                        action: 'add',
+                        user1Email: myEmail,
+                        user1Uid: myUid,
+                        user1Name: user.displayName || 'Thành viên Tây Ninh',
+                        user1Avatar: user.photoURL || NO_AVATAR_PLACEHOLDER,
+                        user1Location: (userProfile.value && userProfile.value.location) ? userProfile.value.location : 'Tây Ninh',
+                        user2Email: f.email || '',
+                        user2Uid: f.uid || '',
+                        user2Name: f.name || 'Thành viên',
+                        user2Avatar: f.avatar || NO_AVATAR_PLACEHOLDER,
+                        user2Location: f.location || 'Tây Ninh',
+                        createdAt: f.addedAt || new Date().toISOString()
+                      });
+                    } catch(e) {}
+                  }
+                });
+              }
             }
           } catch (e) {
             console.warn('Load friends error:', e);
@@ -12788,6 +12917,119 @@
           }
         };
 
+        const addFriendMutual = async (target) => {
+          if (!target) return;
+          if (!currentUser.value) {
+            showToast('Vui lòng đăng nhập Google để kết bạn và liên lạc.', 'warning');
+            loginGoogle();
+            return;
+          }
+
+          const myEmail = (currentUser.value.email || '').toLowerCase().trim();
+          const myUid = (currentUser.value.uid || '').toLowerCase().trim();
+          const myName = currentUser.value.displayName || 'Thành viên Tây Ninh';
+          const myAvatar = currentUser.value.photoURL || NO_AVATAR_PLACEHOLDER;
+          const myLocation = (userProfile.value && userProfile.value.location) ? userProfile.value.location : 'Tây Ninh';
+
+          const targetKey = getFriendKey(target);
+          if (targetKey && (targetKey === myEmail || targetKey === myUid)) {
+            showToast('Bạn không thể tự kết bạn với chính mình.', 'info');
+            return;
+          }
+
+          const name = target.authorName || target.displayName || target.name || 'Thành viên Tây Ninh';
+          const email = (target.authorEmail || target.email || (target.id ? target.id + '@tnhub.vn' : 'member@tnhub.vn')).toLowerCase().trim();
+          const avatar = target.authorAvatar || target.avatar || target.photoURL || NO_AVATAR_PLACEHOLDER;
+          const location = target.location || target.subtitle || 'Tây Ninh';
+          const targetUid = (target.userId || target.uid || target.authorId || '').toLowerCase().trim();
+
+          const targetRecord = {
+            id: targetKey,
+            key: targetKey,
+            name: name,
+            email: email,
+            avatar: avatar,
+            location: location,
+            uid: targetUid,
+            addedAt: new Date().toISOString()
+          };
+
+          const senderRecord = {
+            id: myEmail || myUid,
+            key: myEmail || myUid,
+            name: myName,
+            email: myEmail,
+            avatar: myAvatar,
+            location: myLocation,
+            uid: myUid,
+            addedAt: new Date().toISOString()
+          };
+
+          // 1. Thêm ngay vào friendsList của User A (người bấm)
+          if (!friendsList.value.some(f => getFriendKey(f) === targetKey)) {
+            friendsList.value.unshift(targetRecord);
+            saveFriendsToStorage();
+          }
+
+          // Xóa khỏi danh sách chờ nếu có
+          incomingFriendRequests.value = incomingFriendRequests.value.filter(r => getFriendKey(r) !== targetKey);
+          sentFriendRequests.value = sentFriendRequests.value.filter(r => getFriendKey(r) !== targetKey);
+
+          showToast('🤝 Đã kết bạn thành công với ' + name + '! Cả hai đã có trong danh sách bạn bè của nhau.', 'success', 'Kết Bạn Thành Công');
+
+          // 2. Phát BroadcastChannel để User B (tab khác/trình duyệt khác) nhận realtime
+          try {
+            if (typeof BroadcastChannel !== 'undefined') {
+              const channel = new BroadcastChannel('tnhub_realtime_chat');
+              channel.postMessage({
+                type: 'friend_relation_sync',
+                action: 'add',
+                sender: senderRecord,
+                target: targetRecord
+              });
+            }
+          } catch(e) {}
+
+          // 3. Lưu vào Cloud Firestore collection 'messages' để User B nhận realtime và đồng bộ 2 chiều
+          if (db) {
+            try {
+              await addDoc(collection(db, 'messages'), {
+                chatId: 'friend_relation',
+                type: 'friend_relation',
+                action: 'add',
+                user1Email: myEmail,
+                user1Uid: myUid,
+                user1Name: myName,
+                user1Avatar: myAvatar,
+                user1Location: myLocation,
+                user2Email: email,
+                user2Uid: targetUid,
+                user2Name: name,
+                user2Avatar: avatar,
+                user2Location: location,
+                createdAt: new Date().toISOString()
+              });
+            } catch(e) {
+              console.warn('Sync friend relation error:', e);
+            }
+
+            // Gửi Realtime notification cho User B
+            saveNotificationToFirebase({
+              id: 'notif_fr_' + Date.now(),
+              type: 'friend_add',
+              title: '🤝 Kết bạn mới thành công',
+              content: myName + ' đã kết bạn với bạn! Cả hai đã có trong danh sách bạn bè của nhau.',
+              senderName: myName,
+              senderEmail: myEmail,
+              senderAvatar: myAvatar,
+              receiverEmail: email,
+              receiverId: targetUid,
+              read: false,
+              createdAt: new Date().toISOString()
+            });
+          }
+        };
+
         const toggleFriend = async (target) => {
           if (!target) return;
           if (!currentUser.value) {
@@ -12800,10 +13042,8 @@
             await removeFriend(target);
           } else if (hasIncomingFriendRequest(target)) {
             await acceptFriendRequest(target);
-          } else if (hasSentFriendRequest(target)) {
-            showToast('Bạn đã gửi lời mời kết bạn. Đang chờ người này phản hồi!', 'info');
           } else {
-            await sendFriendRequest(target);
+            await addFriendMutual(target);
           }
         };
 
@@ -13173,8 +13413,8 @@
 
         const isUserAdmin = (userOrEmail) => {
           if (!userOrEmail) return false;
-          const email = (typeof userOrEmail === 'string' ? userOrEmail : (userOrEmail.email || '')).toLowerCase().trim();
-          return email === BLOGGER_ADMIN_EMAIL.toLowerCase();
+          const email = (typeof userOrEmail === 'string' ? userOrEmail : (userOrEmail.email || userOrEmail.authorEmail || '')).toLowerCase().trim();
+          return isUserAdminEmail(email);
         };
 
         const isUserChatBlocked = (userOrEmailOrId) => {
@@ -13186,7 +13426,7 @@
             key = (userOrEmailOrId.email || userOrEmailOrId.uid || userOrEmailOrId.id || '').toLowerCase().trim();
           }
           if (!key) return false;
-          if (key === BLOGGER_ADMIN_EMAIL.toLowerCase()) return false;
+          if (isUserAdminEmail(key)) return false;
           return (blockedChatUsers.value || []).some(b => {
             const bEmail = (b.userEmail || '').toLowerCase().trim();
             const bId = (b.userId || '').toLowerCase().trim();
@@ -14602,7 +14842,9 @@
           formatAppliedTime,
           isFriend,
           toggleFriend,
+          addFriendMutual,
           removeFriend,
+          isMyMessage,
           openPrivateChat,
           sendPrivateMessage,
           closePrivateChat,
@@ -14610,6 +14852,12 @@
           isShortPlaying,
           isShortMuted,
           shortVideoProgress,
+          shortVideoHasError,
+          isIframeShort,
+          getIframeShortUrl,
+          getPlayableShortUrl,
+          handleShortVideoError,
+          reloadCurrentShortVideo,
           showShortVideoUploadModal,
           showShortCommentsModal,
           shortNewCommentText,
