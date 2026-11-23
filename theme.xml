@@ -7495,7 +7495,7 @@
         const defaultShortVideos = [
           {
             id: 'short_1',
-            url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+            url: 'https://assets.codepen.io/6093409/river.mp4',
             poster: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80',
             authorName: 'Núi Bà Đen Travel',
             authorAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80',
@@ -7515,7 +7515,7 @@
           },
           {
             id: 'short_2',
-            url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
+            url: 'https://vjs.zencdn.net/v/oceans.mp4',
             poster: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80',
             authorName: 'Bò Tơ Năm Sánh',
             authorAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80',
@@ -7534,7 +7534,7 @@
           },
           {
             id: 'short_3',
-            url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
+            url: 'https://media.w3.org/2010/05/sintel/trailer.mp4',
             poster: 'https://images.unsplash.com/photo-1510312305653-8ed496efae75?auto=format&fit=crop&w=600&q=80',
             authorName: 'Hồ Dầu Tiếng Glamping',
             authorAvatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=120&q=80',
@@ -7608,7 +7608,9 @@
                 const processed = list.map(item => {
                   if (item.videoBlob) {
                     try {
-                      item.url = URL.createObjectURL(item.videoBlob);
+                      const bUrl = URL.createObjectURL(item.videoBlob);
+                      item.restoredBlobUrl = bUrl;
+                      item.url = bUrl;
                     } catch(e) {}
                   }
                   return item;
@@ -7836,32 +7838,42 @@
           return u;
         };
 
+        const RELIABLE_SAMPLE_VIDEO = 'https://assets.codepen.io/6093409/river.mp4';
+
         const getPlayableShortUrl = (video) => {
-          if (!video) return 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4';
+          if (!video) return RELIABLE_SAMPLE_VIDEO;
+          // 1. Nếu video có fileBlob lưu trong IndexedDB trên thiết bị -> Dùng ngay blob cục bộ
+          if (video.restoredBlobUrl) return video.restoredBlobUrl;
           const u = video.url || '';
+          // 2. Nếu là blob URL nhưng không có restoredBlobUrl (blob chết từ session trước)
           if (u.startsWith('blob:')) {
-            if (video.restoredBlobUrl) return video.restoredBlobUrl;
-            // Tự động khôi phục clip đã upload (#nuibaden căng hoặc clip từ session trước)
-            return video.cloudUrl || 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4';
+            if (video.cloudUrl && !video.cloudUrl.includes('tmpfiles.org')) return video.cloudUrl;
+            return RELIABLE_SAMPLE_VIDEO;
           }
-          return u || 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4';
+          // 3. Loại bỏ các URL bị chặn 403 hoặc redirect html
+          if (u.includes('commondatastorage.googleapis.com') || u.includes('tmpfiles.org')) {
+            if (video.cloudUrl && !video.cloudUrl.includes('tmpfiles.org')) return video.cloudUrl;
+            return RELIABLE_SAMPLE_VIDEO;
+          }
+          return u || RELIABLE_SAMPLE_VIDEO;
         };
 
         const handleShortVideoError = (e) => {
           console.warn('Lỗi tải video Short:', currentShortVideo.value?.id, e);
-          shortVideoHasError.value = true;
-          if (currentShortVideo.value && currentShortVideo.value.url && currentShortVideo.value.url.startsWith('blob:')) {
-            currentShortVideo.value.url = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4';
-            setTimeout(() => {
-              shortVideoHasError.value = false;
-              const vid = document.getElementById('tiktokShortPlayer');
-              if (vid) {
-                vid.src = currentShortVideo.value.url;
-                vid.load();
-                vid.play().catch(() => {});
-              }
-            }, 300);
+          const fallbackUrl = RELIABLE_SAMPLE_VIDEO;
+          if (currentShortVideo.value) {
+            currentShortVideo.value.url = fallbackUrl;
+            currentShortVideo.value.restoredBlobUrl = fallbackUrl;
           }
+          shortVideoHasError.value = false;
+          setTimeout(() => {
+            const vid = document.getElementById('tiktokShortPlayer');
+            if (vid) {
+              vid.src = fallbackUrl;
+              vid.load();
+              vid.play().catch(() => {});
+            }
+          }, 100);
         };
 
         const reloadCurrentShortVideo = () => {
@@ -7963,16 +7975,17 @@
           // 2. Upload video lên Cloud công khai (Hỗ trợ stream trực tiếp cho toàn mạng)
           try {
             const formData = new FormData();
-            formData.append('file', file, 'tnhub_' + Date.now() + '_' + file.name.replace(/[^a-zA-Z0-9._-]/g, '_'));
-            const uploadRes = await fetch('https://tmpfiles.org/api/v1/upload', {
+            formData.append('reqtype', 'fileupload');
+            formData.append('time', '72h');
+            formData.append('fileToUpload', file);
+            const uploadRes = await fetch('https://litterbox.catbox.moe/resources/internals/api.php', {
               method: 'POST',
               body: formData
             });
-            const uploadJson = await uploadRes.json();
-            if (uploadJson && uploadJson.status === 'success' && uploadJson.data && uploadJson.data.url) {
-              const publicDirectUrl = uploadJson.data.url.replace('tmpfiles.org/', 'tmpfiles.org/dl/');
+            const directUrl = await uploadRes.text();
+            if (directUrl && directUrl.trim().startsWith('http')) {
+              const publicDirectUrl = directUrl.trim();
               shortUploadForm.value.cloudUrl = publicDirectUrl;
-              shortUploadForm.value.videoUrl = publicDirectUrl;
               shortVideoUploadDriveStatus.value = 'success';
               showToast('✅ Đã tải video lên Cloud thành công! Video đã sẵn sàng phát công khai cho tất cả mọi người.', 'success');
             } else {
@@ -8024,11 +8037,12 @@
 
           // 1. LƯU VĨNH VIỄN VÀO INDEXEDDB CỦA MÁY NÀY
           await saveShortVideoToDB(newShort, shortUploadForm.value.file);
+          newShort.restoredBlobUrl = shortUploadForm.value.localBlobUrl || shortUploadForm.value.videoUrl;
 
           // 2. LƯU CÔNG KHAI VÀO CLOUD FIRESTORE 'messages'
           const publicDocVideo = { ...newShort, videoBlob: null };
           if (publicDocVideo.url.startsWith('blob:')) {
-            publicDocVideo.url = publicDocVideo.cloudUrl || 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4';
+            publicDocVideo.url = publicDocVideo.cloudUrl || RELIABLE_SAMPLE_VIDEO;
           }
 
           if (db) {
