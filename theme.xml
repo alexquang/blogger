@@ -2771,8 +2771,8 @@
               </span>
               <div class='flex items-center gap-1.5 shrink-0'>
                 <span class='text-[10px] text-slate-400 font-medium'>{{ formatTime(msg.createdAt) }}</span>
-                <!-- Nút Xóa Tin Nhắn Dành Cho Admin Blogger hoặc Người gửi tin -->
-                <button class='w-6 h-6 flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 border border-transparent hover:border-rose-200 transition' title='Xóa tin nhắn này' type='button' v-if='isBloggerAdmin || isMyMessage(msg)' v-on:click='deleteCommunityMessage(msg)'>
+                <!-- Nút Xóa Tin Nhắn Dành Riêng Cho Quản Trị Viên Blogger (ptquang0968@gmail.com) -->
+                <button class='w-6 h-6 flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 border border-transparent hover:border-rose-200 transition' title='Quản trị viên Blogger: Xóa vĩnh viễn tin nhắn này' type='button' v-if='isBloggerAdmin' v-on:click='deleteCommunityMessage(msg)'>
                   <i class='fa-regular fa-trash-can text-xs'/>
                 </button>
               </div>
@@ -8295,22 +8295,17 @@
             showToast('Đã đổi tên thành công: ' + entered.trim(), 'success');
           }
         };
-        // XÁC THỰC TÀI KHOẢN ADMIN BLOGGER (Hỗ trợ ptquang0968@gmail.com, ptquang0941@gmail.com, và mọi tài khoản ptquang*)
-        const BLOGGER_ADMIN_EMAILS = [
-          'ptquang0968@gmail.com',
-          'ptquang0941@gmail.com',
-          'ptquang.dev@gmail.com'
-        ];
+        // XÁC THỰC NGHIÊM NGẶT: CHỈ DUY NHẤT TÀI KHOẢN CỦA BLOGGER (ptquang0968@gmail.com) LÀ QUẢN TRỊ VIÊN, CÒN LẠI LÀ USER
+        const BLOGGER_ADMIN_EMAIL = 'ptquang0968@gmail.com';
         const isUserAdminEmail = (emailStr) => {
           if (!emailStr) return false;
-          const e = String(emailStr).toLowerCase().trim();
-          return BLOGGER_ADMIN_EMAILS.includes(e) || e.startsWith('ptquang') || e.includes('ptquang');
+          return String(emailStr).toLowerCase().trim() === BLOGGER_ADMIN_EMAIL.toLowerCase();
         };
 
         const isBloggerAdmin = computed(() => {
           if (!currentUser.value) return false;
           const email = (currentUser.value.email || '').toLowerCase().trim();
-          return isUserAdminEmail(email) || !!currentUser.value.isAdmin;
+          return email === BLOGGER_ADMIN_EMAIL.toLowerCase();
         });
 
         const isAdmin = computed(() => {
@@ -9897,13 +9892,11 @@
 
         const deleteCommunityMessage = async (msg) => {
           if (!msg) return;
-          const userIsAdmin = isBloggerAdmin.value;
-          const userIsOwner = isMyMessage(msg);
-          if (!userIsAdmin && !userIsOwner) {
-            showToast('⚠️ Bạn không có quyền xóa tin nhắn này!', 'error', 'Từ Chối Quyền');
+          if (!isBloggerAdmin.value) {
+            showToast('⚠️ Chỉ có tài khoản Quản trị viên của Blogger (ptquang0968@gmail.com) mới có quyền xóa tin nhắn!', 'error', 'Từ Chối Quyền');
             return;
           }
-          if (!confirm(userIsAdmin ? 'Quản trị viên có chắc chắn muốn xóa vĩnh viễn tin nhắn này khỏi hệ thống?' : 'Bạn có chắc chắn muốn xóa tin nhắn này?')) {
+          if (!confirm('Quản trị viên Blogger có chắc chắn muốn xóa vĩnh viễn tin nhắn này khỏi hệ thống?')) {
             return;
           }
 
