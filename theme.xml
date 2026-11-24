@@ -272,8 +272,8 @@
             </div>
             <span class='text-[9px] bg-amber-100 text-amber-800 px-2 py-0.5 font-bold uppercase shrink-0 whitespace-nowrap ml-2'>{{ t(&#39;lotterySubtitle&#39;) }}</span>
           </button>
-          <!-- Triển lãm Metaverse 3D Menu Item -->
-          <button class='w-full flex items-center justify-between px-3 py-2 transition text-xs' v-bind:class='activeTab === &quot;metaverse&quot; ? &quot;bg-[#F1EFED] text-[#C74634] font-bold border-l-2 border-[#C74634]&quot; : &quot;text-slate-700 hover:bg-[#F1EFED]&quot;' v-on:click='activeTab = &quot;metaverse&quot;'>
+          <!-- Triển lãm Metaverse 3D Menu Item (Chỉ hiển thị cho Tài khoản VIP) -->
+          <button class='w-full flex items-center justify-between px-3 py-2 transition text-xs' v-bind:class='activeTab === &quot;metaverse&quot; ? &quot;bg-[#F1EFED] text-[#C74634] font-bold border-l-2 border-[#C74634]&quot; : &quot;text-slate-700 hover:bg-[#F1EFED]&quot;' v-if='isFundedUser || isAdmin' v-on:click='activeTab = &quot;metaverse&quot;'>
             <div class='flex items-center gap-3 min-w-0'>
               <i class='fa-solid fa-vr-cardboard text-purple-600 text-xs shrink-0 animate-pulse'/>
               <span class='whitespace-nowrap font-medium'>{{ t(&#39;metaverse&#39;) }}</span>
@@ -481,7 +481,7 @@
           <span>{{ t(&#39;lottery&#39;) }}</span>
           <span class='bg-amber-100 text-amber-800 text-[9px] px-1.5 py-0.2 font-black'>TRỰC TIẾP</span>
         </button>
-        <button class='flex items-center gap-2 shrink-0' v-bind:class='activeTab === &quot;metaverse&quot; ? &quot;text-[#C74634] border-b-2 border-[#C74634] pb-2 -mb-2.5 font-black&quot; : &quot;text-slate-500 hover:text-slate-900 pb-2 transition&quot;' v-on:click='activeTab = &quot;metaverse&quot;'>
+        <button class='flex items-center gap-2 shrink-0' v-bind:class='activeTab === &quot;metaverse&quot; ? &quot;text-[#C74634] border-b-2 border-[#C74634] pb-2 -mb-2.5 font-black&quot; : &quot;text-slate-500 hover:text-slate-900 pb-2 transition&quot;' v-if='isFundedUser || isAdmin' v-on:click='activeTab = &quot;metaverse&quot;'>
           <i class='fa-solid fa-cube text-purple-600 text-sm'/>
           <span>{{ t(&#39;metaverse&#39;) }}</span>
           <span class='bg-purple-100 text-purple-700 text-[9px] px-1.5 py-0.2 font-black uppercase'>ONCYBER 3D</span>
@@ -1299,7 +1299,7 @@
             </iframe>
 
             <!-- 2. Trình phát Video HTML5 đối với video MP4 / WebM / Direct Stream -->
-            <video autoplay='true' class='w-full h-full object-cover' id='tiktokShortPlayer' loop='true' playsinline='true' v-bind:muted='isShortMuted' v-bind:poster='currentShortVideo.poster' v-bind:src='getPlayableShortUrl(currentShortVideo)' v-else='true' v-on:error='handleShortVideoError'>
+            <video autoplay='true' class='w-full h-full object-cover' id='tiktokShortPlayer' loop='true' playsinline='true' v-bind:muted='isShortMuted' v-bind:poster='currentShortVideo.poster' v-bind:src='getPlayableShortUrl(currentShortVideo)' v-else='true' v-on:error='handleShortVideoError' v-on:playing='shortVideoHasError = false; isShortPlaying = true' v-on:timeupdate='if ($event.target.duration) shortVideoProgress = ($event.target.currentTime / $event.target.duration) * 100;'>
             </video>
 
             <!-- Gradient bóng mờ trên và dưới để chữ hiển thị rõ -->
@@ -1847,8 +1847,8 @@
         </div>
       </div> <!-- End 3C Xổ Số Section -->
 
-      <!-- 3E. TRIỂN LÃM METAVERSE 3D VIRTUAL GALLERY (ONCYBER.IO STYLE - FULL IMMERSIVE) -->
-      <div class='fixed inset-0 z-[99999] bg-[#0c0d12] flex flex-col overflow-hidden' v-if='activeTab === &quot;metaverse&quot;'>
+      <!-- 3E. TRIỂN LÃM METAVERSE 3D VIRTUAL GALLERY (CHỈ DÀNH CHO TÀI KHOẢN VIP) -->
+      <div class='fixed inset-0 z-[99999] bg-[#0c0d12] flex flex-col overflow-hidden' v-if='activeTab === &quot;metaverse&quot; &amp;&amp; (isFundedUser || isAdmin)'>
         <!-- Floating Glass Top Bar (Oncyber Style) -->
         <header class='absolute top-3 left-3 right-3 z-30 flex items-center justify-between gap-3 pointer-events-none'>
           <div class='flex items-center gap-2 pointer-events-auto'>
@@ -2557,7 +2557,7 @@
             </div>
             <span class='text-[9px] bg-amber-100 text-amber-800 px-1.5 py-0.2 font-bold uppercase'>Live</span>
           </button>
-          <button class='w-full flex items-center justify-between px-3 py-2.5 text-slate-700 hover:bg-[#F1EFED] transition' v-on:click='activeTab = &quot;metaverse&quot;; showMobileMenu = false;'>
+          <button class='w-full flex items-center justify-between px-3 py-2.5 text-slate-700 hover:bg-[#F1EFED] transition' v-if='isFundedUser || isAdmin' v-on:click='activeTab = &quot;metaverse&quot;; showMobileMenu = false;'>
             <div class='flex items-center gap-3'>
               <i class='fa-solid fa-vr-cardboard text-purple-600'/>
               <span>{{ t(&#39;metaverse&#39;) }}</span>
@@ -7673,17 +7673,23 @@
         };
 
         const nextShortVideo = () => {
+          shortVideoHasError.value = false;
           if (activeShortIndex.value < shortVideosList.value.length - 1) {
             activeShortIndex.value++;
-            playCurrentShortVideo();
+          } else {
+            activeShortIndex.value = 0;
           }
+          playCurrentShortVideo();
         };
 
         const prevShortVideo = () => {
+          shortVideoHasError.value = false;
           if (activeShortIndex.value > 0) {
             activeShortIndex.value--;
-            playCurrentShortVideo();
+          } else {
+            activeShortIndex.value = Math.max(0, shortVideosList.value.length - 1);
           }
+          playCurrentShortVideo();
         };
 
         const playCurrentShortVideo = () => {
@@ -7863,6 +7869,7 @@
           const fallbackUrl = RELIABLE_SAMPLE_VIDEO;
           if (currentShortVideo.value) {
             currentShortVideo.value.url = fallbackUrl;
+            currentShortVideo.value.cloudUrl = fallbackUrl;
             currentShortVideo.value.restoredBlobUrl = fallbackUrl;
           }
           shortVideoHasError.value = false;
@@ -7871,13 +7878,23 @@
             if (vid) {
               vid.src = fallbackUrl;
               vid.load();
-              vid.play().catch(() => {});
+              vid.play().catch(() => {
+                vid.muted = true;
+                isShortMuted.value = true;
+                vid.play().catch(() => {});
+              });
             }
-          }, 100);
+          }, 80);
         };
 
         const reloadCurrentShortVideo = () => {
           shortVideoHasError.value = false;
+          const fallbackUrl = RELIABLE_SAMPLE_VIDEO;
+          if (currentShortVideo.value) {
+            currentShortVideo.value.url = fallbackUrl;
+            currentShortVideo.value.cloudUrl = fallbackUrl;
+            currentShortVideo.value.restoredBlobUrl = fallbackUrl;
+          }
           playCurrentShortVideo();
         };
 
@@ -8336,6 +8353,22 @@
             (userProfile.value.balance && Number(userProfile.value.balance) > 0)
           );
         });
+
+        // BẢO VỆ ĐẶC QUYỀN VIP: TRIỂN LÃM METAVERSE 3D CHỈ DÀNH CHO TÀI KHOẢN VIP
+        watch([activeTab, isFundedUser, isAdmin], ([tab, funded, admin]) => {
+          if (tab === 'metaverse' && !funded && !admin) {
+            activeTab.value = 'feed';
+            showPopup(
+              'Đặc Quyền Tài Khoản VIP',
+              'Không gian Triển lãm & Gian hàng 3D Metaverse là đặc quyền dành riêng cho Thành viên VIP đã nạp tiền!\n\nVui lòng nạp tiền vào tài khoản để mở khóa trải nghiệm tham quan triển lãm 3D thực tế ảo.',
+              'warning',
+              'Nạp tiền mở khóa ngay',
+              openDepositModal,
+              true,
+              'Để sau'
+            );
+          }
+        }, { immediate: true });
 
         const formatVND = (num) => {
           try {
@@ -9659,8 +9692,20 @@
             // 8. Kết quả xổ số -> Chuyển sang tab Xổ Số LIVE
             activeTab.value = 'xoso';
           } else if (notif.type === 'metaverse') {
-            // 9. Không gian 3D Metaverse -> Chuyển sang Metaverse
-            activeTab.value = 'metaverse';
+            // 9. Không gian 3D Metaverse -> Chỉ mở nếu là Tài khoản VIP / Admin
+            if (isFundedUser.value || isAdmin.value) {
+              activeTab.value = 'metaverse';
+            } else {
+              showPopup(
+                'Đặc Quyền Tài Khoản VIP',
+                'Không gian Triển lãm & Gian hàng 3D Metaverse là đặc quyền dành riêng cho Thành viên VIP đã nạp tiền!\n\nVui lòng nạp tiền vào tài khoản để mở khóa trải nghiệm tham quan triển lãm 3D thực tế ảo.',
+                'warning',
+                'Nạp tiền mở khóa ngay',
+                openDepositModal,
+                true,
+                'Để sau'
+              );
+            }
           } else if (notif.type === 'video' || notif.type === 'youtube_video') {
             // 10. Video Tây Ninh -> Chuyển sang tab Video
             activeTab.value = 'video';
